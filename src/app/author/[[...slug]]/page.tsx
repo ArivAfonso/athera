@@ -1,52 +1,50 @@
 'use client'
 
-import React, { useState } from 'react'
-import { DEMO_POSTS } from '@/data/posts'
-import { PostDataType } from '@/data/types'
-import Pagination from '@/components/Pagination/Pagination'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import { DEMO_AUTHORS } from '@/data/authors'
-import { DEMO_CATEGORIES } from '@/data/taxonomies'
-import Nav from '@/components/Nav/Nav'
-import NavItem from '@/components/NavItem/NavItem'
+import React from 'react'
 import SocialsList from '@/components/SocialsList/SocialsList'
-import ArchiveFilterListBox from '@/components/ArchiveFilterListBox/ArchiveFilterListBox'
-import Newsletter from '@/components/Newsletter/Newsletter'
 import Card11 from '@/components/Card11/Card11'
-import BackgroundSection from '@/components/BackgroundSection/BackgroundSection'
-import SectionGridCategoryBox from '@/components/SectionGridCategoryBox/SectionGridCategoryBox'
-import ButtonSecondary from '@/components/Button/ButtonSecondary'
-import SectionSliderNewAuthors from '@/components/SectionSliderNewAthors/SectionSliderNewAuthors'
 import NcImage from '@/components/NcImage/NcImage'
 import { GlobeAltIcon, ShareIcon } from '@heroicons/react/24/outline'
-import { avatarImgs } from '@/contains/fakeData'
 import VerifyIcon from '@/components/VerifyIcon'
 import FollowButton from '@/components/FollowButton'
 import NcDropDown from '@/components/NcDropDown/NcDropDown'
 import { SOCIALS_DATA } from '@/components/SocialsShare/SocialsShare'
 import AccountActionDropdown from '@/components/AccountActionDropdown/AccountActionDropdown'
 import Image from 'next/image'
+import { sanityClient } from '@/lib/sanityClient'
+import groq from 'groq'
 
-const posts: PostDataType[] = DEMO_POSTS.filter((_, i) => i < 12)
-const FILTERS = [
-    { name: 'Most Recent' },
-    { name: 'Curated by Admin' },
-    { name: 'Most Appreciated' },
-    { name: 'Most Discussed' },
-    { name: 'Most Viewed' },
-]
-const TABS = ['Articles', 'Favorites', 'Saved']
+async function getData(context: { params: { slug: any } }) {
+    const slug = context.params.slug
+    const authorQuery = groq`*[_type == "author" && slug.current == $slug][0]{
+      name,
+      slug,
+      image,
+      bio,
+      website,
+    }`
 
-const PageAuthor = ({}) => {
-    const [tabActive, setTabActive] = useState<string>(TABS[0])
+    const author = await sanityClient.fetch(authorQuery, { slug })
 
-    const handleClickTab = (item: string) => {
-        if (item === tabActive) {
-            return
-        }
-        setTabActive(item)
-    }
+    const postsQuery = groq`*[_type == "post" && author._ref == ^._id]`
+    const posts = await sanityClient.fetch(postsQuery, { author })
 
+    author.posts = posts
+
+    return author
+}
+
+interface Author {
+    name: string
+    slug: string
+    image: string
+    bio: string
+    website: string
+    posts: any[]
+}
+
+const PageAuthor = async (context: any) => {
+    const data: Author = await getData(context)
     return (
         <div className={`nc-PageAuthor `}>
             {/* HEADER */}
@@ -68,7 +66,7 @@ const PageAuthor = ({}) => {
                             <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center overflow-hidden text-neutral-100 uppercase font-semibold rounded-full w-20 h-20 text-xl lg:text-2xl lg:w-36 lg:h-36 ring-4 ring-white dark:ring-0 shadow-2xl z-0">
                                 <Image
                                     alt="Avatar"
-                                    src={avatarImgs[3]}
+                                    src={data.image}
                                     fill
                                     className="object-cover"
                                     priority
@@ -80,25 +78,22 @@ const PageAuthor = ({}) => {
                         <div className="pt-5 md:pt-1 lg:ml-6 xl:ml-12 flex-grow">
                             <div className="max-w-screen-sm space-y-3.5 ">
                                 <h2 className="inline-flex items-center text-2xl sm:text-3xl lg:text-4xl font-semibold">
-                                    <span>Dony Herrera</span>
+                                    <span>{data.name}</span>
                                     <VerifyIcon
                                         className="ml-2"
                                         iconClass="w-6 h-6 sm:w-7 sm:h-7 xl:w-8 xl:h-8"
                                     />
                                 </h2>
                                 <span className="block text-sm text-neutral-500 dark:text-neutral-400">
-                                    Lorem, ipsum dolor sit amet consectetur
-                                    adipisicing elit. Porro autem totam iure
-                                    quibusdam asperiores numquam quae animi
-                                    assumenda necessitatibus consectetur.
+                                    {data.bio}
                                 </span>
                                 <a
-                                    href="#"
+                                    href={data.website}
                                     className="flex items-center text-xs font-medium space-x-2.5 cursor-pointer text-neutral-500 dark:text-neutral-400 truncate"
                                 >
                                     <GlobeAltIcon className="flex-shrink-0 w-4 h-4" />
                                     <span className="text-neutral-700 dark:text-neutral-300 truncate">
-                                        https://example.com/me
+                                        {data.website}
                                     </span>
                                 </a>
                                 <SocialsList itemClass="block w-7 h-7" />
@@ -133,59 +128,13 @@ const PageAuthor = ({}) => {
 
             <div className="container py-16 lg:pb-28 lg:pt-20 space-y-16 lg:space-y-28">
                 <main>
-                    {/* TABS FILTER */}
-                    <div className="flex flex-col sm:items-center sm:justify-between sm:flex-row">
-                        <Nav className="sm:space-x-2">
-                            {TABS.map((item, index) => (
-                                <NavItem
-                                    key={index}
-                                    isActive={tabActive === item}
-                                    onClick={() => handleClickTab(item)}
-                                >
-                                    {item}
-                                </NavItem>
-                            ))}
-                        </Nav>
-                        <div className="block my-4 border-b w-full border-neutral-300 dark:border-neutral-500 sm:hidden"></div>
-                        <div className="flex justify-end">
-                            <ArchiveFilterListBox lists={FILTERS} />
-                        </div>
-                    </div>
-
                     {/* LOOP ITEMS */}
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
-                        {posts.map((post) => (
+                        {data.posts.map((post) => (
                             <Card11 key={post.id} post={post} />
                         ))}
                     </div>
-
-                    {/* PAGINATION */}
-                    <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
-                        <Pagination />
-                        <ButtonPrimary>Show me more</ButtonPrimary>
-                    </div>
                 </main>
-
-                {/* === SECTION 5 === */}
-                <div className="relative py-16">
-                    <BackgroundSection />
-                    <SectionGridCategoryBox
-                        categories={DEMO_CATEGORIES.filter((_, i) => i < 10)}
-                    />
-                    <div className="text-center mx-auto mt-10 md:mt-16">
-                        <ButtonSecondary>Show me more</ButtonSecondary>
-                    </div>
-                </div>
-
-                {/* === SECTION 5 === */}
-                <SectionSliderNewAuthors
-                    heading="Top elite authors"
-                    subHeading="Discover our elite writers"
-                    authors={DEMO_AUTHORS.filter((_, i) => i < 10)}
-                />
-
-                {/* SUBCRIBES */}
-                <Newsletter />
             </div>
         </div>
     )

@@ -1,14 +1,14 @@
-import React, { FC } from "react";
-import MainNav2 from "./MainNav2";
+import React, { FC } from 'react'
+import MainNav from './MainNav'
 
 export interface HeaderProps {}
 
 const Header: FC<HeaderProps> = () => {
-  return (
-    <div className="nc-Header sticky top-0 w-full z-40">
-      <MainNav2 />
-    </div>
-  );
-};
+    return (
+        <div className="nc-Header sticky top-0 w-full z-40">
+            <MainNav />
+        </div>
+    )
+}
 
-export default Header;
+export default Header

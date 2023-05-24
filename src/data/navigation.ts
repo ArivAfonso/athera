@@ -89,38 +89,6 @@ export const MEGAMENU_TEMPLATES: NavItemType[] = [
             },
         ],
     },
-
-    // others pages ----------------
-    {
-        id: randomId(),
-        href: '/#',
-        name: 'Other Pages',
-        children: [
-            { id: randomId(), href: '/dashboard', name: 'Dashboard' },
-            { id: randomId(), href: '/about', name: 'About' },
-            { id: randomId(), href: '/contact', name: 'Contact us' },
-            {
-                id: randomId(),
-                href: '/login',
-                name: 'Login',
-            },
-            {
-                id: randomId(),
-                href: '/signup',
-                name: 'Signup',
-            },
-            {
-                id: randomId(),
-                href: '/forgot-pass',
-                name: 'Forgot password',
-            },
-            {
-                id: randomId(),
-                href: '/subscription',
-                name: 'Subscription',
-            },
-        ],
-    },
 ]
 
 const OTHER_PAGE_CHILD: NavItemType[] = [
@@ -225,81 +193,6 @@ const OTHER_PAGE_CHILD: NavItemType[] = [
         href: '/author/demo-slug' as Route,
         name: 'Author page',
     },
-
-    // dashboard pages ----------------
-    {
-        id: randomId(),
-        href: '/dashboard',
-        name: 'Dashboard Page',
-        type: 'dropdown',
-        children: [
-            {
-                id: randomId(),
-                href: '/dashboard/edit-profile',
-                name: 'Edit profile page',
-            },
-            {
-                id: randomId(),
-                href: '/dashboard/posts',
-                name: 'Posts page',
-            },
-            {
-                id: randomId(),
-                href: '/dashboard/submit-post',
-                name: 'Submit post page',
-            },
-            {
-                id: randomId(),
-                href: '/dashboard/subscription',
-                name: 'Subscription',
-            },
-            {
-                id: randomId(),
-                href: '/dashboard/billing-address',
-                name: 'Billing address',
-            },
-        ],
-    },
-
-    // about pages ----------------
-    {
-        id: randomId(),
-        href: '/about',
-        name: 'Other Pages',
-        type: 'dropdown',
-        children: [
-            {
-                id: randomId(),
-                href: '/about',
-                name: 'About',
-            },
-            {
-                id: randomId(),
-                href: '/contact',
-                name: 'Contact us',
-            },
-            {
-                id: randomId(),
-                href: '/login',
-                name: 'Login',
-            },
-            {
-                id: randomId(),
-                href: '/signup',
-                name: 'Signup',
-            },
-            {
-                id: randomId(),
-                href: '/forgot-pass',
-                name: 'Forgot password',
-            },
-            {
-                id: randomId(),
-                href: '/subscription',
-                name: 'Subscription',
-            },
-        ],
-    },
 ]
 
 export const NAVIGATION_DEMO_2: NavItemType[] = [
@@ -312,27 +205,27 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
 
     {
         id: randomId(),
-        href: '/archive/demo-slug' as Route,
+        href: '/archive/space' as Route,
         name: 'Space',
     },
     {
         id: randomId(),
-        href: '/archive/demo-slug' as Route,
+        href: '/archive/ai' as Route,
         name: 'AI',
     },
     {
         id: randomId(),
-        href: '/archive/demo-slug' as Route,
+        href: '/archive/robotics' as Route,
         name: 'Robotics',
     },
     {
         id: randomId(),
-        href: '/archive/demo-slug' as Route,
+        href: '/archive/virtual-reality' as Route,
         name: 'VR',
     },
     {
         id: randomId(),
-        href: '/archive/demo-slug' as Route,
-        name: 'Electric Cars',
+        href: '/archive/electrc-vehicles' as Route,
+        name: 'Electric Vehicles',
     },
 ]

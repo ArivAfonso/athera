@@ -24,10 +24,16 @@ interface PostDataType {
             }
             _type: string
         }
-        slug: string
+        slug: {
+            _type: string
+            current: string
+        }
     }
     publishedAt: string
-    slug: string
+    slug: {
+            _type: string
+            current: string
+        }
     mainImage: {
         asset: {
             _ref: string
@@ -37,7 +43,10 @@ interface PostDataType {
     }
     categories: {
         title: string
-        slug: string
+        slug: {
+            _type: string
+            current: string
+        }
         color: string
     }[]
 }
@@ -70,7 +79,7 @@ const Card9: FC<Card9Props> = ({
                             {post.title}
                         </span>
                     </h2>
-                    {/* <Link href={`/author/${post.author.slug}`} className="flex mt-2.5 relative"> */}
+                    <Link href={`/author/${encodeURIComponent(post.author.slug.current)}`} className="flex mt-2.5 relative">
                     <span className="block text-neutral-200 hover:text-white font-medium truncate">
                         {post.author.name}
                     </span>
@@ -78,7 +87,7 @@ const Card9: FC<Card9Props> = ({
                     <span className="font-normal truncate">
                         {post.publishedAt}
                     </span>
-                    {/* </Link> */}
+                    </Link>
                 </div>
             </div>
         )
@@ -93,7 +102,7 @@ const Card9: FC<Card9Props> = ({
                 <PostCardSaveAction hidenReadingTime className="relative" />
             </div>
             <div className={`flex items-start relative w-full ${ratio}`}></div>
-            {/* <Link href={`/single/${post.slug}`}> */}
+            <Link href={`/single/${post.slug}`}>
             <Image
                 fill
                 alt=""
@@ -107,13 +116,13 @@ const Card9: FC<Card9Props> = ({
                 iconSize="w-4 h-4"
             />
             <span className="absolute inset-0 bg-black bg-opacity-10 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-            {/* </Link> */}
-            {/* <Link
-                href={`/single/${post.slug}`}
+            </Link> 
+            <Link
+                href={`/single/${encodeURIComponent(post.slug.current)}`}
                 className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black opacity-50"
-            ></Link> */}
+            ></Link>
             <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col flex-grow">
-                {/* <Link href={`/archive/${post.categories[0].slug}`} className="absolute inset-0"></Link> */}
+                <Link href={`/archive/${encodeURIComponent(post.categories[0].slug.current)}`} className="absolute inset-0"></Link>
                 <div className="mb-3">
                     <CategoryBadgeList categories={post.categories} />
                 </div>

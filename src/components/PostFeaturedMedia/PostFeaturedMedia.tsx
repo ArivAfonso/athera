@@ -22,10 +22,16 @@ interface PostDataType {
             }
             _type: string
         }
-        slug: string
+        slug: {
+            _type: string
+            current: string
+        }
     }
     publishedAt: string
-    slug: string
+    slug: {
+            _type: string
+            current: string
+        }
     mainImage: {
         asset: {
             _ref: string
@@ -61,10 +67,10 @@ const PostFeaturedMedia: FC<PostFeaturedMediaProps> = ({
                 src={imageUrl}
                 sizes="(max-width: 600px) 480px, 800px"
             />
-            {/* <Link
-                href={`/single/${post.slug}`}
+            <Link
+                href={`/single/${encodeURIComponent(post.slug.current)}`}
                 className={`block absolute inset-0 bg-black/20 transition-opacity opacity-0 group-hover:opacity-100`}
-            /> */}
+            />
         </div>
     )
 }

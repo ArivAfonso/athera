@@ -17,10 +17,16 @@ interface PostDataType {
             }
             _type: string
         }
-        slug: string
+        slug: {
+            current: string
+            _type: string
+        }
     }
     publishedAt: string
-    slug: string
+    slug: {
+            _type: string
+            current: string
+        }
     mainImage: {
         asset: {
             _ref: string
@@ -30,7 +36,10 @@ interface PostDataType {
     }
     categories: {
         title: string
-        slug: string
+        slug: {
+            _type: string
+            current: string
+        }
         color: string
     }[]
 }
@@ -56,6 +65,8 @@ const Card11: FC<Card11Props> = ({
         day: 'numeric',
     })
 
+    console.log(post.slug)
+
     return (
         <div
             className={`nc-Card11 relative flex flex-col group rounded-3xl overflow-hidden bg-white dark:bg-neutral-900 ${className}`}
@@ -70,10 +81,10 @@ const Card11: FC<Card11Props> = ({
                     <PostFeaturedMedia post={post} isHover={isHover} />
                 </div>
             </div>
-            {/* <Link
-                href={`/single/${post.slug}`}
+            <Link
+                href={`/single/${encodeURIComponent(post.slug.current)}`}
                 className="absolute inset-0"
-            ></Link> */}
+            ></Link>
             <span className="absolute top-3 inset-x-3 z-10">
                 <CategoryBadgeList categories={post.categories} />
             </span>

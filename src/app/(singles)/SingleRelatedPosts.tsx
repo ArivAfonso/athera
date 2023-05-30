@@ -8,7 +8,10 @@ import { Route } from '@/routers/types'
 export interface RelatedPostsType {
     latestPostsInCategory: {
         title: string
-        slug: string
+        slug: {
+            _type: string
+            current: string
+        }
         publishedAt: string
         mainImage: {
             asset: {
@@ -19,12 +22,18 @@ export interface RelatedPostsType {
         }
         categories: {
             title: string
-            slug: string
+            slug: {
+            _type: string
+            current: string
+        }
             color: string
         }[]
         author: {
             name: string
-            slug: string
+            slug: {
+            _type: string
+            current: string
+        }
             image: {
                 asset: {
                     _ref: string

@@ -20,10 +20,16 @@ interface PostDataType {
             }
             _type: string
         }
-        slug: string
+        slug: {
+            _type: string
+            current: string
+        }
     }
     publishedAt: string
-    slug: string
+    slug: {
+            _type: string
+            current: string
+        }
     mainImage: {
         asset: {
             _ref: string
@@ -33,7 +39,10 @@ interface PostDataType {
     }
     categories: {
         title: string
-        slug: string
+        slug: {
+            _type: string
+            current: string
+        }
         color: string
     }[]
 }
@@ -61,7 +70,7 @@ const PostCardMeta: FC<PostCardMetaProps> = ({
                 className={`nc-PostCardMeta inline-flex items-center flex-wrap text-neutral-800 dark:text-neutral-200 ${className}`}
             >
                 <Link
-                    href={`/author/${author.slug}`}
+                    href={`/author/${encodeURIComponent(author.slug.current)}`}
                     className="relative flex items-center space-x-2"
                 >
                     {!hiddenAvatar && (

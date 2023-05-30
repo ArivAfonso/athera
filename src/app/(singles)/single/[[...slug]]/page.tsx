@@ -48,7 +48,10 @@ interface BlogPost {
         }
         _type: string
     }
-    categories: { title: string; color: string; slug: string }[]
+    categories: { title: string; color: string; slug: {
+            _type: string
+            current: string
+        } }[]
     publishedAt: string
     description: string
     body: []

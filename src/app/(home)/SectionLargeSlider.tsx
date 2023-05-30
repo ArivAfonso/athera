@@ -1,9 +1,47 @@
 'use client'
 
 import CardLarge1 from '@/components/CardLarge1/CardLarge1'
-import Heading from '@/components/Heading/Heading'
-import { PostDataType } from '@/data/types'
+import MainHeading from './MainHeading'
 import React, { FC, useState } from 'react'
+
+
+interface PostDataType {
+    title: string
+    author: {
+        name: string
+        image: {
+            asset: {
+                _ref: string
+                _type: string
+            }
+            _type: string
+        }
+        slug: {
+            _type: string
+            current: string
+        }
+    }
+    publishedAt: string
+    slug: {
+            _type: string
+            current: string
+        }
+    mainImage: {
+        asset: {
+            _ref: string
+            _type: string
+        }
+        _type: string
+    }
+    categories: {
+        title: string
+        slug: {
+            _type: string
+            current: string
+        }
+        color: string
+    }[]
+}
 
 export interface SectionLargeSliderProps {
     className?: string
@@ -13,7 +51,7 @@ export interface SectionLargeSliderProps {
 
 const SectionLargeSlider: FC<SectionLargeSliderProps> = ({
     posts,
-    heading = "Editor's pick",
+    heading = "See What's happening in",
     className = '',
 }) => {
     const [indexActive, setIndexActive] = useState(0)
@@ -38,7 +76,7 @@ const SectionLargeSlider: FC<SectionLargeSliderProps> = ({
 
     return (
         <div className={`nc-SectionLargeSlider relative ${className}`}>
-            {!!heading && <Heading isCenter={true}>{heading}</Heading>}
+            {!!heading && <MainHeading isCenter={true}>{heading}</MainHeading>}
             {posts.map((item, index) => {
                 if (indexActive !== index) return null
                 return (

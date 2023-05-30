@@ -13,6 +13,7 @@ import AccountActionDropdown from '@/components/AccountActionDropdown/AccountAct
 import Image from 'next/image'
 import { sanityClient } from '@/lib/sanityClient'
 import groq from 'groq'
+import { useState, useEffect } from 'react'
 
 async function getData(context: { params: { slug: any } }) {
     const slug = context.params.slug
@@ -36,15 +37,37 @@ async function getData(context: { params: { slug: any } }) {
 
 interface Author {
     name: string
-    slug: string
+    slug: {
+            _type: string
+            current: string
+        }
     image: string
     bio: string
     website: string
     posts: any[]
 }
 
-const PageAuthor = async (context: any) => {
-    const data: Author = await getData(context)
+const PageAuthor = (context: any) => {
+    const [data, setData] = useState<Author>({
+        name: '',
+        slug: { _type: '', current: '' },
+        image: '',
+        bio: '',
+        website: '',
+        posts: [],
+      })
+    
+    useEffect( () => { 
+        async function fetchData() {
+            try {
+                const res:Author = await getData(context);
+                setData(res);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        fetchData();
+    }, []);
     return (
         <div className={`nc-PageAuthor `}>
             {/* HEADER */}

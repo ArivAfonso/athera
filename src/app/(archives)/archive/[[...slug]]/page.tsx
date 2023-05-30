@@ -58,10 +58,16 @@ interface Category {
                 }
                 _type: string
             }
-            slug: string
+            slug: {
+            _type: string
+            current: string
+        }
         }
         publishedAt: string
-        slug: string
+        slug: {
+            _type: string
+            current: string
+        }
         mainImage: {
             asset: {
                 _ref: string
@@ -71,7 +77,10 @@ interface Category {
         }
         categories: {
             title: string
-            slug: string
+            slug: {
+            _type: string
+            current: string
+        }
             color: string
         }[]
     }[]

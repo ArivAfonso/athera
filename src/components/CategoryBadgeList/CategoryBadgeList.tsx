@@ -6,7 +6,10 @@ import { Route } from '@/routers/types'
 export interface CategoryBadgeListProps {
     className?: string
     itemClass?: string
-    categories: { title: string; slug: string; color: string }[]
+    categories: { title: string; slug: {
+            _type: string
+            current: string
+        }; color: string }[]
 }
 
 const CategoryBadgeList: FC<CategoryBadgeListProps> = ({

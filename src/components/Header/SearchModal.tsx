@@ -15,6 +15,7 @@ import { DEMO_POSTS } from '@/data/posts'
 import Link from 'next/link'
 import { Route } from '@/routers/types'
 import { useRouter } from 'next/navigation'
+import { UrlObject } from 'url'
 
 const categories = DEMO_CATEGORIES.filter((_, i) => i < 9)
 const posts = DEMO_POSTS.filter((_, i) => i < 5)
@@ -161,7 +162,7 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
 
                                     <div className="flex flex-wrap items-center bg-gray-50 py-2.5 px-4 text-xs text-gray-700">
                                         <Link
-                                            href={'/search'}
+                                            href={'/search' as unknown as UrlObject}
                                             className="mx-1 flex h-5 px-1.5 items-center justify-center rounded border bg-white sm:mx-2 border-primary-6000 text-neutral-900"
                                             onClick={() => setOpen(false)}
                                         >

@@ -21,16 +21,19 @@ async function getData(context: { params: { slug: any } }) {
         publishedAt,
         body,
         description,
+        slug,
         author->{name, image},
         "latestPostsInCategory": *[_type == "post" && references(categories[]->._id)] | order(publishedAt desc) [0..3] {
           title,
+          slug,
           mainImage,
           categories[]->{title, slug, color},
           publishedAt,
           description,
           "author": author->{
             name,
-            image
+            image,
+            slug
           }
         }
       }
@@ -49,11 +52,15 @@ interface BlogPost {
         _type: string
     }
     categories: { title: string; color: string; slug: {
-            _type: string
-            current: string
-        } }[]
+        _type: string
+        current: string
+    } }[]
     publishedAt: string
     description: string
+    slug: {
+        _type: string
+        current: string
+    }
     body: []
     author: {
         name: string
@@ -82,7 +89,7 @@ const PageSingle = async (context: any) => {
                         <SingleHeader
                             description={data.description}
                             title={data.title}
-                            category={data.categories[0].title}
+                            category={data.categories}
                         />
                     </div>
                 </header>

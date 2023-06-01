@@ -53,7 +53,6 @@ const PostFeaturedMedia: FC<PostFeaturedMediaProps> = ({
     isHover = false,
 }) => {
     if (post.mainImage === undefined) {
-        console.log(post)
         return <h1>No Post today</h1>
     }
 

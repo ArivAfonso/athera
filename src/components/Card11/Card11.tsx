@@ -65,7 +65,6 @@ const Card11: FC<Card11Props> = ({
         day: 'numeric',
     })
 
-    console.log(post.slug)
 
     return (
         <div

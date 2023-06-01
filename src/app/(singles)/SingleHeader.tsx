@@ -12,7 +12,14 @@ export interface SingleHeaderProps {
     titleMainClass?: string
     className?: string
     description: string
-    category: any
+    category: {
+        title: string
+        color: string
+        slug: {
+            _type: string
+            current: string
+        }
+    }[]
     title: string
 }
 
@@ -21,22 +28,17 @@ const SingleHeader: FC<SingleHeaderProps> = ({
     hiddenDesc = false,
     className = '',
     description = '',
-    category = '',
+    category,
     title = '',
 }) => {
+
     return (
         <>
             <div className={`nc-SingleHeader ${className}`}>
                 <div className="space-y-5">
                     <CategoryBadgeList
                         itemClass="!px-3"
-                        categories={[
-                            {
-                                title: category.title,
-                                color: category.color,
-                                slug: category.slug,
-                            },
-                        ]}
+                        categories={category}
                     />
                     <SingleTitle mainClass={titleMainClass} title={title} />
                     {!hiddenDesc && (

@@ -19,11 +19,13 @@ async function getData(context: { params: { slug: any } }) {
         title,
         image,
         description,
+        slug,
         color,
         "posts": *[_type == "post" && references(^._id)]{
           title,
           "author": author->{
             name,
+            slug,
             image
           },
           publishedAt,
@@ -47,6 +49,10 @@ interface Category {
         _type: string
     }
     description: string
+    slug: {
+        _type: string
+        current: string
+    }
     posts: {
         title: string
         author: {
@@ -59,9 +65,9 @@ interface Category {
                 _type: string
             }
             slug: {
-            _type: string
-            current: string
-        }
+                _type: string
+                current: string
+            }
         }
         publishedAt: string
         slug: {

@@ -23,7 +23,7 @@ interface AuthorType {
         };
         _type: string;
     }
-    count: number;
+    postCount: number;
     username: string;
   }
 
@@ -38,11 +38,11 @@ const CardAuthorBox2: FC<CardAuthorBox2Props> = ({
 }) => {
   const imgUrl = urlFor(author.image).url() || ""
   return (
-    // <Link
-    //   href={`/author/${author.slug}`}
-    //   className={`nc-CardAuthorBox2 flex flex-col overflow-hidden bg-white dark:bg-neutral-800 rounded-3xl ${className}`}
-    // >
     <>
+    <Link
+      href={`/author/${encodeURIComponent(author.slug.current)}`}
+      className={`nc-CardAuthorBox2 flex flex-col overflow-hidden bg-white dark:bg-neutral-800 rounded-3xl ${className}`}
+    ></Link>
       <div className="relative flex-shrink-0 ">
         <div>
           <NcImage
@@ -55,7 +55,7 @@ const CardAuthorBox2: FC<CardAuthorBox2Props> = ({
         </div>
         <div className="absolute top-3 inset-x-3 flex">
           <div className=" py-1 px-4 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center leading-none text-xs font-medium">
-            {author.count} <ArrowRightIcon className="w-5 h-5 text-yellow-600 ml-3" />
+            {author.postCount} <ArrowRightIcon className="w-5 h-5 text-yellow-600 ml-3" />
           </div>
         </div>
       </div>
@@ -79,7 +79,7 @@ const CardAuthorBox2: FC<CardAuthorBox2Props> = ({
           </span>
         </div>
       </div>
-    </>
+      </>
   );
 };
 

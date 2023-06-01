@@ -1,30 +1,124 @@
 'use client'
 
-import React, { FC, useState } from 'react'
-import { DEMO_POSTS } from '@/data/posts'
-import { PostDataType } from '@/data/types'
-import { DEMO_AUTHORS } from '@/data/authors'
-import { DEMO_CATEGORIES } from '@/data/taxonomies'
-import Pagination from '@/components/Pagination/Pagination'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
+import React, { FC, useState, useEffect } from 'react'
 import Nav from '@/components/Nav/Nav'
 import NavItem from '@/components/NavItem/NavItem'
 import ArchiveFilterListBox from '@/components/ArchiveFilterListBox/ArchiveFilterListBox'
 import Input from '@/components/Input/Input'
-import Newsletter from '@/components/Newsletter/Newsletter'
-import SectionSliderNewAuthors from '@/components/SectionSliderNewAthors/SectionSliderNewAuthors'
-import ButtonSecondary from '@/components/Button/ButtonSecondary'
-import SectionGridCategoryBox from '@/components/SectionGridCategoryBox/SectionGridCategoryBox'
-import BackgroundSection from '@/components/BackgroundSection/BackgroundSection'
 import Card11 from '@/components/Card11/Card11'
 import CardCategory2 from '@/components/CardCategory2/CardCategory2'
-import Tag from '@/components/Tag/Tag'
 import CardAuthorBox2 from '@/components/CardAuthorBox2/CardAuthorBox2'
+import { sanityClient } from '@/lib/sanityClient'
+import { useRouter } from 'next/navigation';
+import groq from 'groq'
+import { set } from 'lodash'
 
-const posts: PostDataType[] = DEMO_POSTS.filter((_, i) => i < 12)
-const cats = DEMO_CATEGORIES.filter((_, i) => i < 15)
-const tags = DEMO_CATEGORIES.filter((_, i) => i < 32)
-const authors = DEMO_AUTHORS.filter((_, i) => i < 12)
+async function getData(context: { params: { slug: any } }) {
+    const slug = context.params.slug[0]
+    const query = groq`{
+  "authors": *[_type == "author" && name match $slug]{
+    name,
+    username,
+    slug,
+    image,
+    "postCount": count(*[_type == "post" && references(^._id)])
+  },
+  "categories": *[_type == "category" && title match $slug]{
+    title,
+    image,
+    slug,
+    "postCount": count(*[_type == "post" && references(^._id)])
+  },
+  "posts": *[_type == "post" && title match $slug]{
+    title,
+    "author": author->{
+      name,
+      slug,
+      image
+    },
+    publishedAt,
+    slug,
+    mainImage,
+    categories[]->{title, slug, color}
+  }
+}
+      `
+    const results = await sanityClient.fetch(query, { slug })
+    return results
+}
+
+interface AuthorType {
+    name: string,
+    username: string,
+    slug: {
+        current: string,
+        _type: string
+    }
+    image: {
+        asset: {
+            _ref: string,
+            _type: string
+        },
+        _type: string
+    }
+    postCount: number
+}
+
+interface CategoryType {
+    title: string,
+    image: {
+        asset: {
+            _ref: string,
+            _type: string
+        },
+        _type: string
+    },
+    postCount: number
+}
+
+interface PostType {
+    title: string,
+    author: {
+        name: string,
+        slug: {
+            current: string,
+            _type: string
+        },
+        image: {
+            asset: {
+                _ref: string,
+                _type: string
+            },
+            _type: string
+        }
+    },
+    publishedAt: string,
+    slug: {
+        current: string,
+        _type: string
+    },
+    mainImage: {
+        asset: {
+            _ref: string,
+            _type: string
+        },
+        _type: string
+    },
+    categories: {
+        title: string,
+        slug: {
+            current: string,
+            _type: string
+        },
+        color: string
+    }[]
+}
+
+interface SearchType {
+    authors: AuthorType[],
+    categories: CategoryType[],
+    posts: PostType[]
+}
 
 const FILTERS = [
     { name: 'Most Recent' },
@@ -33,10 +127,29 @@ const FILTERS = [
     { name: 'Most Discussed' },
     { name: 'Most Viewed' },
 ]
-const TABS = ['Articles', 'Categories', 'Tags', 'Authors']
+const TABS = ['Articles', 'Categories', 'Authors']
 
-const PageSearchV2 = ({}) => {
-    let s = 'Ui Design'
+const PageSearchV2 = (context: any) => {
+    const [data, setData] = useState<SearchType>({
+        authors: [],
+        categories: [],
+        posts: [],
+    })
+    const router = useRouter();
+
+    let s = context.params.slug[0]
+
+    useEffect( () => { 
+        async function fetchData() {
+            try {
+                const res:SearchType = await getData(context);
+                setData(res);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        fetchData();
+    }, []);
 
     const [tabActive, setTabActive] = useState<string>(TABS[0])
 
@@ -47,6 +160,13 @@ const PageSearchV2 = ({}) => {
         setTabActive(item)
     }
 
+    const [searchValue, setSearchValue] = useState('');
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        router.push(`/search/${searchValue}`);
+      };
+
     return (
         <div className={`nc-PageSearchV2`}>
             <div
@@ -54,7 +174,7 @@ const PageSearchV2 = ({}) => {
             />
             <div className="container">
                 <header className="max-w-2xl mx-auto -mt-10 flex flex-col lg:-mt-7">
-                    <form className="relative" action="" method="post">
+                    <form className="relative" action="" method="post" onSubmit={handleSubmit}>
                         <label
                             htmlFor="search-input"
                             className="text-neutral-500 dark:text-neutral-300"
@@ -67,6 +187,7 @@ const PageSearchV2 = ({}) => {
                                 className="shadow-lg rounded-xl border-opacity-0"
                                 sizeClass="pl-14 py-5 pr-5 md:pl-16"
                                 defaultValue={s}
+                                onChange={(e) => setSearchValue(e.target.value)}
                             />
                             <span className="absolute left-5 top-1/2 transform -translate-y-1/2 text-2xl md:left-6">
                                 <svg
@@ -126,71 +247,31 @@ const PageSearchV2 = ({}) => {
                     {/* LOOP ITEMS POSTS */}
                     {tabActive === 'Articles' && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-8 mt-8 lg:mt-10">
-                            {posts.map((post) => (
-                                <Card11 key={post.id} post={post} />
+                            {data.posts.map((post, id) => (
+                                <Card11 key={id} post={post} />
                             ))}
                         </div>
                     )}
                     {/* LOOP ITEMS CATEGORIES */}
                     {tabActive === 'Categories' && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
-                            {cats.map((cat) => (
-                                <CardCategory2 key={cat.id} taxonomy={cat} />
-                            ))}
-                        </div>
-                    )}
-                    {/* LOOP ITEMS TAGS */}
-                    {tabActive === 'Tags' && (
-                        <div className="flex flex-wrap mt-12 ">
-                            {tags.map((tag) => (
-                                <Tag
-                                    className="mb-3 mr-3"
-                                    key={tag.id}
-                                    tag={tag}
-                                />
+                            {data.categories.map((cat, id) => (
+                                <CardCategory2 key={id} category={cat} />
                             ))}
                         </div>
                     )}
                     {/* LOOP ITEMS POSTS */}
                     {tabActive === 'Authors' && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
-                            {authors.map((author) => (
+                            {data.authors.map((author, id) => (
                                 <CardAuthorBox2
-                                    key={author.id}
+                                    key={id}
                                     author={author}
                                 />
                             ))}
                         </div>
                     )}
-
-                    {/* PAGINATION */}
-                    <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
-                        <Pagination />
-                        <ButtonPrimary>Show me more</ButtonPrimary>
-                    </div>
                 </main>
-
-                {/* MORE SECTIONS */}
-                {/* === SECTION 5 === */}
-                <div className="relative py-16">
-                    <BackgroundSection />
-                    <SectionGridCategoryBox
-                        categories={DEMO_CATEGORIES.filter((_, i) => i < 10)}
-                    />
-                    <div className="text-center mx-auto mt-10 md:mt-16">
-                        <ButtonSecondary>Show me more</ButtonSecondary>
-                    </div>
-                </div>
-
-                {/* === SECTION 5 === */}
-                <SectionSliderNewAuthors
-                    heading="Top elite authors"
-                    subHeading="Discover our elite writers"
-                    authors={DEMO_AUTHORS.filter((_, i) => i < 10)}
-                />
-
-                {/* SUBCRIBES */}
-                <Newsletter />
             </div>
         </div>
     )

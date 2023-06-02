@@ -1,0 +1,28 @@
+on:
+    push:
+        branches:
+            - main
+            - master
+    pull_request:
+        types:
+            - opened
+            - synchronize
+
+jobs:
+    name: CI
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: '14'
+            - run: npm install
+            - run: npm install --save-dev @percy/cli
+            - run: npm run dev &
+            - run: sleep 5 # Give the dev server some time to start
+            - run: npx percy snapshot src/ # or any directory such as public/
+              env:
+                  PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+            - run: npm stop # Stop the dev server after tests and snapshots

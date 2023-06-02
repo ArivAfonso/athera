@@ -13,7 +13,7 @@
     },
     "dependencies": {
         "@headlessui/react": "^1.7.13",
-        "@heroicons/react": "^2.0.16",
+        "@heroicons/react": "^2.0.18",
         "@portabletext/react": "^3.0.0",
         "@sanity/client": "^6.0.1",
         "@sanity/image-url": "^1.0.2",

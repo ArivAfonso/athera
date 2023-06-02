@@ -1,6 +1,6 @@
 services:
     node:
-        image: tugboatqa/node:14
+        image: tugboatqa/node:16.17
         expose: 3000
         commands:
             build:

@@ -1,0 +1,15 @@
+services:
+    node:
+        image: tugboatqa/node:14
+        expose: 3000
+        commands:
+            build:
+                # We're already in the correct directory, so we can run npm install.
+                - npm install
+                # Run the NextJS development server.
+                - npm run dev
+            start:
+                # Need to add the & at the end, to prevent tugboat qa from hanging
+                - npm start &
+                # Wait until the app is responding before Tugboat posts a link to the preview
+                - wget -O /dev/null -o /dev/null -t 240 --retry-connrefused localhost:3000

@@ -6,21 +6,23 @@ import SingleTitle from './SingleTitle'
 import PostMeta2 from '@/components/PostMeta2/PostMeta2'
 import SingleMetaAction2 from './SingleMetaAction2'
 import { Route } from '@/routers/types'
+import CategoryType from '@/types/CategoryType'
+import AuthorType from '@/types/AuthorType'
 
 export interface SingleHeaderProps {
     hiddenDesc?: boolean
     titleMainClass?: string
     className?: string
     description: string
-    category: {
-        title: string
-        color: string
-        slug: {
-            _type: string
-            current: string
-        }
-    }[]
+    category: CategoryType[]
+    estimatedReadingTime: number
     title: string
+    author: AuthorType
+    publishedAt: string
+    slug: {
+        current: string
+        _type: string
+    }
 }
 
 const SingleHeader: FC<SingleHeaderProps> = ({
@@ -30,8 +32,11 @@ const SingleHeader: FC<SingleHeaderProps> = ({
     description = '',
     category,
     title = '',
+    publishedAt,
+    estimatedReadingTime,
+    author,
+    slug,
 }) => {
-
     return (
         <>
             <div className={`nc-SingleHeader ${className}`}>
@@ -53,8 +58,17 @@ const SingleHeader: FC<SingleHeaderProps> = ({
                             className="leading-none flex-shrink-0"
                             hiddenCategories
                             avatarRounded="rounded-full shadow-inner"
+                            estimatedReadingTime={estimatedReadingTime}
+                            author={author}
+                            publishedAt={new Date(
+                                publishedAt
+                            ).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            })}
                         />
-                        <SingleMetaAction2 />
+                        <SingleMetaAction2 slug={slug} />
                     </div>
                 </div>
             </div>

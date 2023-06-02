@@ -5,48 +5,11 @@ import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
 import PostCardMeta from '@/components/PostCardMeta/PostCardMeta'
 import PostFeaturedMedia from '@/components/PostFeaturedMedia/PostFeaturedMedia'
 import Link from 'next/link'
-
-interface PostDataType {
-    title: string
-    author: {
-        name: string
-        image: {
-            asset: {
-                _ref: string
-                _type: string
-            }
-            _type: string
-        }
-        slug: {
-            current: string
-            _type: string
-        }
-    }
-    publishedAt: string
-    slug: {
-            _type: string
-            current: string
-        }
-    mainImage: {
-        asset: {
-            _ref: string
-            _type: string
-        }
-        _type: string
-    }
-    categories: {
-        title: string
-        slug: {
-            _type: string
-            current: string
-        }
-        color: string
-    }[]
-}
+import PostType from '@/types/PostType'
 
 export interface Card11Props {
     className?: string
-    post: PostDataType
+    post: PostType
     ratio?: string
     hiddenAuthor?: boolean
 }

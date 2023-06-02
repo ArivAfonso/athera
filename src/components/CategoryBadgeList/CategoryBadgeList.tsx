@@ -2,14 +2,12 @@ import React, { FC } from 'react'
 import Badge from '@/components/Badge/Badge'
 import { TwMainColor } from '@/data/types'
 import { Route } from '@/routers/types'
+import CategoryType from '@/types/CategoryType'
 
 export interface CategoryBadgeListProps {
     className?: string
     itemClass?: string
-    categories: { title: string; slug: {
-            _type: string
-            current: string
-        }; color: string }[]
+    categories: CategoryType[]
 }
 
 const CategoryBadgeList: FC<CategoryBadgeListProps> = ({

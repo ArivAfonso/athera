@@ -7,6 +7,7 @@ import SingleContent from '../../SingleContent'
 import SingleRelatedPosts from '../../SingleRelatedPosts'
 import imageUrlBuilder from '@sanity/image-url'
 import { RelatedPostsType } from '../../SingleRelatedPosts'
+import AuthorType from '@/types/AuthorType'
 
 function urlFor(source: any) {
     return imageUrlBuilder(sanityClient).image(source)
@@ -22,7 +23,8 @@ async function getData(context: { params: { slug: any } }) {
         body,
         description,
         slug,
-        author->{name, image},
+        "estimatedReadingTime": round(length(pt::text(body)) / 5 / 180 ),
+        author->{name, slug, bio, image},
         "latestPostsInCategory": *[_type == "post" && references(categories[]->._id)] | order(publishedAt desc) [0..3] {
           title,
           slug,
@@ -32,6 +34,7 @@ async function getData(context: { params: { slug: any } }) {
           description,
           "author": author->{
             name,
+            bio,
             image,
             slug
           }
@@ -51,32 +54,29 @@ interface BlogPost {
         }
         _type: string
     }
-    categories: { title: string; color: string; slug: {
-        _type: string
-        current: string
-    } }[]
+    categories: {
+        title: string
+        color: string
+        slug: {
+            _type: string
+            current: string
+        }
+    }[]
     publishedAt: string
+    estimatedReadingTime: number
     description: string
     slug: {
         _type: string
         current: string
     }
     body: []
-    author: {
-        name: string
-        image: string
-    }
+    author: AuthorType
     latestPostsInCategory: RelatedPostsType['latestPostsInCategory']
 }
 
 const PageSingle = async (context: any) => {
     const data: BlogPost = await getData(context)
-    const imageUrl = urlFor(data.mainImage.asset._ref)
-        .width(320)
-        .height(240)
-        .fit('max')
-        .auto('format')
-        .url()
+    const imageUrl = urlFor(data.mainImage.asset._ref).url()
     if (!data) {
         // Handle the case where data is undefined
         return <div>Post not found</div>
@@ -88,25 +88,28 @@ const PageSingle = async (context: any) => {
                     <div className="max-w-screen-md mx-auto">
                         <SingleHeader
                             description={data.description}
+                            estimatedReadingTime={data.estimatedReadingTime}
                             title={data.title}
                             category={data.categories}
+                            author={data.author}
+                            publishedAt={data.publishedAt}
+                            slug={data.slug}
                         />
                     </div>
                 </header>
 
-                {/* FEATURED IMAGE */}
                 <NcImage
                     alt="single"
-                    containerClassName="container my-10 sm:my-12"
-                    className="w-full rounded-xl"
+                    containerClassName="container my-10 sm:my-12 flex justify-center items-center"
+                    className="rounded-xl"
                     src={imageUrl}
-                    width={1260}
-                    height={750}
-                    sizes="(max-width: 1024px) 100vw, 1280px"
+                    width={800} // Adjust the desired width
+                    height={480} // Adjust the desired height
+                    sizes="(max-width: 768px) 40vw, 300px" // Adjust the sizes based on your requirements
                 />
                 {/* SINGLE MAIN CONTENT */}
                 <div className="container mt-10">
-                    <SingleContent body={data.body} />
+                    <SingleContent body={data.body} author={data.author} />
                 </div>
 
                 {/* RELATED POSTS */}

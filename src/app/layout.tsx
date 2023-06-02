@@ -1,7 +1,6 @@
 import './globals.css'
 import '@/styles/index.scss'
 import { Poppins } from 'next/font/google'
-import MusicPlayer from '@/components/MusicPlayer/MusicPlayer'
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
 
@@ -26,7 +25,6 @@ export default function RootLayout({
             <body className="bg-[#f8f8f8] text-base dark:bg-neutral-900/95 text-neutral-900 dark:text-neutral-200">
                 <Header />
                 {children}
-                <MusicPlayer />
                 <Footer />
             </body>
         </html>

@@ -225,7 +225,7 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
     },
     {
         id: randomId(),
-        href: '/archive/electrc-vehicles' as Route,
+        href: '/archive/electric-vehicles' as Route,
         name: 'Electric Vehicles',
     },
 ]

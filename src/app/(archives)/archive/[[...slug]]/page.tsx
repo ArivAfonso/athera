@@ -8,6 +8,8 @@ import Image from 'next/image'
 import { sanityClient } from '@/lib/sanityClient'
 import groq from 'groq'
 import imageUrlBuilder from '@sanity/image-url'
+import PostType from '@/types/PostType'
+import CategoryType from '@/types/CategoryType'
 
 function urlFor(source: any) {
     return imageUrlBuilder(sanityClient).image(source)
@@ -39,70 +41,10 @@ async function getData(context: { params: { slug: any } }) {
     return category
 }
 
-interface Category {
-    title: string
-    image: {
-        asset: {
-            _ref: string
-            _type: string
-        }
-        _type: string
-    }
-    description: string
-    slug: {
-        _type: string
-        current: string
-    }
-    posts: {
-        title: string
-        author: {
-            name: string
-            image: {
-                asset: {
-                    _ref: string
-                    _type: string
-                }
-                _type: string
-            }
-            slug: {
-                _type: string
-                current: string
-            }
-        }
-        publishedAt: string
-        slug: {
-            _type: string
-            current: string
-        }
-        mainImage: {
-            asset: {
-                _ref: string
-                _type: string
-            }
-            _type: string
-        }
-        categories: {
-            title: string
-            slug: {
-            _type: string
-            current: string
-        }
-            color: string
-        }[]
-    }[]
-}
-
 const PageArchive = async (context: any) => {
-    const FILTERS = [
-        { name: 'Most Recent' },
-        { name: 'Curated by Admin' },
-        { name: 'Most Appreciated' },
-        { name: 'Most Discussed' },
-        { name: 'Most Viewed' },
-    ]
 
-    const data: Category = await getData(context)
-    const imageUrl = urlFor(data.image.asset._ref).url()
+    const data: CategoryType = await getData(context)
+    const imageUrl = data.image && urlFor(data.image.asset._ref).url()
 
     return (
         <div className={`nc-PageArchive`}>
@@ -112,7 +54,7 @@ const PageArchive = async (context: any) => {
                     <Image
                         alt="Category header image"
                         fill
-                        src={imageUrl}
+                        src={imageUrl || ''}
                         className="object-cover w-full h-full rounded-3xl md:rounded-[40px]"
                         sizes="(max-width: 1280px) 100vw, 1536px"
                     />
@@ -121,7 +63,7 @@ const PageArchive = async (context: any) => {
                             {data.title}
                         </h2>
                         <span className="block mt-4 text-neutral-300">
-                            {data.posts.length} Articles
+                            {data.posts && data.posts.length} Articles
                         </span>
                     </div>
                 </div>
@@ -138,7 +80,7 @@ const PageArchive = async (context: any) => {
 
                     {/* LOOP ITEMS */}
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
-                        {data.posts.map((post, id) => (
+                    {data.posts && data.posts.map((post, id) => (
                             <Card11 key={id} post={post} />
                         ))}
                     </div>

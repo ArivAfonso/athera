@@ -14,6 +14,12 @@ import Image from 'next/image'
 import { sanityClient } from '@/lib/sanityClient'
 import groq from 'groq'
 import { useState, useEffect } from 'react'
+import imageUrlBuilder from '@sanity/image-url'
+import AuthorType from '@/types/AuthorType'
+
+function urlFor(source: any) {
+    return imageUrlBuilder(sanityClient).image(source)
+}
 
 async function getData(context: { params: { slug: any } }) {
     const slug = context.params.slug
@@ -35,39 +41,27 @@ async function getData(context: { params: { slug: any } }) {
     return author
 }
 
-interface Author {
-    name: string
-    slug: {
-            _type: string
-            current: string
-        }
-    image: string
-    bio: string
-    website: string
-    posts: any[]
-}
-
 const PageAuthor = (context: any) => {
-    const [data, setData] = useState<Author>({
+    const [data, setData] = useState<AuthorType>({
         name: '',
         slug: { _type: '', current: '' },
-        image: '',
+        image: { asset: { _ref: '', _type: '' }, _type: '' },
         bio: '',
         website: '',
         posts: [],
-      })
-    
-    useEffect( () => { 
+    })
+
+    useEffect(() => {
         async function fetchData() {
             try {
-                const res:Author = await getData(context);
-                setData(res);
+                const res: AuthorType = await getData(context)
+                setData(res)
             } catch (err) {
-                console.log(err);
+                console.log(err)
             }
         }
-        fetchData();
-    }, []);
+        fetchData()
+    }, [])
     return (
         <div className={`nc-PageAuthor `}>
             {/* HEADER */}
@@ -89,7 +83,7 @@ const PageAuthor = (context: any) => {
                             <div className="wil-avatar relative flex-shrink-0 inline-flex items-center justify-center overflow-hidden text-neutral-100 uppercase font-semibold rounded-full w-20 h-20 text-xl lg:text-2xl lg:w-36 lg:h-36 ring-4 ring-white dark:ring-0 shadow-2xl z-0">
                                 <Image
                                     alt="Avatar"
-                                    src={data.image}
+                                    src={urlFor(data.image.asset._ref).url()}
                                     fill
                                     className="object-cover"
                                     priority
@@ -153,9 +147,10 @@ const PageAuthor = (context: any) => {
                 <main>
                     {/* LOOP ITEMS */}
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
-                        {data.posts.map((post) => (
-                            <Card11 key={post.id} post={post} />
-                        ))}
+                        {data.posts &&
+                            data.posts.map((post, id) => (
+                                <Card11 key={id} post={post} />
+                            ))}
                     </div>
                 </main>
             </div>

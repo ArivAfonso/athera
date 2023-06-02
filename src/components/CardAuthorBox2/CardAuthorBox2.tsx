@@ -5,27 +5,11 @@ import NcImage from "@/components/NcImage/NcImage";
 import Link from "next/link";
 import imageUrlBuilder from '@sanity/image-url'
 import { sanityClient } from '@/lib/sanityClient'
+import AuthorType from "@/types/AuthorType";
 
 function urlFor(source: any) {
     return imageUrlBuilder(sanityClient).image(source)
 }
-
-interface AuthorType {
-  name: string;
-    slug: {
-            _type: string
-            current: string
-        };
-    image: {
-        asset: {
-            _ref: string;
-            _type: string;
-        };
-        _type: string;
-    }
-    postCount: number;
-    username: string;
-  }
 
 export interface CardAuthorBox2Props {
   className?: string;

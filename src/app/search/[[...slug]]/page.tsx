@@ -11,7 +11,9 @@ import CardAuthorBox2 from '@/components/CardAuthorBox2/CardAuthorBox2'
 import { sanityClient } from '@/lib/sanityClient'
 import { useRouter } from 'next/navigation';
 import groq from 'groq'
-import { set } from 'lodash'
+import PostType from '@/types/PostType'
+import CategoryType from '@/types/CategoryType'
+import AuthorType from '@/types/AuthorType'
 
 async function getData(context: { params: { slug: any } }) {
     const slug = context.params.slug[0]
@@ -45,73 +47,6 @@ async function getData(context: { params: { slug: any } }) {
       `
     const results = await sanityClient.fetch(query, { slug })
     return results
-}
-
-interface AuthorType {
-    name: string,
-    username: string,
-    slug: {
-        current: string,
-        _type: string
-    }
-    image: {
-        asset: {
-            _ref: string,
-            _type: string
-        },
-        _type: string
-    }
-    postCount: number
-}
-
-interface CategoryType {
-    title: string,
-    image: {
-        asset: {
-            _ref: string,
-            _type: string
-        },
-        _type: string
-    },
-    postCount: number
-}
-
-interface PostType {
-    title: string,
-    author: {
-        name: string,
-        slug: {
-            current: string,
-            _type: string
-        },
-        image: {
-            asset: {
-                _ref: string,
-                _type: string
-            },
-            _type: string
-        }
-    },
-    publishedAt: string,
-    slug: {
-        current: string,
-        _type: string
-    },
-    mainImage: {
-        asset: {
-            _ref: string,
-            _type: string
-        },
-        _type: string
-    },
-    categories: {
-        title: string,
-        slug: {
-            current: string,
-            _type: string
-        },
-        color: string
-    }[]
 }
 
 interface SearchType {

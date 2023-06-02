@@ -1,20 +1,36 @@
 import Avatar from '@/components/Avatar/Avatar'
 import { DEMO_AUTHORS } from '@/data/authors'
 import { PostAuthorType } from '@/data/types'
+import AuthorType from '@/types/AuthorType'
 import Link from 'next/link'
 import React, { FC } from 'react'
+import imageUrlBuilder from '@sanity/image-url'
+import { sanityClient } from '@/lib/sanityClient'
+import { UrlObject } from 'url'
 
-export interface SingleAuthorProps {
-    author?: PostAuthorType
+function urlFor(source: any) {
+    return imageUrlBuilder(sanityClient).image(source)
 }
 
-const SingleAuthor: FC<SingleAuthorProps> = ({ author = DEMO_AUTHORS[1] }) => {
+export interface SingleAuthorProps {
+    author: AuthorType
+}
+
+const SingleAuthor: FC<SingleAuthorProps> = ({ author }) => {
     return (
         <div className="nc-SingleAuthor flex">
-            <Link href={author.href}>
+            <Link
+                href={`/author/${encodeURIComponent(author.slug.current)}`}
+                as={
+                    ('/author/' +
+                        encodeURIComponent(
+                            author.slug.current
+                        )) as unknown as UrlObject
+                }
+            >
                 <Avatar
-                    imgUrl={author.avatar}
-                    userName={author.displayName}
+                    imgUrl={urlFor(author.image.asset._ref).url()}
+                    userName={author.name}
                     sizeClass="h-12 w-12 text-lg sm:text-xl sm:h-24 sm:w-24"
                 />
             </Link>
@@ -23,13 +39,21 @@ const SingleAuthor: FC<SingleAuthorProps> = ({ author = DEMO_AUTHORS[1] }) => {
                     WRITTEN BY
                 </span>
                 <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-200">
-                    <Link href={author.href}>{author.displayName}</Link>
+                    <Link
+                        href={`/author/${encodeURIComponent(
+                            author.slug.current
+                        )}`}
+                    >
+                        {author.name}
+                    </Link>
                 </h2>
                 <span className="block mt-1 text-sm text-neutral-500 sm:text-base dark:text-neutral-300">
-                    {author.desc}
+                    {author.bio}
                     <Link
                         className="text-primary-6000 font-medium ml-1"
-                        href={author.href}
+                        href={`/author/${encodeURIComponent(
+                            author.slug.current
+                        )}`}
                     >
                         Read more
                     </Link>

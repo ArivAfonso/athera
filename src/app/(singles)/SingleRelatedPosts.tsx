@@ -4,45 +4,10 @@ import Card11 from '@/components/Card11/Card11'
 import Card9 from '@/components/Card9/Card9'
 import { DEMO_POSTS } from '@/data/posts'
 import { Route } from '@/routers/types'
+import PostType from '@/types/PostType'
 
 export interface RelatedPostsType {
-    latestPostsInCategory: {
-        title: string
-        slug: {
-            _type: string
-            current: string
-        }
-        publishedAt: string
-        mainImage: {
-            asset: {
-                _ref: string
-                _type: string
-            }
-            _type: string
-        }
-        categories: {
-            title: string
-            slug: {
-            _type: string
-            current: string
-        }
-            color: string
-        }[]
-        author: {
-            name: string
-            slug: {
-            _type: string
-            current: string
-        }
-            image: {
-                asset: {
-                    _ref: string
-                    _type: string
-                }
-                _type: string
-            }
-        }
-    }[]
+    latestPostsInCategory: PostType[]
 }
 
 export interface SingleRelatedPostsProps {

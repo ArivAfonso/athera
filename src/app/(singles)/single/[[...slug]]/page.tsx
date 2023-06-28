@@ -8,6 +8,7 @@ import SingleRelatedPosts from '../../SingleRelatedPosts'
 import imageUrlBuilder from '@sanity/image-url'
 import { RelatedPostsType } from '../../SingleRelatedPosts'
 import AuthorType from '@/types/AuthorType'
+import { Metadata } from 'next'
 
 function urlFor(source: any) {
     return imageUrlBuilder(sanityClient).image(source)
@@ -72,6 +73,36 @@ interface BlogPost {
     body: []
     author: AuthorType
     latestPostsInCategory: RelatedPostsType['latestPostsInCategory']
+}
+
+export async function generateMetadata(
+    props: any,
+    searchParams: any
+): Promise<Metadata> {
+    const data: BlogPost = await getData(props)
+    const imageUrl = urlFor(data.mainImage.asset._ref).url()
+
+    return {
+        title: data.title,
+        description: data.description,
+        authors: [{ name: data.author.name }],
+        keywords: data.categories.map((category) => category.title),
+        openGraph: {
+            title: data.title,
+            description: data.description,
+            url: `https://www.example.com/${data.slug.current}`,
+            publishedTime: data.publishedAt,
+            type: 'article',
+            images: [
+                {
+                    url: imageUrl,
+                    width: 800,
+                    height: 480,
+                    alt: data.title,
+                },
+            ],
+        },
+    }
 }
 
 const PageSingle = async (context: any) => {

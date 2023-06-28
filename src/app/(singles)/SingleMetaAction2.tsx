@@ -2,10 +2,8 @@
 
 import React, { FC } from 'react'
 import PostActionDropdown from '@/components/PostActionDropdown/PostActionDropdown'
-import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
 import { SOCIALS_DATA } from '@/components/SocialsShare/SocialsShare'
 import NcDropDown from '@/components/NcDropDown/NcDropDown'
-import NcBookmark from '@/components/NcBookmark/NcBookmark'
 
 export interface SingleMetaAction2Props {
     className?: string

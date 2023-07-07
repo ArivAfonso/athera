@@ -2,18 +2,10 @@ import React from 'react'
 import SectionLargeSlider from '@/app/(home)/SectionLargeSlider'
 import BackgroundSection from '@/components/BackgroundSection/BackgroundSection'
 import SectionSliderNewAuthors from '@/components/SectionSliderNewAthors/SectionSliderNewAuthors'
-import { DEMO_POSTS } from '@/data/posts'
-import { DEMO_CATEGORIES } from '@/data/taxonomies'
-import { DEMO_AUTHORS } from '@/data/authors'
 import SectionSliderNewCategories from '@/components/SectionSliderNewCategories/SectionSliderNewCategories'
 import SectionMagazine1 from '@/components/Sections/SectionMagazine1'
 import { sanityClient } from '@/lib/sanityClient'
 import groq from 'groq'
-
-//
-const MAGAZINE1_POSTS = DEMO_POSTS.filter((_, i) => i >= 8 && i < 16)
-
-//
 
 async function getData() {
     const query = groq`{
@@ -22,6 +14,7 @@ async function getData() {
     publishedAt,
     mainImage,
     slug,
+    "estimatedReadingTime": round(length(pt::text(body)) / 5 / 180 ),
     categories[]->{
       title,
       slug,
@@ -29,6 +22,7 @@ async function getData() {
     },
     author->{
       name,
+      slug,
       image,
     }
   },
@@ -36,9 +30,12 @@ async function getData() {
     _id,
     title,
     color,
+    image,
     slug,
-    "numPosts": count(*[_type == "post" && references(^._id)])
-  },
+    "postCount": count(*[_type == "post" && references(^._id)])
+  }
+  | order(postCount desc)
+  [0..9],
   "authors": *[_type == "author"] {
     name,
     image,
@@ -52,63 +49,60 @@ async function getData() {
     return home
 }
 
-
 interface Post {
-    title: string;
-    publishedAt: string;
+    title: string
+    publishedAt: string
     slug: {
-            _type: string
-            current: string
-        };
-    categories: Category[];
-    author: Author;
+        _type: string
+        current: string
+    }
+    categories: Category[]
+    author: Author
     mainImage: {
         asset: {
-            _ref: string;
-            _type: string;
-        };
-        _type: string;
-    };
-  }
-  
-  interface Category {
-    _id: string;
-    title: string;
-    color: string;
-    slug: {
+            _ref: string
             _type: string
-            current: string
-        };
-    numPosts: number;
-  }
-  
-  interface Author {
-    name: string;
+        }
+        _type: string
+    }
+}
+
+interface Category {
+    _id: string
+    title: string
+    color: string
     slug: {
-            _type: string
-            current: string
-        };
+        _type: string
+        current: string
+    }
+    numPosts: number
+}
+
+interface Author {
+    name: string
+    slug: {
+        _type: string
+        current: string
+    }
     image: {
         asset: {
-            _ref: string;
-            _type: string;
-        };
-        _type: string;
+            _ref: string
+            _type: string
+        }
+        _type: string
     }
-    count: number;
-    username: string;
-  }
-  
-  interface HomeProps{
-    latestPosts: Post[];
-    categories: Category[];
-    authors: Author[];
-  }
+    count: number
+    username: string
+}
 
-
+interface HomeProps {
+    latestPosts: Post[]
+    categories: Category[]
+    authors: Author[]
+}
 
 const PageHome = async ({}) => {
-    const data:HomeProps= await getData()
+    const data: HomeProps = await getData()
     return (
         <div className="nc-PageHome relative overflow-x-hidden">
             <div className="container relative">
@@ -130,13 +124,13 @@ const PageHome = async ({}) => {
                     className="py-16 lg:py-28"
                     heading="Top trending topics"
                     subHeading="Discover 233 topics"
-                    categories={DEMO_CATEGORIES.filter((_, i) => i < 10)}
+                    categories={data.categories.filter((_, i) => i < 10)}
                     categoryCardType="card4"
                 />
 
                 <SectionMagazine1
                     className="py-16 lg:py-28"
-                    posts={MAGAZINE1_POSTS}
+                    posts={data.latestPosts.filter((_, i) => i < 6)}
                 />
             </div>
         </div>

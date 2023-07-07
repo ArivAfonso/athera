@@ -15,7 +15,6 @@ const CategoryBadgeList: FC<CategoryBadgeListProps> = ({
     itemClass,
     categories,
 }) => {
-
     return (
         <div
             className={`nc-CategoryBadgeList ${className}`}
@@ -26,7 +25,7 @@ const CategoryBadgeList: FC<CategoryBadgeListProps> = ({
                     className={itemClass}
                     key={index}
                     name={item.title}
-                    // href={`/archive/${item.slug}`}
+                    href={`/archive/${encodeURIComponent(item.slug.current)}`}
                     color={item.color as TwMainColor}
                 />
             ))}

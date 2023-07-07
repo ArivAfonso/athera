@@ -10,6 +10,7 @@ import groq from 'groq'
 import imageUrlBuilder from '@sanity/image-url'
 import PostType from '@/types/PostType'
 import CategoryType from '@/types/CategoryType'
+import { Metadata } from 'next'
 
 function urlFor(source: any) {
     return imageUrlBuilder(sanityClient).image(source)
@@ -41,8 +42,35 @@ async function getData(context: { params: { slug: any } }) {
     return category
 }
 
-const PageArchive = async (context: any) => {
+export async function generateMetadata(
+    props: any,
+    searchParams: any
+): Promise<Metadata> {
+    const data: CategoryType = await getData(props)
+    const imageUrl = data.image?.asset._ref
+        ? urlFor(data.image.asset._ref).url()
+        : ''
 
+    return {
+        title: data.title,
+        description: `News articles and other content about ${data.title}`,
+        openGraph: {
+            title: data.title,
+            url: `https://www.example.com/${data.slug.current}`,
+            type: 'article',
+            images: [
+                {
+                    url: imageUrl,
+                    width: 800,
+                    height: 480,
+                    alt: data.title,
+                },
+            ],
+        },
+    }
+}
+
+const PageArchive = async (context: any) => {
     const data: CategoryType = await getData(context)
     const imageUrl = data.image && urlFor(data.image.asset._ref).url()
 
@@ -80,9 +108,10 @@ const PageArchive = async (context: any) => {
 
                     {/* LOOP ITEMS */}
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
-                    {data.posts && data.posts.map((post, id) => (
-                            <Card11 key={id} post={post} />
-                        ))}
+                        {data.posts &&
+                            data.posts.map((post, id) => (
+                                <Card11 key={id} post={post} />
+                            ))}
                     </div>
                 </div>
             </div>

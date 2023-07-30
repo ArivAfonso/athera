@@ -6,6 +6,7 @@ import ArchiveFilterListBox from '@/components/ArchiveFilterListBox/ArchiveFilte
 import Card11 from '@/components/Card11/Card11'
 import Image from 'next/image'
 import { sanityClient } from '@/lib/sanityClient'
+import SectionTrending from '@/components/Sections/SectionTrending'
 import groq from 'groq'
 import imageUrlBuilder from '@sanity/image-url'
 import PostType from '@/types/PostType'
@@ -18,25 +19,31 @@ function urlFor(source: any) {
 
 async function getData(context: { params: { slug: any } }) {
     const slug = context.params.slug[0]
-    const query = groq`*[_type == "category" && slug.current == $slug][0]{
+    const query = groq`*[_type == "category" && slug.current == $slug][0] {
+    title,
+    image,
+    description,
+    slug,
+    color,
+    "posts": *[_type == "post" && references(^._id)] {
         title,
-        image,
-        description,
-        slug,
-        color,
-        "posts": *[_type == "post" && references(^._id)]{
-          title,
-          "author": author->{
+        "author": author->{
             name,
             slug,
             image
-          },
-          publishedAt,
-          slug,
-          mainImage,
-          categories[]->{title, slug, color}
-        }
-      }
+        },
+        publishedAt,
+        slug,
+        mainImage,
+        categories[]->{title, slug, color}
+    },
+    "otherCategories": *[_type == "category" && slug.current != $slug] {
+        title,
+        image,
+        "postCount": count(*[_type == "post" && references(^._id)])
+    }
+}
+
       `
     const category = await sanityClient.fetch(query, { slug })
     return category
@@ -73,6 +80,7 @@ export async function generateMetadata(
 const PageArchive = async (context: any) => {
     const data: CategoryType = await getData(context)
     const imageUrl = data.image && urlFor(data.image.asset._ref).url()
+    const trendingPosts = data.posts?.filter((_, i) => i < 4)
 
     return (
         <div className={`nc-PageArchive`}>
@@ -102,10 +110,24 @@ const PageArchive = async (context: any) => {
                 <div>
                     <div className="flex flex-col sm:justify-between sm:flex-row">
                         <div className="flex space-x-2.5">
-                            <ModalCategories categories={DEMO_CATEGORIES} />
+                            {/* Check if data.otherCategories is defined before passing it */}
+                            {data.otherCategories && (
+                                <ModalCategories
+                                    categories={data.otherCategories.slice(
+                                        0,
+                                        30
+                                    )}
+                                />
+                            )}
                         </div>
                     </div>
-
+                    {trendingPosts && (
+                        <SectionTrending
+                            heading=""
+                            className="py-16 lg:py-28"
+                            posts={trendingPosts}
+                        />
+                    )}
                     {/* LOOP ITEMS */}
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
                         {data.posts &&

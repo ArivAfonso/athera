@@ -1,18 +1,19 @@
-import PostType from "./PostType"
+import PostType from './PostType'
 
 export default interface CategoryType {
-    title: string,
+    title: string
+    otherCategories?: CategoryType[]
     image?: {
         asset: {
-            _ref: string,
+            _ref: string
             _type: string
-        },
+        }
         _type: string
-    },
+    }
     slug: {
-        current: string,
+        current: string
         _type: string
-    },
+    }
     color?: string
     postCount?: number
     posts?: PostType[]

@@ -1,12 +1,9 @@
 import React, { FC } from 'react'
 import Logo from '@/components/Logo/Logo'
 import Navigation from '@/components/Navigation/Navigation'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import MenuBar from '@/components/MenuBar/MenuBar'
 import SwitchDarkMode from '@/components/SwitchDarkMode/SwitchDarkMode'
 import SearchModal from './SearchModal'
-import Button from '../Button/Button'
-import { Route } from '@/routers/types'
 
 export interface MainNavProps {}
 
@@ -29,13 +26,6 @@ const MainNav: FC<MainNavProps> = ({}) => {
                             <SwitchDarkMode />
                             <SearchModal />
                             <div className="px-1"></div>
-                            <Button
-                                sizeClass="py-3 px-4 sm:px-6"
-                                href={'/login' as Route}
-                                pattern="primary"
-                            >
-                                Sign up
-                            </Button>
                         </div>
                         <div className="flex items-center lg:hidden">
                             <SwitchDarkMode />

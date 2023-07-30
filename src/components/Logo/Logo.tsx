@@ -21,8 +21,8 @@ const Logo: React.FC<LogoProps> = ({
             <Image
                 src="/full-logo-transparent.png"
                 alt="Logo"
-                width={200}
-                height={200}
+                width={220}
+                height={220}
             />
         </Link>
     )

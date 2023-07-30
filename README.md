@@ -1,8 +1,8 @@
-# Parsec
+# Athera
 
 ![image](/public/full-logo-transparent.png)
 
-Parsec is a personal blogging service
+Athera is a personal blogging service
 
 ## Local development
 
@@ -14,4 +14,4 @@ Next run the dev server
 
     npm run dev
 
-And that's it!! Parsec is built with React, NextJS, TailwindCSS and Typescript.
+And that's it!! Athera is built with React, NextJS, TailwindCSS and Typescript.

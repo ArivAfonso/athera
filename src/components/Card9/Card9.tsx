@@ -128,7 +128,7 @@ const Card9: FC<Card9Props> = ({
             ></Link>
             <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col flex-grow">
                 <Link
-                    href={`/archive/${encodeURIComponent(
+                    href={`/category/${encodeURIComponent(
                         post.categories[0].slug.current
                     )}`}
                     className="absolute inset-0"

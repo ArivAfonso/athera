@@ -23,7 +23,7 @@ const CardCategory5: FC<CardCategory5Props> = ({
 }) => {
     return (
         <Link
-            href={`/archive/${encodeURIComponent(category.title)}`}
+            href={`/category/${encodeURIComponent(category.title)}`}
             className={`nc-CardCategory5 relative block group ${className}`}
         >
             <div

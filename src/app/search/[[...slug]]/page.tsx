@@ -3,13 +3,13 @@
 import React, { FC, useState, useEffect } from 'react'
 import Nav from '@/components/Nav/Nav'
 import NavItem from '@/components/NavItem/NavItem'
-import ArchiveFilterListBox from '@/components/ArchiveFilterListBox/ArchiveFilterListBox'
+import CategoryFilterListBox from '@/components/CategoryFilterListBox/CategoryFilterListBox'
 import Input from '@/components/Input/Input'
 import Card11 from '@/components/Card11/Card11'
 import CardCategory2 from '@/components/CardCategory2/CardCategory2'
 import CardAuthorBox2 from '@/components/CardAuthorBox2/CardAuthorBox2'
 import { sanityClient } from '@/lib/sanityClient'
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'
 import groq from 'groq'
 import PostType from '@/types/PostType'
 import CategoryType from '@/types/CategoryType'
@@ -50,8 +50,8 @@ async function getData(context: { params: { slug: any } }) {
 }
 
 interface SearchType {
-    authors: AuthorType[],
-    categories: CategoryType[],
+    authors: AuthorType[]
+    categories: CategoryType[]
     posts: PostType[]
 }
 
@@ -70,21 +70,21 @@ const PageSearchV2 = (context: any) => {
         categories: [],
         posts: [],
     })
-    const router = useRouter();
+    const router = useRouter()
 
     let s = context.params.slug[0]
 
-    useEffect( () => { 
+    useEffect(() => {
         async function fetchData() {
             try {
-                const res:SearchType = await getData(context);
-                setData(res);
+                const res: SearchType = await getData(context)
+                setData(res)
             } catch (err) {
-                console.log(err);
+                console.log(err)
             }
         }
-        fetchData();
-    }, []);
+        fetchData()
+    }, [])
 
     const [tabActive, setTabActive] = useState<string>(TABS[0])
 
@@ -95,12 +95,12 @@ const PageSearchV2 = (context: any) => {
         setTabActive(item)
     }
 
-    const [searchValue, setSearchValue] = useState('');
+    const [searchValue, setSearchValue] = useState('')
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        router.push(`/search/${searchValue}`);
-      };
+        event.preventDefault()
+        router.push(`/search/${searchValue}`)
+    }
 
     return (
         <div className={`nc-PageSearchV2`}>
@@ -109,7 +109,12 @@ const PageSearchV2 = (context: any) => {
             />
             <div className="container">
                 <header className="max-w-2xl mx-auto -mt-10 flex flex-col lg:-mt-7">
-                    <form className="relative" action="" method="post" onSubmit={handleSubmit}>
+                    <form
+                        className="relative"
+                        action=""
+                        method="post"
+                        onSubmit={handleSubmit}
+                    >
                         <label
                             htmlFor="search-input"
                             className="text-neutral-500 dark:text-neutral-300"
@@ -174,7 +179,7 @@ const PageSearchV2 = (context: any) => {
                         </Nav>
                         <div className="block my-4 border-b w-full border-neutral-300 dark:border-neutral-500 sm:hidden"></div>
                         <div className="flex justify-end">
-                            <ArchiveFilterListBox lists={FILTERS} />
+                            <CategoryFilterListBox lists={FILTERS} />
                         </div>
                     </div>
 
@@ -199,10 +204,7 @@ const PageSearchV2 = (context: any) => {
                     {tabActive === 'Authors' && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
                             {data.authors.map((author, id) => (
-                                <CardAuthorBox2
-                                    key={id}
-                                    author={author}
-                                />
+                                <CardAuthorBox2 key={id} author={author} />
                             ))}
                         </div>
                     )}

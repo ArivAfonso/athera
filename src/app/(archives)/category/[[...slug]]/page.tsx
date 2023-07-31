@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import ModalCategories from '../../ModalCategories'
 import { DEMO_CATEGORIES } from '@/data/taxonomies'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import ArchiveFilterListBox from '@/components/ArchiveFilterListBox/ArchiveFilterListBox'
+import CategoryFilterListBox from '@/components/CategoryFilterListBox/CategoryFilterListBox'
 import Card11 from '@/components/Card11/Card11'
 import Image from 'next/image'
 import { sanityClient } from '@/lib/sanityClient'
@@ -77,13 +77,13 @@ export async function generateMetadata(
     }
 }
 
-const PageArchive = async (context: any) => {
+const PageCategory = async (context: any) => {
     const data: CategoryType = await getData(context)
     const imageUrl = data.image && urlFor(data.image.asset._ref).url()
     const trendingPosts = data.posts?.filter((_, i) => i < 4)
 
     return (
-        <div className={`nc-PageArchive`}>
+        <div className={`nc-PageCategory`}>
             {/* HEADER */}
             <div className="w-full px-2 xl:max-w-screen-2xl mx-auto">
                 <div className="relative aspect-w-16 aspect-h-13 sm:aspect-h-9 lg:aspect-h-8 xl:aspect-h-5 rounded-3xl md:rounded-[40px] overflow-hidden z-0">
@@ -141,4 +141,4 @@ const PageArchive = async (context: any) => {
     )
 }
 
-export default PageArchive
+export default PageCategory

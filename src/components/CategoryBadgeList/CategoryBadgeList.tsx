@@ -25,7 +25,7 @@ const CategoryBadgeList: FC<CategoryBadgeListProps> = ({
                     className={itemClass}
                     key={index}
                     name={item.title}
-                    href={`/archive/${encodeURIComponent(item.slug.current)}`}
+                    href={`/category/${encodeURIComponent(item.slug.current)}`}
                     color={item.color as TwMainColor}
                 />
             ))}

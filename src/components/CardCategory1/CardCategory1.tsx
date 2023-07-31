@@ -22,7 +22,7 @@ const CardCategory1: FC<CardCategory1Props> = ({
 }) => {
     return (
         <Link
-            href={`/archive/${encodeURIComponent(category.title)}`}
+            href={`/category/${encodeURIComponent(category.title)}`}
             className={`nc-CardCategory1 flex items-center ${className}`}
         >
             <NcImage

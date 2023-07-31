@@ -51,25 +51,25 @@ export const MEGAMENU_TEMPLATES: NavItemType[] = [
         ],
     },
 
-    // archive pages ---------
+    // category pages ---------
     {
         id: randomId(),
         href: '/#',
-        name: 'Archive Pages',
+        name: 'Category Pages',
         children: [
             {
                 id: randomId(),
-                href: '/archive/demo-slug' as Route,
+                href: '/category/demo-slug' as Route,
                 name: 'Category page',
             },
             {
                 id: randomId(),
-                href: '/archive-2/demo-slug' as Route,
+                href: '/category-2/demo-slug' as Route,
                 name: 'Category audio',
             },
             {
                 id: randomId(),
-                href: '/archive-3/demo-slug' as Route,
+                href: '/category-3/demo-slug' as Route,
                 name: 'Category videos',
             },
             {
@@ -92,26 +92,26 @@ export const MEGAMENU_TEMPLATES: NavItemType[] = [
 ]
 
 const OTHER_PAGE_CHILD: NavItemType[] = [
-    // archive pages ----------------
+    // category pages ----------------
     {
         id: randomId(),
-        href: '/archive/demo-slug' as Route,
+        href: '/category/demo-slug' as Route,
         name: 'Category pages',
         type: 'dropdown',
         children: [
             {
                 id: randomId(),
-                href: '/archive/demo-slug' as Route,
+                href: '/category/demo-slug' as Route,
                 name: 'Category page 1',
             },
             {
                 id: randomId(),
-                href: '/archive-2/demo-slug' as Route,
+                href: '/category-2/demo-slug' as Route,
                 name: 'Category page 2',
             },
             {
                 id: randomId(),
-                href: '/archive-3/demo-slug' as Route,
+                href: '/category-3/demo-slug' as Route,
                 name: 'Category page 2',
             },
         ],
@@ -205,27 +205,27 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
 
     {
         id: randomId(),
-        href: '/archive/space' as Route,
+        href: '/category/space' as Route,
         name: 'Space',
     },
     {
         id: randomId(),
-        href: '/archive/ai' as Route,
+        href: '/category/ai' as Route,
         name: 'AI',
     },
     {
         id: randomId(),
-        href: '/archive/robotics' as Route,
+        href: '/category/robotics' as Route,
         name: 'Robotics',
     },
     {
         id: randomId(),
-        href: '/archive/virtual-reality' as Route,
+        href: '/category/virtual-reality' as Route,
         name: 'VR',
     },
     {
         id: randomId(),
-        href: '/archive/electric-vehicles' as Route,
+        href: '/category/electric-vehicles' as Route,
         name: 'Electric Vehicles',
     },
 ]

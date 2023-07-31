@@ -6,10 +6,11 @@ import SectionSliderNewCategories from '@/components/SectionSliderNewCategories/
 import SectionMagazine1 from '@/components/Sections/SectionMagazine1'
 import { sanityClient } from '@/lib/sanityClient'
 import groq from 'groq'
+import SectionSliderPosts from '@/components/Sections/SectionSliderPosts'
 
 async function getData() {
     const query = groq`{
-  "latestPosts": *[_type == "post"] | order(publishedAt desc)[0..9] {
+  "latestPosts": *[_type == "post"] | order(publishedAt desc)[0..17] {
     title,
     publishedAt,
     mainImage,
@@ -132,6 +133,17 @@ const PageHome = async ({}) => {
                     className="py-16 lg:py-28"
                     posts={data.latestPosts.filter((_, i) => i < 6)}
                 />
+                <div className="relative py-16">
+                    <BackgroundSection />
+                    <SectionSliderPosts
+                        postCardName="card9"
+                        heading="Interesting Content"
+                        subHeading="Over 69420 articles till date"
+                        posts={data.latestPosts.filter(
+                            (_, i) => i > 8 && i < 16
+                        )}
+                    />
+                </div>
             </div>
         </div>
     )

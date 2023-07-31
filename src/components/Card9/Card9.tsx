@@ -8,53 +8,16 @@ import Link from 'next/link'
 import Image from 'next/image'
 import imageUrlBuilder from '@sanity/image-url'
 import { sanityClient } from '@/lib/sanityClient'
+import PostType from '@/types/PostType'
 
 function urlFor(source: any) {
     return imageUrlBuilder(sanityClient).image(source)
 }
 
-interface PostDataType {
-    title: string
-    author: {
-        name: string
-        image: {
-            asset: {
-                _ref: string
-                _type: string
-            }
-            _type: string
-        }
-        slug: {
-            _type: string
-            current: string
-        }
-    }
-    publishedAt: string
-    slug: {
-        _type: string
-        current: string
-    }
-    mainImage: {
-        asset: {
-            _ref: string
-            _type: string
-        }
-        _type: string
-    }
-    categories: {
-        title: string
-        slug: {
-            _type: string
-            current: string
-        }
-        color: string
-    }[]
-}
-
 export interface Card9Props {
     className?: string
     ratio?: string
-    post: PostDataType
+    post: PostType
     hoverClass?: string
 }
 

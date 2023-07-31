@@ -22,7 +22,7 @@ function urlFor(source: any) {
 }
 
 async function getData(context: { params: { slug: any } }) {
-    const slug = context.params.slug
+    const slug = context.params.slug[0]
     const authorQuery = groq`*[_type == "author" && slug.current == $slug][0]{
       name,
       slug,

@@ -28,7 +28,7 @@
         "@types/react-dom": "18.2.7",
         "@types/react-typing-effect": "^2.0.3",
         "autoprefixer": "^10.4.15",
-        "eslint": "8.36.0",
+        "eslint": "8.49.0",
         "eslint-config-next": "13.2.4",
         "framer-motion": "^10.16.4",
         "groq": "^3.10.3",

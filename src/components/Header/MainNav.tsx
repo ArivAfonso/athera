@@ -4,10 +4,25 @@ import Navigation from '@/components/Navigation/Navigation'
 import MenuBar from '@/components/MenuBar/MenuBar'
 import SwitchDarkMode from '@/components/SwitchDarkMode/SwitchDarkMode'
 import SearchModal from './SearchModal'
+import Button from '../Button/Button'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+import AvatarDropdown from './AvatarDropdown'
+import { use } from 'react'
+
+async function getUser() {
+    const supabase = createServerComponentClient({ cookies })
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
+    return user
+}
 
 export interface MainNavProps {}
 
 const MainNav: FC<MainNavProps> = ({}) => {
+    const user = use(getUser())
     return (
         <div className="nc-MainNav relative z-10 bg-white dark:bg-slate-900 ">
             <div className="container">
@@ -25,11 +40,39 @@ const MainNav: FC<MainNavProps> = ({}) => {
                         <div className="hidden items-center lg:flex">
                             <SwitchDarkMode />
                             <SearchModal />
-                            <div className="px-1"></div>
+                            {/* if user exists show avatar dropdown else button */}
+                            {user ? (
+                                <AvatarDropdown
+                                    avatar_url={user.user_metadata.avatar_url}
+                                    name={user.user_metadata.name}
+                                />
+                            ) : (
+                                <>
+                                    <div className="px-1"></div>
+                                    <Button
+                                        sizeClass="py-3 px-4 sm:px-6"
+                                        href="/signup"
+                                        pattern="primary"
+                                    >
+                                        Sign up
+                                    </Button>
+                                </>
+                            )}
                         </div>
                         <div className="flex items-center lg:hidden">
-                            <SwitchDarkMode />
-                            <SearchModal />
+                            {
+                                // if user exists show avatar dropdown else button
+                                user ? (
+                                    <AvatarDropdown
+                                        avatar_url={
+                                            user.user_metadata.avatar_url
+                                        }
+                                        name={user.user_metadata.name}
+                                    />
+                                ) : (
+                                    <SearchModal />
+                                )
+                            }
                         </div>
                     </div>
                 </div>

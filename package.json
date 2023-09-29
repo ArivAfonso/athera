@@ -29,7 +29,7 @@
         "@types/react-typing-effect": "^2.0.3",
         "autoprefixer": "^10.4.15",
         "eslint": "8.50.0",
-        "eslint-config-next": "13.2.4",
+        "eslint-config-next": "13.5.3",
         "framer-motion": "^10.16.4",
         "groq": "^3.10.3",
         "html-react-parser": "^4.2.2",

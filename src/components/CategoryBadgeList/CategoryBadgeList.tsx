@@ -2,12 +2,12 @@ import React, { FC } from 'react'
 import Badge from '@/components/Badge/Badge'
 import { TwMainColor } from '@/data/types'
 import { Route } from '@/routers/types'
-import CategoryType from '@/types/CategoryType'
+import PostCategoryType from '@/types/PostCategoryType'
 
 export interface CategoryBadgeListProps {
     className?: string
     itemClass?: string
-    categories: CategoryType[]
+    categories: PostCategoryType[]
 }
 
 const CategoryBadgeList: FC<CategoryBadgeListProps> = ({
@@ -24,9 +24,9 @@ const CategoryBadgeList: FC<CategoryBadgeListProps> = ({
                 <Badge
                     className={itemClass}
                     key={index}
-                    name={item.title}
-                    href={`/category/${encodeURIComponent(item.slug.current)}`}
-                    color={item.color as TwMainColor}
+                    name={item.category.name}
+                    href={`/category/${item.category.name}`}
+                    color={item.category.color.toLowerCase() as TwMainColor}
                 />
             ))}
         </div>

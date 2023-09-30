@@ -10,17 +10,17 @@ import NcLink from '@/components/NcLink/NcLink'
 import Heading2 from '@/components/Heading/Heading2'
 import Image from 'next/image'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
-import * as Yup from 'yup'
-
-const LoginSchema = Yup.object().shape({
-    email: Yup.string().email('Invalid email').required('Required'),
-    password: Yup.string().required('Required'),
-})
+import { Controller, useForm } from 'react-hook-form'
 
 const PageLogin = ({}) => {
     const supabase = createClientComponentClient()
     const [errorMsg, setErrorMsg] = useState('')
+
+    const {
+        handleSubmit,
+        control,
+        formState: { errors },
+    } = useForm() // Initialize the hook
 
     async function emailLogin(formData: any) {
         const { error } = await supabase.auth.signInWithPassword({
@@ -95,52 +95,59 @@ const PageLogin = ({}) => {
                     <div className="absolute left-0 w-full top-1/2 transform -translate-y-1/2 border border-neutral-100 dark:border-neutral-800"></div>
                 </div>
                 {/* FORM */}
-                <Formik
-                    initialValues={{
-                        email: '',
-                        password: '',
-                    }}
-                    validationSchema={LoginSchema}
-                    onSubmit={emailLogin}
+                <form
+                    className="grid grid-cols-1 gap-6"
+                    onSubmit={handleSubmit(
+                        async (data) => await emailLogin(data)
+                    )}
                 >
-                    <Form className="grid grid-cols-1 gap-6">
-                        <label className="block">
-                            <span className="text-neutral-800 dark:text-neutral-200">
-                                Email address
-                            </span>
-                            <Field
-                                type="email"
-                                name="email"
-                                placeholder="example@example.com"
-                                component={Input}
-                                className="mt-1"
-                            />
-                        </label>
-                        <label className="block">
-                            <span className="flex justify-between items-center text-neutral-800 dark:text-neutral-200">
-                                Password
-                                <NcLink
-                                    href="/forgot-pass"
-                                    className="text-sm underline"
-                                >
-                                    Forgot password?
-                                </NcLink>
-                            </span>
-                            <Field
-                                type="password"
-                                name="password"
-                                component={Input}
-                                className="mt-1"
-                            />
-                        </label>
-                        <ButtonPrimary type="submit">Continue</ButtonPrimary>
-                    </Form>
-                </Formik>
+                    <label className="block">
+                        <span className="text-neutral-800 dark:text-neutral-200">
+                            Email address
+                        </span>
+                        <Controller
+                            name="email" // Field name
+                            control={control} // Control prop
+                            defaultValue="" // Default value
+                            render={({ field }) => (
+                                <Input
+                                    {...field}
+                                    type="email"
+                                    placeholder="example@example.com"
+                                    className="mt-1"
+                                />
+                            )}
+                        />
+                    </label>
+                    <label className="block">
+                        <span className="flex justify-between items-center text-neutral-800 dark:text-neutral-200">
+                            Password
+                            <NcLink
+                                href="/forgot-pass"
+                                className="text-sm underline"
+                            >
+                                Forgot password?
+                            </NcLink>
+                        </span>
+                        <Controller
+                            name="password" // Field name
+                            control={control} // Control prop
+                            defaultValue="" // Default value
+                            render={({ field }) => (
+                                <Input
+                                    {...field}
+                                    type="password"
+                                    className="mt-1"
+                                />
+                            )}
+                        />
+                    </label>
+                    <ButtonPrimary type="submit">Continue</ButtonPrimary>
+                </form>
                 {errorMsg && <div className="text-red-600">{errorMsg}</div>}
                 {/* ==== */}
                 <span className="block text-center text-neutral-700 dark:text-neutral-300">
-                    New user? {` `}
-                    <NcLink href="/signup">Create an account</NcLink>
+                    New user? <NcLink href="/signup">Create an account</NcLink>
                 </span>
             </div>
         </>

@@ -3,11 +3,18 @@ import '@/styles/index.scss'
 import { Poppins } from 'next/font/google'
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
-
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 
+import { registerLicense } from '@syncfusion/ej2-base'
+
+// Registering Syncfusion license key
+registerLicense(
+    process.env.SYNCFUSION_LICENSE_KEY ? process.env.SYNCFUSION_LICENSE_KEY : ''
+)
+
 import AuthProvider from '@/providers/AuthProvider'
+import { env } from 'process'
 
 // do not cache this layout
 export const revalidate = 0

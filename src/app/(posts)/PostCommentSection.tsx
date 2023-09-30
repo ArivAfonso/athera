@@ -1,0 +1,177 @@
+import React, { FC, useEffect, useState } from 'react' // Import useState
+import ButtonPrimary from '@/components/Button/ButtonPrimary'
+import CommentCard from '@/components/CommentCard/CommentCard'
+import CommentType from '@/types/CommentType'
+import ButtonSecondary from '@/components/Button/ButtonSecondary'
+import Textarea from '@/components/Textarea/Textarea'
+import Button from '@/components/Button/Button'
+import { useForm, Controller } from 'react-hook-form'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+
+async function getCommentData(id: string) {
+    const supabase = createClientComponentClient()
+    const { data, error } = await supabase
+        .from('comments')
+        .select(
+            'id, comment, created_at, commenter(name, username, avatar, id)'
+        )
+        .eq('post', id)
+        .order('created_at', { ascending: true })
+
+    if (error) {
+        // Handle the error.
+        return
+    }
+
+    // Get the current user's ID.
+    const { data: session } = await supabase.auth.getSession()
+
+    // Query the comment_likes table to get the number of likes for each comment and whether the current user has liked each comment.
+    const { data: commentLikes, error: errorComment } = await supabase
+        .from('comment_likes')
+        .select('comment, liker')
+        .eq('liker', session.session ? session.session.user.id : '')
+
+    // Add the likes and is_liked_by_current_user properties to each comment.
+    data.forEach((comment) => {
+        //@ts-ignore
+        comment.likes = commentLikes?.filter(
+            (like) => like.comment === comment.id
+        ).length
+        //@ts-ignore
+        comment.is_liked_by_current_user = commentLikes?.find(
+            (like) => like.comment === comment.id
+        )
+    })
+    console.log(data)
+    return data
+}
+
+export interface SingleCommentFormProps {
+    className?: string
+    onClickSubmit?: () => void
+    onClickCancel?: () => void
+    textareaRef?: React.MutableRefObject<null>
+    defaultValue?: string
+    id: string
+    rows?: number
+    currentUserID: string
+}
+
+const SingleCommentForm: FC<SingleCommentFormProps> = ({
+    className = 'mt-5',
+    onClickSubmit,
+    onClickCancel,
+    textareaRef,
+    defaultValue = '',
+    id,
+    currentUserID,
+    rows = 4,
+}) => {
+    const { control, handleSubmit, reset } = useForm()
+    const [submittedComment, setSubmittedComment] = useState(null) // State to store submitted comment
+
+    const [comments, setComments] = useState<CommentType[]>([]) // State to store comments
+
+    useEffect(() => {
+        const getData = async () => {
+            const data = await getCommentData(id)
+            console.log(data)
+            //@ts-ignore
+            setComments(data)
+        }
+
+        getData()
+    }, [])
+
+    console.log(comments)
+
+    const onSubmit = async (data: any) => {
+        const supabase = createClientComponentClient()
+        const { data: session } = await supabase.auth.getSession()
+
+        const { data: commentConfirm, error } = await supabase
+            .from('comments')
+            .insert([
+                {
+                    comment: data.comment,
+                    commenter: session.session?.user.id,
+                    post: id,
+                },
+            ])
+
+        if (!error) {
+            // Comment successfully submitted
+            setSubmittedComment({
+                //@ts-ignore
+                comment: data.comment,
+                created_at: new Date(),
+                is_liked_by_current_user: false,
+                likes: 0,
+                commenter: {
+                    name: session?.session?.user.user_metadata.name,
+                    username: session?.session?.user.user_metadata.name,
+                    avatar: session?.session?.user.user_metadata.avatar_url,
+                },
+            }) // Store the submitted comment
+            reset() // Reset the form
+        }
+    }
+    return (
+        <>
+            <div className="pb-10">
+                <form
+                    action="#"
+                    className={`nc-SingleCommentForm ${className}`}
+                    onSubmit={handleSubmit(onSubmit)}
+                >
+                    <Controller
+                        name="comment"
+                        control={control}
+                        defaultValue={defaultValue}
+                        rules={{ required: true }}
+                        render={({ field }) => (
+                            <Textarea
+                                {...field}
+                                placeholder="Add to discussion"
+                                rows={rows}
+                            />
+                        )}
+                    />
+                    <div className="mt-2 space-x-3">
+                        <ButtonPrimary type="submit">Submit</ButtonPrimary>
+                        <Button
+                            type="button"
+                            pattern="white"
+                            onClick={onClickCancel}
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </form>
+            </div>
+            {submittedComment && ( // Render the submitted comment if available
+                <ul className="space-y-5">
+                    <CommentCard
+                        currentUserID={currentUserID}
+                        commentObj={submittedComment}
+                    />
+                </ul>
+            )}
+            <ul className="nc-SingleCommentLists space-y-5">
+                {
+                    //@ts-ignore
+                    comments.map((comment, key) => (
+                        <CommentCard
+                            currentUserID={currentUserID}
+                            commentObj={comment}
+                            key={key}
+                        />
+                    ))
+                }
+            </ul>
+        </>
+    )
+}
+
+export default SingleCommentForm

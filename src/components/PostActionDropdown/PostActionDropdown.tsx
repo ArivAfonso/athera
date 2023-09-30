@@ -11,17 +11,16 @@ export interface PostActionDropdownProps {
     containerClassName?: string
     iconClass?: string
     dropdownPositon?: 'up' | 'down'
-    slug: {
-        current: string
-        _type: string
-    }
+    title: string
+    id: string
 }
 
 const PostActionDropdown: FC<PostActionDropdownProps> = ({
     containerClassName = 'h-8 w-8 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700',
     iconClass = 'h-[18px] w-[18px]',
     dropdownPositon = 'down',
-    slug,
+    title,
+    id,
 }) => {
     let actions = [
         {
@@ -58,7 +57,7 @@ const PostActionDropdown: FC<PostActionDropdownProps> = ({
     const hanldeClickDropDown = (item: (typeof actions)[number]) => {
         if (item.id === 'copylink') {
             navigator.clipboard.writeText(
-                window.location.origin + `/single/${slug.current}`
+                window.location.origin + `/post/${title}/${id}`
             )
             setIsCopied(true)
             setTimeout(() => {

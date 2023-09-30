@@ -1,41 +1,36 @@
 export default interface PostType {
+    id: string
     title: string
-    description?: string
-    latestPostsInCategory?: PostType[]
-    estimatedReadingTime?: number
-    body?: []
+    image: string
+    created_at?: string
+    estimatedReadingTime: number
+    description: string
+    text: string
+    rawText: string
     author: {
         name: string
-        slug: {
-            current: string
-            _type: string
-        }
-        image: {
-            asset: {
-                _ref: string
-                _type: string
-            }
-            _type: string
-        }
+        username: string
+        avatar: string
+        description: string
     }
-    publishedAt: string
-    slug: {
-        current: string
-        _type: string
-    }
-    mainImage: {
-        asset: {
-            _ref: string
-            _type: string
+    post_categories: {
+        category: {
+            title: string
+            color: string
         }
-        _type: string
-    }
-    categories: {
-        title: string
-        slug: {
-            current: string
-            _type: string
+    }[]
+    likeCount: {
+        count: number
+    }[]
+    isLiked: boolean
+    comments?: {
+        commenter: {
+            name: string
+            username: string
+            image: string
+            description: string
         }
-        color: string
+        comment: string
+        created_at: string
     }[]
 }

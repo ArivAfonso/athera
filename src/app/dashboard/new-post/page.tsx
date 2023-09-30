@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Input from '@/components/Input/Input'
+import NextImage from 'next/image'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import Select from '@/components/Select/Select'
 import Textarea from '@/components/Textarea/Textarea'
@@ -32,7 +33,12 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Controller, useForm } from 'react-hook-form'
 import { htmlToJSON } from '@/utils/htmlToJson'
 import { Alert } from '@/components/Alert/Alert'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
+import { TagsInput } from 'react-tag-input-component'
+
+function strWords(str: string) {
+    return str.split(/\s+/).length
+}
 
 const DashboardSubmitPost = () => {
     let rteObj: RichTextEditorComponent
@@ -183,26 +189,120 @@ const DashboardSubmitPost = () => {
     }, [isDarkMode])
 
     const supabase = createClientComponentClient()
+
     const [errorMsg, setErrorMsg] = useState('')
     const [text, setText] = useState('')
     const [htmlText, setHtmlText] = useState('')
-    console.log(text)
+    const [selectedImage, setSelectedImage] = useState(null)
+    const [uploading, setUploading] = useState(false)
+
+    const [tags, setTags] = useState([])
+
+    const handleTagsChange = (newTags: any) => {
+        setTags(newTags)
+    }
 
     async function sendPost(formData: any) {
-        console.log(htmlToJSON(htmlText))
-        const {
-            data: { user },
-        } = await supabase.auth.getUser()
-        const { error } = await supabase.from('posts').insert({
-            title: formData.postTitle,
-            author: user?.id,
-            description: formData.postExcerpt,
-            category: formData.category,
-            text: text,
-            rawText: htmlToJSON(htmlText),
-        })
-        if (error) {
-            setErrorMsg(error.message)
+        try {
+            if (selectedImage) {
+                setUploading(true)
+
+                // Get the authenticated user
+                const {
+                    data: { user },
+                } = await supabase.auth.getUser()
+
+                // Insert the post without the image URL
+                const { data, error: postInsertError } = await supabase
+                    .from('posts')
+                    .insert([
+                        {
+                            title: formData.postTitle,
+                            author: user?.id,
+                            description: formData.postExcerpt,
+                            text: text,
+                            rawText: htmlText,
+                            estimatedReadingTime: Math.round(
+                                strWords(text) / 200
+                            ),
+                        },
+                    ])
+                    .select()
+
+                console.log(postInsertError)
+
+                if (postInsertError) {
+                    throw new Error(
+                        `Post insertion failed: ${postInsertError.message}`
+                    )
+                }
+
+                // Retrieve the generated post ID
+                const postId: string = data ? data[0]?.id : null
+
+                // Upload the selected image to Supabase storage with the post's ID as the name
+                const { data: imagePath, error: imageUploadError } =
+                    await supabase.storage
+                        .from('images')
+                        .upload(`${user?.id}/${postId}`, selectedImage)
+
+                console.log(postId)
+
+                const finalTags: any[] = []
+
+                tags.map(async (tag: string) => {
+                    const words = tag.split(' ')
+
+                    words
+                        .map((word) => {
+                            return word[0].toUpperCase() + word.substring(1)
+                        })
+                        .join(' ')
+                        .replace(' ', '-')
+                    finalTags.push({
+                        post: postId,
+                        category: words,
+                    })
+                })
+
+                // Update the inserted post with the image URL
+                const { data: imgData, error: updateError } = await supabase
+                    .from('posts')
+                    .update({
+                        image:
+                            'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                            imagePath?.path,
+                    })
+                    .eq('id', postId)
+                    .select()
+
+                const { data: categoryData } = await supabase
+                    .from('post_categories')
+                    .insert(finalTags)
+
+                console.log(imgData)
+                console.log(updateError)
+
+                if (updateError) {
+                    setErrorMsg(`Post update failed`)
+                }
+
+                // Reset the form and state
+                setSelectedImage(null)
+                setUploading(false)
+                setErrorMsg('')
+            } else {
+                setErrorMsg('Please select an image')
+            }
+        } catch (error) {
+            setErrorMsg('Post could not be created')
+        }
+    }
+
+    const handleImageSelect = (event: { target: { files: any[] } }) => {
+        const file = event.target.files[0]
+        if (file) {
+            setSelectedImage(file)
         }
     }
 
@@ -268,7 +368,14 @@ const DashboardSubmitPost = () => {
                         name="tags"
                         control={control}
                         render={({ field }) => (
-                            <Input type="text" className="mt-1" {...field} />
+                            <>
+                                <TagsInput
+                                    value={tags}
+                                    onChange={handleTagsChange}
+                                    name="categories"
+                                    placeHolder="enter categories"
+                                />
+                            </>
                         )}
                     />
                 </label>
@@ -278,38 +385,46 @@ const DashboardSubmitPost = () => {
 
                     <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-md">
                         <div className="space-y-1 text-center">
-                            <svg
-                                className="mx-auto h-12 w-12 text-neutral-400"
-                                stroke="currentColor"
-                                fill="none"
-                                viewBox="0 0 48 48"
-                                aria-hidden="true"
-                            >
-                                <path
-                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                ></path>
-                            </svg>
-                            <div className="flex flex-col sm:flex-row text-sm text-neutral-6000">
-                                <label
-                                    htmlFor="file-upload"
-                                    className="relative cursor-pointer rounded-md font-medium text-primary-6000 hover:text-primary-800 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
-                                >
-                                    <span>Upload a file</span>
-                                    <input
-                                        id="file-upload"
-                                        name="file-upload"
-                                        type="file"
-                                        className="sr-only"
-                                    />
-                                </label>
-                                <p className="pl-1">or drag and drop</p>
-                            </div>
-                            <p className="text-xs text-neutral-500">
-                                PNG, JPG, GIF up to 2MB
-                            </p>
+                            {selectedImage ? (
+                                <NextImage
+                                    src={URL.createObjectURL(selectedImage)}
+                                    alt="Selected Image"
+                                    width={800} // Adjust the desired width
+                                    height={480} // Adjust the desired height
+                                />
+                            ) : (
+                                <>
+                                    <svg
+                                        className="mx-auto h-12 w-12 text-neutral-400"
+                                        stroke="currentColor"
+                                        fill="none"
+                                        viewBox="0 0 48 48"
+                                        aria-hidden="true"
+                                    >
+                                        {/* Your SVG path here */}
+                                    </svg>
+                                    <div className="flex flex-col sm:flex-row text-sm text-neutral-6000">
+                                        <label
+                                            htmlFor="file-upload"
+                                            className="relative cursor-pointer rounded-md font-medium text-primary-6000 hover:text-primary-800 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
+                                        >
+                                            <span>Upload a file</span>
+                                            <input
+                                                id="file-upload"
+                                                name="file-upload"
+                                                type="file"
+                                                className="sr-only"
+                                                //@ts-ignore
+                                                onChange={handleImageSelect}
+                                            />
+                                        </label>
+                                        <p className="pl-1">or drag and drop</p>
+                                    </div>
+                                    <p className="text-xs text-neutral-500">
+                                        PNG, JPG, GIF up to 2MB
+                                    </p>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

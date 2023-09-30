@@ -1,46 +1,35 @@
 'use client'
 
-import React, { FC, useEffect, useRef, useState } from 'react'
+import React, { FC, ReactNode, useEffect, useRef, useState } from 'react'
 import SingleAuthor from './SingleAuthor'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import PostCardLikeAction from '@/components/PostCardLikeAction/PostCardLikeAction'
 import PostCardCommentBtn from '@/components/PostCardCommentBtn/PostCardCommentBtn'
 import { ArrowUpIcon } from '@heroicons/react/24/solid'
-import { PortableText } from '@portabletext/react'
-import Image from 'next/image'
-import imageUrlBuilder from '@sanity/image-url'
-import { sanityClient } from '@/lib/sanityClient'
 import AuthorType from '@/types/AuthorType'
+import parse from 'html-react-parser'
+import PostCommentSection from './PostCommentSection'
+import CommentType from '@/types/CommentType'
 
 export interface SingleContentProps {
-    body: []
+    body: string
     author: AuthorType
+    likeCount: number
+    isLiked: boolean
+    commentCount: number
+    id: string
+    currentUserID: string
 }
 
-const ptComponents = {
-    types: {
-        image: ({ value }: { value: any }) => {
-            if (!value?.asset?._ref) {
-                return null
-            }
-            const imageUrl = urlFor(value)
-                .width(320)
-                .height(240)
-                .fit('max')
-                .auto('format')
-                .url()
-            return (
-                <Image alt={value.alt || ' '} loading="lazy" src={imageUrl} />
-            )
-        },
-    },
-}
-
-function urlFor(source: any) {
-    return imageUrlBuilder(sanityClient).image(source)
-}
-
-const SingleContent: FC<SingleContentProps> = ({ body, author }) => {
+const SingleContent: FC<SingleContentProps> = ({
+    body,
+    author,
+    likeCount,
+    isLiked,
+    commentCount,
+    currentUserID,
+    id,
+}) => {
     const endedAnchorRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const progressRef = useRef<HTMLButtonElement>(null)
@@ -106,13 +95,29 @@ const SingleContent: FC<SingleContentProps> = ({ body, author }) => {
                         className="prose lg:prose-lg !max-w-screen-md mx-auto dark:prose-invert"
                         ref={contentRef}
                     >
-                        <PortableText value={body} components={ptComponents} />
+                        {parse(body)}
                     </div>
-
                     {/* AUTHOR */}
                     <div className="max-w-screen-md mx-auto border-b border-t border-neutral-100 dark:border-neutral-700"></div>
                     <div className="max-w-screen-md mx-auto ">
                         <SingleAuthor author={author} />
+                    </div>
+                    {/* COMMENT FORM */}
+                    <div
+                        id="comments"
+                        className="scroll-mt-20 max-w-screen-md mx-auto pt-5"
+                    >
+                        <h3 className="text-xl font-semibold text-neutral-800 dark:text-neutral-200">
+                            Responses (10)
+                        </h3>
+                    </div>
+                    {/* COMMENTS LIST */}
+                    <div className="max-w-screen-md mx-auto">
+                        <PostCommentSection
+                            currentUserID={currentUserID}
+                            id={id}
+                        />
+                        <div ref={endedAnchorRef}></div>
                     </div>
                 </div>
                 <div
@@ -121,11 +126,16 @@ const SingleContent: FC<SingleContentProps> = ({ body, author }) => {
                     }`}
                 >
                     <div className="bg-white dark:bg-neutral-800 shadow-lg rounded-full ring-1 ring-offset-1 ring-neutral-900/5 p-1.5 flex items-center justify-center space-x-2 text-xs">
-                        <PostCardLikeAction className="px-3 h-9 text-xs" />
+                        <PostCardLikeAction
+                            className="px-3 h-9 text-xs"
+                            likeCount={likeCount}
+                            liked={isLiked}
+                        />
                         <div className="border-l h-4 border-neutral-200 dark:border-neutral-700"></div>
                         <PostCardCommentBtn
                             isATagOnSingle
                             className={` flex px-3 h-9 text-xs`}
+                            commentCount={commentCount}
                         />
                         <div className="border-l h-4 border-neutral-200 dark:border-neutral-700"></div>
 

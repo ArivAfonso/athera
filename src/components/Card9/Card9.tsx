@@ -6,13 +6,7 @@ import PostFeaturedMedia from '../PostFeaturedMedia/PostFeaturedMedia'
 import PostTypeFeaturedIcon from '../PostTypeFeaturedIcon/PostTypeFeaturedIcon'
 import Link from 'next/link'
 import Image from 'next/image'
-import imageUrlBuilder from '@sanity/image-url'
-import { sanityClient } from '@/lib/sanityClient'
 import PostType from '@/types/PostType'
-
-function urlFor(source: any) {
-    return imageUrlBuilder(sanityClient).image(source)
-}
 
 export interface Card9Props {
     className?: string
@@ -27,12 +21,14 @@ const Card9: FC<Card9Props> = ({
     post,
     hoverClass = '',
 }) => {
-    post.publishedAt = new Date(post.publishedAt).toLocaleDateString('en-US', {
+    post.created_at = new Date(
+        post.created_at ? post.created_at : ''
+    ).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
     })
-    const imageUrl = urlFor(post.mainImage.asset._ref).url()
+    const imageUrl = post.image
     const renderMeta = () => {
         return (
             <div className="inline-flex items-center text-xs text-neutral-300">
@@ -43,9 +39,7 @@ const Card9: FC<Card9Props> = ({
                         </span>
                     </h2>
                     <Link
-                        href={`/author/${encodeURIComponent(
-                            post.author.slug.current
-                        )}`}
+                        href={`/author/${post.author.username}`}
                         className="flex mt-2.5 relative"
                     >
                         <span className="block text-neutral-200 hover:text-white font-medium truncate">
@@ -53,7 +47,7 @@ const Card9: FC<Card9Props> = ({
                         </span>
                         <span className="mx-[6px] font-medium">·</span>
                         <span className="font-normal truncate">
-                            {post.publishedAt}
+                            {post.created_at}
                         </span>
                     </Link>
                 </div>
@@ -70,7 +64,7 @@ const Card9: FC<Card9Props> = ({
                 <PostCardSaveAction hidenReadingTime className="relative" />
             </div>
             <div className={`flex items-start relative w-full ${ratio}`}></div>
-            <Link href={`/single/${encodeURIComponent(post.slug.current)}`}>
+            <Link href={`/post/${post.title}/${post.id}`}>
                 <Image
                     fill
                     alt=""
@@ -86,14 +80,12 @@ const Card9: FC<Card9Props> = ({
                 <span className="absolute inset-0 bg-black bg-opacity-10 opacity-0 group-hover:opacity-100 transition-opacity"></span>
             </Link>
             <Link
-                href={`/single/${encodeURIComponent(post.slug.current)}`}
+                href={`/post/${post.title}/${post.id}`}
                 className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black opacity-50"
             ></Link>
             <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col flex-grow">
                 <Link
-                    href={`/category/${encodeURIComponent(
-                        post.categories[0].slug.current
-                    )}`}
+                    href={`/category/${post.categories[0].title}`}
                     className="absolute inset-0"
                 ></Link>
                 <div className="mb-3">

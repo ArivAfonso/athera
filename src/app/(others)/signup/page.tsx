@@ -31,10 +31,12 @@ const PageSignUp = ({}) => {
                 data: {
                     full_name: formData.full_name,
                 },
+                emailRedirectTo: `${window.location.origin}/auth/callback`,
             },
         })
         if (error) {
             setErrorMsg(error.message)
+            console.log(error)
         }
     }
 
@@ -109,7 +111,9 @@ const PageSignUp = ({}) => {
                 </div>
                 {/* FORM */}
                 <form
-                    onSubmit={handleSubmit(emailSignUp)} // Use the handleSubmit function from React Hook Form
+                    onSubmit={handleSubmit(
+                        async (data) => await emailSignUp(data)
+                    )} // Use the handleSubmit function from React Hook Form
                     className="grid grid-cols-1 gap-6"
                     action="#"
                     method="post"

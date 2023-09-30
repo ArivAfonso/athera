@@ -8,21 +8,20 @@ import SingleMetaAction2 from './SingleMetaAction2'
 import { Route } from '@/routers/types'
 import CategoryType from '@/types/CategoryType'
 import AuthorType from '@/types/AuthorType'
+import PostCategoryType from '@/types/PostCategoryType'
 
 export interface SingleHeaderProps {
     hiddenDesc?: boolean
     titleMainClass?: string
     className?: string
     description: string
-    category: CategoryType[]
+    category: PostCategoryType[]
     estimatedReadingTime: number
     title: string
     author: AuthorType
-    publishedAt: string
-    slug: {
-        current: string
-        _type: string
-    }
+    created_at: string
+    likes: number
+    id: string
 }
 
 const SingleHeader: FC<SingleHeaderProps> = ({
@@ -32,10 +31,11 @@ const SingleHeader: FC<SingleHeaderProps> = ({
     description = '',
     category,
     title = '',
-    publishedAt,
+    created_at,
+    likes,
     estimatedReadingTime,
+    id,
     author,
-    slug,
 }) => {
     return (
         <>
@@ -61,14 +61,18 @@ const SingleHeader: FC<SingleHeaderProps> = ({
                             estimatedReadingTime={estimatedReadingTime}
                             author={author}
                             publishedAt={new Date(
-                                publishedAt
+                                created_at
                             ).toLocaleDateString('en-US', {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
                             })}
                         />
-                        <SingleMetaAction2 slug={slug} />
+                        <SingleMetaAction2
+                            likes={likes}
+                            title={title}
+                            id={id}
+                        />
                     </div>
                 </div>
             </div>

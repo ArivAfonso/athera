@@ -15,7 +15,7 @@ const Card5: FC<Card5Props> = ({ className = '', post }) => {
             className={`nc-Card5 relative p-5 group border border-neutral-200 hover:shadow-lg transition-shadow dark:border-neutral-700 rounded-3xl bg-white dark:bg-neutral-900 ${className}`}
         >
             <Link
-                href={`/single/${encodeURIComponent(post.slug.current)}`}
+                href={`/post/${post.title}/${post.id}`}
                 className="absolute inset-0 rounded-lg"
             ></Link>
 
@@ -26,9 +26,7 @@ const Card5: FC<Card5Props> = ({ className = '', post }) => {
                     title={post.title}
                 >
                     <Link
-                        href={`/single/${encodeURIComponent(
-                            post.slug.current
-                        )}`}
+                        href={`/post/${post.title}/${post.id}`}
                         className="line-clamp-2"
                         title={post.title}
                     >
@@ -39,7 +37,7 @@ const Card5: FC<Card5Props> = ({ className = '', post }) => {
                     className="relative mt-auto"
                     readingTime={post.estimatedReadingTime}
                     author={post.author}
-                    date={post.publishedAt}
+                    date={post.created_at}
                 />
             </div>
         </div>

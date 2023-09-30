@@ -8,10 +8,6 @@ import imageUrlBuilder from '@sanity/image-url'
 import { sanityClient } from '@/lib/sanityClient'
 import { UrlObject } from 'url'
 
-function urlFor(source: any) {
-    return imageUrlBuilder(sanityClient).image(source)
-}
-
 export interface SingleAuthorProps {
     author: AuthorType
 }
@@ -20,16 +16,11 @@ const SingleAuthor: FC<SingleAuthorProps> = ({ author }) => {
     return (
         <div className="nc-SingleAuthor flex">
             <Link
-                href={`/author/${encodeURIComponent(author.slug.current)}`}
-                as={
-                    ('/author/' +
-                        encodeURIComponent(
-                            author.slug.current
-                        )) as unknown as UrlObject
-                }
+                href={`/author/${author.username}`}
+                as={('/author/' + author.username) as unknown as UrlObject}
             >
                 <Avatar
-                    imgUrl={urlFor(author.image.asset._ref).url()}
+                    imgUrl={author.avatar}
                     userName={author.name}
                     sizeClass="h-12 w-12 text-lg sm:text-xl sm:h-24 sm:w-24"
                 />
@@ -39,11 +30,7 @@ const SingleAuthor: FC<SingleAuthorProps> = ({ author }) => {
                     WRITTEN BY
                 </span>
                 <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-200">
-                    <Link
-                        href={`/author/${encodeURIComponent(
-                            author.slug.current
-                        )}`}
-                    >
+                    <Link href={`/author/${author.username}`}>
                         {author.name}
                     </Link>
                 </h2>
@@ -51,9 +38,7 @@ const SingleAuthor: FC<SingleAuthorProps> = ({ author }) => {
                     {author.bio}
                     <Link
                         className="text-primary-6000 font-medium ml-1"
-                        href={`/author/${encodeURIComponent(
-                            author.slug.current
-                        )}`}
+                        href={`/author/${author.username}`}
                     >
                         Read more
                     </Link>

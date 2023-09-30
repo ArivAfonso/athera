@@ -1,52 +1,47 @@
 import React, { FC } from 'react'
 import ModalCategories from '../../ModalCategories'
-import { DEMO_CATEGORIES } from '@/data/taxonomies'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import CategoryFilterListBox from '@/components/CategoryFilterListBox/CategoryFilterListBox'
 import Card11 from '@/components/Card11/Card11'
 import Image from 'next/image'
-import { sanityClient } from '@/lib/sanityClient'
 import SectionTrending from '@/components/Sections/SectionTrending'
-import groq from 'groq'
-import imageUrlBuilder from '@sanity/image-url'
 import PostType from '@/types/PostType'
 import CategoryType from '@/types/CategoryType'
 import { Metadata } from 'next'
-
-function urlFor(source: any) {
-    return imageUrlBuilder(sanityClient).image(source)
-}
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
 async function getData(context: { params: { slug: any } }) {
-    const slug = context.params.slug[0]
-    const query = groq`*[_type == "category" && slug.current == $slug][0] {
-    title,
-    image,
-    description,
-    slug,
-    color,
-    "posts": *[_type == "post" && references(^._id)] {
-        title,
-        "author": author->{
-            name,
-            slug,
-            image
-        },
-        publishedAt,
-        slug,
-        mainImage,
-        categories[]->{title, slug, color}
-    },
-    "otherCategories": *[_type == "category" && slug.current != $slug] {
-        title,
-        image,
-        "postCount": count(*[_type == "post" && references(^._id)])
-    }
-}
+    const supabase = createServerComponentClient({ cookies })
 
-      `
-    const category = await sanityClient.fetch(query, { slug })
-    return category
+    const id = context.params.slug[1]
+    const { data, error } = await supabase
+        .from('categories')
+        .select(
+            `
+    name,
+    color,
+    post_categories(
+        post:posts(
+            id,
+            title,
+            created_at,
+            description,
+            image,
+            author(
+                name,
+                username,
+                avatar
+            )
+        )
+    )
+    `
+        )
+        .eq('id', id)
+    const postData: CategoryType | null = data as unknown as CategoryType
+    console.log(postData[0].post_categories)
+    //@ts-ignore
+    return postData[0]
 }
 
 export async function generateMetadata(
@@ -54,63 +49,39 @@ export async function generateMetadata(
     searchParams: any
 ): Promise<Metadata> {
     const data: CategoryType = await getData(props)
-    const imageUrl = data.image?.asset._ref
-        ? urlFor(data.image.asset._ref).url()
-        : ''
 
     return {
-        title: data.title,
-        description: `News articles and other content about ${data.title}`,
+        title: data.name,
+        description: `News articles and other content about ${data.name}`,
         openGraph: {
-            title: data.title,
-            url: `https://www.example.com/${data.slug.current}`,
+            title: data.name,
             type: 'article',
-            images: [
-                {
-                    url: imageUrl,
-                    width: 800,
-                    height: 480,
-                    alt: data.title,
-                },
-            ],
         },
     }
 }
 
 const PageCategory = async (context: any) => {
     const data: CategoryType = await getData(context)
-    const imageUrl = data.image && urlFor(data.image.asset._ref).url()
-    const trendingPosts = data.posts?.filter((_, i) => i < 4)
+    console.log(data.posts_categories)
+    const trendingPosts = data?.posts_categories?.filter((_, i) => i < 4)
 
     return (
         <div className={`nc-PageCategory`}>
             {/* HEADER */}
             <div className="w-full px-2 xl:max-w-screen-2xl mx-auto">
                 <div className="relative aspect-w-16 aspect-h-13 sm:aspect-h-9 lg:aspect-h-8 xl:aspect-h-5 rounded-3xl md:rounded-[40px] overflow-hidden z-0">
-                    <Image
-                        alt="Category header image"
-                        fill
-                        src={imageUrl || ''}
-                        className="object-cover w-full h-full rounded-3xl md:rounded-[40px]"
-                        sizes="(max-width: 1280px) 100vw, 1536px"
-                    />
-                    <div className="absolute inset-0 bg-black text-white bg-opacity-30 flex flex-col items-center justify-center">
-                        <h2 className="inline-block align-middle text-5xl font-semibold md:text-7xl ">
-                            {data.title}
-                        </h2>
-                        <span className="block mt-4 text-neutral-300">
-                            {data.posts && data.posts.length} Articles
-                        </span>
-                    </div>
+                    <h2 className="inline-block align-middle text-5xl font-semibold md:text-6xl ">
+                        Videos
+                    </h2>
                 </div>
             </div>
             {/* ====================== END HEADER ====================== */}
 
             <div className="container pt-10 pb-16 lg:pb-28 lg:pt-20 space-y-16 lg:space-y-28">
                 <div>
-                    <div className="flex flex-col sm:justify-between sm:flex-row">
+                    {/* <div className="flex flex-col sm:justify-between sm:flex-row">
                         <div className="flex space-x-2.5">
-                            {/* Check if data.otherCategories is defined before passing it */}
+                            {/* Check if data.otherCategories is defined before passing it 
                             {data.otherCategories && (
                                 <ModalCategories
                                     categories={data.otherCategories.slice(
@@ -120,7 +91,7 @@ const PageCategory = async (context: any) => {
                                 />
                             )}
                         </div>
-                    </div>
+                    </div> */}
                     {trendingPosts && (
                         <SectionTrending
                             heading=""
@@ -130,9 +101,9 @@ const PageCategory = async (context: any) => {
                     )}
                     {/* LOOP ITEMS */}
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
-                        {data.posts &&
-                            data.posts.map((post, id) => (
-                                <Card11 key={id} post={post} />
+                        {data.posts_categories &&
+                            data.posts_categories.map((post, id) => (
+                                <Card11 key={id} post={post.posts} />
                             ))}
                     </div>
                 </div>

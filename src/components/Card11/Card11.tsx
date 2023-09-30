@@ -22,12 +22,13 @@ const Card11: FC<Card11Props> = ({
 }) => {
     const [isHover, setIsHover] = useState(false)
 
-    post.publishedAt = new Date(post.publishedAt).toLocaleDateString('en-US', {
+    post.created_at = new Date(
+        post.created_at ? post.created_at : ''
+    ).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
     })
-
 
     return (
         <div
@@ -44,11 +45,11 @@ const Card11: FC<Card11Props> = ({
                 </div>
             </div>
             <Link
-                href={`/single/${encodeURIComponent(post.slug.current)}`}
+                href={`/post/${post.title}/${post.id}`}
                 className="absolute inset-0"
             ></Link>
             <span className="absolute top-3 inset-x-3 z-10">
-                <CategoryBadgeList categories={post.categories} />
+                <CategoryBadgeList categories={post.post_categories} />
             </span>
 
             <div className="p-4 flex flex-col space-y-3">
@@ -56,7 +57,7 @@ const Card11: FC<Card11Props> = ({
                     <PostCardMeta meta={post} />
                 ) : (
                     <span className="text-xs text-neutral-500">
-                        {post.publishedAt}
+                        {post.created_at}
                     </span>
                 )}
                 <h3 className="nc-card-title block text-base font-semibold text-neutral-900 dark:text-neutral-100">

@@ -2,51 +2,23 @@ import React, { FC } from 'react'
 import { PostDataType } from '@/data/types'
 import Avatar from '@/components/Avatar/Avatar'
 import Link from 'next/link'
-import imageUrlBuilder from '@sanity/image-url'
-import { sanityClient } from '@/lib/sanityClient'
-
-function urlFor(source: any) {
-    return imageUrlBuilder(sanityClient).image(source)
-}
-
-interface AuthorType {
-    author: {
-        name: string
-        image: {
-            asset: {
-                _ref: string
-                _type: string
-            }
-            _type: string
-        }
-        slug: {
-            _type: string
-            current: string
-        }
-    }
-    date: string
-}
+import AuthorType from '@/types/AuthorType'
 
 export interface CardAuthor2Props extends AuthorType {
     className?: string
+    author: AuthorType
     readingTime?: PostDataType['readingTime']
     hoverReadingTime?: boolean
+    date: string
 }
 
-const CardAuthor2: FC<CardAuthor2Props> = ({
-    className = '',
-    author,
-    readingTime,
-    date,
-    hoverReadingTime = true,
-}) => {
-    const avatar = urlFor(author.image).url() || ''
+const CardAuthor2: FC<CardAuthor2Props> = ({ className = '', author }) => {
+    const avatar = author.avatar || ''
     return (
-        // <Link
-        //   href={`/author/${author.slug}`}
-        //   className={`nc-CardAuthor2 relative inline-flex items-center ${className}`}
-        // >
-        <>
+        <Link
+            href={`/author/${author.username}`}
+            className={`nc-CardAuthor2 relative inline-flex items-center ${className}`}
+        >
             <Avatar
                 sizeClass="h-10 w-10 text-base"
                 containerClassName="flex-shrink-0 mr-3"
@@ -61,7 +33,7 @@ const CardAuthor2: FC<CardAuthor2Props> = ({
                     {author.name}
                 </h2>
             </div>
-        </>
+        </Link>
     )
 }
 

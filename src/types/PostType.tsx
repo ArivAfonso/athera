@@ -22,6 +22,9 @@ export default interface PostType {
     likeCount: {
         count: number
     }[]
+    commentCount: {
+        count: number
+    }[]
     isLiked: boolean
     comments?: {
         commenter: {

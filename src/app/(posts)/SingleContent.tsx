@@ -130,6 +130,7 @@ const SingleContent: FC<SingleContentProps> = ({
                             className="px-3 h-9 text-xs"
                             likeCount={likeCount}
                             liked={isLiked}
+                            postId={id}
                         />
                         <div className="border-l h-4 border-neutral-200 dark:border-neutral-700"></div>
                         <PostCardCommentBtn

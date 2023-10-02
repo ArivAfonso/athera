@@ -2,12 +2,13 @@
 
 import React, { FC, useEffect, useRef } from 'react'
 import NcModal from '@/components/NcModal/NcModal'
-import SingleCommentForm from '@/app/(posts)/PostCommentForm'
+import EditCommentForm from './EditCommentForm'
 
 export interface ModalEditCommentProps {
     show: boolean
     onCloseModalEditComment: () => void
     comment: string
+    onEditComment: (comment: string) => void
     id: string
 }
 
@@ -15,6 +16,7 @@ const ModalEditComment: FC<ModalEditCommentProps> = ({
     show,
     onCloseModalEditComment,
     comment,
+    onEditComment, // Add this prop
     id,
 }) => {
     const textareaRef = useRef(null)
@@ -36,10 +38,11 @@ const ModalEditComment: FC<ModalEditCommentProps> = ({
 
     const renderContent = () => {
         return (
-            <SingleCommentForm
+            <EditCommentForm
                 className="mt-0"
                 onClickCancel={onCloseModalEditComment}
                 onClickSubmit={onCloseModalEditComment}
+                onEditComment={onEditComment}
                 defaultValue={comment}
                 id={id}
                 textareaRef={textareaRef}

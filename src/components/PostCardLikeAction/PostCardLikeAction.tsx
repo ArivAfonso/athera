@@ -1,20 +1,64 @@
 'use client'
 
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import convertNumbThousand from '@/utils/convertNumbThousand'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export interface PostCardLikeActionProps {
     className?: string
     likeCount?: number
     liked?: boolean
+    postId: string
 }
 
 const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
     className = 'px-3 h-8 text-xs',
     likeCount,
     liked = false,
+    postId = '',
 }) => {
-    const [isLiked, setisLiked] = useState(liked)
+    const [isLiked, setIsLiked] = useState(liked)
+
+    useEffect(() => {
+        async function checkLikedStatus() {
+            const supabase = createClientComponentClient()
+            const { data: session } = await supabase.auth.getSession()
+            const userId = session?.session?.user.id
+            // Check if the post is liked by the user
+            const { data: likes, error } = await supabase
+                .from('likes')
+                .select('id')
+                .eq('post', postId)
+                .eq('liker', userId)
+            setIsLiked(!error && likes.length > 0)
+        }
+        checkLikedStatus()
+    }, [postId])
+
+    async function toggleLike() {
+        const supabase = createClientComponentClient()
+        const { data: session } = await supabase.auth.getSession()
+        const userId = session?.session?.user.id
+        try {
+            if (isLiked) {
+                // If already liked, delete the like from the database
+                await supabase
+                    .from('likes')
+                    .delete()
+                    .eq('post', postId)
+                    .eq('liker', userId)
+                setIsLiked((prevIsLiked) => !prevIsLiked) // Toggle state
+            } else {
+                // If not liked, insert a new like into the database
+                await supabase
+                    .from('likes')
+                    .insert([{ post: postId, liker: userId }])
+                setIsLiked((prevIsLiked) => !prevIsLiked) // Toggle state
+            }
+        } catch (error) {
+            console.error('Error toggling like:', error)
+        }
+    }
 
     return (
         <button
@@ -23,8 +67,8 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
                     ? 'text-rose-600 bg-rose-50 dark:bg-rose-100'
                     : 'text-neutral-700 bg-neutral-50 dark:text-neutral-200 dark:bg-neutral-800 hover:bg-rose-50 dark:hover:bg-rose-100 hover:text-rose-600 dark:hover:text-rose-500'
             }`}
-            onClick={() => setisLiked(!isLiked)}
-            title="Liked"
+            onClick={toggleLike}
+            title={isLiked ? 'Unlike' : 'Like'}
         >
             <svg
                 width="24"

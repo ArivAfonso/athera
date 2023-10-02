@@ -12,12 +12,14 @@ export interface SingleMetaAction2Props {
     title: string
     id: string
     likes: number
+    comments: number
 }
 
 const SingleMetaAction2: FC<SingleMetaAction2Props> = ({
     className = '',
     title,
     likes = 0,
+    comments = 0,
     id,
 }) => {
     return (
@@ -29,6 +31,8 @@ const SingleMetaAction2: FC<SingleMetaAction2Props> = ({
                     useOnSinglePage
                     className="!space-x-2.5"
                     likes={likes}
+                    id={id}
+                    comments={comments}
                 />
                 <div className="px-1">
                     <div className="border-l border-neutral-200 dark:border-neutral-700 h-6" />

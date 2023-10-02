@@ -21,6 +21,7 @@ export interface SingleHeaderProps {
     author: AuthorType
     created_at: string
     likes: number
+    comments: number
     id: string
 }
 
@@ -32,6 +33,7 @@ const SingleHeader: FC<SingleHeaderProps> = ({
     category,
     title = '',
     created_at,
+    comments,
     likes,
     estimatedReadingTime,
     id,
@@ -72,6 +74,7 @@ const SingleHeader: FC<SingleHeaderProps> = ({
                             likes={likes}
                             title={title}
                             id={id}
+                            comments={comments}
                         />
                     </div>
                 </div>

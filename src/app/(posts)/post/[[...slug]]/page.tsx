@@ -33,6 +33,7 @@ async function getPostData(context: { params: { slug: any } }) {
         ),
         post_categories(category:categories(name,color)),
         likeCount:likes(count),
+        commentCount:comments(count),
         likes(
             liker(
                 id
@@ -133,6 +134,7 @@ const PageSingle = async (context: any) => {
                                 created_at={
                                     data.created_at ? data.created_at : ''
                                 }
+                                comments={data.commentCount[0].count}
                                 id={data.id}
                             />
                         </div>
@@ -175,7 +177,9 @@ const PageSingle = async (context: any) => {
                             currentUserID={currentUserID ? currentUserID : ''}
                             likeCount={data.likeCount[0].count}
                             isLiked={data.isLiked}
-                            commentsCount={commentData?.length}
+                            commentCount={
+                                commentData?.length ? commentData.length : 0
+                            }
                         />
                     </div>
                 </Suspense>

@@ -3,34 +3,33 @@
 import React, { FC, useEffect, useRef } from 'react'
 import NcModal from '@/components/NcModal/NcModal'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import ButtonSecondary from '@/components/Button/ButtonSecondary'
 import ButtonThird from '../Button/ButtonThird'
+import { useForm } from 'react-hook-form'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 async function deleteComment(id: string) {
     const supabase = createClientComponentClient()
-    const { data, error } = await supabase
-        .from('comments')
-        .delete()
-        .eq('id', id)
+    const { error } = await supabase.from('comments').delete().eq('id', id)
     if (error) {
         // Handle the error.
         return
     }
-    console.log(data)
 }
 
 export interface ModalDeleteCommentProps {
     show: boolean
     id: string
     onCloseModalDeleteComment: () => void
+    onDeleteComment: (commentId: string) => void // Add this prop
 }
 
 const ModalDeleteComment: FC<ModalDeleteCommentProps> = ({
     show,
     id,
     onCloseModalDeleteComment,
+    onDeleteComment, // Add this prop
 }) => {
+    const { handleSubmit } = useForm()
     const textareaRef = useRef(null)
 
     useEffect(() => {
@@ -44,9 +43,15 @@ const ModalDeleteComment: FC<ModalDeleteCommentProps> = ({
         }
     }, [show])
 
+    const onSubmit = async () => {
+        await deleteComment(id)
+        onDeleteComment(id)
+        onCloseModalDeleteComment()
+    }
+
     const renderContent = () => {
         return (
-            <form action="#">
+            <form onSubmit={handleSubmit(async (data) => await onSubmit())}>
                 <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-200">
                     Delete comment
                 </h3>
@@ -55,11 +60,7 @@ const ModalDeleteComment: FC<ModalDeleteCommentProps> = ({
                     undo this action.
                 </span>
                 <div className="mt-4 space-x-3">
-                    <ButtonPrimary
-                        className="!bg-red-500"
-                        onClick={async () => await deleteComment(id)}
-                        type="submit"
-                    >
+                    <ButtonPrimary className="!bg-red-500" type="submit">
                         Delete
                     </ButtonPrimary>
                     <ButtonThird

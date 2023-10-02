@@ -40,6 +40,14 @@ function strWords(str: string) {
     return str.split(/\s+/).length
 }
 
+function modifyString(str: string) {
+    //Capitalize every word of the string and replace spaces with -
+    return str
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('-')
+}
+
 const DashboardSubmitPost = () => {
     let rteObj: RichTextEditorComponent
     const hostUrl: string = 'https://ej2-aspcore-service.azurewebsites.net/'
@@ -246,24 +254,61 @@ const DashboardSubmitPost = () => {
                         .from('images')
                         .upload(`${user?.id}/${postId}`, selectedImage)
 
-                console.log(postId)
-
                 const finalTags: any[] = []
 
-                tags.map(async (tag: string) => {
-                    const words = tag.split(' ')
+                const tagsArray = await Promise.all(
+                    tags.map(async (tag: string) => {
+                        tag = modifyString(tag)
+                        console.log(tag)
 
-                    words
-                        .map((word) => {
-                            return word[0].toUpperCase() + word.substring(1)
-                        })
-                        .join(' ')
-                        .replace(' ', '-')
-                    finalTags.push({
-                        post: postId,
-                        category: words,
+                        const { data: isCategory } = await supabase
+                            .from('categories')
+                            .select('*')
+                            .eq('name', tag)
+                        console.log(isCategory)
+
+                        if (isCategory && isCategory.length > 0) {
+                            return {
+                                post: postId,
+                                category: isCategory[0].id,
+                            }
+                        } else {
+                            // Choose a random element from an array of words
+                            const colors = [
+                                'Red',
+                                'Green',
+                                'Blue',
+                                'Yellow',
+                                'Purple',
+                                'Pink',
+                                'Orange',
+                                'Grey',
+                            ]
+                            const color =
+                                colors[
+                                    Math.floor(Math.random() * colors.length)
+                                ]
+                            const { data: newCategory } = await supabase
+                                .from('categories')
+                                .insert({ name: tag, color: color })
+                                .select('*')
+
+                            if (newCategory && newCategory.length > 0) {
+                                return {
+                                    post: postId,
+                                    category: newCategory[0].id,
+                                }
+                            } else {
+                                // Handle the case where the category couldn't be created
+                                return null // or any other suitable value
+                            }
+                        }
                     })
-                })
+                )
+                const { data: uploadCategories } = await supabase
+                    .from('post_categories')
+                    .insert(tagsArray)
+                    .select('*')
 
                 // Update the inserted post with the image URL
                 const { data: imgData, error: updateError } = await supabase
@@ -275,13 +320,6 @@ const DashboardSubmitPost = () => {
                     })
                     .eq('id', postId)
                     .select()
-
-                const { data: categoryData } = await supabase
-                    .from('post_categories')
-                    .insert(finalTags)
-
-                console.log(imgData)
-                console.log(updateError)
 
                 if (updateError) {
                     setErrorMsg(`Post update failed`)

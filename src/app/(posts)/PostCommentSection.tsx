@@ -84,7 +84,33 @@ const SingleCommentForm: FC<SingleCommentFormProps> = ({
         getData()
     }, [])
 
-    console.log(comments)
+    const handleEditComment = (commentId: string, newComment: string) => {
+        // Update the comments state with the edited comment
+        const updatedComments = comments.map((comment) =>
+            comment.id === commentId
+                ? { ...comment, comment: newComment }
+                : comment
+        )
+        setComments(updatedComments)
+    }
+
+    const handleDeleteComment = async (commentId: string) => {
+        const supabase = createClientComponentClient()
+        const { error } = await supabase
+            .from('comments')
+            .delete()
+            .eq('id', commentId)
+        if (error) {
+            // Handle the error.
+            return
+        }
+
+        // Remove the deleted comment from the comments state
+        const updatedComments = comments.filter(
+            (comment) => comment.id !== commentId
+        )
+        setComments(updatedComments)
+    }
 
     const onSubmit = async (data: any) => {
         const supabase = createClientComponentClient()
@@ -155,6 +181,8 @@ const SingleCommentForm: FC<SingleCommentFormProps> = ({
                     <CommentCard
                         currentUserID={currentUserID}
                         commentObj={submittedComment}
+                        onDeleteComment={handleDeleteComment} // Pass the delete callback
+                        onEditComment={handleEditComment} // Pass the edit callback
                     />
                 </ul>
             )}
@@ -166,6 +194,8 @@ const SingleCommentForm: FC<SingleCommentFormProps> = ({
                             currentUserID={currentUserID}
                             commentObj={comment}
                             key={key}
+                            onDeleteComment={handleDeleteComment} // Pass the delete callback
+                            onEditComment={handleEditComment} // Pass the edit callback
                         />
                     ))
                 }

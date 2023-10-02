@@ -19,10 +19,10 @@
   dependencies:
     regenerator-runtime "^0.13.11"
 
-"@cloudflare/next-on-pages@^1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@cloudflare/next-on-pages/-/next-on-pages-1.6.1.tgz#0bc6a4f6d338e23878cb5499cf636dd67a8062e4"
-  integrity sha512-f1v82OUVELH6FD71wGN5B0UsHU1xgNC44m6KcxXU3ujIr+S7QiOLhK18aiPqWPWlmkDMibDS3kY9XXRGeiOh8g==
+"@cloudflare/next-on-pages@^1.6.3":
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/@cloudflare/next-on-pages/-/next-on-pages-1.6.3.tgz#20356a1c4a2bb44b3b365990f4b038f693c8a7c6"
+  integrity sha512-v+gmG3M8mOUJxeby3Odtuz64D5ta/6bF9rjAiKiq7YQtoRNgYaMZwLOFz7sejabEC2CukjW1Zbj8YULFM1jcOw==
   dependencies:
     acorn "^8.8.0"
     ast-types "^0.14.2"
@@ -3209,12 +3209,7 @@ screenfull@^5.1.0:
   resolved "https://registry.npmjs.org/screenfull/-/screenfull-5.2.0.tgz"
   integrity sha512-9BakfsO2aUQN2K9Fdbj87RJIEZ82Q9IGim7FqM5OsebfoFC6ZHXgDq/KvniuLTPdeM8wY2o6Dj3WQ7KeQCj3cA==
 
-semver@^6.3.0:
-  version "6.3.0"
-  resolved "https://registry.npmjs.org/semver/-/semver-6.3.0.tgz"
-  integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
-
-semver@^6.3.1:
+semver@^6.3.0, semver@^6.3.1:
   version "6.3.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.1.tgz#556d2ef8689146e46dcea4bfdd095f3434dffcb4"
   integrity sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==

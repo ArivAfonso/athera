@@ -34,7 +34,7 @@
         "groq": "^3.10.3",
         "html-react-parser": "^4.2.2",
         "lodash": "^4.17.21",
-        "next": "^13.4.19",
+        "next": "^13.5.4",
         "plausible-tracker": "^0.3.8",
         "postcss": "^8.4.21",
         "react": "18.2.0",

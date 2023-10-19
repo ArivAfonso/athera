@@ -15,19 +15,18 @@ const CardAuthorBox2: FC<CardAuthorBox2Props> = ({
     author,
 }) => {
     return (
-        <>
-            <Link
-                href={`/author/${author.username}`}
-                className={`nc-CardAuthorBox2 flex flex-col overflow-hidden bg-white dark:bg-neutral-800 rounded-3xl ${className}`}
-            ></Link>
-            <div className="relative flex-shrink-0 ">
+        <Link
+            href={`/author/${author.username}`}
+            className={`nc-CardAuthorBox2 flex flex-col overflow-hidden bg-white dark:bg-neutral-800 rounded-3xl ${className}`}
+        >
+            <div className="relative">
                 <div>
                     <NcImage
                         alt="author"
                         containerClassName="flex aspect-w-7 aspect-h-5 w-full h-0"
                         src={author.avatar || ''}
                         fill
-                        sizes="(max-width: 600px) 480px, 33vw"
+                        sizes="(max-width: 600px) 480px, (max-width: 1024px) 768px, 1000px"
                     />
                 </div>
                 <div className="absolute top-3 inset-x-3 flex">
@@ -57,7 +56,7 @@ const CardAuthorBox2: FC<CardAuthorBox2Props> = ({
                     </span>
                 </div>
             </div>
-        </>
+        </Link>
     )
 }
 

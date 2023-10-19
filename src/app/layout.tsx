@@ -10,7 +10,7 @@ import { registerLicense } from '@syncfusion/ej2-base'
 
 // Registering Syncfusion license key
 registerLicense(
-    process.env.SYNCFUSION_LICENSE_KEY ? process.env.SYNCFUSION_LICENSE_KEY : ''
+    'Ngo9BigBOggjHTQxAR8/V1NHaF5cXmVCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdgWXZcc3RVR2RdWEB/WkQ='
 )
 
 import AuthProvider from '@/providers/AuthProvider'

@@ -31,7 +31,7 @@ const CardCategory5: FC<CardCategory5Props> = ({
                 href={`/category/${category.name}`}
                 name={
                     <div className="flex items-center">
-                        {category.postCount}
+                        {category.postCount[0].count}
                         <ArrowRightIcon className="ml-1.5 w-3.5 h-3.5" />
                     </div>
                 }

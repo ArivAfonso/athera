@@ -15,7 +15,7 @@ export default interface PostType {
     }
     post_categories: {
         category: {
-            title: string
+            name: string
             color: string
         }
     }[]
@@ -25,7 +25,16 @@ export default interface PostType {
     commentCount: {
         count: number
     }[]
+    likes: {
+        liker: {
+            id: string
+        }
+    }[]
     isLiked: boolean
+    isBookmarked: boolean
+    bookmarks: {
+        user: { id: string }
+    }[]
     comments?: {
         commenter: {
             name: string

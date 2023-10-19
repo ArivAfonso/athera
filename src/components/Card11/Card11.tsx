@@ -6,6 +6,8 @@ import PostCardMeta from '@/components/PostCardMeta/PostCardMeta'
 import PostFeaturedMedia from '@/components/PostFeaturedMedia/PostFeaturedMedia'
 import Link from 'next/link'
 import PostType from '@/types/PostType'
+import PostCardLikeAndComment from '../PostCardLikeAndComment/PostCardLikeAndComment'
+import PostBookmark from '../PostBookmark/PostBookmark'
 
 export interface Card11Props {
     className?: string
@@ -65,6 +67,20 @@ const Card11: FC<Card11Props> = ({
                         {post.title}
                     </span>
                 </h3>
+                <div className="flex items-end justify-between mt-auto">
+                    <PostCardLikeAndComment
+                        likes={post.likeCount[0].count}
+                        liked={post.isLiked}
+                        comments={post.commentCount[0].count}
+                        id={post.id}
+                        className="relative"
+                    />
+                    <PostBookmark
+                        isBookmarked={post.isBookmarked}
+                        className="relative"
+                        postId={post.id}
+                    />
+                </div>
             </div>
         </div>
     )

@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import PostCardSaveAction from '@/components/PostCardSaveAction/PostCardSaveAction'
+import PostBookmark from '@/components/PostBookmark/PostBookmark'
 import CardAuthor2 from '@/components/CardAuthor2/CardAuthor2'
 import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
 import Image from 'next/image'
@@ -58,7 +58,7 @@ const Card4: FC<Card4Props> = ({ className = 'h-full', post }) => {
                         date={post.created_at}
                         author={post.author}
                     />
-                    <PostCardSaveAction hidenReadingTime />
+                    <PostBookmark hidenReadingTime />
                 </div>
             </div>
         </div>

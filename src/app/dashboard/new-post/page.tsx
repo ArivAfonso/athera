@@ -32,9 +32,10 @@ import { useThemeMode } from '@/hooks/useThemeMode'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Controller, useForm } from 'react-hook-form'
 import { htmlToJSON } from '@/utils/htmlToJson'
-import { Alert } from '@/components/Alert/Alert'
+import Alert from '@/components/Alert/Alert'
 import { redirect, useRouter } from 'next/navigation'
 import { TagsInput } from 'react-tag-input-component'
+import { pipeline } from '@xenova/transformers'
 
 function strWords(str: string) {
     return str.split(/\s+/).length
@@ -211,6 +212,16 @@ const DashboardSubmitPost = () => {
     }
 
     async function sendPost(formData: any) {
+        const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
+
+        // Generate the embedding from text
+        const output = await pipe(formData.postTitle + formData.postExcerpt, {
+            pooling: 'mean',
+            normalize: true,
+        })
+
+        // Extract the embedding output
+        const embedding = Array.from(output.data)
         try {
             if (selectedImage) {
                 setUploading(true)
@@ -233,6 +244,7 @@ const DashboardSubmitPost = () => {
                             estimatedReadingTime: Math.round(
                                 strWords(text) / 200
                             ),
+                            embeddings: embedding,
                         },
                     ])
                     .select()
@@ -325,10 +337,7 @@ const DashboardSubmitPost = () => {
                     setErrorMsg(`Post update failed`)
                 }
 
-                // Reset the form and state
-                setSelectedImage(null)
-                setUploading(false)
-                setErrorMsg('')
+                redirect(`post/${postId}`)
             } else {
                 setErrorMsg('Please select an image')
             }
@@ -351,177 +360,197 @@ const DashboardSubmitPost = () => {
     } = useForm() // Initialize the hook
 
     return (
-        <div className="rounded-xl md:border md:border-neutral-100 dark:border-neutral-800 md:p-6">
-            <form
-                className="grid md:grid-cols-2 gap-6"
-                action="#"
-                onSubmit={handleSubmit(async (data) => await sendPost(data))}
-                method="post"
-            >
-                <label className="block md:col-span-2">
-                    <label>Post Title *</label>
-                    <Controller
-                        name="postTitle"
-                        control={control}
-                        render={({ field }) => (
-                            <Input type="text" className="mt-2" {...field} />
-                        )}
-                    />
-                    {errors.postTitle && <Alert type="error">Required</Alert>}
-                </label>
-                <label className="block md:col-span-2">
-                    <label>Post Excerpt</label>
-                    <Controller
-                        name="postExcerpt"
-                        control={control}
-                        render={({ field }) => (
-                            <>
-                                <Textarea rows={4} {...field} />
-                                <p className="mt-1 text-sm text-neutral-500">
-                                    Brief description for your article. URLs are
-                                    hyperlinked.
-                                </p>
-                            </>
-                        )}
-                    />
-                </label>
-                <label className="block">
-                    <label>Category</label>
-                    <Controller
-                        name="category"
-                        control={control}
-                        render={({ field }) => (
-                            <Select className="mt-1" {...field}>
-                                <option value="-1">– select –</option>
-                                <option value="Category 1">Category 1</option>
-                                <option value="Category 2">Category 2</option>
-                                <option value="Category 3">Category 3</option>
-                            </Select>
-                        )}
-                    />
-                </label>
-                <label className="block">
-                    <label>Tags</label>
-                    <Controller
-                        name="tags"
-                        control={control}
-                        render={({ field }) => (
-                            <>
-                                <TagsInput
-                                    value={tags}
-                                    onChange={handleTagsChange}
-                                    name="categories"
-                                    placeHolder="enter categories"
+        <div className="max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32">
+            <div className="rounded-xl md:border md:border-neutral-100 dark:border-neutral-800 md:p-6">
+                <form
+                    className="grid md:grid-cols-2 gap-6"
+                    action="#"
+                    onSubmit={handleSubmit(
+                        async (data) => await sendPost(data)
+                    )}
+                    method="post"
+                >
+                    <label className="block md:col-span-2">
+                        <label>Post Title *</label>
+                        <Controller
+                            name="postTitle"
+                            control={control}
+                            render={({ field }) => (
+                                <Input
+                                    type="text"
+                                    className="mt-2"
+                                    {...field}
                                 />
-                            </>
+                            )}
+                        />
+                        {errors.postTitle && (
+                            <Alert type="danger" message="Required" />
                         )}
-                    />
-                </label>
-
-                <div className="block md:col-span-2">
-                    <Label>Featured Image</Label>
-
-                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-md">
-                        <div className="space-y-1 text-center">
-                            {selectedImage ? (
-                                <NextImage
-                                    src={URL.createObjectURL(selectedImage)}
-                                    alt="Selected Image"
-                                    width={800} // Adjust the desired width
-                                    height={480} // Adjust the desired height
-                                />
-                            ) : (
+                    </label>
+                    <label className="block md:col-span-2">
+                        <label>Post Excerpt</label>
+                        <Controller
+                            name="postExcerpt"
+                            control={control}
+                            render={({ field }) => (
                                 <>
-                                    <svg
-                                        className="mx-auto h-12 w-12 text-neutral-400"
-                                        stroke="currentColor"
-                                        fill="none"
-                                        viewBox="0 0 48 48"
-                                        aria-hidden="true"
-                                    >
-                                        {/* Your SVG path here */}
-                                    </svg>
-                                    <div className="flex flex-col sm:flex-row text-sm text-neutral-6000">
-                                        <label
-                                            htmlFor="file-upload"
-                                            className="relative cursor-pointer rounded-md font-medium text-primary-6000 hover:text-primary-800 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
-                                        >
-                                            <span>Upload a file</span>
-                                            <input
-                                                id="file-upload"
-                                                name="file-upload"
-                                                type="file"
-                                                className="sr-only"
-                                                //@ts-ignore
-                                                onChange={handleImageSelect}
-                                            />
-                                        </label>
-                                        <p className="pl-1">or drag and drop</p>
-                                    </div>
-                                    <p className="text-xs text-neutral-500">
-                                        PNG, JPG, GIF up to 2MB
+                                    <Textarea rows={4} {...field} />
+                                    <p className="mt-1 text-sm text-neutral-500">
+                                        Brief description for your article. URLs
+                                        are hyperlinked.
                                     </p>
                                 </>
                             )}
-                        </div>
-                    </div>
-                </div>
-                <label className="block md:col-span-2">
-                    <Label> Post Content</Label>
-                    <link
-                        href="https://cdn.syncfusion.com/ej2/22.1.34/tailwind.css"
-                        rel="stylesheet"
-                    ></link>
-                    <div className="control-pane dark:bg-blue-950">
-                        <div className="control-section" id="rteTools">
-                            <div className="rte-control-section">
-                                <div className="mx-auto custom-rte-styles">
-                                    <RichTextEditorComponent
-                                        id="toolsRTE"
-                                        ref={(richtexteditor) => {
-                                            rteObj = richtexteditor!
-                                            if (richtexteditor != null) {
-                                                setText(rteObj.getText())
-                                                setHtmlText(rteObj.getHtml())
-                                            }
-                                        }}
-                                        showCharCount={true}
-                                        actionBegin={handleFullScreen.bind(
-                                            this
-                                        )}
-                                        toolbarSettings={toolbarSettings}
-                                        fileManagerSettings={
-                                            fileManagerSettings
-                                        }
-                                        quickToolbarSettings={
-                                            quickToolbarSettings
-                                        }
-                                    >
-                                        <Inject
-                                            services={[
-                                                Toolbar,
-                                                Image,
-                                                Link,
-                                                HtmlEditor,
-                                                Count,
-                                                QuickToolbar,
-                                                Table,
-                                                FileManager,
-                                                EmojiPicker,
-                                            ]}
-                                        />
-                                    </RichTextEditorComponent>
-                                </div>
+                        />
+                    </label>
+                    <label className="block">
+                        <label>Category</label>
+                        <Controller
+                            name="category"
+                            control={control}
+                            render={({ field }) => (
+                                <Select className="mt-1" {...field}>
+                                    <option value="-1">– select –</option>
+                                    <option value="Category 1">
+                                        Category 1
+                                    </option>
+                                    <option value="Category 2">
+                                        Category 2
+                                    </option>
+                                    <option value="Category 3">
+                                        Category 3
+                                    </option>
+                                </Select>
+                            )}
+                        />
+                    </label>
+                    <label className="block">
+                        <label>Tags</label>
+                        <Controller
+                            name="tags"
+                            control={control}
+                            render={({ field }) => (
+                                <>
+                                    <TagsInput
+                                        value={tags}
+                                        onChange={handleTagsChange}
+                                        name="categories"
+                                        placeHolder="enter categories"
+                                    />
+                                </>
+                            )}
+                        />
+                    </label>
+
+                    <div className="block md:col-span-2">
+                        <Label>Featured Image</Label>
+
+                        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-md">
+                            <div className="space-y-1 text-center">
+                                {selectedImage ? (
+                                    <NextImage
+                                        src={URL.createObjectURL(selectedImage)}
+                                        alt="Selected Image"
+                                        width={800} // Adjust the desired width
+                                        height={480} // Adjust the desired height
+                                    />
+                                ) : (
+                                    <>
+                                        <svg
+                                            className="mx-auto h-12 w-12 text-neutral-400"
+                                            stroke="currentColor"
+                                            fill="none"
+                                            viewBox="0 0 48 48"
+                                            aria-hidden="true"
+                                        >
+                                            {/* Your SVG path here */}
+                                        </svg>
+                                        <div className="flex flex-col sm:flex-row text-sm text-neutral-6000">
+                                            <label
+                                                htmlFor="file-upload"
+                                                className="relative cursor-pointer rounded-md font-medium text-primary-6000 hover:text-primary-800 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
+                                            >
+                                                <span>Upload a file</span>
+                                                <input
+                                                    id="file-upload"
+                                                    name="file-upload"
+                                                    type="file"
+                                                    className="sr-only"
+                                                    //@ts-ignore
+                                                    onChange={handleImageSelect}
+                                                />
+                                            </label>
+                                            <p className="pl-1">
+                                                or drag and drop
+                                            </p>
+                                        </div>
+                                        <p className="text-xs text-neutral-500">
+                                            PNG, JPG, GIF up to 2MB
+                                        </p>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
-                </label>
+                    <label className="block md:col-span-2">
+                        <Label> Post Content</Label>
+                        <link
+                            href="https://cdn.syncfusion.com/ej2/22.1.34/tailwind.css"
+                            rel="stylesheet"
+                        ></link>
+                        <div className="control-pane dark:bg-blue-950">
+                            <div className="control-section" id="rteTools">
+                                <div className="rte-control-section">
+                                    <div className="mx-auto custom-rte-styles">
+                                        <RichTextEditorComponent
+                                            id="toolsRTE"
+                                            ref={(richtexteditor) => {
+                                                rteObj = richtexteditor!
+                                                if (richtexteditor != null) {
+                                                    setText(rteObj.getText())
+                                                    setHtmlText(
+                                                        rteObj.getHtml()
+                                                    )
+                                                }
+                                            }}
+                                            showCharCount={true}
+                                            actionBegin={handleFullScreen.bind(
+                                                this
+                                            )}
+                                            toolbarSettings={toolbarSettings}
+                                            fileManagerSettings={
+                                                fileManagerSettings
+                                            }
+                                            quickToolbarSettings={
+                                                quickToolbarSettings
+                                            }
+                                        >
+                                            <Inject
+                                                services={[
+                                                    Toolbar,
+                                                    Image,
+                                                    Link,
+                                                    HtmlEditor,
+                                                    Count,
+                                                    QuickToolbar,
+                                                    Table,
+                                                    FileManager,
+                                                    EmojiPicker,
+                                                ]}
+                                            />
+                                        </RichTextEditorComponent>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
 
-                <ButtonPrimary className="md:col-span-2" type="submit">
-                    Submit post
-                </ButtonPrimary>
-                {errorMsg && <Alert type="error">{errorMsg}</Alert>}
-            </form>
+                    <ButtonPrimary className="md:col-span-2" type="submit">
+                        Submit post
+                    </ButtonPrimary>
+                    {errorMsg && <Alert type="danger" message={errorMsg} />}
+                </form>
+            </div>
         </div>
     )
 }

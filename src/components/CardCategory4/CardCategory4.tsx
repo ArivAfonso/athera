@@ -65,7 +65,7 @@ const CardCategory4: FC<CardCategory4Props> = ({
                         {category.name}
                     </h2>
                     <span className="block text-sm text-neutral-500 dark:text-neutral-400">
-                        {category.postCount} Articles
+                        {category.postCount[0].count} Articles
                     </span>
                 </div>
             </div>

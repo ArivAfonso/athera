@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import PostCardSaveAction from '@/components/PostCardSaveAction/PostCardSaveAction'
+import PostBookmark from '@/components/PostBookmark/PostBookmark'
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
 import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
 import PostFeaturedMedia from '../PostFeaturedMedia/PostFeaturedMedia'
@@ -61,7 +61,7 @@ const Card9: FC<Card9Props> = ({
         >
             <div className="absolute inset-x-0 top-0 p-3 flex items-center justify-between transition-all opacity-0 z-[-1] group-hover:opacity-100 group-hover:z-10 duration-300">
                 <PostCardLikeAndComment className="relative" />
-                <PostCardSaveAction hidenReadingTime className="relative" />
+                <PostBookmark hidenReadingTime className="relative" />
             </div>
             <div className={`flex items-start relative w-full ${ratio}`}></div>
             <Link href={`/post/${post.title}/${post.id}`}>

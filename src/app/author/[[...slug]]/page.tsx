@@ -14,12 +14,13 @@ import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import AuthorType from '@/types/AuthorType'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import Card6 from '@/components/Card6/Card6'
 
 async function getData(context: { params: { slug: any } }) {
     const supabase = createClientComponentClient()
+    //TODO: check if user is current user then add edit button to SOCIALS_DATA
 
     const username = context.params.slug[0]
-    console.log(username)
     const { data, error } = await supabase
         .from('users')
         .select(
@@ -29,9 +30,18 @@ async function getData(context: { params: { slug: any } }) {
             username,
             avatar,
             posts (
+                id,
               title,
               created_at,
               description,
+              likeCount:likes(count),
+              commentCount:comments(count),
+              likes(
+                liker(
+                    id
+                )
+              ),
+              bookmarks(user(id)),
               image,
               author(
                 name,
@@ -43,9 +53,24 @@ async function getData(context: { params: { slug: any } }) {
             `
         )
         .eq('username', username)
+        .single()
     const userData: AuthorType | null = data as unknown as AuthorType
-    //@ts-ignore
-    return userData[0]
+
+    const { data: session } = await supabase.auth.getSession()
+
+    userData?.posts?.map((post) => {
+        post.likes.map((like) => {
+            if (like.liker.id === session?.session?.user.id) post.isLiked = true
+            else post.isLiked = false
+        })
+        post.bookmarks.map((bookmark) => {
+            if (bookmark.user.id === session?.session?.user.id)
+                post.isBookmarked = true
+            else post.isBookmarked = false
+        })
+    })
+    console.log(userData)
+    return userData
 }
 
 const PageAuthor = (context: any) => {
@@ -78,7 +103,7 @@ const PageAuthor = (context: any) => {
                     <NcImage
                         alt=""
                         containerClassName="absolute inset-0"
-                        sizes="(max-width: 1280px) 100vw, 1536px"
+                        // sizes="(max-width: 1280px) 100vw, 1536px"
                         src="https://images.pexels.com/photos/459225/pexels-photo-459225.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
                         className="object-cover w-full h-full"
                         fill
@@ -86,7 +111,7 @@ const PageAuthor = (context: any) => {
                     />
                 </div>
                 <div className="container -mt-10 lg:-mt-16">
-                    <div className="relative bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 p-5 lg:p-8 rounded-3xl md:rounded-[40px] shadow-xl flex flex-col md:flex-row">
+                    <div className="relative bg-white dark:bg-neutral-900 p-5 lg:p-8 rounded-3xl md:rounded-[40px] shadow-xl flex flex-col md:flex-row">
                         <div className="w-32 lg:w-40 flex-shrink-0 mt-12 sm:mt-0">
                             <Suspense
                                 fallback={
@@ -120,10 +145,6 @@ const PageAuthor = (context: any) => {
                                 <div className="max-w-screen-sm space-y-3.5 ">
                                     <h2 className="inline-flex items-center text-2xl sm:text-3xl lg:text-4xl font-semibold">
                                         <span>{data.name}</span>
-                                        <VerifyIcon
-                                            className="ml-2"
-                                            iconClass="w-6 h-6 sm:w-7 sm:h-7 xl:w-8 xl:h-8"
-                                        />
                                     </h2>
                                     <span className="block text-sm text-neutral-500 dark:text-neutral-400">
                                         {data.bio}
@@ -196,10 +217,20 @@ const PageAuthor = (context: any) => {
                             </div>
                         ))}
                     >
+                        {/* LOOP ITEMS */}
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
                             {data.posts &&
                                 data.posts.map((post, id) => (
-                                    <Card11 key={id} post={post} />
+                                    <div key={id}>
+                                        <div className="hidden sm:block">
+                                            {/* Render Card11 on larger screens */}
+                                            <Card11 post={post} />
+                                        </div>
+                                        <div className="sm:hidden grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                            {/* Render Card5 on smaller screens */}
+                                            <Card6 post={post} />
+                                        </div>
+                                    </div>
                                 ))}
                         </div>
                     </Suspense>

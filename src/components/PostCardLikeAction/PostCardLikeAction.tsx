@@ -1,5 +1,3 @@
-'use client'
-
 import React, { FC, useEffect, useState } from 'react'
 import convertNumbThousand from '@/utils/convertNumbThousand'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
@@ -13,15 +11,20 @@ export interface PostCardLikeActionProps {
 
 const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
     className = 'px-3 h-8 text-xs',
-    likeCount,
+    likeCount = 0,
     liked = false,
     postId = '',
 }) => {
     const [isLiked, setIsLiked] = useState(liked)
+    const [likeCountState, setLikeCount] = useState(likeCount)
+    const supabase = createClientComponentClient()
 
     useEffect(() => {
-        async function checkLikedStatus() {
-            const supabase = createClientComponentClient()
+        checkLikedStatus()
+    }, [postId])
+
+    async function checkLikedStatus() {
+        try {
             const { data: session } = await supabase.auth.getSession()
             const userId = session?.session?.user.id
             // Check if the post is liked by the user
@@ -30,30 +33,49 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
                 .select('id')
                 .eq('post', postId)
                 .eq('liker', userId)
-            setIsLiked(!error && likes.length > 0)
+            if (!error) {
+                setIsLiked(likes.length > 0)
+            }
+        } catch (error) {
+            console.error('Error checking liked status:', error)
         }
-        checkLikedStatus()
-    }, [postId])
+    }
 
     async function toggleLike() {
-        const supabase = createClientComponentClient()
-        const { data: session } = await supabase.auth.getSession()
-        const userId = session?.session?.user.id
         try {
+            const { data: session } = await supabase.auth.getSession()
+            const userId = session?.session?.user.id
+
             if (isLiked) {
-                // If already liked, delete the like from the database
-                await supabase
+                // Delete the like from the database
+                const { data, error } = await supabase
                     .from('likes')
                     .delete()
                     .eq('post', postId)
                     .eq('liker', userId)
-                setIsLiked((prevIsLiked) => !prevIsLiked) // Toggle state
+
+                if (error) {
+                    console.error('Error deleting like:', error)
+                    return
+                }
+
+                setIsLiked(false)
+                setLikeCount((prevLikeCount) =>
+                    prevLikeCount > 0 ? prevLikeCount - 1 : 0
+                )
             } else {
-                // If not liked, insert a new like into the database
-                await supabase
+                // Insert a new like into the database
+                const { data, error } = await supabase
                     .from('likes')
                     .insert([{ post: postId, liker: userId }])
-                setIsLiked((prevIsLiked) => !prevIsLiked) // Toggle state
+
+                if (error) {
+                    console.error('Error inserting like:', error)
+                    return
+                }
+
+                setIsLiked(true)
+                setLikeCount((prevLikeCount) => prevLikeCount + 1)
             }
         } catch (error) {
             console.error('Error toggling like:', error)
@@ -64,8 +86,8 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
         <button
             className={`nc-PostCardLikeAction relative min-w-[68px] flex items-center rounded-full leading-none group transition-colors ${className} ${
                 isLiked
-                    ? 'text-rose-600 bg-rose-50 dark:bg-rose-100'
-                    : 'text-neutral-700 bg-neutral-50 dark:text-neutral-200 dark:bg-neutral-800 hover:bg-rose-50 dark:hover:bg-rose-100 hover:text-rose-600 dark:hover:text-rose-500'
+                    ? 'text-rose-600 bg-rose-50 dark:bg-red-950'
+                    : 'text-neutral-700 bg-neutral-50 dark:text-neutral-200 dark:bg-neutral-800 hover:bg-rose-50 dark:hover:bg-rose-950 hover:text-rose-600 dark:hover:text-rose-500'
             }`}
             onClick={toggleLike}
             title={isLiked ? 'Unlike' : 'Like'}
@@ -87,7 +109,7 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
                 ></path>
             </svg>
 
-            {likeCount && (
+            {likeCountState !== undefined && (
                 <span
                     className={`ml-1 ${
                         isLiked
@@ -95,7 +117,7 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
                             : 'text-neutral-900 dark:text-neutral-200'
                     }`}
                 >
-                    {convertNumbThousand(isLiked ? likeCount + 1 : likeCount)}
+                    {convertNumbThousand(likeCountState)}
                 </span>
             )}
         </button>

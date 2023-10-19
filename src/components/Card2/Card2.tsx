@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import PostCardSaveAction from '@/components/PostCardSaveAction/PostCardSaveAction'
+import PostBookmark from '@/components/PostBookmark/PostBookmark'
 import SocialsShare from '@/components/SocialsShare/SocialsShare'
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
 import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'

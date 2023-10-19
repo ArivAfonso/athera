@@ -8,51 +8,69 @@ import Input from '@/components/Input/Input'
 import Card11 from '@/components/Card11/Card11'
 import CardCategory2 from '@/components/CardCategory2/CardCategory2'
 import CardAuthorBox2 from '@/components/CardAuthorBox2/CardAuthorBox2'
-import { sanityClient } from '@/lib/sanityClient'
 import { useRouter } from 'next/navigation'
-import groq from 'groq'
 import PostType from '@/types/PostType'
 import CategoryType from '@/types/CategoryType'
 import AuthorType from '@/types/AuthorType'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { pipeline } from '@xenova/transformers'
+import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
+import NoResultsFound from '@/components/NoResultsFound/NoResultsFound'
 
 async function getData(context: { params: { slug: any } }) {
     const slug = context.params.slug[0]
-    const query = groq`{
-  "authors": *[_type == "author" && name match $slug]{
-    name,
-    username,
-    slug,
-    image,
-    "postCount": count(*[_type == "post" && references(^._id)])
-  },
-  "categories": *[_type == "category" && title match $slug]{
-    title,
-    image,
-    slug,
-    "postCount": count(*[_type == "post" && references(^._id)])
-  },
-  "posts": *[_type == "post" && title match $slug]{
-    title,
-    "author": author->{
-      name,
-      slug,
-      image
-    },
-    publishedAt,
-    slug,
-    mainImage,
-    categories[]->{title, slug, color}
-  }
-}
-      `
-    const results = await sanityClient.fetch(query, { slug })
-    return results
+    const supabase = createClientComponentClient()
+
+    const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
+
+    // Generate the embedding from text
+    const output = await pipe(slug, {
+        pooling: 'mean',
+        normalize: true,
+    })
+
+    // Extract the embedding output
+    const embedding = Array.from(output.data)
+
+    const { data, error } = await supabase.rpc('match_posts', {
+        query_embedding: embedding,
+        match_threshold: 0.8,
+        match_count: 10,
+    })
+    data.map((post: any) => {
+        post.likeCount = post.likecount
+        post.commentCount = post.commentcount
+    })
+    console.log(data)
+    return data
 }
 
-interface SearchType {
-    authors: AuthorType[]
-    categories: CategoryType[]
-    posts: PostType[]
+async function fetchCategoriesData(context: { params: { slug: any } }) {
+    const slug = context.params.slug[0]
+    const supabase = createClientComponentClient()
+
+    const { data, error } = await supabase
+        .from('categories')
+        .select(`name, color, postCount:post_categories(count)`)
+        .textSearch('name', `${slug}`)
+
+    console.log(data)
+
+    return data
+}
+
+async function fetchAuthorsData(context: { params: { slug: any } }) {
+    const slug = context.params.slug[0]
+    const supabase = createClientComponentClient()
+
+    const { data, error } = await supabase
+        .from('users')
+        .select(`*`)
+        .textSearch('name', `${slug}`)
+
+    console.log(data)
+
+    return data
 }
 
 const FILTERS = [
@@ -65,11 +83,7 @@ const FILTERS = [
 const TABS = ['Articles', 'Categories', 'Authors']
 
 const PageSearchV2 = (context: any) => {
-    const [data, setData] = useState<SearchType>({
-        authors: [],
-        categories: [],
-        posts: [],
-    })
+    const [data, setData] = useState<PostType[]>([])
     const router = useRouter()
 
     let s = context.params.slug[0]
@@ -77,22 +91,58 @@ const PageSearchV2 = (context: any) => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const res: SearchType = await getData(context)
+                const res: PostType[] = await getData(context)
                 setData(res)
             } catch (err) {
                 console.log(err)
             }
         }
         fetchData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const [tabActive, setTabActive] = useState<string>(TABS[0])
+
+    const [categories, setCategories] = useState<CategoryType[]>([])
+
+    const getCategoriesData = async () => {
+        try {
+            // Implement the logic to fetch categories data based on the search term
+            //@ts-ignore
+            const categoriesData: CategoryType[] = await fetchCategoriesData(
+                context
+            ) // Implement the function to fetch categories
+            setCategories(categoriesData)
+        } catch (error) {
+            console.error('Failed to fetch categories:', error)
+        }
+    }
+
+    const [authors, setAuthors] = useState<AuthorType[]>([])
+
+    const getAuthorsData = async () => {
+        try {
+            // Implement the logic to fetch authors data based on the search value
+            //@ts-ignore
+            const authorsData: AuthorType[] = await fetchAuthorsData(context) // Implement the function to fetch authors
+            setAuthors(authorsData)
+        } catch (error) {
+            console.error('Failed to fetch authors:', error)
+        }
+    }
 
     const handleClickTab = (item: string) => {
         if (item === tabActive) {
             return
         }
         setTabActive(item)
+
+        // Lazy load categories data when the 'Categories' tab is clicked
+        if (item === 'Categories' && categories.length === 0) {
+            getCategoriesData()
+        } else if (item === 'Authors' && authors.length === 0) {
+            getAuthorsData()
+        }
     }
 
     const [searchValue, setSearchValue] = useState('')
@@ -183,30 +233,40 @@ const PageSearchV2 = (context: any) => {
                         </div>
                     </div>
 
-                    {/* LOOP ITEMS */}
-                    {/* LOOP ITEMS POSTS */}
-                    {tabActive === 'Articles' && (
+                    {/* CONDITIONALLY RENDER COMPONENTS */}
+                    {tabActive === 'Articles' && data.length > 0 && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-8 mt-8 lg:mt-10">
-                            {data.posts.map((post, id) => (
+                            {data.map((post, id) => (
                                 <Card11 key={id} post={post} />
                             ))}
                         </div>
                     )}
-                    {/* LOOP ITEMS CATEGORIES */}
-                    {tabActive === 'Categories' && (
+
+                    {tabActive === 'Categories' && categories.length > 0 && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
-                            {data.categories.map((cat, id) => (
+                            {categories.map((cat, id) => (
                                 <CardCategory2 key={id} category={cat} />
                             ))}
                         </div>
                     )}
-                    {/* LOOP ITEMS POSTS */}
-                    {tabActive === 'Authors' && (
+
+                    {tabActive === 'Authors' && authors.length > 0 && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
-                            {data.authors.map((author, id) => (
-                                <CardAuthorBox2 key={id} author={author} />
+                            {authors.map((author, key) => (
+                                <CardAuthorBox key={key} author={author} />
                             ))}
                         </div>
+                    )}
+
+                    {/* RENDER NO RESULTS COMPONENT */}
+                    {tabActive === 'Articles' && data.length === 0 && (
+                        <NoResultsFound message="No Results Found :(" />
+                    )}
+                    {tabActive === 'Categories' && categories.length === 0 && (
+                        <NoResultsFound message="No Results Found :(" />
+                    )}
+                    {tabActive === 'Authors' && authors.length === 0 && (
+                        <NoResultsFound message="No Results Found :(" />
                     )}
                 </main>
             </div>

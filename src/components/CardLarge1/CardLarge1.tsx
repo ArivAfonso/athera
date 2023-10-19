@@ -1,4 +1,4 @@
-import PostCardSaveAction from '@/components/PostCardSaveAction/PostCardSaveAction'
+import PostBookmark from '@/components/PostBookmark/PostBookmark'
 import NcImage from '@/components/NcImage/NcImage'
 import NextPrev from '@/components/NextPrev/NextPrev'
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
@@ -58,7 +58,7 @@ const CardLarge1: FC<CardLarge1Props> = ({
 
                     <div className="flex items-center justify-between mt-auto">
                         <PostCardLikeAndComment />
-                        <PostCardSaveAction bookmarkClass="h-8 w-8 bg-neutral-50/30 hover:bg-neutral-50/50 dark:bg-neutral-800/30 dark:hover:bg-neutral-800/50" />
+                        <PostBookmark bookmarkClass="h-8 w-8 bg-neutral-50/30 hover:bg-neutral-50/50 dark:bg-neutral-800/30 dark:hover:bg-neutral-800/50" />
                     </div>
                 </div>
                 <div className="p-4 sm:pt-8 sm:px-10">

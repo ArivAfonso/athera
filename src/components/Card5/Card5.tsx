@@ -10,6 +10,14 @@ export interface Card5Props {
 }
 
 const Card5: FC<Card5Props> = ({ className = '', post }) => {
+    post.created_at = new Date(
+        post.created_at ? post.created_at : ''
+    ).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    })
+
     return (
         <div
             className={`nc-Card5 relative p-5 group border border-neutral-200 hover:shadow-lg transition-shadow dark:border-neutral-700 rounded-3xl bg-white dark:bg-neutral-900 ${className}`}
@@ -20,7 +28,7 @@ const Card5: FC<Card5Props> = ({ className = '', post }) => {
             ></Link>
 
             <div className="flex flex-col">
-                <CategoryBadgeList categories={post.categories} />
+                <CategoryBadgeList categories={post.post_categories} />
                 <h2
                     className="block text-base font-semibold text-neutral-800 dark:text-neutral-300 my-4"
                     title={post.title}

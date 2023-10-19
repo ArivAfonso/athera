@@ -31,7 +31,7 @@ const CardCategory1: FC<CardCategory1Props> = ({
                         size === 'large' ? 'text-sm' : 'text-xs'
                     } block mt-[2px] text-neutral-500 dark:text-neutral-400`}
                 >
-                    {category.postCount} Articles
+                    {category.postCount[0].count} Articles
                 </span>
             </div>
         </Link>

@@ -1,6 +1,8 @@
+'use client'
+
 import React, { FC } from 'react'
 import PostCardMeta from '@/components/PostCardMeta/PostCardMeta'
-import PostCardSaveAction from '@/components/PostCardSaveAction/PostCardSaveAction'
+import PostBookmark from '@/components/PostBookmark/PostBookmark'
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
 import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
 import Link from 'next/link'
@@ -13,6 +15,13 @@ export interface Card6Props {
 }
 
 const Card6: FC<Card6Props> = ({ className = 'h-full', post }) => {
+    post.created_at = new Date(
+        post.created_at ? post.created_at : ''
+    ).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    })
     return (
         <div
             className={`nc-Card6 relative flex group flex-row items-center sm:p-4 sm:rounded-3xl sm:bg-white sm:dark:bg-neutral-900 sm:border border-neutral-200 dark:border-neutral-700 ${className}`}
@@ -23,7 +32,7 @@ const Card6: FC<Card6Props> = ({ className = 'h-full', post }) => {
             ></Link>
             <div className="flex flex-col flex-grow">
                 <div className="space-y-3 mb-4">
-                    <CategoryBadgeList categories={post.categories} />
+                    <CategoryBadgeList categories={post.post_categories} />
                     <h2 className={`block font-semibold text-sm sm:text-base`}>
                         <Link
                             href={`/post/${post.title}/${post.id}`}
@@ -34,6 +43,20 @@ const Card6: FC<Card6Props> = ({ className = 'h-full', post }) => {
                         </Link>
                     </h2>
                     <PostCardMeta meta={{ ...post }} />
+                </div>
+                <div className="flex items-center flex-wrap justify-between mt-auto">
+                    <PostCardLikeAndComment
+                        likes={post.likeCount[0].count}
+                        liked={post.isLiked}
+                        comments={post.commentCount[0].count}
+                        id={post.id}
+                        className="relative"
+                    />
+                    <PostBookmark
+                        isBookmarked={post.isBookmarked}
+                        className="relative"
+                        postId={post.id}
+                    />
                 </div>
             </div>
 

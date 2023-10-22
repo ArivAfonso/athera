@@ -20,6 +20,8 @@ const DashboardBookmarks = async () => {
         description,
         image,
         author (
+            id,
+            verified,
             name,
             username,
             avatar
@@ -53,7 +55,6 @@ const DashboardBookmarks = async () => {
         })
     })
 
-    console.log(data)
     return (
         <div className={`nc-PageCategory`}>
             <div className="container pb-16 lg:pb-28 lg:pt-20 space-y-16 lg:space-y-28">

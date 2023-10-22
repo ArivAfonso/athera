@@ -1,9 +1,14 @@
 'use client'
 
 import { Route } from '@/routers/types'
+import {
+    Session,
+    createClientComponentClient,
+} from '@supabase/auth-helpers-nextjs'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import React from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import router from 'next/router'
+import React, { useEffect, useState } from 'react'
 import { FC } from 'react'
 
 export interface CommonLayoutProps {
@@ -42,6 +47,24 @@ const pages: {
 
 const CommonLayout: FC<CommonLayoutProps> = ({ children }) => {
     const pathname = usePathname()
+    const [session, setSession] = useState<Session>()
+    const router = useRouter()
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const supabase = createClientComponentClient()
+                const { data: session } = await supabase.auth.getSession()
+                if (session.session) setSession(session.session)
+                else {
+                    router.push('/login')
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        fetchData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <div className="nc-AccountCommonLayout container">
@@ -49,13 +72,13 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children }) => {
                 <div className="max-w-4xl mx-auto">
                     <div className="max-w-2xl">
                         <h2 className="text-3xl xl:text-4xl font-semibold">
-                            Account
+                            Dashboard
                         </h2>
                         <span className="block mt-4 text-neutral-500 dark:text-neutral-400 text-base sm:text-lg">
                             <span className="text-slate-900 dark:text-slate-200 font-semibold">
-                                Enrico Cole,
+                                {session?.user.user_metadata.full_name} ·
                             </span>{' '}
-                            ciseco@gmail.com · Los Angeles, CA
+                            {session?.user.email}
                         </span>
                     </div>
                     <hr className="mt-10 border-slate-200 dark:border-slate-700"></hr>

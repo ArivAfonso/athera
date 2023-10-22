@@ -41,7 +41,7 @@ const NcBookmark: FC<NcBookmarkProps> = ({
                     .from('bookmarks')
                     .delete()
                     .eq('user', userId)
-                    .eq('post', postId) // Include postId in the condition
+                    .eq('post', postId)
                 if (!error) {
                     setIsBookmarked(false) // Set isBookmarked to false
                 }

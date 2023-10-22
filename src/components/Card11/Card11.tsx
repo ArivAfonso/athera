@@ -8,6 +8,7 @@ import Link from 'next/link'
 import PostType from '@/types/PostType'
 import PostCardLikeAndComment from '../PostCardLikeAndComment/PostCardLikeAndComment'
 import PostBookmark from '../PostBookmark/PostBookmark'
+import stringToSlug from '@/utils/stringToSlug'
 
 export interface Card11Props {
     className?: string
@@ -47,11 +48,14 @@ const Card11: FC<Card11Props> = ({
                 </div>
             </div>
             <Link
-                href={`/post/${post.title}/${post.id}`}
+                href={`/post/${stringToSlug(post.title)}/${post.id}`}
                 className="absolute inset-0"
             ></Link>
-            <span className="absolute top-3 inset-x-3 z-10">
-                <CategoryBadgeList categories={post.post_categories} />
+            <span className="absolute top-3 left-3 z-10">
+                <CategoryBadgeList
+                    shorten={true}
+                    categories={post.post_categories}
+                />
             </span>
 
             <div className="p-4 flex flex-col space-y-3">

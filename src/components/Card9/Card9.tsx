@@ -7,6 +7,7 @@ import PostTypeFeaturedIcon from '../PostTypeFeaturedIcon/PostTypeFeaturedIcon'
 import Link from 'next/link'
 import Image from 'next/image'
 import PostType from '@/types/PostType'
+import stringToSlug from '@/utils/stringToSlug'
 
 export interface Card9Props {
     className?: string
@@ -60,11 +61,21 @@ const Card9: FC<Card9Props> = ({
             className={`nc-Card9 relative flex flex-col group rounded-3xl overflow-hidden z-0 ${hoverClass} ${className}`}
         >
             <div className="absolute inset-x-0 top-0 p-3 flex items-center justify-between transition-all opacity-0 z-[-1] group-hover:opacity-100 group-hover:z-10 duration-300">
-                <PostCardLikeAndComment className="relative" />
-                <PostBookmark hidenReadingTime className="relative" />
+                <PostCardLikeAndComment
+                    likes={post.likeCount[0].count}
+                    liked={post.isLiked}
+                    comments={post.commentCount[0].count}
+                    id={post.id}
+                    className="relative"
+                />
+                <PostBookmark
+                    isBookmarked={post.isBookmarked}
+                    className="relative"
+                    postId={post.id}
+                />
             </div>
             <div className={`flex items-start relative w-full ${ratio}`}></div>
-            <Link href={`/post/${post.title}/${post.id}`}>
+            <Link href={`/post/${stringToSlug(post.title)}/${post.id}`}>
                 <Image
                     fill
                     alt=""
@@ -80,16 +91,16 @@ const Card9: FC<Card9Props> = ({
                 <span className="absolute inset-0 bg-black bg-opacity-10 opacity-0 group-hover:opacity-100 transition-opacity"></span>
             </Link>
             <Link
-                href={`/post/${post.title}/${post.id}`}
+                href={`/post/${stringToSlug(post.title)}/${post.id}`}
                 className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black opacity-50"
             ></Link>
-            <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col flex-grow">
+            <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col flex-grow items-start">
                 <Link
-                    href={`/category/${post.categories[0].title}`}
+                    href={`/post/${stringToSlug(post.title)}/${post.id}`}
                     className="absolute inset-0"
                 ></Link>
-                <div className="mb-3">
-                    <CategoryBadgeList categories={post.categories} />
+                <div className="mb-3 left-3">
+                    <CategoryBadgeList categories={post.post_categories} />
                 </div>
                 {renderMeta()}
             </div>

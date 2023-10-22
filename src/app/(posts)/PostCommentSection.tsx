@@ -6,7 +6,10 @@ import ButtonSecondary from '@/components/Button/ButtonSecondary'
 import Textarea from '@/components/Textarea/Textarea'
 import Button from '@/components/Button/Button'
 import { useForm, Controller } from 'react-hook-form'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import {
+    Session,
+    createClientComponentClient,
+} from '@supabase/auth-helpers-nextjs'
 
 async function getCommentData(id: string) {
     const supabase = createClientComponentClient()
@@ -72,16 +75,21 @@ const SingleCommentForm: FC<SingleCommentFormProps> = ({
     const [submittedComment, setSubmittedComment] = useState(null) // State to store submitted comment
 
     const [comments, setComments] = useState<CommentType[]>([]) // State to store comments
+    const [session, setSession] = useState<Session>()
 
     useEffect(() => {
         const getData = async () => {
+            const supabase = createClientComponentClient()
             const data = await getCommentData(id)
-            console.log(data)
+            const { data: session } = await supabase.auth.getSession()
+            //@ts-ignore
+            setSession(session.session)
             //@ts-ignore
             setComments(data)
         }
 
         getData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const handleEditComment = (commentId: string, newComment: string) => {
@@ -145,37 +153,41 @@ const SingleCommentForm: FC<SingleCommentFormProps> = ({
     }
     return (
         <>
-            <div className="pb-10">
-                <form
-                    action="#"
-                    className={`nc-SingleCommentForm ${className}`}
-                    onSubmit={handleSubmit(onSubmit)}
-                >
-                    <Controller
-                        name="comment"
-                        control={control}
-                        defaultValue={defaultValue}
-                        rules={{ required: true }}
-                        render={({ field }) => (
-                            <Textarea
-                                {...field}
-                                placeholder="Add to discussion"
-                                rows={rows}
-                            />
-                        )}
-                    />
-                    <div className="mt-2 space-x-3">
-                        <ButtonPrimary type="submit">Submit</ButtonPrimary>
-                        <Button
-                            type="button"
-                            pattern="white"
-                            onClick={onClickCancel}
-                        >
-                            Cancel
-                        </Button>
-                    </div>
-                </form>
-            </div>
+            {session ? (
+                <div className="pb-10">
+                    <form
+                        action="#"
+                        className={`nc-SingleCommentForm ${className}`}
+                        onSubmit={handleSubmit(onSubmit)}
+                    >
+                        <Controller
+                            name="comment"
+                            control={control}
+                            defaultValue={defaultValue}
+                            rules={{ required: true }}
+                            render={({ field }) => (
+                                <Textarea
+                                    {...field}
+                                    placeholder="Add to discussion"
+                                    rows={rows}
+                                />
+                            )}
+                        />
+                        <div className="mt-2 space-x-3">
+                            <ButtonPrimary type="submit">Submit</ButtonPrimary>
+                            <Button
+                                type="button"
+                                pattern="white"
+                                onClick={onClickCancel}
+                            >
+                                Cancel
+                            </Button>
+                        </div>
+                    </form>
+                </div>
+            ) : (
+                <></>
+            )}
             {submittedComment && ( // Render the submitted comment if available
                 <ul className="space-y-5">
                     <CommentCard

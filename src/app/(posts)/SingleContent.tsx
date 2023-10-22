@@ -108,7 +108,7 @@ const SingleContent: FC<SingleContentProps> = ({
                         className="scroll-mt-20 max-w-screen-md mx-auto pt-5"
                     >
                         <h3 className="text-xl font-semibold text-neutral-800 dark:text-neutral-200">
-                            Responses (10)
+                            Comments {`(${commentCount})`}
                         </h3>
                     </div>
                     {/* COMMENTS LIST */}

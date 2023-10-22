@@ -36,7 +36,7 @@ const Card10: FC<Card10Props> = ({ className = 'h-full', post }) => {
             </div>
             <div className="absolute top-3 inset-x-3 flex justify-between items-start space-x-4 z-10">
                 <CategoryBadgeList categories={categories} />
-                <PostBookmark hidenReadingTime />
+                <PostBookmark postId={} hidenReadingTime />
             </div>
 
             <div className="space-y-2.5 mt-4">

@@ -1,18 +1,52 @@
-import React from 'react'
+'use client'
+
+import React, { useEffect } from 'react'
 import NcImage from '@/components/NcImage/NcImage'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import NoResultsFound from '@/components/NoResultsFound/NoResultsFound'
+import ModalDeletePost from './ModalDeletePost'
+import PostType from '@/types/PostType'
 
-const DashboardPosts = async () => {
-    const supabase = createServerComponentClient({ cookies })
-    const { data: session, error } = await supabase.auth.getSession()
+const DashboardPosts = () => {
+    const [posts, setPosts] = React.useState<PostType[]>([])
 
-    // First, fetch the posts
-    const { data: posts } = await supabase
-        .from('posts')
-        .select(`id, title, image, comments(count), likes(count)`)
-        .eq('author', session.session?.user.id)
+    const [showDeleteModal, setShowDeleteModal] = React.useState(false)
+    const [postIdToDelete, setPostIdToDelete] = React.useState('')
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const supabase = createClientComponentClient()
+                const { data: session, error } =
+                    await supabase.auth.getSession()
+
+                // First, fetch the posts
+                const { data } = await supabase
+                    .from('posts')
+                    .select(`id, title, image, comments(count), likes(count)`)
+                    .eq('author', session.session?.user.id)
+                //@ts-ignore
+                setPosts(data)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        fetchData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    const handleDeletePost = async (postId: string) => {
+        const supabase = createClientComponentClient() // Change to server component client
+        const { error } = await supabase.from('posts').delete().eq('id', postId)
+        if (error) {
+            // Handle the error
+            console.error('Error deleting post:', error)
+        } else {
+            // Remove the deleted post from the posts state
+            const updatedPosts = posts?.filter((post) => post.id !== postId)
+            setPosts(updatedPosts) // Assuming you have 'setPosts' function to update the posts state
+        }
+    }
 
     return (
         <div className="max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32">
@@ -74,36 +108,37 @@ const DashboardPosts = async () => {
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-neutral-500 dark:text-neutral-400">
                                                         <span>
-                                                            {' '}
-                                                            {/* @ts-ignore */}
-                                                            {
-                                                                post.comments[0]
-                                                                    .count
-                                                            }
+                                                            {post.comments
+                                                                ?.length - 1}
                                                         </span>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <span className="px-2 inline-flex text-xs leading-5 font-medium rounded-full bg-teal-100 text-teal-900 lg:text-sm">
-                                                            {
-                                                                post.likes[0]
-                                                                    .count
-                                                            }
+                                                            {post.likes
+                                                                ?.length - 1}
                                                         </span>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-neutral-300">
-                                                        <a
-                                                            href="/#"
+                                                        <button
+                                                            href={`/edit/${post.id}`}
                                                             className="text-primary-800 dark:text-primary-500 hover:text-primary-900"
                                                         >
                                                             Edit
-                                                        </a>
+                                                        </button>
                                                         {` | `}
-                                                        <a
-                                                            href="/#"
+                                                        <button
+                                                            onClick={() => {
+                                                                setShowDeleteModal(
+                                                                    true
+                                                                )
+                                                                setPostIdToDelete(
+                                                                    post.id
+                                                                )
+                                                            }}
                                                             className="text-rose-600 hover:text-rose-900"
                                                         >
                                                             Delete
-                                                        </a>
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -115,6 +150,14 @@ const DashboardPosts = async () => {
                 </div>
             ) : (
                 <NoResultsFound message="Awww You haven't posted anything!!" />
+            )}
+            {showDeleteModal && (
+                <ModalDeletePost
+                    show={showDeleteModal}
+                    id={postIdToDelete}
+                    onCloseModalDeletePost={() => setShowDeleteModal(false)}
+                    onDeletePost={handleDeletePost} // Pass onDeletePost method
+                />
             )}
         </div>
     )

@@ -21,6 +21,8 @@ const DashboardLikedPosts = async () => {
         image,
         author (
             name,
+            id,
+            verified,
             username,
             avatar
         ),

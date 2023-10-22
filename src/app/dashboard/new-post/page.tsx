@@ -7,7 +7,6 @@ import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import Select from '@/components/Select/Select'
 import Textarea from '@/components/Textarea/Textarea'
 import Label from '@/components/Label/Label'
-import { BlockNoteView, useBlockNote } from '@blocknote/react'
 import { addClass, removeClass, Browser } from '@syncfusion/ej2-base'
 import {
     RichTextEditorComponent,
@@ -20,6 +19,8 @@ import {
     QuickToolbar,
     Table,
     EmojiPicker,
+    PasteCleanupSettingsModel,
+    ImageSettingsModel,
 } from '@syncfusion/ej2-react-richtexteditor'
 import {
     ToolbarSettingsModel,
@@ -27,7 +28,6 @@ import {
     FileManagerSettingsModel,
     QuickToolbarSettingsModel,
 } from '@syncfusion/ej2-react-richtexteditor'
-import '@/styles/styles.css'
 import { useThemeMode } from '@/hooks/useThemeMode'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Controller, useForm } from 'react-hook-form'
@@ -52,6 +52,20 @@ function modifyString(str: string) {
 const DashboardSubmitPost = () => {
     let rteObj: RichTextEditorComponent
     const hostUrl: string = 'https://ej2-aspcore-service.azurewebsites.net/'
+    const pasteCleanupSettings: PasteCleanupSettingsModel = {
+        prompt: false,
+        allowedStyleProps: ['font-size', 'font-weight', 'font-style'],
+        keepFormat: true,
+        plainText: false,
+    }
+
+    const insertImageSettings: ImageSettingsModel = {
+        allowedTypes: ['.jpeg', '.jpg', '.png'],
+        display: 'inline',
+        width: 'auto',
+        height: 'auto',
+        saveFormat: 'Base64',
+    }
 
     // Rich Text Editor items list
     const items: string[] = [
@@ -111,8 +125,6 @@ const DashboardSubmitPost = () => {
     const toolbarSettings: ToolbarSettingsModel = {
         items: items,
     }
-    let textArea: HTMLTextAreaElement
-    let myCodeMirror: any
     function handleFullScreen(e: any) {
         // Use optional chaining to handle the possibility of elements not being found
         let sbCntEle = document.querySelector(
@@ -201,7 +213,7 @@ const DashboardSubmitPost = () => {
 
     const [errorMsg, setErrorMsg] = useState('')
     const [text, setText] = useState('')
-    const [htmlText, setHtmlText] = useState('')
+    let [htmlText, setHtmlText] = useState('')
     const [selectedImage, setSelectedImage] = useState(null)
     const [uploading, setUploading] = useState(false)
 
@@ -213,6 +225,13 @@ const DashboardSubmitPost = () => {
 
     async function sendPost(formData: any) {
         const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
+
+        tags.map((tag: string) => {
+            if (tag.length == 0 || tag == null || tag.length > 20) {
+                setErrorMsg('Categories must be between 1 and 20 characters')
+                return
+            }
+        })
 
         // Generate the embedding from text
         const output = await pipe(formData.postTitle + formData.postExcerpt, {
@@ -240,7 +259,6 @@ const DashboardSubmitPost = () => {
                             author: user?.id,
                             description: formData.postExcerpt,
                             text: text,
-                            rawText: htmlText,
                             estimatedReadingTime: Math.round(
                                 strWords(text) / 200
                             ),
@@ -249,7 +267,81 @@ const DashboardSubmitPost = () => {
                     ])
                     .select()
 
-                console.log(postInsertError)
+                // Retrieve the generated post ID
+                const postId: string = data ? data[0]?.id : null
+
+                // Define the regular expression pattern to extract base64 image data
+                const pattern = /base64,([^'">]+)/g
+
+                // Find all matches of the pattern in the HTML string
+                let match
+                const matches = []
+                while ((match = pattern.exec(htmlText))) {
+                    console.log(match)
+                    matches.push(match[1])
+                }
+
+                // Function to upload the image to Supabase Storage
+                const uploadToSupabaseStorage = async (
+                    base64Data: string,
+                    index: number
+                ) => {
+                    try {
+                        // Extract the image data type from the base64 string
+                        const typeMatch = base64Data.match(/^data:(.+);base64,/)
+                        const imageType = typeMatch ? typeMatch[1] : 'image/png' // Set a default value if the type is not matched
+
+                        // Decode base64 data
+                        const byteCharacters = atob(base64Data)
+                        const byteNumbers = new Array(byteCharacters.length)
+                        for (let i = 0; i < byteCharacters.length; i++) {
+                            byteNumbers[i] = byteCharacters.charCodeAt(i)
+                        }
+                        const byteArray = new Uint8Array(byteNumbers)
+
+                        // Convert the byte array to a Blob
+                        const blob = new Blob([byteArray], { type: imageType })
+
+                        // Upload the Blob to Supabase Storage
+                        const { data, error } = await supabase.storage
+                            .from('images')
+                            .upload(
+                                `${user?.id}/${postId}/image${index}.${
+                                    imageType.split('/')[1]
+                                }`,
+                                blob
+                            )
+
+                        if (error) {
+                            console.error(
+                                `Error uploading image ${index}:`,
+                                error
+                            )
+                        } else {
+                            console.log(imageType)
+                            // Replace the base64 image with the Supabase URL
+                            const supabaseUrl = `https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/${data?.path}`
+                            const regex = new RegExp(
+                                `"${base64Data}"|'${base64Data}'`,
+                                'g'
+                            )
+                            htmlText = htmlText.replace(
+                                regex,
+                                `"${supabaseUrl}"`
+                            )
+                            console.log(
+                                `Image ${index} uploaded successfully:`,
+                                data
+                            )
+                        }
+                    } catch (error) {
+                        console.error(`Error processing image ${index}:`, error)
+                    }
+                }
+                // Iterate over the matches and upload images to Supabase Storage
+                matches.forEach(async (base64Data, index) => {
+                    await uploadToSupabaseStorage(base64Data, index)
+                })
 
                 if (postInsertError) {
                     throw new Error(
@@ -257,16 +349,10 @@ const DashboardSubmitPost = () => {
                     )
                 }
 
-                // Retrieve the generated post ID
-                const postId: string = data ? data[0]?.id : null
-
                 // Upload the selected image to Supabase storage with the post's ID as the name
-                const { data: imagePath, error: imageUploadError } =
-                    await supabase.storage
-                        .from('images')
-                        .upload(`${user?.id}/${postId}`, selectedImage)
-
-                const finalTags: any[] = []
+                const { data: imagePath } = await supabase.storage
+                    .from('images')
+                    .upload(`${user?.id}/${postId}/main-image`, selectedImage)
 
                 const tagsArray = await Promise.all(
                     tags.map(async (tag: string) => {
@@ -317,18 +403,19 @@ const DashboardSubmitPost = () => {
                         }
                     })
                 )
-                const { data: uploadCategories } = await supabase
+                await supabase
                     .from('post_categories')
                     .insert(tagsArray)
                     .select('*')
 
                 // Update the inserted post with the image URL
-                const { data: imgData, error: updateError } = await supabase
+                const { error: updateError } = await supabase
                     .from('posts')
                     .update({
                         image:
                             'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
                             imagePath?.path,
+                        rawText: htmlText,
                     })
                     .eq('id', postId)
                     .select()
@@ -351,6 +438,32 @@ const DashboardSubmitPost = () => {
         if (file) {
             setSelectedImage(file)
         }
+    }
+
+    const [isDragging, setIsDragging] = useState(false)
+
+    const handleDrop = (event: any) => {
+        event.preventDefault()
+        const file = event.dataTransfer.files[0]
+        if (file) {
+            setSelectedImage(file)
+        }
+        setIsDragging(false)
+    }
+
+    const handleDragOver = (event: any) => {
+        event.preventDefault()
+        setIsDragging(true)
+    }
+
+    const handleDragEnter = (event: any) => {
+        event.preventDefault()
+        setIsDragging(true)
+    }
+
+    const handleDragLeave = (event: any) => {
+        event.preventDefault()
+        setIsDragging(false)
     }
 
     const {
@@ -445,7 +558,13 @@ const DashboardSubmitPost = () => {
                     <div className="block md:col-span-2">
                         <Label>Featured Image</Label>
 
-                        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-md">
+                        <div
+                            onDrop={handleDrop}
+                            onDragOver={handleDragOver}
+                            onDragEnter={handleDragEnter}
+                            onDragLeave={handleDragLeave}
+                            className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-md"
+                        >
                             <div className="space-y-1 text-center">
                                 {selectedImage ? (
                                     <NextImage
@@ -468,9 +587,17 @@ const DashboardSubmitPost = () => {
                                         <div className="flex flex-col sm:flex-row text-sm text-neutral-6000">
                                             <label
                                                 htmlFor="file-upload"
-                                                className="relative cursor-pointer rounded-md font-medium text-primary-6000 hover:text-primary-800 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
+                                                className={`relative cursor-pointer rounded-md font-medium text-primary-6000 hover:text-primary-800 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 ${
+                                                    isDragging
+                                                        ? 'border-2 border-primary-500'
+                                                        : ''
+                                                }`}
                                             >
-                                                <span>Upload a file</span>
+                                                {isDragging ? (
+                                                    <span>Drop here</span>
+                                                ) : (
+                                                    <span>Upload a file</span>
+                                                )}
                                                 <input
                                                     id="file-upload"
                                                     name="file-upload"
@@ -513,13 +640,22 @@ const DashboardSubmitPost = () => {
                                                     )
                                                 }
                                             }}
+                                            enablePersistence={true}
                                             showCharCount={true}
+                                            insertImageSettings={
+                                                insertImageSettings
+                                            }
                                             actionBegin={handleFullScreen.bind(
                                                 this
                                             )}
+                                            placeholder="Type something"
+                                            maxLength={50000}
                                             toolbarSettings={toolbarSettings}
                                             fileManagerSettings={
                                                 fileManagerSettings
+                                            }
+                                            pasteCleanupSettings={
+                                                pasteCleanupSettings
                                             }
                                             quickToolbarSettings={
                                                 quickToolbarSettings

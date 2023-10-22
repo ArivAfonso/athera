@@ -28,6 +28,7 @@ async function getPostData(context: { params: { slug: any } }) {
         image,
         author (
             name,
+            id,
             username,
             avatar
         ),
@@ -185,7 +186,7 @@ const PageSingle = async (context: any) => {
                 </Suspense>
 
                 {/* RELATED POSTS */}
-                {/* <SingleRelatedPosts posts={data} /> */}
+                <SingleRelatedPosts id={data.id} authorId={data.author.id} />
             </div>
         </>
     )

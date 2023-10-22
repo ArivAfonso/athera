@@ -8,6 +8,8 @@ export default interface PostType {
     text: string
     rawText: string
     author: {
+        id: string
+        verified?: boolean
         name: string
         username: string
         avatar: string

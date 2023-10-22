@@ -3,6 +3,7 @@ import Avatar from '@/components/Avatar/Avatar'
 import Link from 'next/link'
 import { Route } from '@/routers/types'
 import PostType from '@/types/PostType'
+import VerifyIcon from '../VerifyIcon'
 
 export interface PostCardMetaProps {
     className?: string
@@ -42,6 +43,11 @@ const PostCardMeta: FC<PostCardMetaProps> = ({
                     </span>
                 </Link>
                 <>
+                    {author.verified ? (
+                        <VerifyIcon iconClass="w-4 h-4" />
+                    ) : (
+                        <> </>
+                    )}
                     <span className="text-neutral-500 dark:text-neutral-400 mx-[6px] font-medium">
                         ·
                     </span>

@@ -46,6 +46,7 @@ const SingleHeader: FC<SingleHeaderProps> = ({
                     <CategoryBadgeList
                         itemClass="!px-3"
                         categories={category}
+                        shorten={false}
                     />
                     <SingleTitle mainClass={titleMainClass} title={title} />
                     {!hiddenDesc && (

@@ -39,6 +39,8 @@ const PageCategory = async (context: any) => {
                 )
             ),
             author(
+                id,
+                verified,
                 name,
                 username,
                 avatar
@@ -56,7 +58,7 @@ const PageCategory = async (context: any) => {
 
     catData.post_categories?.map((post) => {
         post.post.post_categories[0].category = {
-            title: catData.name,
+            name: catData.name,
             color: catData.color,
         }
         post.post.likes.map((like) => {

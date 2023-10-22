@@ -1,6 +1,5 @@
 import React from 'react'
 import Logo from '@/components/Logo/Logo'
-import SocialsList1 from '@/components/SocialsList1/SocialsList1'
 import { CustomLink } from '@/data/types'
 
 export interface WidgetFooterMenu {
@@ -86,9 +85,6 @@ const Footer: React.FC = () => {
                 <div className="grid grid-cols-4 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col">
                     <div className="col-span-2 md:col-span-1">
                         <Logo />
-                    </div>
-                    <div className="col-span-2 flex items-center md:col-span-3">
-                        <SocialsList1 className="flex items-center space-x-3 lg:space-x-0 lg:flex-col lg:space-y-2.5 lg:items-start" />
                     </div>
                 </div>
                 {widgetMenus.map(renderWidgetMenuItem)}

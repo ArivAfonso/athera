@@ -16,8 +16,12 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { pipeline } from '@xenova/transformers'
 import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
 import NoResultsFound from '@/components/NoResultsFound/NoResultsFound'
+import Card6 from '@/components/Card6/Card6'
 
-async function getData(context: { params: { slug: any } }) {
+async function getData(
+    context: { params: { slug: any } },
+    filter_option: string
+) {
     const slug = context.params.slug[0]
     const supabase = createClientComponentClient()
 
@@ -31,17 +35,22 @@ async function getData(context: { params: { slug: any } }) {
 
     // Extract the embedding output
     const embedding = Array.from(output.data)
+    console.log(filter_option)
 
-    const { data, error } = await supabase.rpc('match_posts', {
-        query_embedding: embedding,
-        match_threshold: 0.8,
-        match_count: 10,
-    })
+    const { data, error } = await supabase
+        .rpc('match_posts', {
+            query_embedding: embedding,
+            match_threshold: 0.8,
+            match_count: 10,
+            filter_option: filter_option,
+        })
+        .range(0, 10)
     data.map((post: any) => {
         post.likeCount = post.likecount
         post.commentCount = post.commentcount
     })
     console.log(data)
+    console.log(error)
     return data
 }
 
@@ -74,11 +83,10 @@ async function fetchAuthorsData(context: { params: { slug: any } }) {
 }
 
 const FILTERS = [
+    { name: 'Most Relevant' },
+    { name: 'Most Commented' },
     { name: 'Most Recent' },
-    { name: 'Curated by Admin' },
-    { name: 'Most Appreciated' },
-    { name: 'Most Discussed' },
-    { name: 'Most Viewed' },
+    { name: 'Most Liked' },
 ]
 const TABS = ['Articles', 'Categories', 'Authors']
 
@@ -87,11 +95,12 @@ const PageSearchV2 = (context: any) => {
     const router = useRouter()
 
     let s = context.params.slug[0]
+    s = decodeURIComponent(s)
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const res: PostType[] = await getData(context)
+                const res: PostType[] = await getData(context, 'most_relevant')
                 setData(res)
             } catch (err) {
                 console.log(err)
@@ -142,6 +151,18 @@ const PageSearchV2 = (context: any) => {
             getCategoriesData()
         } else if (item === 'Authors' && authors.length === 0) {
             getAuthorsData()
+        }
+    }
+
+    const handleFilterClick = async (filterOption: string) => {
+        try {
+            const res: PostType[] = await getData(
+                context,
+                filterOption.replaceAll(' ', '_').toLowerCase()
+            )
+            setData(res)
+        } catch (err) {
+            console.log(err)
         }
     }
 
@@ -200,7 +221,7 @@ const PageSearchV2 = (context: any) => {
                     <span className="block text-sm mt-4 text-neutral-500 dark:text-neutral-300">
                         We found{' '}
                         <strong className="font-semibold text-neutral-800 dark:text-neutral-100">
-                            1135
+                            {data.length}
                         </strong>{' '}
                         results articles for{' '}
                         <strong className="font-semibold text-neutral-800 dark:text-neutral-100">
@@ -229,15 +250,27 @@ const PageSearchV2 = (context: any) => {
                         </Nav>
                         <div className="block my-4 border-b w-full border-neutral-300 dark:border-neutral-500 sm:hidden"></div>
                         <div className="flex justify-end">
-                            <CategoryFilterListBox lists={FILTERS} />
+                            <CategoryFilterListBox
+                                lists={FILTERS}
+                                onFilterClick={handleFilterClick}
+                            />
                         </div>
                     </div>
 
                     {/* CONDITIONALLY RENDER COMPONENTS */}
                     {tabActive === 'Articles' && data.length > 0 && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-8 mt-8 lg:mt-10">
+                        <div className="grid justify-center items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-8 mt-8 lg:mt-10">
                             {data.map((post, id) => (
-                                <Card11 key={id} post={post} />
+                                <div key={id}>
+                                    <div className="hidden sm:block justify-center">
+                                        {/* Render Card11 on larger screens */}
+                                        <Card11 post={post} />
+                                    </div>
+                                    <div className="sm:hidden">
+                                        {/* Render Card5 on smaller screens */}
+                                        <Card6 post={post} />
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     )}

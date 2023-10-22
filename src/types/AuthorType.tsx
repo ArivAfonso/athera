@@ -1,7 +1,9 @@
 import PostType from './PostType'
 
 export default interface AuthorType {
+    id: string
     name: string
+    followerCount: number
     followers?: {
         following: string
     }[]
@@ -12,4 +14,5 @@ export default interface AuthorType {
     posts?: PostType[]
     avatar: string
     postCount?: number
+    verified?: boolean
 }

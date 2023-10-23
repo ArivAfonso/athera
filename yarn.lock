@@ -432,10 +432,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-typing-effect@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@types/react-typing-effect/-/react-typing-effect-2.0.4.tgz#48cab2cea3a48f30216c8e0ae487b37da05e20cd"
-  integrity sha512-hn0SyFzNupdmYIrBLw6vpjiLP0HRSly0my1sGXRzoZtgi1/N7FWmyO8BF53Lrmeq4vOWR2M9ZHRaw3++YNeIQg==
+"@types/react-typing-effect@^2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@types/react-typing-effect/-/react-typing-effect-2.0.5.tgz#5589b8f0e9e9b55718c21226f61de7f8210e4456"
+  integrity sha512-MIAP2hv9moPFjZZvjbWWGPvE3KfoxlvET8f/BFUxoIgJgnMKSgCWCN1DAl6TriDXeFwVkjo6dDT1dHMOkebRag==
   dependencies:
     "@types/react" "*"
 

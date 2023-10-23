@@ -31,7 +31,7 @@
         "eslint": "8.50.0",
         "eslint-config-next": "13.5.3",
         "framer-motion": "^10.16.4",
-        "groq": "^3.10.3",
+        "groq": "^3.18.1",
         "html-react-parser": "^4.2.2",
         "lodash": "^4.17.21",
         "next": "^13.5.4",

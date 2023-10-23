@@ -1926,10 +1926,10 @@ graphemer@^1.4.0:
   resolved "https://registry.yarnpkg.com/graphemer/-/graphemer-1.4.0.tgz#fb2f1d55e0e3a1849aeffc90c4fa0dd53a0e66c6"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
 
-groq@^3.10.3:
-  version "3.10.3"
-  resolved "https://registry.npmjs.org/groq/-/groq-3.10.3.tgz"
-  integrity sha512-1+bhtNpbkHXh2hvz7LLtuIJlhMzhNMdaikVgin2xCu5SsHpXcdvZoPg0kTONi6COBaT2IOiDMbOmIWmGdRwplQ==
+groq@^3.18.1:
+  version "3.18.1"
+  resolved "https://registry.yarnpkg.com/groq/-/groq-3.18.1.tgz#4425c62e7d623510622377ff1aae837ad723672d"
+  integrity sha512-+IAn1xU51GY1J3L/6aBak3lxQV7mdvEDegTk2+KRgU5BFq7C0A5Anfe1buo6+gz9d7RkkWNrVwVqxduSJ71udA==
 
 has-bigints@^1.0.1, has-bigints@^1.0.2:
   version "1.0.2"

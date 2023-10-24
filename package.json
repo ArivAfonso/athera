@@ -14,7 +14,7 @@
     "dependencies": {
         "@headlessui/react": "^1.7.17",
         "@heroicons/react": "^2.0.18",
-        "@portabletext/react": "^3.0.7",
+        "@portabletext/react": "^3.0.11",
         "@sanity/client": "^6.7.0",
         "@sanity/image-url": "^1.0.2",
         "@supabase/supabase-js": "^2.38.1",

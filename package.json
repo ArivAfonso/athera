@@ -32,7 +32,7 @@
         "eslint-config-next": "13.5.3",
         "framer-motion": "^10.16.4",
         "groq": "^3.18.1",
-        "html-react-parser": "^4.2.9",
+        "html-react-parser": "^5.0.2",
         "lodash": "^4.17.21",
         "next": "^13.5.4",
         "plausible-tracker": "^0.3.8",

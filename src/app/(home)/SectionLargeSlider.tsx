@@ -3,50 +3,12 @@
 import CardLarge1 from '@/components/CardLarge1/CardLarge1'
 import MainHeading from './MainHeading'
 import React, { FC, useState } from 'react'
-
-
-interface PostDataType {
-    title: string
-    author: {
-        name: string
-        image: {
-            asset: {
-                _ref: string
-                _type: string
-            }
-            _type: string
-        }
-        slug: {
-            _type: string
-            current: string
-        }
-    }
-    publishedAt: string
-    slug: {
-            _type: string
-            current: string
-        }
-    mainImage: {
-        asset: {
-            _ref: string
-            _type: string
-        }
-        _type: string
-    }
-    categories: {
-        title: string
-        slug: {
-            _type: string
-            current: string
-        }
-        color: string
-    }[]
-}
+import PostType from '@/types/PostType'
 
 export interface SectionLargeSliderProps {
     className?: string
     heading?: string
-    posts: PostDataType[]
+    posts: PostType[]
 }
 
 const SectionLargeSlider: FC<SectionLargeSliderProps> = ({

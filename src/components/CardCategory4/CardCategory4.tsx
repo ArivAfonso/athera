@@ -2,14 +2,7 @@ import React, { FC } from 'react'
 import { TwMainColor } from '@/data/types'
 import Badge from '@/components/Badge/Badge'
 import Link from 'next/link'
-import Image from 'next/image'
-import imageUrlBuilder from '@sanity/image-url'
-import { sanityClient } from '@/lib/sanityClient'
 import CategoryType from '@/types/CategoryType'
-
-function urlFor(source: any) {
-    return imageUrlBuilder(sanityClient).image(source)
-}
 
 export interface CardCategory4Props {
     className?: string
@@ -46,26 +39,16 @@ const CardCategory4: FC<CardCategory4Props> = ({
     }
     return (
         <Link
-            href={`/category/${encodeURIComponent(category.slug.current)}`}
+            href={`/category/${category.name}`}
             className={`nc-CardCategory4 flex flex-col ${className}`}
         >
             <div className="flex-shrink-0 relative w-full aspect-w-7 aspect-h-5 h-0 rounded-3xl overflow-hidden group">
-                <Image
-                    alt="taxonomies"
-                    fill
-                    src={
-                        category.image?.asset
-                            ? urlFor(category.image.asset._ref).url()
-                            : ''
-                    }
-                    className="object-cover w-full h-full rounded-2xl"
-                    sizes="(min-width: 1024px) 20rem, (min-width: 640px) 16rem, 12rem"
-                />
                 <div>
                     {index && (
                         <Badge
-                            color={category.color as TwMainColor}
+                            color={category.color.toLowerCase() as TwMainColor}
                             name={index}
+                            href={`/category/${category.name}`}
                             className="absolute top-3 left-3"
                         />
                     )}
@@ -79,10 +62,10 @@ const CardCategory4: FC<CardCategory4Props> = ({
                 ></div>
                 <div className="ml-4">
                     <h2 className="text-base text-neutral-900 dark:text-neutral-100 font-medium">
-                        {category.title}
+                        {category.name}
                     </h2>
                     <span className="block text-sm text-neutral-500 dark:text-neutral-400">
-                        {category.postCount} Articles
+                        {category.postCount[0].count} Articles
                     </span>
                 </div>
             </div>

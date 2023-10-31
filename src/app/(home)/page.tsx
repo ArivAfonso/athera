@@ -4,112 +4,73 @@ import BackgroundSection from '@/components/BackgroundSection/BackgroundSection'
 import SectionSliderNewAuthors from '@/components/SectionSliderNewAthors/SectionSliderNewAuthors'
 import SectionSliderNewCategories from '@/components/SectionSliderNewCategories/SectionSliderNewCategories'
 import SectionMagazine1 from '@/components/Sections/SectionMagazine1'
-import { sanityClient } from '@/lib/sanityClient'
-import groq from 'groq'
 import SectionSliderPosts from '@/components/Sections/SectionSliderPosts'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+import PostType from '@/types/PostType'
+import CategoryType from '@/types/CategoryType'
+import AuthorType from '@/types/AuthorType'
 
 async function getData() {
-    const query = groq`{
-  "latestPosts": *[_type == "post"] | order(publishedAt desc)[0..17] {
-    title,
-    publishedAt,
-    mainImage,
-    slug,
-    "estimatedReadingTime": round(length(pt::text(body)) / 5 / 180 ),
-    categories[]->{
-      title,
-      slug,
-      color,
-    },
-    author->{
-      name,
-      slug,
-      image,
-    }
-  },
-  "categories": *[_type == "category"] {
-    _id,
-    title,
-    color,
-    image,
-    slug,
-    "postCount": count(*[_type == "post" && references(^._id)])
-  }
-  | order(postCount desc)
-  [0..9],
-  "authors": *[_type == "author"] {
-    name,
-    image,
-    slug,
-    username,
-    "count": count(*[_type == "post" && references(^._id)])
-  }
-}
-      `
-    const home = await sanityClient.fetch(query)
-    return home
-}
+    const supabase = createServerComponentClient({ cookies })
+    const { data: posts, error } = await supabase
+        .from('posts')
+        .select(
+            `id,
+        title,
+        created_at,
+        description,
+        image,
+        likeCount:likes(count),
+        commentCount:comments(count),
+        post_categories(category:categories(id,name,color)),
+        bookmarks(user(id)),
+        likes(
+            liker(
+                id
+            )
+        ),
+        author(
+            id,
+            verified,
+            name,
+            username,
+            avatar
+        )`
+        )
+        .limit(20)
 
-interface Post {
-    title: string
-    publishedAt: string
-    slug: {
-        _type: string
-        current: string
-    }
-    categories: Category[]
-    author: Author
-    mainImage: {
-        asset: {
-            _ref: string
-            _type: string
-        }
-        _type: string
-    }
-}
+    const { data: categories, error: categoriesError } = await supabase
+        .from('categories')
+        .select('id, name, color, postCount:post_categories(count)')
+        .limit(20)
 
-interface Category {
-    _id: string
-    title: string
-    color: string
-    slug: {
-        _type: string
-        current: string
+    const { data: authors, error: authorsError } = await supabase
+        .from('users')
+        .select('id, name, username, verified, postCount:posts(count), avatar')
+        .limit(20)
+    return {
+        popular_posts: posts,
+        categories: categories,
+        authors: authors,
     }
-    numPosts: number
-}
-
-interface Author {
-    name: string
-    slug: {
-        _type: string
-        current: string
-    }
-    image: {
-        asset: {
-            _ref: string
-            _type: string
-        }
-        _type: string
-    }
-    count: number
-    username: string
 }
 
 interface HomeProps {
-    latestPosts: Post[]
-    categories: Category[]
-    authors: Author[]
+    popular_posts: PostType[]
+    categories: CategoryType[]
+    authors: AuthorType[]
 }
 
 const PageHome = async ({}) => {
     const data: HomeProps = await getData()
+    console.log(data.authors)
     return (
         <div className="nc-PageHome relative overflow-x-hidden">
             <div className="container relative">
                 <SectionLargeSlider
                     className="pt-10 pb-16 md:py-16 lg:pb-28 lg:pt-20"
-                    posts={data.latestPosts.filter((_, i) => i < 3)}
+                    posts={data.popular_posts.filter((_, i) => i < 3)}
                 />
 
                 <div className="relative py-16">
@@ -131,7 +92,7 @@ const PageHome = async ({}) => {
 
                 <SectionMagazine1
                     className="py-16 lg:py-28"
-                    posts={data.latestPosts.filter((_, i) => i < 6)}
+                    posts={data.popular_posts.filter((_, i) => i < 6)}
                 />
                 <div className="relative py-16">
                     <BackgroundSection />
@@ -139,9 +100,7 @@ const PageHome = async ({}) => {
                         postCardName="card9"
                         heading="Interesting Content"
                         subHeading="Over 69420 articles till date"
-                        posts={data.latestPosts.filter(
-                            (_, i) => i > 8 && i < 16
-                        )}
+                        posts={data.popular_posts}
                     />
                 </div>
             </div>

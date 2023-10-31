@@ -1,0 +1,74 @@
+import React, { FC } from 'react'
+import ButtonPrimary from '@/components/Button/ButtonPrimary'
+import ButtonSecondary from '@/components/Button/ButtonSecondary'
+import Textarea from '@/components/Textarea/Textarea'
+import Button from '@/components/Button/Button'
+import { useForm, Controller } from 'react-hook-form'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+
+export interface SingleCommentFormProps {
+    className?: string
+    onClickSubmit?: () => void
+    onClickCancel?: () => void
+    textareaRef?: React.MutableRefObject<null>
+    defaultValue?: string
+    id: string
+    rows?: number
+}
+
+const SingleCommentForm: FC<SingleCommentFormProps> = ({
+    className = 'mt-5',
+    onClickSubmit,
+    onClickCancel,
+    textareaRef,
+    defaultValue = '',
+    id,
+    rows = 4,
+}) => {
+    const { control, handleSubmit } = useForm()
+    const onSubmit = async (data: any) => {
+        const supabase = createClientComponentClient()
+        const { data: session } = await supabase.auth.getSession()
+
+        const { data: commentConfirm, error } = await supabase
+            .from('comments')
+            .insert([
+                {
+                    comment: data.comment,
+                    commenter: session.session?.user.id,
+                    post: id,
+                },
+            ])
+        console.log(error)
+    }
+
+    return (
+        <form
+            action="#"
+            className={`nc-SingleCommentForm ${className}`}
+            onSubmit={handleSubmit(onSubmit)}
+        >
+            <Controller
+                name="comment"
+                control={control}
+                defaultValue={defaultValue}
+                rules={{ required: true }}
+                render={({ field }) => (
+                    <Textarea
+                        {...field}
+                        placeholder="Add to discussion"
+                        rows={rows}
+                    />
+                )}
+            />
+            <div className="mt-2 space-x-3">
+                <ButtonPrimary type="submit">Submit</ButtonPrimary>
+                <Button type="button" pattern="white" onClick={onClickCancel}>
+                    Cancel
+                </Button>
+            </div>
+        </form>
+    )
+}
+
+export default SingleCommentForm

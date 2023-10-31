@@ -1,4 +1,4 @@
-# Athera
+# Athera - Pre Alpha
 
 ![image](/public/full-logo-transparent.png)
 

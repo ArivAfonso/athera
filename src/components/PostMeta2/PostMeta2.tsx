@@ -2,13 +2,6 @@ import React, { FC } from 'react'
 import Avatar from '@/components/Avatar/Avatar'
 import Link from 'next/link'
 import AuthorType from '@/types/AuthorType'
-import CategoryType from '@/types/CategoryType'
-import { sanityClient } from '@/lib/sanityClient'
-import imageUrlBuilder from '@sanity/image-url'
-
-function urlFor(source: any) {
-    return imageUrlBuilder(sanityClient).image(source)
-}
 
 export interface PostMeta2Props {
     className?: string
@@ -35,7 +28,7 @@ const PostMeta2: FC<PostMeta2Props> = ({
             } ${className}`}
         >
             <Link
-                href={`/author/${encodeURIComponent(author.slug.current)}`}
+                href={`/author/${author.username}`}
                 className="flex items-center space-x-2"
             >
                 <Avatar
@@ -45,16 +38,14 @@ const PostMeta2: FC<PostMeta2Props> = ({
                             ? 'h-6 w-6 text-sm'
                             : 'h-10 w-10 sm:h-11 sm:w-11 text-xl'
                     }
-                    imgUrl={urlFor(author.image.asset._ref).url()}
+                    imgUrl={author.avatar}
                     userName={author.name}
                 />
             </Link>
             <div className="ml-3">
                 <div className="flex items-center">
                     <Link
-                        href={`/author/${encodeURIComponent(
-                            author.slug.current
-                        )}`}
+                        href={`/author/${author.username}`}
                         className="block font-semibold"
                     >
                         {author.name}

@@ -10,25 +10,31 @@ export interface Card5Props {
 }
 
 const Card5: FC<Card5Props> = ({ className = '', post }) => {
+    post.created_at = new Date(
+        post.created_at ? post.created_at : ''
+    ).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    })
+
     return (
         <div
             className={`nc-Card5 relative p-5 group border border-neutral-200 hover:shadow-lg transition-shadow dark:border-neutral-700 rounded-3xl bg-white dark:bg-neutral-900 ${className}`}
         >
             <Link
-                href={`/single/${encodeURIComponent(post.slug.current)}`}
+                href={`/post/${post.title}/${post.id}`}
                 className="absolute inset-0 rounded-lg"
             ></Link>
 
             <div className="flex flex-col">
-                <CategoryBadgeList categories={post.categories} />
+                <CategoryBadgeList categories={post.post_categories} />
                 <h2
                     className="block text-base font-semibold text-neutral-800 dark:text-neutral-300 my-4"
                     title={post.title}
                 >
                     <Link
-                        href={`/single/${encodeURIComponent(
-                            post.slug.current
-                        )}`}
+                        href={`/post/${post.title}/${post.id}`}
                         className="line-clamp-2"
                         title={post.title}
                     >
@@ -39,7 +45,7 @@ const Card5: FC<Card5Props> = ({ className = '', post }) => {
                     className="relative mt-auto"
                     readingTime={post.estimatedReadingTime}
                     author={post.author}
-                    date={post.publishedAt}
+                    date={post.created_at}
                 />
             </div>
         </div>

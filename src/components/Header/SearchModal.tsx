@@ -14,16 +14,8 @@ import { DEMO_CATEGORIES } from '@/data/taxonomies'
 import { DEMO_POSTS } from '@/data/posts'
 import Link from 'next/link'
 import { Route } from '@/routers/types'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import { UrlObject } from 'url'
-
-const categories = DEMO_CATEGORIES.filter((_, i) => i < 9)
-const posts = DEMO_POSTS.filter((_, i) => i < 5)
-const authors = DEMO_AUTHORS.filter((_, i) => i < 9)
-
-function classNames(...classes: any) {
-    return classes.filter(Boolean).join(' ')
-}
 
 interface Props {
     renderTrigger?: () => ReactNode
@@ -31,38 +23,15 @@ interface Props {
 
 const SearchModal: FC<Props> = ({ renderTrigger }) => {
     const [open, setOpen] = useState(false)
-    const [rawQuery, setRawQuery] = useState('a')
+    const [rawQuery, setRawQuery] = useState('')
 
     const router = useRouter()
 
     const query = rawQuery.toLowerCase().replace(/^[#>]/, '')
-
-    const filteredPosts =
-        rawQuery === '#'
-            ? posts
-            : query === '' || rawQuery.startsWith('>')
-            ? []
-            : posts.filter((project) =>
-                  project.title.toLowerCase().includes(query)
-              )
-
-    const filteredProjects =
-        rawQuery === '#'
-            ? categories
-            : query === '' || rawQuery.startsWith('>')
-            ? []
-            : categories.filter((project) =>
-                  project.name.toLowerCase().includes(query)
-              )
-
-    const filteredUsers =
-        rawQuery === '>'
-            ? authors
-            : query === '' || rawQuery.startsWith('#')
-            ? []
-            : authors.filter((user) =>
-                  user.displayName.toLowerCase().includes(query)
-              )
+    const handleClose = () => {
+        setRawQuery('')
+        setOpen(false)
+    }
 
     return (
         <>
@@ -100,7 +69,7 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
             <Transition.Root
                 show={open}
                 as={Fragment}
-                afterLeave={() => setRawQuery('a')}
+                afterLeave={() => setRawQuery('')}
                 appear
             >
                 <Dialog
@@ -135,8 +104,8 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                                 as="form"
                                 onSubmit={(e) => {
                                     e.preventDefault()
-                                    router.push('/search')
-                                    setOpen(false)
+                                    router.push(`/search/${query}`)
+                                    handleClose()
                                 }}
                             >
                                 <Combobox
@@ -162,7 +131,9 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
 
                                     <div className="flex flex-wrap items-center bg-gray-50 py-2.5 px-4 text-xs text-gray-700">
                                         <Link
-                                            href={'/search' as unknown as UrlObject}
+                                            href={
+                                                '/search' as unknown as UrlObject
+                                            }
                                             className="mx-1 flex h-5 px-1.5 items-center justify-center rounded border bg-white sm:mx-2 border-primary-6000 text-neutral-900"
                                             onClick={() => setOpen(false)}
                                         >

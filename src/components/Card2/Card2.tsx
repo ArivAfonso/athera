@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import PostCardSaveAction from '@/components/PostCardSaveAction/PostCardSaveAction'
+import PostBookmark from '@/components/PostBookmark/PostBookmark'
 import SocialsShare from '@/components/SocialsShare/SocialsShare'
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
 import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
@@ -7,12 +7,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import PostCardMeta from '../PostCardMeta/PostCardMeta'
 import PostType from '@/types/PostType'
-import imageUrlBuilder from '@sanity/image-url'
-import { sanityClient } from '@/lib/sanityClient'
-
-function urlFor(source: any) {
-    return imageUrlBuilder(sanityClient).image(source)
-}
 
 export interface Card2Props {
     className?: string
@@ -32,18 +26,18 @@ const Card2: FC<Card2Props> = ({
                     fill
                     sizes="(max-width: 600px) 480px, 800px"
                     className="object-cover rounded-3xl"
-                    src={urlFor(post.mainImage.asset._ref).url()}
+                    src={post.image}
                     alt={post.title}
                 />
                 <CategoryBadgeList
                     className="flex flex-wrap space-x-2 absolute top-3 left-3"
                     itemClass="relative"
-                    categories={post.categories}
+                    categories={post.post_categories}
                 />
             </div>
 
             <SocialsShare className="absolute hidden md:grid gap-[5px] right-4 top-4 opacity-0 z-[-1] group-hover:z-10 group-hover:opacity-100 transition-opacity duration-300" />
-            <Link href={`/single/${encodeURIComponent(post.slug.current)}`} />
+            <Link href={`/post/${post.title}/${post.id}`} />
 
             <div className="mt-5 px-4 flex flex-col">
                 <div className="space-y-3">
@@ -61,9 +55,7 @@ const Card2: FC<Card2Props> = ({
                         }`}
                     >
                         <Link
-                            href={`/single/${encodeURIComponent(
-                                post.slug.current
-                            )}`}
+                            href={`/post/${post.title}/${post.id}`}
                             className="line-clamp-2"
                             title={post.title}
                         >

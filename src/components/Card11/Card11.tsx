@@ -6,6 +6,10 @@ import PostCardMeta from '@/components/PostCardMeta/PostCardMeta'
 import PostFeaturedMedia from '@/components/PostFeaturedMedia/PostFeaturedMedia'
 import Link from 'next/link'
 import PostType from '@/types/PostType'
+import PostCardLikeAndComment from '../PostCardLikeAndComment/PostCardLikeAndComment'
+import PostBookmark from '../PostBookmark/PostBookmark'
+import stringToSlug from '@/utils/stringToSlug'
+import Tilt from 'react-parallax-tilt'
 
 export interface Card11Props {
     className?: string
@@ -22,50 +26,73 @@ const Card11: FC<Card11Props> = ({
 }) => {
     const [isHover, setIsHover] = useState(false)
 
-    post.publishedAt = new Date(post.publishedAt).toLocaleDateString('en-US', {
+    post.created_at = new Date(
+        post.created_at ? post.created_at : ''
+    ).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
     })
 
+    const tilt = localStorage.getItem('parallaxTiltEnabled')
+    console.log(tilt)
 
     return (
-        <div
-            className={`nc-Card11 relative flex flex-col group rounded-3xl overflow-hidden bg-white dark:bg-neutral-900 ${className}`}
-            onMouseEnter={() => setIsHover(true)}
-            onMouseLeave={() => setIsHover(false)}
-            //
-        >
+        <Tilt tiltEnable={tilt === 'true'}>
             <div
-                className={`block flex-shrink-0 relative w-full rounded-t-3xl overflow-hidden z-10 ${ratio}`}
+                className={`nc-Card11 relative flex flex-col group rounded-3xl overflow-hidden bg-white dark:bg-neutral-900 ${className}`}
+                onMouseEnter={() => setIsHover(true)}
+                onMouseLeave={() => setIsHover(false)}
+                //
             >
-                <div>
-                    <PostFeaturedMedia post={post} isHover={isHover} />
+                <div
+                    className={`block flex-shrink-0 relative w-full rounded-t-3xl overflow-hidden z-10 ${ratio}`}
+                >
+                    <div>
+                        <PostFeaturedMedia post={post} isHover={isHover} />
+                    </div>
+                </div>
+                <Link
+                    href={`/post/${stringToSlug(post.title)}/${post.id}`}
+                    className="absolute inset-0"
+                ></Link>
+                <span className="absolute top-3 inset-x-3 z-10">
+                    <CategoryBadgeList
+                        chars={26}
+                        categories={post.post_categories}
+                    />
+                </span>
+
+                <div className="p-4 flex flex-col space-y-3">
+                    {!hiddenAuthor ? (
+                        <PostCardMeta meta={post} />
+                    ) : (
+                        <span className="text-xs text-neutral-500">
+                            {post.created_at}
+                        </span>
+                    )}
+                    <h3 className="nc-card-title block text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                        <span className="line-clamp-2" title={post.title}>
+                            {post.title}
+                        </span>
+                    </h3>
+                    <div className="flex items-end justify-between mt-auto">
+                        <PostCardLikeAndComment
+                            likes={post.likeCount[0].count}
+                            liked={post.isLiked}
+                            comments={post.commentCount[0].count}
+                            id={post.id}
+                            className="relative"
+                        />
+                        <PostBookmark
+                            isBookmarked={post.isBookmarked}
+                            className="relative"
+                            postId={post.id}
+                        />
+                    </div>
                 </div>
             </div>
-            <Link
-                href={`/single/${encodeURIComponent(post.slug.current)}`}
-                className="absolute inset-0"
-            ></Link>
-            <span className="absolute top-3 inset-x-3 z-10">
-                <CategoryBadgeList categories={post.categories} />
-            </span>
-
-            <div className="p-4 flex flex-col space-y-3">
-                {!hiddenAuthor ? (
-                    <PostCardMeta meta={post} />
-                ) : (
-                    <span className="text-xs text-neutral-500">
-                        {post.publishedAt}
-                    </span>
-                )}
-                <h3 className="nc-card-title block text-base font-semibold text-neutral-900 dark:text-neutral-100">
-                    <span className="line-clamp-2" title={post.title}>
-                        {post.title}
-                    </span>
-                </h3>
-            </div>
-        </div>
+        </Tilt>
     )
 }
 

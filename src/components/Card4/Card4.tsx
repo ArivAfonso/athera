@@ -1,16 +1,10 @@
 import React, { FC } from 'react'
-import PostCardSaveAction from '@/components/PostCardSaveAction/PostCardSaveAction'
+import PostBookmark from '@/components/PostBookmark/PostBookmark'
 import CardAuthor2 from '@/components/CardAuthor2/CardAuthor2'
 import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
 import Image from 'next/image'
 import Link from 'next/link'
-import imageUrlBuilder from '@sanity/image-url'
-import { sanityClient } from '@/lib/sanityClient'
 import PostType from '@/types/PostType'
-
-function urlFor(source: any) {
-    return imageUrlBuilder(sanityClient).image(source)
-}
 
 export interface Card4Props {
     className?: string
@@ -18,12 +12,14 @@ export interface Card4Props {
 }
 
 const Card4: FC<Card4Props> = ({ className = 'h-full', post }) => {
-    post.publishedAt = new Date(post.publishedAt).toLocaleDateString('en-US', {
+    post.created_at = new Date(
+        post.created_at ? post.created_at : ''
+    ).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
     })
-    const imageUrl = urlFor(post.mainImage.asset._ref).url()
+    const imageUrl = post.image
     return (
         <div
             className={`nc-Card4 relative flex flex-col group bg-white dark:bg-neutral-900 rounded-3xl ${className}`}
@@ -39,7 +35,7 @@ const Card4: FC<Card4Props> = ({ className = 'h-full', post }) => {
             </span>
 
             <Link
-                href={`/single/${encodeURIComponent(post.slug.current)}`}
+                href={`/post/${post.title}/${post.id}`}
                 className="absolute inset-0"
             ></Link>
 
@@ -48,9 +44,7 @@ const Card4: FC<Card4Props> = ({ className = 'h-full', post }) => {
                     <CategoryBadgeList categories={post.categories} />
                     <h2 className="nc-card-title block text-base font-semibold text-neutral-900 dark:text-neutral-100 ">
                         <Link
-                            href={`/single/${encodeURIComponent(
-                                post.slug.current
-                            )}`}
+                            href={`/post/${post.title}/${post.id}`}
                             className="line-clamp-2"
                             title={post.title}
                         >
@@ -61,10 +55,10 @@ const Card4: FC<Card4Props> = ({ className = 'h-full', post }) => {
                 <div className="flex items-end justify-between mt-auto">
                     <CardAuthor2
                         readingTime={post.estimatedReadingTime}
-                        date={post.publishedAt}
+                        date={post.created_at}
                         author={post.author}
                     />
-                    <PostCardSaveAction hidenReadingTime />
+                    <PostBookmark hidenReadingTime />
                 </div>
             </div>
         </div>

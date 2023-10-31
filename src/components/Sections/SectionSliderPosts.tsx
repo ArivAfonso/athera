@@ -10,13 +10,14 @@ import Card9 from '@/components/Card9/Card9'
 // import Card10V2 from "@/components/Card10/Card10V2";
 import MySlider from '@/components/MySlider'
 import PostType from '@/types/PostType'
+import Card11 from '../Card11/Card11'
 
 export interface SectionSliderPostsProps {
     className?: string
     heading: string
     subHeading?: string
     posts: PostType[]
-    postCardName?: 'card4' | 'card7' | 'card9' | 'card10' | 'card10V2'
+    postCardName?: 'card4' | 'card7' | 'card9' | 'card10' | 'card11'
     perView?: 2 | 3 | 4
 }
 
@@ -40,9 +41,9 @@ const SectionSliderPosts: FC<SectionSliderPostsProps> = ({
         case 'card9':
             CardComponent = Card9
             break
-        // case "card10":
-        //   CardComponent = Card10;
-        //   break;
+        case 'card11':
+            CardComponent = Card11
+            break
         // case "card10V2":
         //   CardComponent = Card10V2;
         //   break;

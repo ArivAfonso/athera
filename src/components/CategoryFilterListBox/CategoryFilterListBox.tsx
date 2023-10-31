@@ -9,13 +9,19 @@ import Button from '../Button/Button'
 export interface CategoryFilterListBoxProps {
     className?: string
     lists: { name: string }[]
+    onFilterClick: (name: string) => void
 }
 
 const CategoryFilterListBox: FC<CategoryFilterListBoxProps> = ({
     className = '',
     lists,
+    onFilterClick,
 }) => {
     const [selected, setSelected] = useState(lists[0])
+    const handleFilterClick = (item: { name: string }) => {
+        setSelected(item)
+        onFilterClick(item.name) // Call the onFilterClick function with the selected filter option
+    }
     return (
         <div className={`nc-CategoryFilterListBox flex-shrink-0 ${className}`}>
             <Listbox value={selected} onChange={setSelected}>
@@ -47,6 +53,7 @@ const CategoryFilterListBox: FC<CategoryFilterListBoxProps> = ({
                                         } cursor-default select-none relative py-2 pl-10 pr-4`
                                     }
                                     value={item}
+                                    onClick={() => handleFilterClick(item)}
                                 >
                                     {({ selected }) => (
                                         <>

@@ -136,10 +136,12 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                         .upload(`${data.catName}`, selectedImage)
 
                     if (!error) {
-                        await supabase
-                            .from('categories')
-                            .update({ image: path?.path })
-                            .eq('id', newCat[0].id)
+                        if (newCat !== null) {
+                            await supabase
+                                .from('categories')
+                                .update({ image: path?.path })
+                                .eq('id', newCat[0].id)
+                        }
                     }
                 }
             } else {

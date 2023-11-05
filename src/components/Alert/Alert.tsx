@@ -103,47 +103,46 @@ const Alert: React.FC<AlertProps> = ({ type, message }) => {
                 return null
         }
     }
+    if (!showAlert) return null
 
     return (
-        showAlert && (
-            <div
-                id={`alert-${type}`}
-                className={`flex items-center p-4 mb-4 rounded-lg ${getColorClass(
+        <div
+            id={`alert-${type}`}
+            className={`flex items-center p-4 mb-4 rounded-lg ${getColorClass(
+                type
+            )}`}
+            role="alert"
+        >
+            {getIcon()}
+            <span className="sr-only">Info</span>
+            <div className="ml-3 text-sm font-medium">{message}</div>
+            <button
+                type="button"
+                className={`ml-auto -mx-1.5 -my-1.5 ${getCloseButtonStyle(
                     type
                 )}`}
-                role="alert"
+                data-dismiss-target={`#alert-${type}`}
+                aria-label="Close"
+                onClick={handleClose}
             >
-                {getIcon()}
-                <span className="sr-only">Info</span>
-                <div className="ml-3 text-sm font-medium">{message}</div>
-                <button
-                    type="button"
-                    className={`ml-auto -mx-1.5 -my-1.5 ${getCloseButtonStyle(
-                        type
-                    )}`}
-                    data-dismiss-target={`#alert-${type}`}
-                    aria-label="Close"
-                    onClick={handleClose}
+                <span className="sr-only">Close</span>
+                <svg
+                    className="w-3 h-3"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 14"
                 >
-                    <span className="sr-only">Close</span>
-                    <svg
-                        className="w-3 h-3"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 14 14"
-                    >
-                        <path
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                        />
-                    </svg>
-                </button>
-            </div>
-        )
+                    <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                    />
+                </svg>
+            </button>
+        </div>
     )
 }
 

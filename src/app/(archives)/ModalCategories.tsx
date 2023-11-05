@@ -16,8 +16,8 @@ const ModalCategories: FC<ModalCategoriesProps> = ({ categories }) => {
     const renderModalContent = () => {
         return (
             <div className="grid gap-6 sm:grid-cols-2 sm:py-2 md:gap-8 md:grid-cols-3 lg:grid-cols-4 xl:md:grid-cols-5">
-                {categories.map((cat) => (
-                    <CardCategory1 category={cat} size="normal" />
+                {categories.map((cat, key) => (
+                    <CardCategory1 key={key} category={cat} size="normal" />
                 ))}
             </div>
         )

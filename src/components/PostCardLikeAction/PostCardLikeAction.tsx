@@ -21,6 +21,7 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
 
     useEffect(() => {
         checkLikedStatus()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [postId])
 
     async function checkLikedStatus() {

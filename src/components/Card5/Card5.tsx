@@ -46,6 +46,10 @@ const Card5: FC<Card5Props> = ({ className = '', post }) => {
                     readingTime={post.estimatedReadingTime}
                     author={post.author}
                     date={post.created_at}
+                    id={post.id}
+                    name={post.author.name}
+                    username={post.author.username}
+                    avatar={post.author.avatar}
                 />
             </div>
         </div>

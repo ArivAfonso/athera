@@ -232,11 +232,34 @@ const DashboardSubmitPost = () => {
     let [htmlText, setHtmlText] = useState('')
     const [selectedImage, setSelectedImage] = useState(null)
     const [uploading, setUploading] = useState(false)
+    const [bigTag, setBigTag] = useState(false)
 
-    const [tags, setTags] = useState([])
+    const [tags, setTags] = useState([''])
 
-    const handleTagsChange = (newTags: any) => {
-        setTags(newTags)
+    function handleKeyDown(e: any) {
+        setBigTag(false)
+        // If user did not press enter key, return
+        if (e.key !== 'Enter') return
+        // Get the value of the input
+        const value = e.target.value
+        // If the value is empty or longer than 20 characters, show an error message and return
+        if (!value.trim()) {
+            // Show error message for empty input
+            console.error('Input is empty')
+            return
+        } else if (value.length > 20) {
+            // Show error message for tag length more than 20 characters
+            setBigTag(true)
+            return
+        }
+        // Add the value to the tags array
+        setTags([...tags, value])
+        // Clear the input
+        e.target.value = ''
+    }
+
+    function removeTag(index: number) {
+        setTags(tags.filter((el, i) => i !== index))
     }
 
     async function sendPost(formData: any) {
@@ -541,42 +564,44 @@ const DashboardSubmitPost = () => {
                                 )}
                             />
                         </label>
-                        <label className="block">
-                            <label>Category</label>
-                            <Controller
-                                name="category"
-                                control={control}
-                                render={({ field }) => (
-                                    <Select className="mt-1" {...field}>
-                                        <option value="-1">– select –</option>
-                                        <option value="Category 1">
-                                            Category 1
-                                        </option>
-                                        <option value="Category 2">
-                                            Category 2
-                                        </option>
-                                        <option value="Category 3">
-                                            Category 3
-                                        </option>
-                                    </Select>
-                                )}
-                            />
-                        </label>
-                        <label className="block">
-                            <label>Tags</label>
+                        <label className="block md:col-span-2">
+                            <label>Categories</label>
                             <Controller
                                 name="tags"
                                 control={control}
                                 render={({ field }) => (
                                     <>
-                                        <TagsInput
-                                            value={tags}
-                                            onChange={handleTagsChange}
-                                            name="categories"
-                                            placeHolder="enter categories"
-                                            classNames={{
-                                                input: 'dark:bg-blue-950',
-                                            }}
+                                        <div className="rounded-l w-min-80vw sm:w-600px mt-4 flex flex-wrap items-center gap-2 bg-transparent">
+                                            {tags.map((tag, index) =>
+                                                tag ? (
+                                                    <div
+                                                        className="bg-gray-200 dark:bg-neutral-900 flex items-center rounded-full px-3 py-1"
+                                                        key={index}
+                                                    >
+                                                        <span className="text-black dark:text-gray-400 mr-2">
+                                                            {tag}
+                                                        </span>
+                                                        <span
+                                                            className="h-5 w-5 bg-gray-800 text-white rounded-full flex items-center justify-center text-lg cursor-pointer"
+                                                            onClick={() =>
+                                                                removeTag(index)
+                                                            }
+                                                        >
+                                                            &times;
+                                                        </span>
+                                                    </div>
+                                                ) : null
+                                            )}
+                                            <input
+                                                onKeyDown={handleKeyDown}
+                                                type="text"
+                                                className="flex-grow py-2 rounded-md border-neutral-200 focus:border-primary-300 focus:ring focus:ring-primary-200/50 bg-white dark:border-neutral-500 dark:focus:ring-primary-500/30 dark:bg-neutral-900"
+                                                placeholder="Type something"
+                                            />
+                                        </div>
+                                        <Alert
+                                            type="danger"
+                                            message="Categories must be between 1 and 20 characters"
                                         />
                                     </>
                                 )}

@@ -1,11 +1,7 @@
 import Avatar from '@/components/Avatar/Avatar'
-import { DEMO_AUTHORS } from '@/data/authors'
-import { PostAuthorType } from '@/data/types'
 import AuthorType from '@/types/AuthorType'
 import Link from 'next/link'
 import React, { FC } from 'react'
-import imageUrlBuilder from '@sanity/image-url'
-import { sanityClient } from '@/lib/sanityClient'
 import { UrlObject } from 'url'
 
 export interface SingleAuthorProps {

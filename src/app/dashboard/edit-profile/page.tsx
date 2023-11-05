@@ -23,7 +23,7 @@ function AccountPage() {
         const { data: session } = await supabase.auth.getSession()
         try {
             if (imageFile) {
-                const fileData = new Blob([imageFile], { type: imageFile.type })
+                const fileData = new Blob([imageFile])
 
                 // Upload the image file to Supabase Storage
                 const { data, error } = await supabase.storage

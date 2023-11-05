@@ -137,11 +137,14 @@ const DashboardPosts = () => {
                                                             </div>
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-neutral-500 dark:text-neutral-400">
-                                                            <span>
-                                                                {post.comments
-                                                                    ?.length -
-                                                                    1}
-                                                            </span>
+                                                            {post.comments && (
+                                                                <span>
+                                                                    {post
+                                                                        .comments
+                                                                        ?.length -
+                                                                        1}
+                                                                </span>
+                                                            )}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             <span className="px-2 inline-flex text-xs leading-5 font-medium rounded-full bg-teal-100 dark:bg-teal-900 text-teal-900 dark:text-white lg:text-sm">
@@ -152,7 +155,7 @@ const DashboardPosts = () => {
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-neutral-300">
                                                             <button
-                                                                href={`/edit/${post.id}`}
+                                                                // href={`/edit/${post.id}`}
                                                                 className="text-primary-800 dark:text-primary-500 hover:text-primary-900"
                                                             >
                                                                 Edit

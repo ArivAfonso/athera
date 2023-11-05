@@ -7,7 +7,6 @@ import {
 } from '@supabase/auth-helpers-nextjs'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import router from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { FC } from 'react'
 

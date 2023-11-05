@@ -1,5 +1,6 @@
 import Card11 from '@/components/Card11/Card11'
 import Card6 from '@/components/Card6/Card6'
+import PostType from '@/types/PostType'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import React, { Suspense } from 'react'
@@ -55,15 +56,16 @@ const DashboardLikedPosts = async () => {
         })
     })
 
-    console.log(data)
+    const myPosts = data as unknown as { posts: PostType }[]
+
     return (
         <div className={`nc-PageCategory`}>
             <div className="container pb-16 lg:pb-28 lg:pt-20 space-y-16 lg:space-y-28">
                 <div>
                     {/* LOOP ITEMS */}
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
-                        {data &&
-                            data.map((post, id) => (
+                        {myPosts &&
+                            myPosts.map((post, id) => (
                                 <div key={id}>
                                     <div className="hidden sm:block">
                                         {/* Render Card11 on larger screens */}

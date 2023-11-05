@@ -140,6 +140,7 @@ const CommentCard: FC<CommentCardProps> = ({
         return (
             <SingleCommentForm
                 textareaRef={textareaRef}
+                id={id}
                 onClickSubmit={closeReplyForm}
                 onClickCancel={closeReplyForm}
                 className="flex-grow"

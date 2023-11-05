@@ -2,8 +2,6 @@
 
 import React, { FC } from 'react'
 import Heading from '@/components/Heading/Heading'
-import Card4 from '@/components/Card4/Card4'
-import Card7 from '@/components/Card7/Card7'
 import Card9 from '@/components/Card9/Card9'
 // import Card10 from "@/components/Card10/Card10";
 // import Card11 from "@/components/Card11/Card11";
@@ -29,12 +27,12 @@ const SectionSliderPosts: FC<SectionSliderPostsProps> = ({
     postCardName = 'card4',
     perView = 4,
 }) => {
-    let CardComponent = Card4
+    let CardComponent = Card9
 
     switch (postCardName) {
-        case 'card4':
-            CardComponent = Card4
-            break
+        // case 'card4':
+        //     CardComponent = Card4
+        //     break
         // case "card7":
         //   CardComponent = Card7;
         //   break;

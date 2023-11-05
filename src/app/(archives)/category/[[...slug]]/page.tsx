@@ -1,11 +1,5 @@
 import React, { FC } from 'react'
-import ModalCategories from '../../ModalCategories'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import CategoryFilterListBox from '@/components/CategoryFilterListBox/CategoryFilterListBox'
 import Card11 from '@/components/Card11/Card11'
-import Image from 'next/image'
-import SectionTrending from '@/components/Sections/SectionTrending'
-import PostType from '@/types/PostType'
 import CategoryType from '@/types/CategoryType'
 import { Metadata } from 'next'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
@@ -59,6 +53,7 @@ const PageCategory = async (context: any) => {
     catData.post_categories?.map((post) => {
         post.post.post_categories[0].category = {
             name: catData.name,
+            id: id,
             color: catData.color,
         }
         post.post.likes.map((like) => {

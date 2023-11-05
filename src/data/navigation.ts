@@ -74,16 +74,6 @@ export const MEGAMENU_TEMPLATES: NavItemType[] = [
             },
             {
                 id: randomId(),
-                href: '/search',
-                name: 'Search page',
-            },
-            {
-                id: randomId(),
-                href: '/search-2',
-                name: 'Search page 2',
-            },
-            {
-                id: randomId(),
                 href: '/author/demo-slug' as Route,
                 name: 'Author page',
             },
@@ -163,26 +153,6 @@ const OTHER_PAGE_CHILD: NavItemType[] = [
                 id: randomId(),
                 href: '/single-gallery/demo-slug' as Route,
                 name: 'Single Gallery',
-            },
-        ],
-    },
-
-    // seach pages ----------------
-    {
-        id: randomId(),
-        href: '/search',
-        name: 'Search Page',
-        type: 'dropdown',
-        children: [
-            {
-                id: randomId(),
-                href: '/search',
-                name: 'Search page',
-            },
-            {
-                id: randomId(),
-                href: '/search-2',
-                name: 'Search page 2',
             },
         ],
     },

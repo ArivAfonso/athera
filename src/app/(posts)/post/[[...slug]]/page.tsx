@@ -9,6 +9,8 @@ import { cookies } from 'next/headers'
 import PostType from '@/types/PostType'
 import stringToSlug from '@/utils/stringToSlug'
 
+export const runtime = 'edge'
+
 async function getPostData(context: { params: { slug: any } }) {
     const supabase = createServerComponentClient({ cookies })
 

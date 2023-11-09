@@ -17,6 +17,8 @@ import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
 import Card6 from '@/components/Card6/Card6'
 import Empty from '@/components/Empty'
 
+export const runtime = 'edge'
+
 async function getData(
     context: { params: { slug: any } },
     filter_option: string

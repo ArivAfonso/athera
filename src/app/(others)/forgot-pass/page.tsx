@@ -8,6 +8,8 @@ import NcLink from '@/components/NcLink/NcLink'
 import Heading2 from '@/components/Heading/Heading2'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
+export const runtime = 'edge'
+
 async function recoverPassword(email: string) {
     const supabase = createClientComponentClient()
     await supabase.auth.resetPasswordForEmail(email, {

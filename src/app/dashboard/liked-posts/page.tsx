@@ -6,6 +6,8 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import React, { Suspense } from 'react'
 
+export const runtime = 'edge'
+
 const DashboardLikedPosts = async () => {
     const supabase = createServerComponentClient({ cookies })
     const { data: session } = await supabase.auth.getSession()

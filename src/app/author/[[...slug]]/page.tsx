@@ -17,6 +17,8 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import Card6 from '@/components/Card6/Card6'
 import Empty from '@/components/Empty'
 
+export const runtime = 'edge'
+
 async function getData(context: { params: { slug: any } }) {
     const supabase = createClientComponentClient()
     //TODO: check if user is current user then add edit button to SOCIALS_DATA

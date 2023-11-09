@@ -7,6 +7,8 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import Image from 'next/image'
 import Card6 from '@/components/Card6/Card6'
 
+export const runtime = 'edge'
+
 async function getCategories(context: { params: { slug: any } }) {
     const supabase = createClientComponentClient()
 

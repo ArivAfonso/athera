@@ -12,6 +12,8 @@ import Label from '@/components/Label/Label'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import Select from '@/components/Select/Select'
 
+export const runtime = 'edge'
+
 async function getData(context: { params: { slug: any } }) {
     const slug = context.params.slug[0]
     const supabase = createClientComponentClient()

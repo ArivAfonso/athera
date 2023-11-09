@@ -37,6 +37,8 @@ import { pipeline } from '@xenova/transformers'
 import { registerLicense } from '@syncfusion/ej2-base'
 import stringToSlug from '@/utils/stringToSlug'
 
+export const runtime = 'edge'
+
 registerLicense(
     'Ngo9BigBOggjHTQxAR8/V1NHaF5cXmVCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdgWH5edXRcQ2BfWE1/XEI='
 )

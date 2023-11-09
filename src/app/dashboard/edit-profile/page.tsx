@@ -14,6 +14,8 @@ import Alert from '@/components/Alert/Alert'
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
 import { EnvelopeOpenIcon } from '@heroicons/react/24/outline'
 
+export const runtime = 'edge'
+
 function isValidHttpUrl(string: string) {
     let url
 

@@ -4,6 +4,8 @@ import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import React from 'react'
 import Link from 'next/link'
 
+export const runtime = 'edge'
+
 const ErrorPage: React.FC = () => (
     <div className="nc-Page404">
         <div className="flex flex-col items-center justify-center pl-8 pr-8 pt-8 pb-8">

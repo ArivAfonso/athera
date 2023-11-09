@@ -14,6 +14,8 @@ import Input from '@/components/Input/Input'
 import Alert from '@/components/Alert/Alert'
 import Cookies from 'js-cookie'
 
+export const runtime = 'edge'
+
 const PageSignUp = ({}) => {
     const supabase = createClientComponentClient()
     const [errorMsg, setErrorMsg] = useState('')

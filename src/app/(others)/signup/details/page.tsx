@@ -16,6 +16,8 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 
+export const runtime = 'edge'
+
 const DetailsPage = ({}) => {
     const supabase = createClientComponentClient()
 

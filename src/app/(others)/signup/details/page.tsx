@@ -15,7 +15,6 @@ import {
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
-import { create } from 'lodash'
 
 const DetailsPage = ({}) => {
     const supabase = createClientComponentClient()

@@ -35,6 +35,9 @@ export default interface PostType {
     }[]
     isLiked: boolean
     isBookmarked: boolean
+    bookmarkCount: {
+        count: number
+    }[]
     bookmarks: {
         user: { id: string }
     }[]

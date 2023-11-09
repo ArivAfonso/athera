@@ -61,7 +61,7 @@ const PageLogin = ({}) => {
 
             <div className="max-w-md mx-auto space-y-6">
                 <div className="grid gap-3">
-                    <a
+                    <button
                         className=" flex w-full rounded-lg bg-primary-50 dark:bg-neutral-800 px-4 py-3 transform transition-transform sm:px-6 hover:translate-y-[-2px]"
                         onClick={googleSignIn}
                     >
@@ -73,8 +73,8 @@ const PageLogin = ({}) => {
                         <h3 className="flex-grow text-center text-sm font-medium text-neutral-700 dark:text-neutral-300 sm:text-sm">
                             Login with Google
                         </h3>
-                    </a>
-                    <a
+                    </button>
+                    <button
                         className=" flex w-full rounded-lg bg-primary-50 dark:bg-neutral-800 px-4 py-3 transform transition-transform sm:px-6 hover:translate-y-[-2px]"
                         onClick={twitterSignIn}
                     >
@@ -86,7 +86,7 @@ const PageLogin = ({}) => {
                         <h3 className="flex-grow text-center text-sm font-medium text-neutral-700 dark:text-neutral-300 sm:text-sm">
                             Login with Twitter
                         </h3>
-                    </a>
+                    </button>
                 </div>
                 {/* OR */}
                 <div className="relative text-center">

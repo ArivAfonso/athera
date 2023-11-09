@@ -14,8 +14,8 @@ import AuthorType from '@/types/AuthorType'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { pipeline } from '@xenova/transformers'
 import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
-import NoResultsFound from '@/components/NoResultsFound/NoResultsFound'
 import Card6 from '@/components/Card6/Card6'
+import Empty from '@/components/Empty'
 
 async function getData(
     context: { params: { slug: any } },
@@ -322,13 +322,22 @@ const PageSearchV2 = (context: any) => {
                     )}
                     {/* RENDER NO RESULTS COMPONENT */}
                     {tabActive === 'Articles' && data.length === 0 && (
-                        <NoResultsFound message="No Results Found :(" />
+                        <Empty
+                            mainText="No Posts Found"
+                            subText="We couldn’t find any results. Try for something else."
+                        />
                     )}
                     {tabActive === 'Categories' && categories.length === 0 && (
-                        <NoResultsFound message="No Results Found :(" />
+                        <Empty
+                            mainText="No Posts Found"
+                            subText="We couldn’t find any results. Try for something else."
+                        />
                     )}
                     {tabActive === 'Authors' && authors.length === 0 && (
-                        <NoResultsFound message="No Results Found :(" />
+                        <Empty
+                            mainText="No Posts Found"
+                            subText="We couldn’t find any results. Try for something else."
+                        />
                     )}
                 </main>
             </div>

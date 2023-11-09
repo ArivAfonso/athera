@@ -4,9 +4,15 @@ import React, { FC } from 'react'
 export interface SocialsListProps {
     className?: string
     itemClass?: string
-    twitter?: string
-    facebook?: string
-    instagram?: string
+    twitter: string
+    facebook: string
+    instagram: string
+    youtube: string
+    github: string
+    pinterest: string
+    linkedin: string
+    twitch: string
+    tiktok: string
 }
 
 const SocialsList: FC<SocialsListProps> = ({
@@ -15,6 +21,12 @@ const SocialsList: FC<SocialsListProps> = ({
     twitter,
     facebook,
     instagram,
+    youtube,
+    github,
+    pinterest,
+    linkedin,
+    twitch,
+    tiktok,
 }) => {
     const socials: SocialType[] = [
         {
@@ -26,7 +38,7 @@ const SocialsList: FC<SocialsListProps> = ({
     </g>
     </svg>
     `,
-            href: `https://www.facebook.com/${facebook}`,
+            href: facebook,
         },
         {
             id: 'Twitter',
@@ -37,7 +49,7 @@ const SocialsList: FC<SocialsListProps> = ({
     </g>
     </svg>
     `,
-            href: `https://twitter.com/${twitter}`,
+            href: twitter,
         },
         {
             id: 'Instagram',
@@ -52,6 +64,84 @@ const SocialsList: FC<SocialsListProps> = ({
     `,
             href: `https://www.instagram.com/${instagram}`,
         },
+        {
+            id: 'Youtube',
+            name: 'Youtube',
+            icon: `<svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="1em"
+            viewBox="0 0 576 512"
+            fill="currentColor"
+        >
+            <path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z" />
+        </svg>`,
+            href: youtube,
+        },
+        {
+            id: 'Github',
+            name: 'Github',
+            icon: ` <svg
+            fill="currentColor"
+            height="1em"
+            viewBox="0 0 496 512"
+            className="w-5 h-5"
+        >
+            <path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z" />
+        </svg>`,
+            href: github,
+        },
+        {
+            id: 'Pinterest',
+            name: 'Pinterest',
+            icon: `<svg
+            fill="currentColor"
+            height="1em"
+            viewBox="0 0 384 512"
+            className="w-5 h-5"
+        >
+            <path d="M204 6.5C101.4 6.5 0 74.9 0 185.6 0 256 39.6 296 63.6 296c9.9 0 15.6-27.6 15.6-35.4 0-9.3-23.7-29.1-23.7-67.8 0-80.4 61.2-137.4 140.4-137.4 68.1 0 118.5 38.7 118.5 109.8 0 53.1-21.3 152.7-90.3 152.7-24.9 0-46.2-18-46.2-43.8 0-37.8 26.4-74.4 26.4-113.4 0-66.2-93.9-54.2-93.9 25.8 0 16.8 2.1 35.4 9.6 50.7-13.8 59.4-42 147.9-42 209.1 0 18.9 2.7 37.5 4.5 56.4 3.4 3.8 1.7 3.4 6.9 1.5 50.4-69 48.6-82.5 71.4-172.8 12.3 23.4 44.1 36 69.3 36 106.2 0 153.9-103.5 153.9-196.8C384 71.3 298.2 6.5 204 6.5z" />
+        </svg>`,
+            href: pinterest,
+        },
+        {
+            id: 'Linkedin',
+            name: 'Linkedin',
+            icon: `<svg
+            fill="currentColor"
+            height="1em"
+            viewBox="0 0 448 512"
+            className="w-5 h-5"
+        >
+            <path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z" />
+        </svg>`,
+            href: linkedin,
+        },
+        {
+            id: 'Twitch',
+            name: 'Twitch',
+            icon: `<svg
+            fill="currentColor"
+            height="1em"
+            viewBox="0 0 512 512"
+            className="w-5 h-5"
+        >
+            <path d="M391.17,103.47H352.54v109.7h38.63ZM285,103H246.37V212.75H285ZM120.83,0,24.31,91.42V420.58H140.14V512l96.53-91.42h77.25L487.69,256V0ZM449.07,237.75l-77.22,73.12H294.61l-67.6,64v-64H140.14V36.58H449.07Z" />
+        </svg>`,
+            href: twitch,
+        },
+        {
+            id: 'Tiktok',
+            name: 'Tiktok',
+            icon: `<svg
+            fill="currentColor"
+            height="1em"
+            viewBox="0 0 448 512"
+            className="w-5 h-5"
+        >
+            <path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z" />
+        </svg>`,
+            href: tiktok,
+        },
     ]
     return (
         <nav
@@ -61,6 +151,12 @@ const SocialsList: FC<SocialsListProps> = ({
                 if (item.id === 'Facebook' && !facebook) return null
                 if (item.id === 'Twitter' && !twitter) return null
                 if (item.id === 'Instagram' && !instagram) return null
+                if (item.id === 'Youtube' && !youtube) return null
+                if (item.id === 'Github' && !github) return null
+                if (item.id === 'Pinterest' && !pinterest) return null
+                if (item.id === 'Linkedin' && !linkedin) return null
+                if (item.id === 'Twitch' && !twitch) return null
+                if (item.id === 'Tiktok' && !tiktok) return null
 
                 return (
                     <a

@@ -15,14 +15,11 @@ import { useState, useEffect } from 'react'
 import AuthorType from '@/types/AuthorType'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import Card6 from '@/components/Card6/Card6'
+import Empty from '@/components/Empty'
 
 async function getData(context: { params: { slug: any } }) {
     const supabase = createClientComponentClient()
     //TODO: check if user is current user then add edit button to SOCIALS_DATA
-
-    const storedParallaxTiltEnabled = localStorage.getItem(
-        'parallaxTiltEnabled'
-    )
 
     const username = context.params.slug[0]
     const { data, error } = await supabase
@@ -34,6 +31,15 @@ async function getData(context: { params: { slug: any } }) {
             verified,
             username,
             avatar,
+            twitter,
+            facebook,
+            instagram,
+            youtube,
+            tiktok,
+            twitch,
+            pinterest,
+            linkedin,
+            github,
             posts (
                 id,
               title,
@@ -90,6 +96,16 @@ const PageAuthor = (context: any) => {
         bio: '',
         website: '',
         posts: [],
+        verified: false,
+        twitter: '',
+        facebook: '',
+        instagram: '',
+        youtube: '',
+        tiktok: '',
+        twitch: '',
+        pinterest: '',
+        linkedin: '',
+        github: '',
     })
 
     useEffect(() => {
@@ -106,6 +122,7 @@ const PageAuthor = (context: any) => {
     }, [])
     return (
         <div className={`nc-PageAuthor `}>
+            <title>{data.name} - Athera</title>
             {/* HEADER */}
             <div className="w-full">
                 <div className="container mt-10 lg:mt-16">
@@ -166,7 +183,27 @@ const PageAuthor = (context: any) => {
                                             </span>
                                         </a>
                                     )}
-                                    <SocialsList itemClass="block w-7 h-7" />
+                                    <SocialsList
+                                        //@ts-ignore
+                                        github={data.github}
+                                        //@ts-ignore
+                                        twitter={data.twitter}
+                                        //@ts-ignore
+                                        facebook={data.facebook}
+                                        //@ts-ignore
+                                        instagram={data.instagram}
+                                        //@ts-ignore
+                                        youtube={data.youtube}
+                                        //@ts-ignore
+                                        tiktok={data.tiktok}
+                                        //@ts-ignore
+                                        twitch={data.twitch}
+                                        //@ts-ignore
+                                        pinterest={data.pinterest}
+                                        //@ts-ignore
+                                        linkedin={data.linkedin}
+                                        itemClass="block w-7 h-7"
+                                    />
                                 </div>
                             </Suspense>
                         </div>
@@ -226,9 +263,9 @@ const PageAuthor = (context: any) => {
                         ))}
                     >
                         {/* LOOP ITEMS */}
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
-                            {data.posts &&
-                                data.posts.map((post, id) => (
+                        {data.posts ? (
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
+                                {data.posts.map((post, id) => (
                                     <div key={id}>
                                         <div className="hidden sm:block">
                                             {/* Render Card11 on larger screens */}
@@ -240,7 +277,14 @@ const PageAuthor = (context: any) => {
                                         </div>
                                     </div>
                                 ))}
-                        </div>
+                            </div>
+                        ) : (
+                            <Empty
+                                mainText="No Posts Found"
+                                subText="This user hasn't posted anything!"
+                                className="text-center p-4"
+                            />
+                        )}
                     </Suspense>
                 </main>
             </div>

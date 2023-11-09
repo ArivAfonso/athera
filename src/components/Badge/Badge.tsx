@@ -2,12 +2,13 @@ import { TwMainColor } from '@/data/types'
 import { Route } from '@/routers/types'
 import Link from 'next/link'
 import React, { FC, ReactNode } from 'react'
+import { UrlObject } from 'url'
 
 export interface BadgeProps {
     className?: string
     name: ReactNode
     color?: TwMainColor
-    href: string
+    href?: string
 }
 
 const Badge: FC<BadgeProps> = ({
@@ -84,13 +85,20 @@ const Badge: FC<BadgeProps> = ({
     const CLASSES =
         'nc-Badge  inline-flex px-2.5 py-1 rounded-full font-medium text-xs ' +
         className
-    return (
+
+    return href ? (
         <Link
-            href={`/category/${encodeURIComponent(href)}`}
+            href={href as unknown as UrlObject}
             className={`transition-colors hover:text-white duration-300 ${CLASSES} ${getColorClass()}`}
         >
             {name}
         </Link>
+    ) : (
+        <span
+            className={`transition-colors duration-300 cursor-default ${CLASSES} ${getColorClass()}`}
+        >
+            {name}
+        </span>
     )
 }
 

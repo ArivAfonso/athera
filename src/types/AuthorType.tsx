@@ -13,6 +13,15 @@ export default interface AuthorType {
     website?: string
     posts?: PostType[]
     avatar: string
+    twitter?: string
+    facebook?: string
+    instagram?: string
+    linkedin?: string
+    github?: string
+    twitch?: string
+    youtube?: string
+    tiktok?: string
+    pinterest?: string
     postCount?: {
         count: number
     }[]

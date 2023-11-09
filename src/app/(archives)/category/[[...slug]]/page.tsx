@@ -1,47 +1,49 @@
-import React, { FC } from 'react'
+'use client'
+
+import React, { FC, useEffect, useState } from 'react'
 import Card11 from '@/components/Card11/Card11'
 import CategoryType from '@/types/CategoryType'
-import { Metadata } from 'next'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import Image from 'next/image'
 import Card6 from '@/components/Card6/Card6'
 
-const PageCategory = async (context: any) => {
-    const supabase = createServerComponentClient({ cookies })
+async function getCategories(context: { params: { slug: any } }) {
+    const supabase = createClientComponentClient()
 
     const id = context.params.slug[1]
     const { data, error } = await supabase
         .from('categories')
         .select(
             `
-    name,
-    color,
-    post_categories(
-        post:posts(
-            id,
-            title,
-            created_at,
-            description,
+            name,
+            color,
             image,
-            likeCount:likes(count),
-            commentCount:comments(count),
-            post_categories(category:categories(id,name,color)),
-            bookmarks(user(id)),
-            likes(
-                liker(
-                    id
+            post_categories(
+                post:posts(
+                    id,
+                    title,
+                    created_at,
+                    description,
+                    image,
+                    likeCount:likes(count),
+                    commentCount:comments(count),
+                    post_categories(category:categories(id,name,color)),
+                    bookmarks(user(id)),
+                    likes(
+                        liker(
+                            id
+                        )
+                    ),
+                    author(
+                        id,
+                        verified,
+                        name,
+                        username,
+                        avatar
+                    )
                 )
-            ),
-            author(
-                id,
-                verified,
-                name,
-                username,
-                avatar
             )
-        )
-    )
-    `
+            `
         )
         .eq('id', id)
         .single()
@@ -67,24 +69,73 @@ const PageCategory = async (context: any) => {
             else post.post.isBookmarked = false
         })
     })
+    return catData
+}
+
+const PageCategory = async (context: any) => {
+    const [catData, setData] = useState<CategoryType>({
+        name: '',
+        id: '',
+        postCount: [
+            {
+                count: 0,
+            },
+        ],
+        color: '',
+        image: '',
+        post_categories: [],
+    })
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const res: CategoryType = await getCategories(context)
+                setData(res)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        fetchData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <div className={`nc-PageCategory`}>
             <title>{catData.name} - Athera</title>
             {/* HEADER */}
-            <div className="w-full px-2 xl:max-w-screen-2xl mx-auto">
-                <div className="flex flex-col justify-center items-center h-48">
-                    {' '}
-                    {/* Adjust the height (h-48) as needed */}
-                    <h1 className="text-center text-7xl font-semibold md:text-8xl mb-2">
+            <div className="w-full px-2 pt-2 xl:max-w-screen-2xl mx-auto">
+                {catData.image ? (
+                    <div className="relative aspect-w-16 aspect-h-13 sm:aspect-h-9 lg:aspect-h-8 xl:aspect-h-5 rounded-3xl md:rounded-[40px] overflow-hidden z-0">
+                        <Image
+                            alt="Category header image"
+                            fill
+                            src={catData.image || ''}
+                            className="object-cover w-full h-full rounded-3xl md:rounded-[40px]"
+                            sizes="(max-width: 1280px) 100vw, 1536px"
+                        />
+                        <div className="absolute inset-0 bg-black text-white bg-opacity-30 flex flex-col items-center justify-center">
+                            <h2 className="inline-block align-middle text-5xl font-semibold md:text-7xl ">
+                                {catData.name}
+                            </h2>
+                            <span className="block mt-4 text-neutral-300">
+                                {catData.post_categories?.length} Articles
+                            </span>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex flex-col justify-center items-center h-48">
                         {' '}
-                        {/* Add margin-bottom (mb-2) */}
-                        {catData.name}
-                    </h1>
-                    <h2 className="text-center text-2xl md:text-3xl">
-                        Found {catData.post_categories?.length} posts
-                    </h2>
-                </div>
+                        {/* Adjust the height (h-48) as needed */}
+                        <h1 className="text-center text-7xl font-semibold md:text-8xl mb-2">
+                            {' '}
+                            {/* Add margin-bottom (mb-2) */}
+                            {catData.name}
+                        </h1>
+                        <h2 className="text-center text-2xl md:text-3xl">
+                            Found {catData.post_categories?.length} posts
+                        </h2>
+                    </div>
+                )}
             </div>
             {/* ====================== END HEADER ====================== */}
 

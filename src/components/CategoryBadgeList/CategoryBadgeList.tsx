@@ -12,7 +12,7 @@ export interface CategoryBadgeListProps {
 }
 
 const CategoryBadgeList: FC<CategoryBadgeListProps> = ({
-    className = 'flex flex-wrap space-x-2',
+    className = 'flex flex-wrap gap-1.5',
     itemClass,
     shorten = true,
     chars,
@@ -45,7 +45,9 @@ const CategoryBadgeList: FC<CategoryBadgeListProps> = ({
                     className={itemClass}
                     key={index}
                     name={item.category.name}
-                    href={`/category/${item.category.name}/${item.category.id}`}
+                    href={`/category/${encodeURIComponent(
+                        item.category.name.trim()
+                    )}/${item.category.id}`}
                     color={item.category.color.toLowerCase() as TwMainColor}
                 />
             ))}

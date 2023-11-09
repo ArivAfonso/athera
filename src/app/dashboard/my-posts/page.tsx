@@ -1,13 +1,17 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { ReactNode, useEffect } from 'react'
 import NcImage from '@/components/NcImage/NcImage'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import NoResultsFound from '@/components/NoResultsFound/NoResultsFound'
 import ModalDeletePost from './ModalDeletePost'
 import PostType from '@/types/PostType'
 import stringToSlug from '@/utils/stringToSlug'
 import Link from 'next/link'
+import Badge from '@/components/Badge/Badge'
+import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
+import PostActionDropdown from '@/components/PostActionDropdown/PostActionDropdown'
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
+import Empty from '@/components/Empty'
 
 const DashboardPosts = () => {
     const [posts, setPosts] = React.useState<PostType[]>([])
@@ -19,16 +23,18 @@ const DashboardPosts = () => {
         async function fetchData() {
             try {
                 const supabase = createClientComponentClient()
-                const { data: session, error } =
-                    await supabase.auth.getSession()
+                const { data: session } = await supabase.auth.getSession()
 
                 // First, fetch the posts
-                const { data } = await supabase
+                const { data, error } = await supabase
                     .from('posts')
-                    .select(`id, title, image, comments(count), likes(count)`)
+                    .select(
+                        `id, title, image, post_categories(category:categories(id,name,color)), bookmarkCount:bookmarks(count), commentCount:comments(count), likeCount:likes(count)`
+                    )
                     .eq('author', session.session?.user.id)
                 //@ts-ignore
                 setPosts(data)
+                console.log(error)
             } catch (err) {
                 console.log(err)
             }
@@ -60,131 +66,181 @@ const DashboardPosts = () => {
             <div className="max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32">
                 {posts && posts.length > 0 ? (
                     <div className="flex flex-col space-y-8">
-                        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div className="py-2 align-middle inline-block min-w-full px-1 sm:px-6 lg:px-8">
-                                <div className="shadow dark:border dark:border-neutral-800 overflow-hidden sm:rounded-lg">
-                                    <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-800">
-                                        <thead className="bg-neutral-50 dark:bg-neutral-800">
-                                            <tr className="text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3"
-                                                >
-                                                    No.
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3"
-                                                >
-                                                    Article
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3"
-                                                >
-                                                    Comments
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3"
-                                                >
-                                                    Likes
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="relative px-6 py-3"
-                                                >
-                                                    <span className="sr-only">
-                                                        Edit
-                                                    </span>
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white dark:bg-neutral-900 divide-y divide-neutral-200 dark:divide-neutral-800">
-                                            {posts &&
-                                                posts.map((post, key) => (
-                                                    <tr key={key}>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-neutral-700">
-                                                            {key + 1}{' '}
-                                                            {/* Adding the source number */}
-                                                        </td>
-                                                        <td className="px-6 py-4">
-                                                            <div className="flex items-center w-96 lg:w-auto max-w-md overflow-hidden">
+                        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                <table className="min-w-full divide-y divide-gray-300 dark:divide-neutral-600">
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                scope="col"
+                                                className="py-3.5 pl-4 pr-3 text-start text-sm font-normal text-neutral-600 dark:text-neutral-400 sm:pl-0 capitalize"
+                                            >
+                                                Post
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="px-3 py-3.5 text-center text-sm font-normal text-neutral-600 dark:text-neutral-400"
+                                            >
+                                                Likes
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="px-3 py-3.5 text-center text-sm font-normal text-neutral-600 dark:text-neutral-400"
+                                            >
+                                                Categories
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="px-3 py-3.5 text-center text-sm font-normal text-neutral-600 dark:text-neutral-400"
+                                            >
+                                                Bookmarks
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="px-3 py-3.5 text-center text-sm font-normal text-neutral-600 dark:text-neutral-400"
+                                            >
+                                                Comments
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="relative py-3.5 pl-3 pr-4 sm:pr-0"
+                                            >
+                                                <span className="sr-only">
+                                                    Edit
+                                                </span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-200 dark:divide-neutral-600">
+                                        {posts.map((post, key) => {
+                                            return (
+                                                <tr key={key}>
+                                                    <td className="whitespace-nowrap py-4 sm:py-5 ps-4 pe-3 text-sm sm:ps-0">
+                                                        <Link
+                                                            href={`/post/${stringToSlug(
+                                                                post.title
+                                                            )}/${post.id}`}
+                                                            className="flex items-center"
+                                                        >
+                                                            <div className="h-12 w-12 sm:h-16 sm:w-16 relative flex-shrink-0">
                                                                 <NcImage
-                                                                    containerClassName="flex-shrink-0 h-12 w-12 rounded-lg relative z-0 overflow-hidden lg:h-14 lg:w-14"
                                                                     src={
-                                                                        post.image
+                                                                        post.image ||
+                                                                        ''
                                                                     }
+                                                                    alt={
+                                                                        post.title
+                                                                    }
+                                                                    className="rounded-md object-cover w-full h-full"
                                                                     fill
-                                                                    sizes="80px"
-                                                                    alt="post"
                                                                 />
-                                                                <div className="ml-4 flex-grow">
-                                                                    <Link
-                                                                        href={`/post/${stringToSlug(
-                                                                            post.title
-                                                                        )}/${
-                                                                            post.id
-                                                                        }`}
-                                                                    >
-                                                                        <h2 className="inline-flex line-clamp-2 text-sm font-semibold  dark:text-neutral-300">
-                                                                            {
-                                                                                post.title
-                                                                            }
-                                                                        </h2>
-                                                                    </Link>
+                                                            </div>
+                                                            <div className="ms-4">
+                                                                <div className="font-medium text-gray-900 dark:text-neutral-200 w-96 max-w-sm flex whitespace-normal">
+                                                                    <span
+                                                                        dangerouslySetInnerHTML={{
+                                                                            __html:
+                                                                                post.title ||
+                                                                                '',
+                                                                        }}
+                                                                    ></span>
+                                                                </div>
+                                                                <div className="mt-1 text-gray-500">
+                                                                    {
+                                                                        post.created_at
+                                                                    }
                                                                 </div>
                                                             </div>
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-neutral-500 dark:text-neutral-400">
-                                                            {post.comments && (
-                                                                <span>
-                                                                    {post
-                                                                        .comments
-                                                                        ?.length -
-                                                                        1}
-                                                                </span>
-                                                            )}
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            <span className="px-2 inline-flex text-xs leading-5 font-medium rounded-full bg-teal-100 dark:bg-teal-900 text-teal-900 dark:text-white lg:text-sm">
-                                                                {post.likes
-                                                                    ?.length -
-                                                                    1}
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-neutral-300">
-                                                            <button
-                                                                // href={`/edit/${post.id}`}
-                                                                className="text-primary-800 dark:text-primary-500 hover:text-primary-900"
-                                                            >
-                                                                Edit
-                                                            </button>
-                                                            {` | `}
-                                                            <button
-                                                                onClick={() => {
-                                                                    setShowDeleteModal(
-                                                                        true
-                                                                    )
-                                                                    setPostIdToDelete(
-                                                                        post.id
-                                                                    )
-                                                                }}
-                                                                className="text-rose-600 hover:text-rose-900"
-                                                            >
-                                                                Delete
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                                        </Link>
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                                        <Badge
+                                                            name={
+                                                                (post
+                                                                    .likeCount[0]
+                                                                    .count as ReactNode) ||
+                                                                0
+                                                            }
+                                                            color="red"
+                                                            className="rounded-md"
+                                                        />
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                                        <CategoryBadgeList
+                                                            categories={
+                                                                post.post_categories
+                                                            }
+                                                            chars={20}
+                                                        />
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-8 py-5 text-sm text-gray-500">
+                                                        <Badge
+                                                            name={
+                                                                (post
+                                                                    .bookmarkCount[0]
+                                                                    .count as ReactNode) ||
+                                                                0
+                                                            }
+                                                            color="blue"
+                                                            className="rounded-md"
+                                                        />
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-8 py-5 text-sm text-gray-500">
+                                                        <Badge
+                                                            name={
+                                                                (post
+                                                                    .commentCount[0]
+                                                                    .count as ReactNode) ||
+                                                                0
+                                                            }
+                                                            color="blue"
+                                                            className="rounded-md"
+                                                        />
+                                                    </td>
+                                                    <td className="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                                        <PostActionDropdown
+                                                            containerClassName="h-8 w-8 bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-700 rounded-xl"
+                                                            iconClass="h-5 w-5"
+                                                            title={post.title}
+                                                            id={post.id}
+                                                        />
+                                                    </td>
+                                                    <td className="px-6 py-2 whitespace-nowrap text-right text-sm font-medium text-neutral-300">
+                                                        <button
+                                                            // href={`/edit/${post.id}`}
+                                                            className="text-primary-800 dark:text-primary-500 hover:text-primary-900"
+                                                        >
+                                                            <PencilSquareIcon className="h-6 w-6" />
+                                                        </button>
+                                                        {` | `}
+                                                        <button
+                                                            onClick={() => {
+                                                                setShowDeleteModal(
+                                                                    true
+                                                                )
+                                                                setPostIdToDelete(
+                                                                    post.id
+                                                                )
+                                                            }}
+                                                            className="text-rose-600 hover:text-rose-900"
+                                                        >
+                                                            <TrashIcon className="h-6 w-6" />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 ) : (
-                    <NoResultsFound message="Awww You haven't posted anything!!" />
+                    <Empty
+                        mainText="No Posts Found"
+                        subText="You haven't posted yet!"
+                        className="text-center p-4"
+                    />
                 )}
                 {showDeleteModal && (
                     <ModalDeletePost

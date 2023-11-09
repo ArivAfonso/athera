@@ -34,7 +34,6 @@ function modifyString(str: string) {
 
 const NewCategoryPage = (context: { params: { slug: any } }) => {
     let s = context.params.slug[0]
-    console.log(s)
     s = modifyString(decodeURIComponent(s))
     const [data, setData] = useState<CategoryType>()
     const [loading, setLoading] = useState(true)
@@ -48,6 +47,16 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
         async function fetchData() {
             try {
                 const res = await getData(context)
+                const supabase = createClientComponentClient()
+                const { data: session } = await supabase.auth.getSession()
+                if (
+                    session.session?.user.id !==
+                        'd8101ee4-ae24-4f0f-bf00-0674140b4675' &&
+                    session.session?.user.id !==
+                        'b0156ec3-2660-421e-8aea-bb704cf67ec4'
+                ) {
+                    router.push('/')
+                }
                 const data = res ? res : { name: { s }, color: '', image: '' }
                 if (data.color) {
                     setExists(true)
@@ -88,7 +97,18 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
         event.preventDefault()
         const file = event.dataTransfer.files[0]
         if (file) {
-            setSelectedImage(file)
+            if (
+                file.type === 'image/png' ||
+                file.type === 'image/jpeg' ||
+                file.type === 'image/jpg'
+            ) {
+                setSelectedImage(file)
+            } else {
+                // Handle the case when the file type is not supported
+                setErrorMsg(
+                    'Unsupported file type. Please use PNG, JPG, or JPEG.'
+                )
+            }
         }
         setIsDragging(false)
     }
@@ -117,11 +137,12 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
     const sendCategory = async (data: any) => {
         setUploading(true)
         setErrorMsg('')
+        console.log(data.catName)
         try {
             const supabase = createClientComponentClient()
 
             if (!exists) {
-                const { data: newCat } = await supabase
+                const { data: newCat, error: catError } = await supabase
                     .from('categories')
                     .insert([
                         {
@@ -135,12 +156,16 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                         .from('categories')
                         .upload(`${data.catName}`, selectedImage)
 
+                    console.log('Storage' + error)
+
                     if (!error) {
                         if (newCat !== null) {
-                            await supabase
-                                .from('categories')
-                                .update({ image: path?.path })
-                                .eq('id', newCat[0].id)
+                            const { data: update, error: updateErr } =
+                                await supabase
+                                    .from('categories')
+                                    .update({ image: path?.path })
+                                    .eq('id', newCat[0].id)
+                            console.log(updateErr)
                         }
                     }
                 }
@@ -148,19 +173,36 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                 if (selectedImage) {
                     const { data: path, error } = await supabase.storage
                         .from('categories')
-                        .upload(`${data.catName}`, selectedImage)
+                        .upload(
+                            `${data.catName}/${data.catName}`,
+                            selectedImage
+                        )
+
+                    console.log(path)
 
                     if (!error) {
                         await supabase
                             .from('categories')
-                            .update({ image: path?.path, color: data.color })
+                            .update({
+                                image:
+                                    'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/categories/' +
+                                    path?.path,
+                                color: data.color,
+                            })
                             .eq('name', s)
                     } else {
-                        await supabase
-                            .from('categories')
-                            .update({ color: data.color })
-                            .eq('name', s)
+                        const { data: update, error: updateErr } =
+                            await supabase
+                                .from('categories')
+                                .update({ color: data.color })
+                                .eq('name', s)
+                        console.log(update, updateErr)
                     }
+                } else {
+                    await supabase
+                        .from('categories')
+                        .update({ color: data.color })
+                        .eq('name', s)
                 }
             }
             setUploading(false)
@@ -237,12 +279,11 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                                     <Input
                                         type="text"
                                         className="mt-2"
-                                        defaultValue={s}
                                         {...field}
                                     />
                                 )}
                             />
-                            {errors.postTitle && (
+                            {errors.catName && (
                                 <Alert type="danger" message="Required" />
                             )}
                         </label>
@@ -334,7 +375,7 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                                                 </p>
                                             </div>
                                             <p className="text-xs text-neutral-500">
-                                                PNG, JPG, GIF up to 2MB
+                                                PNG, JPG, up to 10MB
                                             </p>
                                         </>
                                     )}

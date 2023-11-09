@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import Input from '@/components/Input/Input'
 import NextImage from 'next/image'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import Select from '@/components/Select/Select'
 import Textarea from '@/components/Textarea/Textarea'
 import Label from '@/components/Label/Label'
 import { addClass, removeClass, Browser } from '@syncfusion/ej2-base'
@@ -33,9 +32,14 @@ import { useThemeMode } from '@/hooks/useThemeMode'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Controller, useForm } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
-import { redirect, useRouter } from 'next/navigation'
-import { TagsInput } from 'react-tag-input-component'
+import { useRouter } from 'next/navigation'
 import { pipeline } from '@xenova/transformers'
+import { registerLicense } from '@syncfusion/ej2-base'
+import stringToSlug from '@/utils/stringToSlug'
+
+registerLicense(
+    'Ngo9BigBOggjHTQxAR8/V1NHaF5cXmVCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdgWH5edXRcQ2BfWE1/XEI='
+)
 
 function strWords(str: string) {
     return str.split(/\s+/).length
@@ -50,6 +54,7 @@ function modifyString(str: string) {
 }
 
 const DashboardSubmitPost = () => {
+    const router = useRouter()
     let rteObj: RichTextEditorComponent
     const hostUrl: string = 'https://ej2-aspcore-service.azurewebsites.net/'
     const pasteCleanupSettings: PasteCleanupSettingsModel = {
@@ -238,9 +243,11 @@ const DashboardSubmitPost = () => {
 
     function handleKeyDown(e: any) {
         setBigTag(false)
+        setErrorMsg('')
         // If user did not press enter key, return
         if (e.key !== 'Enter') return
         // Get the value of the input
+        e.preventDefault()
         const value = e.target.value
         // If the value is empty or longer than 20 characters, show an error message and return
         if (!value.trim()) {
@@ -266,8 +273,9 @@ const DashboardSubmitPost = () => {
         setUploading(true)
         const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
 
-        tags.map((tag: string) => {
+        tags.filter((tag) => tag && tag.length > 0).map((tag: string) => {
             if (tag.length == 0 || tag == null || tag.length > 20) {
+                setUploading(false)
                 setErrorMsg('Categories must be between 1 and 20 characters')
                 return
             }
@@ -379,9 +387,6 @@ const DashboardSubmitPost = () => {
                         }
                     } catch (error) {
                         console.error(`Error processing image ${index}:`, error)
-                    } finally {
-                        setUploading(false)
-                        redirect(`post/${postId}`)
                     }
                 }
                 // Iterate over the matches and upload images to Supabase Storage
@@ -401,53 +406,57 @@ const DashboardSubmitPost = () => {
                     .upload(`${user?.id}/${postId}/main-image`, selectedImage)
 
                 const tagsArray = await Promise.all(
-                    tags.map(async (tag: string) => {
-                        tag = modifyString(tag)
-                        console.log(tag)
+                    tags
+                        .filter((tag) => tag && tag.length > 0)
+                        .map(async (tag: string) => {
+                            tag = modifyString(tag)
+                            console.log(tag)
 
-                        const { data: isCategory } = await supabase
-                            .from('categories')
-                            .select('*')
-                            .eq('name', tag)
-                        console.log(isCategory)
-
-                        if (isCategory && isCategory.length > 0) {
-                            return {
-                                post: postId,
-                                category: isCategory[0].id,
-                            }
-                        } else {
-                            // Choose a random element from an array of words
-                            const colors = [
-                                'Red',
-                                'Green',
-                                'Blue',
-                                'Yellow',
-                                'Purple',
-                                'Pink',
-                                'Orange',
-                                'Grey',
-                            ]
-                            const color =
-                                colors[
-                                    Math.floor(Math.random() * colors.length)
-                                ]
-                            const { data: newCategory } = await supabase
+                            const { data: isCategory } = await supabase
                                 .from('categories')
-                                .insert({ name: tag, color: color })
-                                .select('*')
+                                .select('id')
+                                .eq('name', tag)
+                            console.log(isCategory)
 
-                            if (newCategory && newCategory.length > 0) {
+                            if (isCategory && isCategory.length > 0) {
                                 return {
                                     post: postId,
-                                    category: newCategory[0].id,
+                                    category: isCategory[0].id,
                                 }
                             } else {
-                                // Handle the case where the category couldn't be created
-                                return null // or any other suitable value
+                                // Choose a random element from an array of words
+                                const colors = [
+                                    'Red',
+                                    'Green',
+                                    'Blue',
+                                    'Yellow',
+                                    'Purple',
+                                    'Pink',
+                                    'Orange',
+                                    'Grey',
+                                ]
+                                const color =
+                                    colors[
+                                        Math.floor(
+                                            Math.random() * colors.length
+                                        )
+                                    ]
+                                const { data: newCategory } = await supabase
+                                    .from('categories')
+                                    .insert({ name: tag, color: color })
+                                    .select('*')
+
+                                if (newCategory && newCategory.length > 0) {
+                                    return {
+                                        post: postId,
+                                        category: newCategory[0].id,
+                                    }
+                                } else {
+                                    // Handle the case where the category couldn't be created
+                                    return null // or any other suitable value
+                                }
                             }
-                        }
-                    })
+                        })
                 )
                 await supabase
                     .from('post_categories')
@@ -468,14 +477,19 @@ const DashboardSubmitPost = () => {
 
                 if (updateError) {
                     setErrorMsg(`Post update failed`)
+                    setUploading(false)
                 }
-
-                redirect(`post/${postId}`)
+                router.push(
+                    `/post/${stringToSlug(formData.postTitle)}/${postId}`
+                )
             } else {
                 setErrorMsg('Please select an image')
+                setUploading(false)
             }
         } catch (error) {
             setErrorMsg('Post could not be created')
+            console.log(error)
+            setUploading(false)
         }
     }
 
@@ -492,7 +506,18 @@ const DashboardSubmitPost = () => {
         event.preventDefault()
         const file = event.dataTransfer.files[0]
         if (file) {
-            setSelectedImage(file)
+            if (
+                file.type === 'image/png' ||
+                file.type === 'image/jpeg' ||
+                file.type === 'image/jpg'
+            ) {
+                setSelectedImage(file)
+            } else {
+                // Handle the case when the file type is not supported
+                setErrorMsg(
+                    'Unsupported file type. Please use PNG, JPG, or JPEG.'
+                )
+            }
         }
         setIsDragging(false)
     }
@@ -599,10 +624,12 @@ const DashboardSubmitPost = () => {
                                                 placeholder="Type something"
                                             />
                                         </div>
-                                        <Alert
-                                            type="danger"
-                                            message="Categories must be between 1 and 20 characters"
-                                        />
+                                        {bigTag && (
+                                            <Alert
+                                                type="danger"
+                                                message="Categories must be between 1 and 20 characters"
+                                            />
+                                        )}
                                     </>
                                 )}
                             />
@@ -671,7 +698,7 @@ const DashboardSubmitPost = () => {
                                                 </p>
                                             </div>
                                             <p className="text-xs text-neutral-500">
-                                                PNG, JPG, GIF up to 2MB
+                                                PNG, JPG up to 10MB
                                             </p>
                                         </>
                                     )}

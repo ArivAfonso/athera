@@ -9,7 +9,7 @@ import Image from 'next/image'
 export const runtime = 'edge'
 
 const ErrorPage: React.FC = () => {
-    const theme = useThemeMode()
+    const theme: any = useThemeMode()
     return (
         <div className="nc-Page404">
             <div className="flex flex-col items-center justify-center pl-8 pr-8 pt-8 pb-8">

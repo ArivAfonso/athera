@@ -325,7 +325,6 @@ const DashboardSubmitPost = () => {
                 let match
                 const matches = []
                 while ((match = pattern.exec(htmlText))) {
-                    console.log(match)
                     matches.push(match[1])
                 }
 
@@ -367,7 +366,6 @@ const DashboardSubmitPost = () => {
                                 error
                             )
                         } else {
-                            console.log(imageType)
                             // Replace the base64 image with the Supabase URL
                             const supabaseUrl = `https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/${data?.path}`
                             htmlText = htmlText.replace(
@@ -381,10 +379,6 @@ const DashboardSubmitPost = () => {
                             htmlText = htmlText.replace(
                                 `data:image/jpg;base64,${base64Data}`,
                                 `${supabaseUrl}`
-                            )
-                            console.log(
-                                `Image ${index} uploaded successfully:`,
-                                data
                             )
                         }
                     } catch (error) {
@@ -412,13 +406,11 @@ const DashboardSubmitPost = () => {
                         .filter((tag) => tag && tag.length > 0)
                         .map(async (tag: string) => {
                             tag = modifyString(tag)
-                            console.log(tag)
 
                             const { data: isCategory } = await supabase
                                 .from('categories')
                                 .select('id')
                                 .eq('name', tag)
-                            console.log(isCategory)
 
                             if (isCategory && isCategory.length > 0) {
                                 return {

@@ -1,6 +1,5 @@
 'use client'
 
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import Heading2 from '@/components/Heading/Heading2'
 import Input from '@/components/Input/Input'
 import NcLink from '@/components/NcLink/NcLink'
@@ -14,25 +13,39 @@ import {
 } from '@supabase/auth-helpers-nextjs'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Cookies from 'js-cookie'
+import { getCookie } from 'cookies-next'
+import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
+import Alert from '@/components/Alert/Alert'
+import ButtonPrimary from '@/components/Button/ButtonPrimary'
 
 export const runtime = 'edge'
+
+function isValidHttpUrl(string: string) {
+    let url
+
+    try {
+        url = new URL(string)
+    } catch (_) {
+        return false
+    }
+
+    return url.protocol === 'http:' || url.protocol === 'https:'
+}
 
 const DetailsPage = ({}) => {
     const supabase = createClientComponentClient()
 
-    const [selectedImage, setSelectedImage] = useState(null)
-    const [uploading, setUploading] = useState(false)
-    const [errorMsg, setErrorMsg] = useState('')
     const [session, setSession] = useState<Session>()
     const router = useRouter()
     const [imageFile, setImageFile] = useState(null)
-    const [imagebase, setImageBase] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
+    const [success, setSuccess] = useState('')
 
     const handleImageSelect = (event: { target: { files: any[] } }) => {
         const file = event.target.files[0]
         if (file) {
-            setSelectedImage(file)
+            setImageFile(file)
         }
     }
 
@@ -40,7 +53,7 @@ const DetailsPage = ({}) => {
         async function fetchData() {
             try {
                 const { data: session } = await supabase.auth.getSession()
-                const username = Cookies.get('signup-username')
+                const username = getCookie('signup-username')
                 if (session.session == null) {
                     router.push('/login')
                 } else if (username == null) router.push('/signup')
@@ -68,65 +81,128 @@ const DetailsPage = ({}) => {
     } = useForm() // Initialize the hook
 
     async function sendDetails(formData: any) {
+        setLoading(true)
+        setError('')
+        const supabase = createClientComponentClient()
         const { data: session } = await supabase.auth.getSession()
         try {
-            if (selectedImage) {
-                setUploading(true)
+            if (formData.website && !isValidHttpUrl(formData.website)) {
+                setError('Invalid website url')
+                setLoading(false)
+                return
+            }
+            if (formData.tiktok && !isValidHttpUrl(formData.tiktok)) {
+                setError('Invalid tiktok url')
+                setLoading(false)
+                return
+            }
+            if (formData.twitter && !isValidHttpUrl(formData.twitter)) {
+                setError('Invalid twitter url')
+                setLoading(false)
+                return
+            }
+            if (formData.facebook && !isValidHttpUrl(formData.facebook)) {
+                setError('Invalid facebook url')
+                setLoading(false)
+                return
+            }
+            if (formData.youtube && !isValidHttpUrl(formData.youtube)) {
+                setError('Invalid youtube url')
+                setLoading(false)
+                return
+            }
+            if (formData.github && !isValidHttpUrl(formData.github)) {
+                setError('Invalid github url')
+                setLoading(false)
+                return
+            }
+            if (formData.instagram && !isValidHttpUrl(formData.instagram)) {
+                setError('Invalid instagram url')
+                setLoading(false)
+                return
+            }
+            if (formData.linkedin && !isValidHttpUrl(formData.linkedin)) {
+                setError('Invalid linkedin url')
+                setLoading(false)
+                return
+            }
+            if (formData.pinterest && !isValidHttpUrl(formData.pinterest)) {
+                setError('Invalid pinterest url')
+                setLoading(false)
+                return
+            }
+            if (formData.twitch && !isValidHttpUrl(formData.twitch)) {
+                setError('Invalid twitch url')
+                setLoading(false)
+                return
+            }
+            let imgUrl
+            if (imageFile) {
+                // Upload the image file to Supabase Storage
+                const random = Math.floor(10000 + Math.random() * 90000)
 
-                // Upload the image to Supabase Storage
+                await supabase.storage
+                    .from('avatars')
+                    .remove([`${session.session?.user.id}`])
 
-                const { data: imagePath, error: imageUploadError } =
-                    await supabase.storage
-                        .from('images')
-                        .upload(
-                            `${session.session?.user?.id}/avatar`,
-                            selectedImage
-                        )
+                await supabase.storage
+                    .from('avatars')
+                    .upload(
+                        `${session.session?.user.id}/avatar${random}`,
+                        imageFile
+                    )
+                imgUrl = `https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/avatars/${session.session?.user.id}/avatar${random}`
+                await supabase.auth.updateUser({
+                    data: {
+                        avatar_url: imgUrl,
+                    },
+                })
+            }
 
-                if (
-                    session.session?.user?.user_metadata.name !== formData.name
-                ) {
-                    await supabase.auth.updateUser({
-                        data: { name: formData.name },
-                    })
-                }
+            if (
+                formData.fullName !==
+                    session.session?.user?.user_metadata.full_name &&
+                formData.fullName !== ''
+            ) {
+                await supabase.auth.updateUser({
+                    data: {
+                        full_name: formData.fullName,
+                    },
+                })
+            }
 
-                const { data, error } = await supabase.from('users').update([
+            await supabase
+                .from('users')
+                .update([
                     {
                         id: session.session?.user?.id,
-                        name: formData.name,
-                        bio: formData.bio,
-                        avatar: imagePath,
+                        name:
+                            formData.fullName == ''
+                                ? session.session?.user?.user_metadata.full_name
+                                : formData.fullName,
+                        // email: formData.email,
+                        website: formData.website,
+                        bio: formData.about,
+                        avatar: imgUrl
+                            ? imgUrl
+                            : session.session?.user?.user_metadata.avatar_url,
+                        phone: formData.phone,
+                        tiktok: formData.tiktok,
+                        twitter: formData.twitter,
+                        facebook: formData.facebook,
+                        youtube: formData.youtube,
+                        github: formData.github,
+                        instagram: formData.instagram,
+                        linkedin: formData.linkedin,
+                        pinterest: formData.pinterest,
+                        twitch: formData.twitch,
                     },
                 ])
-            } else {
-                const { data, error } = await supabase
-                    .from('users')
-                    .update([
-                        {
-                            id: session.session?.user?.id,
-                            username: formData.username,
-                            bio: formData.bio,
-                        },
-                    ])
-                    .eq('id', session.session?.user?.id)
-            }
+                .eq('id', session.session?.user?.id)
+            setSuccess('Profile updated successfully')
+            setLoading(false)
         } catch (error) {
-            setErrorMsg('Profile could not be updated')
-        }
-    }
-
-    console.log(session)
-
-    const handleFileInputChange = (e: any) => {
-        const file = e.target.files[0]
-        setImageFile(file)
-        //Convert to base64
-        const reader = new FileReader()
-        reader.readAsDataURL(file)
-        reader.onloadend = () => {
-            const base64String = reader.result?.toString()
-            setImageBase(base64String ? base64String : '')
+            console.log(error)
         }
     }
 
@@ -155,8 +231,8 @@ const DetailsPage = ({}) => {
                                 <div className="relative rounded-full overflow-hidden flex">
                                     <Image
                                         src={
-                                            imagebase
-                                                ? imagebase
+                                            imageFile
+                                                ? URL.createObjectURL(imageFile)
                                                 : session?.user.user_metadata
                                                       .avatar_url
                                         }
@@ -205,7 +281,8 @@ const DetailsPage = ({}) => {
                                         accept="image/png, image/jpeg, image/jpg"
                                         className="absolute inset-0 opacity-0 cursor-pointer"
                                         id="fileInput"
-                                        onChange={handleFileInputChange}
+                                        //@ts-ignore
+                                        onChange={handleImageSelect}
                                     />
                                 </div>
                             </div>
@@ -226,13 +303,15 @@ const DetailsPage = ({}) => {
                                     <Label>Email</Label>
                                     <div className="mt-1.5 flex">
                                         <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
-                                            <i className="text-2xl las la-envelope"></i>
+                                            <EnvelopeIcon
+                                                className="w-5 h-5"
+                                                aria-hidden="true"
+                                            />
                                         </span>
                                         <Input
                                             {...register('email')}
                                             className="!rounded-l-none"
                                             placeholder="youremail@com"
-                                            defaultValue={session?.user.email}
                                         />
                                     </div>
                                 </div>
@@ -247,92 +326,225 @@ const DetailsPage = ({}) => {
                                         <Input
                                             {...register('website')}
                                             className="!rounded-l-none"
-                                            placeholder={'example.com'}
+                                            placeholder="example.com"
                                         />
                                     </div>
                                 </div>
-                                {/* ---- */}
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-2.5">
-                                    <div>
+                                <div className="SocialsProfileForm__fieldsWrap grid grid-cols-1 sm:grid-cols-2 gap-5 ">
+                                    {/* ---- Youtube */}
+                                    <div className="SocialsProfileForm__Youtube">
+                                        <Label>Youtube</Label>
+                                        <div className="mt-1.5 flex">
+                                            <span className="inline-flex items-center px-2.5 rounded-s-2xl border border-e-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    height="1em"
+                                                    viewBox="0 0 576 512"
+                                                    fill="currentColor"
+                                                >
+                                                    <path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z" />
+                                                </svg>
+                                            </span>
+                                            <Input
+                                                {...register('youtube')}
+                                                className="!rounded-s-none"
+                                                sizeClass="h-11 px-4 ps-2 pe-3"
+                                                placeholder="https://www.youtube.com/channel/yourname"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* ----Facebook */}
+                                    <div className="SocialsProfileForm__Facebook">
                                         <Label>Facebook</Label>
                                         <div className="mt-1.5 flex">
-                                            <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                                            <span className="inline-flex items-center px-2.5 rounded-s-2xl border border-e-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                                                 <svg
+                                                    fill="currentColor"
                                                     className="w-5 h-5"
-                                                    viewBox="0 0 45 74"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    height="1em"
+                                                    viewBox="0 0 512 512"
                                                 >
-                                                    <path
-                                                        d="M26.645 42.6953V72H13.1834V42.6953H2V30.8129H13.1834V26.4896C13.1834 10.4393 19.8883 2 34.0747 2C38.4238 2 39.5111 2.69896 41.8928 3.26849V15.0215C39.2263 14.5555 38.4756 14.2966 35.7056 14.2966C32.4179 14.2966 30.6575 15.2286 29.0525 17.0666C27.4475 18.9046 26.645 22.0888 26.645 26.645V30.8388H41.8928L37.8025 42.7212H26.645V42.6953Z"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                    />
+                                                    <path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z" />
                                                 </svg>
                                             </span>
                                             <Input
                                                 {...register('facebook')}
-                                                className="!rounded-l-none"
-                                                placeholder="yourfacebook"
+                                                className="!rounded-s-none"
+                                                sizeClass="h-11 px-4 ps-2 pe-3"
+                                                placeholder="https://www.facebook.com/yourname"
                                             />
                                         </div>
                                     </div>
-                                    <div>
-                                        <Label>Twitter</Label>
+                                    {/* ---- Github */}
+                                    <div className="SocialsProfileForm__Github">
+                                        <Label>Github </Label>
                                         <div className="mt-1.5 flex">
-                                            <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                                            <span className="inline-flex items-center px-2.5 rounded-s-2xl border border-e-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                                                 <svg
+                                                    fill="currentColor"
+                                                    height="1em"
+                                                    viewBox="0 0 496 512"
                                                     className="w-5 h-5"
-                                                    viewBox="0 0 79 65"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
                                                 >
-                                                    <path
-                                                        d="M7 54.4003C14.4009 54.8168 20.8727 53.0867 27.1844 48.5051C20.8087 47.4158 16.3873 44.5003 13.9844 38.477C15.8427 38.2207 17.4767 38.7013 19.399 37.9324C13.1194 35.1771 9.05048 31.0441 8.89029 23.8994C10.8767 24.0596 12.3825 25.3732 14.7534 25.181C8.98642 19.5422 7.22427 13.3908 10.8446 5.92575C16.8679 12.8461 23.9164 17.5558 32.5348 19.7665C33.0154 19.8946 33.4639 20.0228 33.9445 20.1189C36.1552 20.6315 38.7824 21.7208 40.128 21.5606C42.4348 21.2723 40.128 18.6131 40.7047 15.1529C42.5309 4.38789 54.3852 -0.514024 63.1638 5.79759C65.7269 7.65584 67.7453 7.6238 70.2764 6.50245C71.59 5.92575 72.9356 5.34905 74.5055 4.67624C74.1531 7.75195 71.7822 9.45 69.8919 11.7247C72.0385 12.2053 73.7686 11.5966 75.755 10.9558C75.0822 13.1665 73.4162 14.416 71.9103 15.6335C70.3404 16.883 69.7317 18.1966 69.6676 20.247C68.7065 51.2925 33.4319 75.2895 9.30681 56.1944C6.96798 54.3362 9.24271 56.1944 7 54.4003Z"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                    />
+                                                    <path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z" />
+                                                </svg>
+                                            </span>
+                                            <Input
+                                                {...register('github')}
+                                                className="!rounded-s-none"
+                                                sizeClass="h-11 px-4 ps-2 pe-3"
+                                                placeholder="https://github.com/yourname"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* ---- Twitter*/}
+                                    <div className="SocialsProfileForm__Twitter">
+                                        <Label>X/Twitter</Label>
+                                        <div className="mt-1.5 flex">
+                                            <span className="inline-flex items-center px-2.5 rounded-s-2xl border border-e-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                                                <svg
+                                                    fill="currentColor"
+                                                    height="1em"
+                                                    viewBox="0 0 512 512"
+                                                    className="w-5 h-5"
+                                                >
+                                                    <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
                                                 </svg>
                                             </span>
                                             <Input
                                                 {...register('twitter')}
-                                                className="!rounded-l-none"
-                                                placeholder="yourtwitter"
+                                                className="!rounded-s-none"
+                                                sizeClass="h-11 px-4 ps-2 pe-3"
+                                                placeholder="https://twitter.com/yourname"
                                             />
                                         </div>
                                     </div>
-                                    <div>
-                                        <Label>Tiktok</Label>
+
+                                    {/* ---- Instagram */}
+                                    <div className="SocialsProfileForm__Instagram">
+                                        <Label>Instagram </Label>
                                         <div className="mt-1.5 flex">
-                                            <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                                            <span className="inline-flex items-center px-2.5 rounded-s-2xl border border-e-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
                                                 <svg
+                                                    fill="currentColor"
+                                                    height="1em"
+                                                    viewBox="0 0 448 512"
                                                     className="w-5 h-5"
-                                                    viewBox="0 0 65 74"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
                                                 >
-                                                    <path
-                                                        d="M46.5893 4.66285L44.9004 2H34.6802V25.9831L34.6454 49.4092C34.6628 49.5833 34.6802 49.7747 34.6802 49.9488C34.6802 55.814 29.9097 60.6002 24.0248 60.6002C18.1399 60.6002 13.3693 55.8314 13.3693 49.9488C13.3693 44.0835 18.1399 39.2974 24.0248 39.2974C25.2435 39.2974 26.4275 39.5236 27.5244 39.9065V28.2108C26.3927 28.0194 25.2261 27.915 24.0248 27.915C11.8894 27.9324 2 37.818 2 49.9662C2 62.1144 11.8894 72 24.0422 72C36.195 72 46.0844 62.1144 46.0844 49.9662V22.1019C50.4893 26.5052 56.1827 30.8041 62.4854 32.179V20.2223C55.6430 17.1939 48.8353 8.24814 46.5893 4.66285Z"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                    />
+                                                    <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z" />
+                                                </svg>
+                                            </span>
+                                            <Input
+                                                {...register('instagram')}
+                                                className="!rounded-s-none"
+                                                sizeClass="h-11 px-4 ps-2 pe-3"
+                                                placeholder="https://instagram.com/yourname"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* ---- Linkedin  */}
+                                    <div className="SocialsProfileForm__Linkedin">
+                                        <Label>Linkedin </Label>
+                                        <div className="mt-1.5 flex">
+                                            <span className="inline-flex items-center px-2.5 rounded-s-2xl border border-e-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                                                <svg
+                                                    fill="currentColor"
+                                                    height="1em"
+                                                    viewBox="0 0 448 512"
+                                                    className="w-5 h-5"
+                                                >
+                                                    <path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z" />
+                                                </svg>
+                                            </span>
+                                            <Input
+                                                {...register('linkedin')}
+                                                className="!rounded-s-none"
+                                                sizeClass="h-11 px-4 ps-2 pe-3"
+                                                placeholder="https://linkedin.com/in/yourname"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* ---- Pinterest   */}
+                                    <div className="SocialsProfileForm__Pinterest">
+                                        <Label>Pinterest </Label>
+                                        <div className="mt-1.5 flex">
+                                            <span className="inline-flex items-center px-2.5 rounded-s-2xl border border-e-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                                                <svg
+                                                    fill="currentColor"
+                                                    height="1em"
+                                                    viewBox="0 0 384 512"
+                                                    className="w-5 h-5"
+                                                >
+                                                    <path d="M204 6.5C101.4 6.5 0 74.9 0 185.6 0 256 39.6 296 63.6 296c9.9 0 15.6-27.6 15.6-35.4 0-9.3-23.7-29.1-23.7-67.8 0-80.4 61.2-137.4 140.4-137.4 68.1 0 118.5 38.7 118.5 109.8 0 53.1-21.3 152.7-90.3 152.7-24.9 0-46.2-18-46.2-43.8 0-37.8 26.4-74.4 26.4-113.4 0-66.2-93.9-54.2-93.9 25.8 0 16.8 2.1 35.4 9.6 50.7-13.8 59.4-42 147.9-42 209.1 0 18.9 2.7 37.5 4.5 56.4 3.4 3.8 1.7 3.4 6.9 1.5 50.4-69 48.6-82.5 71.4-172.8 12.3 23.4 44.1 36 69.3 36 106.2 0 153.9-103.5 153.9-196.8C384 71.3 298.2 6.5 204 6.5z" />
+                                                </svg>
+                                            </span>
+                                            <Input
+                                                {...register('pinterest')}
+                                                className="!rounded-s-none"
+                                                sizeClass="h-11 px-4 ps-2 pe-3"
+                                                placeholder="https://pinterest.com/yourname"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* ---- Twitch    */}
+                                    <div className="SocialsProfileForm__Twitch">
+                                        <Label>Twitch </Label>
+                                        <div className="mt-1.5 flex">
+                                            <span className="inline-flex items-center px-2.5 rounded-s-2xl border border-e-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                                                <svg
+                                                    fill="currentColor"
+                                                    height="1em"
+                                                    viewBox="0 0 512 512"
+                                                    className="w-5 h-5"
+                                                >
+                                                    <path d="M391.17,103.47H352.54v109.7h38.63ZM285,103H246.37V212.75H285ZM120.83,0,24.31,91.42V420.58H140.14V512l96.53-91.42h77.25L487.69,256V0ZM449.07,237.75l-77.22,73.12H294.61l-67.6,64v-64H140.14V36.58H449.07Z" />
+                                                </svg>
+                                            </span>
+                                            <Input
+                                                {...register('twitch')}
+                                                className="!rounded-s-none"
+                                                sizeClass="h-11 px-4 ps-2 pe-3"
+                                                placeholder="https://twitch.com/yourname"
+                                            />
+                                        </div>
+                                    </div>
+                                    {/* ---- Tiktok    */}
+                                    <div className="SocialsProfileForm__Tiktok">
+                                        <Label>Tiktok </Label>
+                                        <div className="mt-1.5 flex">
+                                            <span className="inline-flex items-center px-2.5 rounded-s-2xl border border-e-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                                                <svg
+                                                    fill="currentColor"
+                                                    height="1em"
+                                                    viewBox="0 0 448 512"
+                                                    className="w-5 h-5"
+                                                >
+                                                    <path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z" />
                                                 </svg>
                                             </span>
                                             <Input
                                                 {...register('tiktok')}
-                                                className="!rounded-l-none"
-                                                placeholder="yourtiktok"
+                                                className="!rounded-s-none"
+                                                sizeClass="h-11 px-4 ps-2 pe-3"
+                                                placeholder="https://www.tiktok.com/@name"
                                             />
                                         </div>
                                     </div>
                                 </div>
-                                {/* ... */}
                                 {/* ---- */}
                                 <div>
                                     <Label>Phone number</Label>
                                     <div className="mt-1.5 flex">
                                         <span className="inline-flex items-center px-2.5 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
-                                            <i className="text-2xl las la-phone-volume"></i>
+                                            <PhoneIcon
+                                                className="w-5 h-5"
+                                                aria-hidden="true"
+                                            />
                                         </span>
                                         <Input
                                             {...register('phone')}
@@ -351,17 +563,25 @@ const DetailsPage = ({}) => {
                                     />
                                 </div>
                                 <div className="pt-2 flex justify-center">
-                                    <button
-                                        type="submit"
-                                        className="text-white bg-blue-500 px-4 py-2 rounded-lg"
-                                    >
-                                        Create Account
-                                    </button>
+                                    {loading ? (
+                                        <button
+                                            type="submit"
+                                            className="text-white bg-blue-500 px-4 py-2 rounded-lg"
+                                        >
+                                            Create account
+                                        </button>
+                                    ) : (
+                                        <ButtonPrimary loading>
+                                            Submitting...
+                                        </ButtonPrimary>
+                                    )}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </form>
+                {success && <Alert type="success" message={success} />}
+                {error && <Alert type="danger" message={error} />}
             </div>
         </>
     )

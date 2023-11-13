@@ -34,7 +34,6 @@ const EditCommentForm: FC<SingleCommentFormProps> = ({
             .from('comments')
             .update({ comment: data.comment })
             .eq('id', id)
-        console.log(error)
         onEditComment(data.comment)
     }
 

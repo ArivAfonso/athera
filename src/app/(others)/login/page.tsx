@@ -4,6 +4,8 @@ import React from 'react'
 import { useState } from 'react'
 import twitterSvg from '@/images/Twitter.svg'
 import googleSvg from '@/images/Google.svg'
+import discordSvg from '@/images/Discord.svg'
+import xSvg from '@/images/X.svg'
 import Input from '@/components/Input/Input'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import NcLink from '@/components/NcLink/NcLink'
@@ -11,6 +13,7 @@ import Heading2 from '@/components/Heading/Heading2'
 import Image from 'next/image'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Controller, useForm } from 'react-hook-form'
+import Alert from '@/components/Alert/Alert'
 
 export const runtime = 'edge'
 
@@ -50,6 +53,18 @@ const PageLogin = ({}) => {
                 redirectTo: `${window.location.origin}/auth/login`,
             },
         })
+        if (error) {
+            setErrorMsg(error.message)
+        }
+    }
+
+    async function discordSignIn() {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'discord',
+            options: {
+                redirectTo: `${window.location.origin}/auth/login`,
+            },
+        })
     }
     return (
         <>
@@ -82,11 +97,24 @@ const PageLogin = ({}) => {
                     >
                         <Image
                             className="flex-shrink-0"
-                            src={twitterSvg}
-                            alt="Login with Twitter"
+                            src={xSvg}
+                            alt="Login with X"
                         />
                         <h3 className="flex-grow text-center text-sm font-medium text-neutral-700 dark:text-neutral-300 sm:text-sm">
-                            Login with Twitter
+                            Login with X
+                        </h3>
+                    </button>
+                    <button
+                        className=" flex w-full rounded-lg bg-primary-50 dark:bg-neutral-800 px-4 py-3 transform transition-transform sm:px-6 hover:translate-y-[-2px]"
+                        onClick={discordSignIn}
+                    >
+                        <Image
+                            className="flex-shrink-0"
+                            src={discordSvg}
+                            alt="Login with Discord"
+                        />
+                        <h3 className="flex-grow text-center text-sm font-medium text-neutral-700 dark:text-neutral-300 sm:text-sm">
+                            Login with Discord
                         </h3>
                     </button>
                 </div>
@@ -147,7 +175,7 @@ const PageLogin = ({}) => {
                     </label>
                     <ButtonPrimary type="submit">Continue</ButtonPrimary>
                 </form>
-                {errorMsg && <div className="text-red-600">{errorMsg}</div>}
+                {errorMsg && <Alert message={errorMsg} type="danger" />}
                 {/* ==== */}
                 <span className="block text-center text-neutral-700 dark:text-neutral-300">
                     New user? <NcLink href="/signup">Create an account</NcLink>

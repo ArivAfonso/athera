@@ -50,7 +50,6 @@ const FollowButton: FC<FollowButtonProps> = ({
                 if (!error) {
                     setFollowing(false)
                 }
-                console.log(data, error)
             } else {
                 const { data, error } = await supabase
                     .from('followers')
@@ -58,7 +57,6 @@ const FollowButton: FC<FollowButtonProps> = ({
                 if (!error) {
                     setFollowing(true)
                 }
-                console.log(data, error)
             }
         } catch (error) {
             console.error('Error toggling following:', error)

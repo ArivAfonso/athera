@@ -29,6 +29,7 @@ module.exports = {
 
         extend: {
             colors: {
+                'athera-blue': '#3059FF',
                 primary: {
                     50: customColors('--c-primary-50'),
                     100: customColors('--c-primary-100'),

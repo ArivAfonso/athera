@@ -10,6 +10,7 @@ import PostCardLikeAndComment from '../PostCardLikeAndComment/PostCardLikeAndCom
 import PostBookmark from '../PostBookmark/PostBookmark'
 import stringToSlug from '@/utils/stringToSlug'
 import Tilt from 'react-parallax-tilt'
+import { getCookie } from 'cookies-next'
 
 export interface Card11Props {
     className?: string
@@ -34,8 +35,7 @@ const Card11: FC<Card11Props> = ({
         day: 'numeric',
     })
 
-    const tilt = localStorage.getItem('parallaxTiltEnabled')
-    console.log(tilt)
+    const tilt = getCookie('parallaxTiltEnabled')
 
     return (
         <Tilt tiltEnable={tilt === 'true'}>

@@ -67,7 +67,6 @@ interface HomeProps {
 const PageHome = async ({}) => {
     //@ts-ignore
     const data: HomeProps = await getData()
-    console.log(data.authors)
     return (
         <div className="nc-PageHome relative overflow-x-hidden">
             <div className="container relative">

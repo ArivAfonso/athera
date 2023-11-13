@@ -1,7 +1,7 @@
 'use client'
 
 import { Popover, Transition } from '@/app/headlessui'
-import { FC, Fragment } from 'react'
+import { FC, Fragment, useEffect, useState } from 'react'
 import Avatar from '@/components/Avatar/Avatar'
 import SwitchDarkMode2 from '@/components/SwitchDarkMode/SwitchDarkMode2'
 import Link from 'next/link'
@@ -12,18 +12,50 @@ import {
     DocumentPlusIcon,
     FolderOpenIcon,
 } from '@heroicons/react/24/outline'
+import { deleteCookie, getCookie, setCookie } from 'cookies-next'
 
 interface AvatarProps {
     avatar_url: string
     name: string
+    email: string
+    id: string
 }
 
-const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name }) => {
+const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
     const supabase = createClientComponentClient()
+    const [username, setUsername] = useState('')
 
     async function logOut() {
+        deleteCookie('username')
         const { error } = await supabase.auth.signOut()
     }
+
+    const chars = window.screen.width < 640 ? 10 : 20
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                let username = getCookie('username')
+
+                if (username == null) {
+                    const { data } = await supabase
+                        .from('users')
+                        .select('username')
+                        .eq('id', id)
+                        .single()
+                    username = data?.username
+                    setCookie('username', username)
+                }
+                setUsername(username as string)
+            } catch (err) {
+                console.error(err)
+            }
+        }
+
+        fetchData()
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []) // Empty dependency array to run only once on mount
 
     return (
         <div className="AvatarDropdown ">
@@ -77,8 +109,14 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name }) => {
                                                 <h4 className="font-semibold">
                                                     {name}
                                                 </h4>
-                                                <p className="text-xs mt-0.5">
-                                                    Los Angeles, CA
+                                                <p className="text-xs mt-0.5 overflow-hidden whitespace-nowrap overflow-ellipsis">
+                                                    @
+                                                    {username.length > chars
+                                                        ? `${username.slice(
+                                                              0,
+                                                              chars
+                                                          )}...`
+                                                        : username}
                                                 </p>
                                             </div>
                                         </div>

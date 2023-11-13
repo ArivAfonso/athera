@@ -46,7 +46,6 @@ async function getCommentData(id: string) {
             (like) => like.comment === comment.id
         )
     })
-    console.log(data)
     return data
 }
 

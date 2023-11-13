@@ -6,6 +6,7 @@ import Card11 from '@/components/Card11/Card11'
 import PostType from '@/types/PostType'
 import Card9 from '@/components/Card9/Card9'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import MySlider from '@/components/MySlider'
 
 export interface RelatedPostsType {
     latestPostsInCategory: PostType[]
@@ -37,7 +38,7 @@ async function getAuthorPosts(id: string) {
         )`
         )
         .eq('author', id)
-        .limit(4)
+        .limit(20)
 
     return data
 }
@@ -46,7 +47,7 @@ async function getRelatedPosts(id: string) {
     const supabase = createClientComponentClient()
     const { data, error } = await supabase.rpc('related_posts', {
         post_id: id,
-        match_threshold: 0.00001,
+        match_threshold: 0.8,
         match_count: 10,
     })
 
@@ -54,7 +55,6 @@ async function getRelatedPosts(id: string) {
         post.likeCount = post.likecount
         post.commentCount = post.commentcount
     })
-    console.log(data)
     return data
 }
 
@@ -93,7 +93,7 @@ const SingleRelatedPosts: FC<SingleRelatedPostsProps> = ({ id, authorId }) => {
         <div className="relative bg-neutral-100 dark:bg-neutral-800 pb-16 pt-4 mt-16 lg:mt-28">
             {/* RELATED  */}
             <div className="container">
-                {relatedPosts.length >= 1 && (
+                {relatedPosts.length >= 3 && (
                     <div>
                         <Heading
                             className="mb-10 text-neutral-900 dark:text-neutral-50"
@@ -101,28 +101,32 @@ const SingleRelatedPosts: FC<SingleRelatedPostsProps> = ({ id, authorId }) => {
                         >
                             Related posts
                         </Heading>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-                            {relatedPosts.map((post, key) => (
-                                <Card11 key={key} post={post} />
-                            ))}
-                        </div>
+                        <MySlider
+                            data={authorPosts}
+                            renderItem={(item, indx) => (
+                                <Card9 key={indx} post={item} />
+                            )}
+                            itemPerRow={4}
+                        />
                     </div>
                 )}
 
                 {/* MORE FROM AUTHOR */}
-                {authorPosts.length >= 1 && (
-                    <div className="mt-20">
+                {authorPosts.length >= 3 && (
+                    <div className="mt-20 px-3">
                         <Heading
                             className="mb-10 text-neutral-900 dark:text-neutral-50"
                             desc=""
                         >
                             More from author
                         </Heading>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-                            {authorPosts.map((post, key) => (
-                                <Card9 key={key} post={post} />
-                            ))}
-                        </div>
+                        <MySlider
+                            data={authorPosts}
+                            renderItem={(item, indx) => (
+                                <Card9 key={indx} post={item} />
+                            )}
+                            itemPerRow={4}
+                        />
                     </div>
                 )}
             </div>

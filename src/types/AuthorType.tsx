@@ -4,6 +4,7 @@ export default interface AuthorType {
     id: string
     name: string
     followerCount?: number
+    followingCount?: number
     followers?: {
         following: string
     }[]

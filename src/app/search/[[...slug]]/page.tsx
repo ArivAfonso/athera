@@ -36,7 +36,6 @@ async function getData(
 
     // Extract the embedding output
     const embedding = Array.from(output.data)
-    console.log(filter_option)
 
     const { data, error } = await supabase
         .rpc('match_posts', {
@@ -50,8 +49,6 @@ async function getData(
         post.likeCount = post.likecount
         post.commentCount = post.commentcount
     })
-    console.log(data)
-    console.log(error)
     return data
 }
 
@@ -64,8 +61,6 @@ async function fetchCategoriesData(context: { params: { slug: any } }) {
         .select(`id, name, color, postCount:post_categories(count)`)
         .textSearch('name', `${slug}`)
 
-    console.log(data)
-
     return data
 }
 
@@ -77,8 +72,6 @@ async function fetchAuthorsData(context: { params: { slug: any } }) {
         .from('users')
         .select(`*`)
         .textSearch('name', `${slug}`)
-
-    console.log(data)
 
     return data
 }
@@ -106,7 +99,6 @@ const PageSearchV2 = (context: any) => {
                 setData(res)
                 setLoading(false)
             } catch (err) {
-                console.log(err)
                 setLoading(false)
             }
         }

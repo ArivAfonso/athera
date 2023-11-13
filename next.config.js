@@ -2,6 +2,7 @@
 const nextConfig = {
     experimental: {
         typedRoutes: true,
+        serverActions: true,
     },
     webpack: (config) => {
         // See https://webpack.js.org/configuration/resolve/#resolvealias

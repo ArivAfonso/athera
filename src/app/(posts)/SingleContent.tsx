@@ -125,7 +125,7 @@ const SingleContent: FC<SingleContentProps> = ({
                         showLikeAndCommentSticky ? 'flex' : 'hidden'
                     }`}
                 >
-                    <div className="bg-white dark:bg-neutral-800 shadow-lg rounded-full ring-1 ring-offset-1 ring-neutral-900/5 p-1.5 flex items-center justify-center space-x-2 text-xs">
+                    <div className="bg-white dark:bg-neutral-800 shadow- rounded-full p-1.5 flex items-center justify-center space-x-2 text-xs">
                         <PostCardLikeAction
                             className="px-3 h-9 text-xs"
                             likeCount={likeCount}

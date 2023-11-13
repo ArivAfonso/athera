@@ -1,16 +1,27 @@
-'use client'
-
-import React, { FC, useEffect, useState } from 'react'
+import React from 'react'
 import Card11 from '@/components/Card11/Card11'
 import CategoryType from '@/types/CategoryType'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import Image from 'next/image'
 import Card6 from '@/components/Card6/Card6'
+import { cookies } from 'next/headers'
+import { Metadata } from 'next'
 
 export const runtime = 'edge'
 
+export async function generateMetadata(
+    props: any,
+    searchParams: any
+): Promise<Metadata> {
+    const data: CategoryType = await getCategories(props)
+
+    return {
+        title: data.name + ' - Latest articles on Athera',
+    }
+}
+
 async function getCategories(context: { params: { slug: any } }) {
-    const supabase = createClientComponentClient()
+    const supabase = createServerComponentClient({ cookies })
 
     const id = context.params.slug[1]
     const { data, error } = await supabase
@@ -75,35 +86,10 @@ async function getCategories(context: { params: { slug: any } }) {
 }
 
 const PageCategory = async (context: any) => {
-    const [catData, setData] = useState<CategoryType>({
-        name: '',
-        id: '',
-        postCount: [
-            {
-                count: 0,
-            },
-        ],
-        color: '',
-        image: '',
-        post_categories: [],
-    })
-
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const res: CategoryType = await getCategories(context)
-                setData(res)
-            } catch (err) {
-                console.log(err)
-            }
-        }
-        fetchData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    const catData = await getCategories(context)
 
     return (
         <div className={`nc-PageCategory`}>
-            <title>{catData.name} - Athera</title>
             {/* HEADER */}
             <div className="w-full px-2 pt-2 xl:max-w-screen-2xl mx-auto">
                 {catData.image ? (

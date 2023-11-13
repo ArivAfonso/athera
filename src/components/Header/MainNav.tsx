@@ -45,13 +45,15 @@ const MainNav: FC<MainNavProps> = ({}) => {
                                 <AvatarDropdown
                                     avatar_url={user.user_metadata.avatar_url}
                                     name={user.user_metadata.name}
+                                    email={user.email ? user.email : ''}
+                                    id={user.id}
                                 />
                             ) : (
                                 <>
                                     <div className="px-1"></div>
                                     <Button
                                         sizeClass="py-3 px-4 sm:px-6"
-                                        className="bg-primary-600 hover:bg-primary-700 text-white"
+                                        className="bg-athera-blue hover:bg-primary-700 text-white"
                                         href="/signup"
                                         pattern="primary"
                                     >
@@ -69,6 +71,8 @@ const MainNav: FC<MainNavProps> = ({}) => {
                                             user.user_metadata.avatar_url
                                         }
                                         name={user.user_metadata.name}
+                                        email={user.email ? user.email : ''}
+                                        id={user.id}
                                     />
                                 ) : (
                                     <SearchModal />

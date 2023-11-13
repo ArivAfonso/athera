@@ -12,9 +12,21 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useForm, Controller } from 'react-hook-form' // Import the necessary functions
 import Input from '@/components/Input/Input'
 import Alert from '@/components/Alert/Alert'
-import Cookies from 'js-cookie'
+import { setCookie } from 'cookies-next'
 
 export const runtime = 'edge'
+
+function isValidHttpUrl(string: string) {
+    let url
+
+    try {
+        url = new URL(string)
+    } catch (_) {
+        return false
+    }
+
+    return url.protocol === 'http:' || url.protocol === 'https:'
+}
 
 const PageSignUp = ({}) => {
     const supabase = createClientComponentClient()
@@ -30,18 +42,27 @@ const PageSignUp = ({}) => {
     } = useForm() // Initialize the hook
 
     async function submitUsername(formData: any) {
+        //Check if username has whitespace or special characters except $ and _
+        const regex = /^\S*$/
+        if (!regex.test(formData.username)) {
+            setErrorMsg(
+                'Username cannot contain whitespace or special characters except $ and _'
+            )
+            return
+        }
+
         setUsernameExists(false)
         const { data } = await supabase
             .from('users')
             .select('id')
-            .eq('username', formData.newPassword)
+            .eq('username', formData.username)
             .single()
 
         if (data) {
             setUsernameExists(true)
         } else {
             //Set a cookie with the chosen username
-            Cookies.set('signup-username', formData.newPassword, { expires: 1 })
+            setCookie('signup-username', formData.username, { maxAge: 240 })
             setShowPart2(true)
         }
     }
@@ -106,21 +127,28 @@ const PageSignUp = ({}) => {
                     <div className="max-w-md mx-auto space-y-6">
                         <form
                             className="grid grid-cols-1 gap-6"
-                            onSubmit={handleSubmit(submitUsername)}
+                            onSubmit={handleSubmit(async (data) =>
+                                submitUsername(data)
+                            )}
                         >
                             <label className="block">
                                 <span className="text-neutral-800 dark:text-neutral-200">
-                                    New Password
+                                    New Username
                                 </span>
                                 <Controller
-                                    name="newPassword"
+                                    name="username"
                                     control={control}
                                     render={({ field }) => (
                                         <Input
                                             type="text"
                                             placeholder="username"
+                                            maxLength={20}
+                                            spellCheck={false}
+                                            // onSubmit={(e) => {
+                                            //     e.preventDefault()
+                                            // }}
                                             className={`mt-1 ${
-                                                errors.newPassword
+                                                errors.username
                                                     ? 'border-red-500'
                                                     : ''
                                             }`}
@@ -128,7 +156,7 @@ const PageSignUp = ({}) => {
                                         />
                                     )}
                                 />
-                                {errors.newPassword && (
+                                {errors.username && (
                                     <div className="text-red-500">Required</div>
                                 )}
                             </label>
@@ -147,6 +175,7 @@ const PageSignUp = ({}) => {
                                 type="danger"
                             />
                         )}
+                        {errorMsg && <Alert message={errorMsg} type="danger" />}
                     </div>
                 </>
             ) : (
@@ -278,9 +307,7 @@ const PageSignUp = ({}) => {
                                 Continue
                             </ButtonPrimary>
                         </form>
-                        {errorMsg && (
-                            <div className="text-red-600">{errorMsg}</div>
-                        )}
+                        {errorMsg && <Alert message={errorMsg} type="danger" />}
                         {emailConfirm && (
                             <Alert
                                 message="Check your inbox. We just sent you an email"

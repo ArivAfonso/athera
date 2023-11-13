@@ -126,7 +126,6 @@ async function getCommentData(context: { params: { slug: any } }) {
             (like) => like.comment === comment.id
         )
     })
-    console.log(data)
     return data
 }
 

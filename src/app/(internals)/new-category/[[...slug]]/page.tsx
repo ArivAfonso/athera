@@ -139,7 +139,6 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
     const sendCategory = async (data: any) => {
         setUploading(true)
         setErrorMsg('')
-        console.log(data.catName)
         try {
             const supabase = createClientComponentClient()
 
@@ -148,7 +147,7 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                     .from('categories')
                     .insert([
                         {
-                            name: data.catName,
+                            name: s,
                             color: data.color,
                         },
                     ])
@@ -156,7 +155,7 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                 if (selectedImage) {
                     const { data: path, error } = await supabase.storage
                         .from('categories')
-                        .upload(`${data.catName}`, selectedImage)
+                        .upload(`${s}`, selectedImage)
 
                     console.log('Storage' + error)
 
@@ -165,7 +164,11 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                             const { data: update, error: updateErr } =
                                 await supabase
                                     .from('categories')
-                                    .update({ image: path?.path })
+                                    .update({
+                                        image:
+                                            'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/categories/' +
+                                            path?.path,
+                                    })
                                     .eq('id', newCat[0].id)
                             console.log(updateErr)
                         }
@@ -175,10 +178,7 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                 if (selectedImage) {
                     const { data: path, error } = await supabase.storage
                         .from('categories')
-                        .upload(
-                            `${data.catName}/${data.catName}`,
-                            selectedImage
-                        )
+                        .upload(`${s}/${s}`, selectedImage)
 
                     console.log(path)
 
@@ -199,12 +199,16 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                                 .update({ color: data.color })
                                 .eq('name', s)
                         console.log(update, updateErr)
+                        //@ts-ignore
+                        router.push(`/category/${s}/${update[0].id}`)
                     }
                 } else {
-                    await supabase
+                    const { data: newCat } = await supabase
                         .from('categories')
                         .update({ color: data.color })
                         .eq('name', s)
+                    //@ts-ignore
+                    router.push(`/category/${s}/${newCat[0].id}`)
                 }
             }
             setUploading(false)
@@ -281,6 +285,7 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                                     <Input
                                         type="text"
                                         className="mt-2"
+                                        defaultValue={s}
                                         {...field}
                                     />
                                 )}

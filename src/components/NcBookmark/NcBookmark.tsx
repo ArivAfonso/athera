@@ -45,7 +45,6 @@ const NcBookmark: FC<NcBookmarkProps> = ({
                 if (!error) {
                     setIsBookmarked(false) // Set isBookmarked to false
                 }
-                console.log(data, error)
             } else {
                 // If not bookmarked, insert a new bookmark into the database
                 const { data, error } = await supabase
@@ -54,7 +53,6 @@ const NcBookmark: FC<NcBookmarkProps> = ({
                 if (!error) {
                     setIsBookmarked(true) // Set isBookmarked to true
                 }
-                console.log(data, error)
             }
         } catch (error) {
             console.error('Error toggling bookmark:', error)

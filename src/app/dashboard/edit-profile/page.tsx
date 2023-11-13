@@ -6,13 +6,12 @@ import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import Input from '@/components/Input/Input'
 import Select from '@/components/Select/Select'
 import Textarea from '@/components/Textarea/Textarea'
-import { avatarImgs } from '@/contains/fakeData'
 import Image from 'next/image'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useForm, Controller } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
-import { EnvelopeOpenIcon } from '@heroicons/react/24/outline'
+import { set } from 'lodash'
 
 export const runtime = 'edge'
 
@@ -33,95 +32,7 @@ function AccountPage() {
     const [success, setSuccess] = useState('')
     const [error, setError] = useState('')
     const [imageFile, setImageFile] = useState(null)
-    const [imagebase, setImageBase] = useState('')
-
-    async function updateProfile(formData: any) {
-        const supabase = createClientComponentClient()
-        const { data: session } = await supabase.auth.getSession()
-        try {
-            if (formData.website && !isValidHttpUrl(formData.website)) {
-                setError('Invalid website url')
-                return
-            }
-            if (formData.youtube && !isValidHttpUrl(formData.youtube)) {
-                setError('Invalid youtube url')
-                return
-            }
-            if (formData.facebook && !isValidHttpUrl(formData.facebook)) {
-                setError('Invalid facebook url')
-                return
-            }
-            if (formData.github && !isValidHttpUrl(formData.github)) {
-                setError('Invalid github url')
-                return
-            }
-            if (formData.twitter && !isValidHttpUrl(formData.twitter)) {
-                setError('Invalid twitter url')
-                return
-            }
-            if (formData.instagram && !isValidHttpUrl(formData.instagram)) {
-                setError('Invalid instagram url')
-                return
-            }
-            if (formData.linkedin && !isValidHttpUrl(formData.linkedin)) {
-                setError('Invalid linkedin url')
-                return
-            }
-            if (formData.pinterest && !isValidHttpUrl(formData.pinterest)) {
-                setError('Invalid pinterest url')
-                return
-            }
-            if (formData.twitch && !isValidHttpUrl(formData.twitch)) {
-                setError('Invalid twitch url')
-                return
-            }
-            if (formData.tiktok && !isValidHttpUrl(formData.tiktok)) {
-                setError('Invalid tiktok url')
-                return
-            }
-            if (imageFile) {
-                const fileData = new Blob([imageFile])
-
-                // Upload the image file to Supabase Storage
-                const { data, error } = await supabase.storage
-                    .from('avatars')
-                    .upload(`${session.session?.user.id}`, fileData)
-
-                if (error) {
-                    console.error('Error uploading image:', error)
-                } else {
-                    console.log('Image uploaded successfully:', data)
-                    // You can handle any additional logic here after the image is uploaded
-                }
-            }
-            await supabase
-                .from('users')
-                .update([
-                    {
-                        id: session.session?.user?.id,
-                        name: formData.fullName,
-                        // email: formData.email,
-                        website: formData.website,
-                        bio: formData.about,
-                        avatar: formData.avatar,
-                        phone: formData.phone,
-                        tiktok: formData.tiktok,
-                        twitter: formData.twitter,
-                        facebook: formData.facebook,
-                        youtube: formData.youtube,
-                        github: formData.github,
-                        instagram: formData.instagram,
-                        linkedin: formData.linkedin,
-                        pinterest: formData.pinterest,
-                        twitch: formData.twitch,
-                    },
-                ])
-                .eq('id', session.session?.user?.id)
-            setSuccess('Profile updated successfully')
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    const [loading, setLoading] = useState(false)
 
     const [profile, setProfile] = useState({
         name: '',
@@ -141,6 +52,140 @@ function AccountPage() {
         twitch: '',
     })
 
+    async function updateProfile(formData: any) {
+        setLoading(true)
+        setError('')
+        const supabase = createClientComponentClient()
+        const { data: session } = await supabase.auth.getSession()
+        try {
+            if (formData.website && !isValidHttpUrl(formData.website)) {
+                setError('Invalid website url')
+                setLoading(false)
+                return
+            } else if (formData.website == '')
+                formData.website = profile.website
+            if (formData.tiktok && !isValidHttpUrl(formData.tiktok)) {
+                setError('Invalid tiktok url')
+                setLoading(false)
+                return
+            } else if (formData.tiktok == '') formData.tiktok = profile.tiktok
+            if (formData.twitter && !isValidHttpUrl(formData.twitter)) {
+                setError('Invalid twitter url')
+                setLoading(false)
+                return
+            } else if (formData.twitter == '')
+                formData.twitter = profile.twitter
+            if (formData.facebook && !isValidHttpUrl(formData.facebook)) {
+                setError('Invalid facebook url')
+                setLoading(false)
+                return
+            } else if (formData.facebook == '')
+                formData.facebook = profile.facebook
+            if (formData.youtube && !isValidHttpUrl(formData.youtube)) {
+                setError('Invalid youtube url')
+                setLoading(false)
+                return
+            } else if (formData.youtube == '')
+                formData.youtube = profile.youtube
+            if (formData.github && !isValidHttpUrl(formData.github)) {
+                setError('Invalid github url')
+                setLoading(false)
+                return
+            } else if (formData.github == '') formData.github = profile.github
+            if (formData.instagram && !isValidHttpUrl(formData.instagram)) {
+                setError('Invalid instagram url')
+                setLoading(false)
+                return
+            } else if (formData.instagram == '')
+                formData.instagram = profile.instagram
+            if (formData.linkedin && !isValidHttpUrl(formData.linkedin)) {
+                setError('Invalid linkedin url')
+                setLoading(false)
+                return
+            } else if (formData.linkedin == '')
+                formData.linkedin = profile.linkedin
+            if (formData.pinterest && !isValidHttpUrl(formData.pinterest)) {
+                setError('Invalid pinterest url')
+                setLoading(false)
+                return
+            } else if (formData.pinterest == '')
+                formData.pinterest = profile.pinterest
+            if (formData.twitch && !isValidHttpUrl(formData.twitch)) {
+                setError('Invalid twitch url')
+                setLoading(false)
+                return
+            } else if (formData.twitch == '') formData.twitch = profile.twitch
+            if (formData.phone == '') formData.phone = profile.phone
+            if (formData.about == '') formData.about = profile.bio
+            if (formData.avatar == '') formData.avatar = profile.avatar
+            let imgUrl
+            if (imageFile) {
+                // Upload the image file to Supabase Storage
+                const random = Math.floor(10000 + Math.random() * 90000)
+
+                await supabase.storage
+                    .from('avatars')
+                    .remove([`${session.session?.user.id}`])
+
+                await supabase.storage
+                    .from('avatars')
+                    .upload(
+                        `${session.session?.user.id}/avatar${random}`,
+                        imageFile
+                    )
+                imgUrl = `https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/avatars/${session.session?.user.id}/avatar${random}`
+                await supabase.auth.updateUser({
+                    data: {
+                        avatar_url: imgUrl,
+                    },
+                })
+            }
+
+            if (
+                formData.fullName !==
+                    session.session?.user?.user_metadata.full_name &&
+                formData.fullName !== ''
+            ) {
+                await supabase.auth.updateUser({
+                    data: {
+                        full_name: formData.fullName,
+                    },
+                })
+            }
+
+            await supabase
+                .from('users')
+                .update([
+                    {
+                        id: session.session?.user?.id,
+                        name:
+                            formData.fullName == ''
+                                ? profile.name
+                                : formData.fullName,
+                        // email: formData.email,
+                        website: formData.website,
+                        bio: formData.about,
+                        avatar: imgUrl ? imgUrl : profile.avatar,
+                        phone: formData.phone,
+                        tiktok: formData.tiktok,
+                        twitter: formData.twitter,
+                        facebook: formData.facebook,
+                        youtube: formData.youtube,
+                        github: formData.github,
+                        instagram: formData.instagram,
+                        linkedin: formData.linkedin,
+                        pinterest: formData.pinterest,
+                        twitch: formData.twitch,
+                    },
+                ])
+                .eq('id', session.session?.user?.id)
+            setSuccess('Profile updated successfully')
+            setLoading(false)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         async function checkLikedStatus() {
             const supabase = createClientComponentClient()
@@ -159,15 +204,10 @@ function AccountPage() {
 
     console.log(profile.name)
 
-    const handleFileInputChange = (e: any) => {
-        const file = e.target.files[0]
-        setImageFile(file)
-        //Convert to base64
-        const reader = new FileReader()
-        reader.readAsDataURL(file)
-        reader.onloadend = () => {
-            const base64String = reader.result?.toString()
-            setImageBase(base64String ? base64String : '')
+    const handleImageSelect = (event: { target: { files: any[] } }) => {
+        const file = event.target.files[0]
+        if (file) {
+            setImageFile(file)
         }
     }
 
@@ -192,8 +232,8 @@ function AccountPage() {
                                 <div className="relative rounded-full overflow-hidden flex">
                                     <Image
                                         src={
-                                            imagebase
-                                                ? imagebase
+                                            imageFile
+                                                ? URL.createObjectURL(imageFile)
                                                 : profile.avatar
                                         }
                                         alt="avatar"
@@ -241,7 +281,8 @@ function AccountPage() {
                                         accept="image/png, image/jpeg, image/jpg"
                                         className="absolute inset-0 opacity-0 cursor-pointer"
                                         id="fileInput"
-                                        onChange={handleFileInputChange}
+                                        //@ts-ignore
+                                        onChange={handleImageSelect}
                                     />
                                 </div>
                             </div>
@@ -251,6 +292,7 @@ function AccountPage() {
                                     <Input
                                         {...register('fullName')}
                                         className="mt-1.5"
+                                        maxLength={50}
                                         defaultValue={profile.name}
                                     />
                                 </div>
@@ -555,12 +597,18 @@ function AccountPage() {
                                     />
                                 </div>
                                 <div className="pt-2">
-                                    <button
-                                        type="submit"
-                                        className="text-white bg-blue-500 px-4 py-2 rounded-lg"
-                                    >
-                                        Update account
-                                    </button>
+                                    {loading ? (
+                                        <button
+                                            type="submit"
+                                            className="text-white bg-blue-500 px-4 py-2 rounded-lg"
+                                        >
+                                            Update account
+                                        </button>
+                                    ) : (
+                                        <ButtonPrimary loading>
+                                            Submitting...
+                                        </ButtonPrimary>
+                                    )}
                                 </div>
                             </div>
                         </div>

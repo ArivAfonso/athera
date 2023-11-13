@@ -4,7 +4,11 @@ import React, { Suspense } from 'react'
 import SocialsList from '@/components/SocialsList/SocialsList'
 import Card11 from '@/components/Card11/Card11'
 import NcImage from '@/components/NcImage/NcImage'
-import { GlobeAltIcon, ShareIcon } from '@heroicons/react/24/outline'
+import {
+    GlobeAltIcon,
+    ShareIcon,
+    UserGroupIcon,
+} from '@heroicons/react/24/outline'
 import VerifyIcon from '@/components/VerifyIcon'
 import FollowButton from '@/components/FollowButton'
 import NcDropDown from '@/components/NcDropDown/NcDropDown'
@@ -70,6 +74,25 @@ async function getData(context: { params: { slug: any } }) {
         .eq('username', username)
         .single()
     const userData: AuthorType | null = data as unknown as AuthorType
+
+    console.log(userData.id)
+
+    const { count: followerData, error: followerErr } = await supabase
+        .from('followers')
+        .select('*', { count: 'exact', head: true })
+        .eq('following', userData?.id)
+
+    const { count: followingData, error: followingErr } = await supabase
+        .from('followers')
+        .select('*', { count: 'exact', head: true })
+        .eq('follower', userData?.id)
+
+    // @ts-ignore
+    userData.followerCount = followerData
+    // @ts-ignore
+    userData.followingCount = followingData
+
+    console.log(followingErr, followerErr, followingData, followerData)
 
     const { data: session } = await supabase.auth.getSession()
 
@@ -206,6 +229,32 @@ const PageAuthor = (context: any) => {
                                         linkedin={data.linkedin}
                                         itemClass="block w-7 h-7"
                                     />
+                                </div>
+                                <div className="flex items-center justify-between mt-4 md:mt-6 lg:mt-8">
+                                    <div className="flex items-center space-x-4 text-sm text-neutral-500 dark:text-neutral-400">
+                                        <div className="flex items-center space-x-1">
+                                            <UserGroupIcon className="h-5 w-5" />
+                                            <span>
+                                                {data.followerCount
+                                                    ? data.followerCount
+                                                    : 0}
+                                            </span>
+                                            <span className="inline">
+                                                Followers
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center space-x-1">
+                                            <UserGroupIcon className="h-5 w-5" />
+                                            <span>
+                                                {data.followingCount
+                                                    ? data.followingCount
+                                                    : 0}
+                                            </span>
+                                            <span className="inline">
+                                                Following
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </Suspense>
                         </div>

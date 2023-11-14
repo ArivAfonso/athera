@@ -37,7 +37,103 @@ import { pipeline } from '@xenova/transformers'
 import { registerLicense } from '@syncfusion/ej2-base'
 import stringToSlug from '@/utils/stringToSlug'
 
-export const runtime = 'edge'
+import dynamic from 'next/dynamic'
+
+const DynamicRichTextEditor = dynamic(
+    () =>
+        import('@syncfusion/ej2-react-richtexteditor').then(
+            (module) => module.RichTextEditorComponent
+        ) as any,
+    { ssr: false }
+)
+
+const DynamicToolbar = dynamic(
+    () =>
+        import('@syncfusion/ej2-react-richtexteditor').then(
+            (module) => module.Toolbar
+        ) as any,
+    { ssr: false }
+)
+
+const DynamicInject = dynamic(
+    () =>
+        import('@syncfusion/ej2-react-richtexteditor').then(
+            (module) => module.Inject
+        ) as any,
+    { ssr: false }
+)
+
+const DynamicImage = dynamic(
+    () =>
+        import('@syncfusion/ej2-react-richtexteditor').then(
+            (module) => module.Image
+        ) as any,
+    { ssr: false }
+)
+
+const DynamicLink = dynamic(
+    () =>
+        import('@syncfusion/ej2-react-richtexteditor').then(
+            (module) => module.Link
+        ) as any,
+    { ssr: false }
+)
+
+const DynamicHtmlEditor = dynamic(
+    () =>
+        import('@syncfusion/ej2-react-richtexteditor').then(
+            (module) => module.HtmlEditor
+        ) as any,
+    { ssr: false }
+)
+
+const DynamicCount = dynamic(
+    () =>
+        import('@syncfusion/ej2-react-richtexteditor').then(
+            (module) => module.Count
+        ) as any,
+    { ssr: false }
+)
+
+const DynamicQuickToolbar = dynamic(
+    () =>
+        import('@syncfusion/ej2-react-richtexteditor').then(
+            (module) => module.QuickToolbar
+        ) as any,
+    { ssr: false }
+)
+
+const DynamicTable = dynamic(
+    () =>
+        import('@syncfusion/ej2-react-richtexteditor').then(
+            (module) => module.Table
+        ) as any,
+    { ssr: false }
+)
+
+const DynamicPasteCleanup = dynamic(
+    () =>
+        import('@syncfusion/ej2-react-richtexteditor').then(
+            (module) => module.PasteCleanup
+        ) as any,
+    { ssr: false }
+)
+
+const DynamicFileManager = dynamic(
+    () =>
+        import('@syncfusion/ej2-react-richtexteditor').then(
+            (module) => module.FileManager
+        ) as any,
+    { ssr: false }
+)
+
+const DynamicEmojiPicker = dynamic(
+    () =>
+        import('@syncfusion/ej2-react-richtexteditor').then(
+            (module) => module.EmojiPicker
+        ) as any,
+    { ssr: false }
+)
 
 registerLicense(
     'Ngo9BigBOggjHTQxAR8/V1NHaF5cXmVCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdgWH5edXRcQ2BfWE1/XEI='
@@ -749,16 +845,27 @@ const DashboardSubmitPost = () => {
                                             >
                                                 <Inject
                                                     services={[
-                                                        Toolbar,
-                                                        Image,
-                                                        Link,
-                                                        HtmlEditor,
-                                                        Count,
-                                                        QuickToolbar,
-                                                        Table,
-                                                        PasteCleanup,
-                                                        FileManager,
-                                                        EmojiPicker,
+                                                        // Toolbar,
+                                                        // Image,
+                                                        // Link,
+                                                        // HtmlEditor,
+                                                        // Count,
+                                                        // QuickToolbar,
+                                                        // Table,
+                                                        // PasteCleanup,
+                                                        // FileManager,
+                                                        // EmojiPicker,
+                                                        DynamicCount,
+                                                        DynamicEmojiPicker,
+                                                        DynamicFileManager,
+                                                        DynamicHtmlEditor,
+                                                        DynamicImage,
+                                                        DynamicInject,
+                                                        DynamicLink,
+                                                        DynamicPasteCleanup,
+                                                        DynamicQuickToolbar,
+                                                        DynamicRichTextEditor,
+                                                        DynamicTable,
                                                     ]}
                                                 />
                                             </RichTextEditorComponent>

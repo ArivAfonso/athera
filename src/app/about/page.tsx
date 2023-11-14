@@ -7,8 +7,6 @@ import Newsletter from '@/components/Newsletter/Newsletter'
 import BgGlassmorphism from '@/components/BgGlassmorphism/BgGlassmorphism'
 import BackgroundSection from '@/components/BackgroundSection/BackgroundSection'
 
-export const runtime = 'edge'
-
 const PageAbout = ({}) => {
     return (
         <div className={`nc-PageAbout relative`}>

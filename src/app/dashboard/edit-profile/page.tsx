@@ -13,8 +13,6 @@ import Alert from '@/components/Alert/Alert'
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
 import { set } from 'lodash'
 
-export const runtime = 'edge'
-
 function isValidHttpUrl(string: string) {
     let url
 

@@ -13,8 +13,6 @@ import PostActionDropdown from '@/components/PostActionDropdown/PostActionDropdo
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import Empty from '@/components/Empty'
 
-export const runtime = 'edge'
-
 const DashboardPosts = () => {
     const [posts, setPosts] = React.useState<PostType[]>([])
 

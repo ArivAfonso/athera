@@ -6,8 +6,6 @@ import Link from 'next/link'
 import { useThemeMode } from '@/hooks/useThemeMode'
 import Image from 'next/image'
 
-export const runtime = 'edge'
-
 const ErrorPage: React.FC = () => {
     const theme: any = useThemeMode()
     return (

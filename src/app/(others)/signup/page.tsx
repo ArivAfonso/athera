@@ -14,8 +14,6 @@ import Input from '@/components/Input/Input'
 import Alert from '@/components/Alert/Alert'
 import { setCookie } from 'cookies-next'
 
-export const runtime = 'edge'
-
 function isValidHttpUrl(string: string) {
     let url
 

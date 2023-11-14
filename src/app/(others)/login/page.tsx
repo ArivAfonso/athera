@@ -15,8 +15,6 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Controller, useForm } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
 
-export const runtime = 'edge'
-
 const PageLogin = ({}) => {
     const supabase = createClientComponentClient()
     const [errorMsg, setErrorMsg] = useState('')

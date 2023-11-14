@@ -7,8 +7,6 @@ import Card6 from '@/components/Card6/Card6'
 import { cookies } from 'next/headers'
 import { Metadata } from 'next'
 
-export const runtime = 'edge'
-
 export async function generateMetadata(
     props: any,
     searchParams: any

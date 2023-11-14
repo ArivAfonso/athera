@@ -18,8 +18,6 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
 import Alert from '@/components/Alert/Alert'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 
-export const runtime = 'edge'
-
 function isValidHttpUrl(string: string) {
     let url
 

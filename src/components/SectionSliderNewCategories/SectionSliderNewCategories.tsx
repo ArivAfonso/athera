@@ -27,7 +27,7 @@ const SectionSliderNewCategories: FC<SectionSliderNewCategoriesProps> = ({
     categoryCardType = 'card3',
 }) => {
     const renderCard = (item: CategoryType, index: number) => {
-        const topIndex = index < 3 ? `#${index + 1}` : undefined
+        const topIndex = index < 10 ? `#${index + 1}` : undefined
         switch (categoryCardType) {
             case 'card1':
                 return <CardCategory1 category={item} />

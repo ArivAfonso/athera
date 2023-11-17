@@ -5,17 +5,15 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 export interface PostCardLikeActionProps {
     className?: string
     likeCount?: number
-    liked?: boolean
     postId: string
 }
 
 const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
     className = 'px-3 h-8 text-xs',
     likeCount = 0,
-    liked = false,
     postId = '',
 }) => {
-    const [isLiked, setIsLiked] = useState(liked)
+    const [isLiked, setIsLiked] = useState(false)
     const [likeCountState, setLikeCount] = useState(likeCount)
     const supabase = createClientComponentClient()
 
@@ -29,13 +27,15 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
             const { data: session } = await supabase.auth.getSession()
             const userId = session?.session?.user.id
             // Check if the post is liked by the user
-            const { data: likes, error } = await supabase
-                .from('likes')
-                .select('id')
-                .eq('post', postId)
-                .eq('liker', userId)
-            if (!error) {
-                setIsLiked(likes.length > 0)
+            if (userId) {
+                const { data: likes, error } = await supabase
+                    .from('likes')
+                    .select('id')
+                    .eq('post', postId)
+                    .eq('liker', userId)
+                if (!error) {
+                    setIsLiked(likes.length > 0)
+                }
             }
         } catch (error) {
             console.error('Error checking liked status:', error)
@@ -46,6 +46,8 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
         try {
             const { data: session } = await supabase.auth.getSession()
             const userId = session?.session?.user.id
+
+            if (!userId) return
 
             if (isLiked) {
                 // Delete the like from the database

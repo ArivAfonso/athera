@@ -62,13 +62,11 @@ const CardLarge1: FC<CardLarge1Props> = ({
                     <div className="flex items-center justify-between mt-auto">
                         <PostCardLikeAndComment
                             likes={post.likeCount[0].count}
-                            liked={post.isLiked}
                             comments={post.commentCount[0].count}
                             id={post.id}
                             className="relative"
                         />
                         <PostBookmark
-                            isBookmarked={post.isBookmarked}
                             bookmarkClass="h-8 w-8 bg-neutral-50/30 hover:bg-neutral-50/50 dark:bg-neutral-800/30 dark:hover:bg-neutral-800/50"
                             className="relative"
                             postId={post.id}

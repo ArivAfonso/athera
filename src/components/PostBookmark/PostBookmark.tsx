@@ -5,7 +5,6 @@ export interface PostBookmarkProps {
     className?: string
     bookmarkClass?: string
     readingTime?: number
-    isBookmarked?: boolean
     hidenReadingTime?: boolean
     postId: string
 }
@@ -13,7 +12,6 @@ export interface PostBookmarkProps {
 const PostBookmark: FC<PostBookmarkProps> = ({
     className = '',
     bookmarkClass,
-    isBookmarked = false,
     hidenReadingTime = true,
     readingTime = 3,
     postId = '',

@@ -71,7 +71,7 @@ const Card11: FC<Card11Props> = ({
                             {post.created_at}
                         </span>
                     )}
-                    <h3 className="nc-card-title block text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                    <h3 className="card-title block text-base font-semibold text-neutral-900 dark:text-neutral-100">
                         <span className="line-clamp-2" title={post.title}>
                             {post.title}
                         </span>
@@ -79,16 +79,11 @@ const Card11: FC<Card11Props> = ({
                     <div className="flex items-end justify-between mt-auto">
                         <PostCardLikeAndComment
                             likes={post.likeCount[0].count}
-                            liked={post.isLiked}
                             comments={post.commentCount[0].count}
                             id={post.id}
                             className="relative"
                         />
-                        <PostBookmark
-                            isBookmarked={post.isBookmarked}
-                            className="relative"
-                            postId={post.id}
-                        />
+                        <PostBookmark className="relative" postId={post.id} />
                     </div>
                 </div>
             </div>

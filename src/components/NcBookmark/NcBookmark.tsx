@@ -17,13 +17,15 @@ const NcBookmark: FC<NcBookmarkProps> = ({
             const supabase = createClientComponentClient()
             const { data: session } = await supabase.auth.getSession()
             const userId = session?.session?.user.id
-            const { data: bookmarks, error } = await supabase
-                .from('bookmarks')
-                .select('post')
-                .eq('user', userId)
-                .eq('post', postId)
-            if (bookmarks && bookmarks.length > 0 && !error) {
-                setIsBookmarked(true)
+            if (userId) {
+                const { data: bookmarks, error } = await supabase
+                    .from('bookmarks')
+                    .select('post')
+                    .eq('user', userId)
+                    .eq('post', postId)
+                if (bookmarks && bookmarks.length > 0 && !error) {
+                    setIsBookmarked(true)
+                }
             }
         }
         fetchInitialBookmarkStatus()
@@ -33,6 +35,8 @@ const NcBookmark: FC<NcBookmarkProps> = ({
         const supabase = createClientComponentClient()
         const { data: session } = await supabase.auth.getSession()
         const userId = session?.session?.user.id
+
+        if (!userId) return
 
         try {
             if (isBookmarked) {

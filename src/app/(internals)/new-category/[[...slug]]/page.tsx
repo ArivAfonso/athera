@@ -136,6 +136,9 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
 
     const sendCategory = async (data: any) => {
         setUploading(true)
+        if (data.color === '') {
+            data.color = 'Red'
+        }
         setErrorMsg('')
         try {
             const supabase = createClientComponentClient()

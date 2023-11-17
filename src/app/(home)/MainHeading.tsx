@@ -58,7 +58,12 @@ const MainHeading: React.FC<HeadingProps> = ({
                             eraseDelay={500}
                             cursorClassName="font-light text-blue-500"
                             className="text-blue-500"
-                            text={['Music', 'Technology', 'AI', 'the World']}
+                            text={[
+                                ' Music',
+                                ' Technology',
+                                ' AI',
+                                ' the World',
+                            ]}
                         />
                     </span>
                 </h2>

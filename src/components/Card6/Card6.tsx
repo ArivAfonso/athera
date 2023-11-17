@@ -54,16 +54,11 @@ const Card6: FC<Card6Props> = ({ className = 'h-full', post }) => {
                 <div className="flex items-center flex-wrap justify-between mt-auto">
                     <PostCardLikeAndComment
                         likes={post.likeCount[0].count}
-                        liked={post.isLiked}
                         comments={post.commentCount[0].count}
                         id={post.id}
                         className="relative"
                     />
-                    <PostBookmark
-                        isBookmarked={post.isBookmarked}
-                        className="relative"
-                        postId={post.id}
-                    />
+                    <PostBookmark className="relative" postId={post.id} />
                 </div>
             </div>
 

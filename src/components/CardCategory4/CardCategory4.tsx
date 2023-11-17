@@ -3,6 +3,7 @@ import { TwMainColor } from '@/data/types'
 import Badge from '@/components/Badge/Badge'
 import Link from 'next/link'
 import CategoryType from '@/types/CategoryType'
+import Image from 'next/image'
 
 export interface CardCategory4Props {
     className?: string
@@ -16,7 +17,7 @@ const CardCategory4: FC<CardCategory4Props> = ({
     index,
 }) => {
     const getColorClass = () => {
-        switch (category.color) {
+        switch (category.color.toLowerCase()) {
             case 'pink':
                 return 'bg-pink-500'
             case 'red':
@@ -39,16 +40,23 @@ const CardCategory4: FC<CardCategory4Props> = ({
     }
     return (
         <Link
-            href={`/category/${category.name}`}
+            href={`/category/${category.name}/${category.id}`}
             className={`nc-CardCategory4 flex flex-col ${className}`}
         >
             <div className="flex-shrink-0 relative w-full aspect-w-7 aspect-h-5 h-0 rounded-3xl overflow-hidden group">
+                <Image
+                    alt="taxonomies"
+                    fill
+                    src={category.image ? category.image : ''}
+                    className="object-cover w-full h-full rounded-2xl"
+                    sizes="(min-width: 1024px) 20rem, (min-width: 640px) 16rem, 12rem"
+                />
                 <div>
                     {index && (
                         <Badge
                             color={category.color.toLowerCase() as TwMainColor}
                             name={index}
-                            href={`/category/${category.name}`}
+                            href={`/category/${category.name}/${category.id}`}
                             className="absolute top-3 left-3"
                         />
                     )}

@@ -61,25 +61,6 @@ async function getCategories(context: { params: { slug: any } }) {
 
     const catData: CategoryType | null = data as unknown as CategoryType
 
-    const { data: session } = await supabase.auth.getSession()
-
-    catData.post_categories?.map((post) => {
-        post.post.post_categories[0].category = {
-            name: catData.name,
-            id: id,
-            color: catData.color,
-        }
-        post.post.likes.map((like) => {
-            if (like.liker.id === session?.session?.user.id) {
-                post.post.isLiked = true
-            }
-        })
-        post.post.bookmarks.map((bookmark) => {
-            if (bookmark.user.id === session?.session?.user.id)
-                post.post.isBookmarked = true
-            else post.post.isBookmarked = false
-        })
-    })
     return catData
 }
 

@@ -10,7 +10,6 @@ export interface PostCardLikeAndCommentProps {
     hiddenCommentOnMobile?: boolean
     id: string
     useOnSinglePage?: boolean
-    liked?: boolean
 }
 
 const PostCardLikeAndComment: FC<PostCardLikeAndCommentProps> = ({
@@ -21,7 +20,6 @@ const PostCardLikeAndComment: FC<PostCardLikeAndCommentProps> = ({
     comments = 0,
     id,
     useOnSinglePage = true,
-    liked = false,
 }) => {
     return (
         <div
@@ -31,7 +29,6 @@ const PostCardLikeAndComment: FC<PostCardLikeAndCommentProps> = ({
                 likeCount={likes}
                 className={itemClass}
                 postId={id}
-                liked={liked}
             />
             <PostCardCommentBtn
                 className={`${

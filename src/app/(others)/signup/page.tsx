@@ -13,18 +13,7 @@ import { useForm, Controller } from 'react-hook-form' // Import the necessary fu
 import Input from '@/components/Input/Input'
 import Alert from '@/components/Alert/Alert'
 import { setCookie } from 'cookies-next'
-
-function isValidHttpUrl(string: string) {
-    let url
-
-    try {
-        url = new URL(string)
-    } catch (_) {
-        return false
-    }
-
-    return url.protocol === 'http:' || url.protocol === 'https:'
-}
+import Button from '@/components/Button/Button'
 
 const PageSignUp = ({}) => {
     const supabase = createClientComponentClient()
@@ -158,9 +147,7 @@ const PageSignUp = ({}) => {
                                     <div className="text-red-500">Required</div>
                                 )}
                             </label>
-                            <ButtonPrimary type="submit">
-                                Next Step
-                            </ButtonPrimary>
+                            <Button type="submit">Next Step</Button>
                         </form>
 
                         <span className="block text-center text-neutral-700 dark:text-neutral-300">

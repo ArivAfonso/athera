@@ -63,16 +63,11 @@ const Card9: FC<Card9Props> = ({
             <div className="absolute inset-x-0 top-0 p-3 flex items-center justify-between transition-all opacity-0 z-[-1] group-hover:opacity-100 group-hover:z-10 duration-300">
                 <PostCardLikeAndComment
                     likes={post.likeCount[0].count}
-                    liked={post.isLiked}
                     comments={post.commentCount[0].count}
                     id={post.id}
                     className="relative"
                 />
-                <PostBookmark
-                    isBookmarked={post.isBookmarked}
-                    className="relative"
-                    postId={post.id}
-                />
+                <PostBookmark className="relative" postId={post.id} />
             </div>
             <div className={`flex items-start relative w-full ${ratio}`}></div>
             <Link href={`/post/${stringToSlug(post.title)}/${post.id}`}>

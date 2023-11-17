@@ -42,7 +42,8 @@ async function getData() {
 
     const { data: categories, error: categoriesError } = await supabase
         .from('categories')
-        .select('id, name, color, postCount:post_categories(count)')
+        .select('id, name, image, color, postCount:post_categories(count)')
+        .ilike('image', '%https://%')
         .limit(20)
 
     const { data: authors, error: authorsError } = await supabase
@@ -66,7 +67,7 @@ const PageHome = async ({}) => {
     //@ts-ignore
     const data: HomeProps = await getData()
     return (
-        <div className="nc-PageHome relative overflow-x-hidden">
+        <div className="PageHome relative overflow-x-hidden">
             <div className="container relative">
                 <SectionLargeSlider
                     className="pt-10 pb-16 md:py-16 lg:pb-28 lg:pt-20"
@@ -84,7 +85,7 @@ const PageHome = async ({}) => {
 
                 <SectionSliderNewCategories
                     className="py-16 lg:py-28"
-                    heading="Top trending topics"
+                    heading="Top trending categories"
                     subHeading="Discover 233 topics"
                     categories={data.categories.filter((_, i) => i < 10)}
                     categoryCardType="card4"

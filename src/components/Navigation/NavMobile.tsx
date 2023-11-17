@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ButtonClose from '@/components/ButtonClose/ButtonClose'
 import Logo from '@/components/Logo/Logo'
 import { Disclosure } from '@/app/headlessui'
@@ -9,6 +9,11 @@ import { NAVIGATION_DEMO_2 } from '@/data/navigation'
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import SwitchDarkMode from '@/components/SwitchDarkMode/SwitchDarkMode'
 import Link from 'next/link'
+import Button from '../Button/Button'
+import {
+    Session,
+    createClientComponentClient,
+} from '@supabase/auth-helpers-nextjs'
 
 export interface NavMobileProps {
     data?: NavItemType[]
@@ -164,6 +169,22 @@ const NavMobile: React.FC<NavMobileProps> = ({
         )
     }
 
+    const [session, setSession] = useState<Session>()
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const supabase = createClientComponentClient()
+                const { data: session } = await supabase.auth.getSession()
+                if (session.session) setSession(session.session)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        fetchData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     return (
         <div className="overflow-y-auto w-full h-screen py-2 transition transform shadow-lg ring-1 dark:ring-neutral-700 bg-white dark:bg-neutral-900 divide-y-2 divide-neutral-100 dark:divide-neutral-800">
             <div className="py-6 px-5">
@@ -189,6 +210,13 @@ const NavMobile: React.FC<NavMobileProps> = ({
             <ul className="flex flex-col py-6 px-2 space-y-1">
                 {data.map(_renderItem)}
             </ul>
+            {!session && (
+                <div className="flex items-center justify-center py-6 px-5 space-x-2">
+                    <Button href="/signup" className="!px-10 bg-blue-500">
+                        Sign Up
+                    </Button>
+                </div>
+            )}
         </div>
     )
 }

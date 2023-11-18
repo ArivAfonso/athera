@@ -175,27 +175,27 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
 
     {
         id: randomId(),
-        href: '/category/space' as Route,
+        href: '/category/space/75c8b97c-3cd6-432f-8775-fa8170143f65' as Route,
         name: 'Space',
     },
     {
         id: randomId(),
-        href: '/category/ai' as Route,
+        href: '/category/ai/2573c2ec-abc5-45b6-9819-befd7714a206' as Route,
         name: 'AI',
     },
     {
         id: randomId(),
-        href: '/category/robotics' as Route,
-        name: 'Robotics',
+        href: '/category/music/772131eb-340d-44ea-aba9-ae2c91e8ff08' as Route,
+        name: 'Music',
     },
     {
         id: randomId(),
-        href: '/category/virtual-reality' as Route,
-        name: 'VR',
+        href: '/category/sports/c2cb2a4a-6e8d-4d7f-9199-0d268f9ea6c2' as Route,
+        name: 'Sports',
     },
     {
         id: randomId(),
-        href: '/category/electric-vehicles' as Route,
-        name: 'Electric Vehicles',
+        href: '/category/history/42536f03-8975-4ef6-8e3f-af9d3100aace' as Route,
+        name: 'History',
     },
 ]

@@ -53,11 +53,10 @@ const MainNav: FC<MainNavProps> = ({}) => {
                                     <div className="px-1"></div>
                                     <Button
                                         sizeClass="py-3 px-4 sm:px-6"
-                                        className="bg-athera-blue hover:bg-primary-700 text-white"
+                                        className="bg-indigo-500 hover:bg-primary-700 text-white"
                                         href="/signup"
-                                        pattern="primary"
                                     >
-                                        Sign up
+                                        Sign Up
                                     </Button>
                                 </>
                             )}

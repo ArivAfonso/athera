@@ -13,7 +13,7 @@ export interface SectionLargeSliderProps {
 
 const SectionLargeSlider: FC<SectionLargeSliderProps> = ({
     posts,
-    heading = "See What's happening in",
+    heading = "See What's happening in ",
     className = '',
 }) => {
     const [indexActive, setIndexActive] = useState(0)

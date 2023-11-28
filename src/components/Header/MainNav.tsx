@@ -8,7 +8,9 @@ import Button from '../Button/Button'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import AvatarDropdown from './AvatarDropdown'
+import NotifyDropdown from './NotifyDropdown'
 import { use } from 'react'
+import ButtonPrimary from '../Button/ButtonPrimary'
 
 async function getUser() {
     const supabase = createServerComponentClient({ cookies })
@@ -39,6 +41,7 @@ const MainNav: FC<MainNavProps> = ({}) => {
                     <div className="flex-1 flex items-center justify-end text-neutral-700 dark:text-neutral-100 space-x-1">
                         <div className="hidden items-center lg:flex">
                             <SwitchDarkMode />
+                            <NotifyDropdown className="hidden md:block" />
                             <SearchModal />
                             {/* if user exists show avatar dropdown else button */}
                             {user ? (
@@ -51,13 +54,13 @@ const MainNav: FC<MainNavProps> = ({}) => {
                             ) : (
                                 <>
                                     <div className="px-1"></div>
-                                    <Button
+                                    <ButtonPrimary
                                         sizeClass="py-3 px-4 sm:px-6"
-                                        className="bg-indigo-500 hover:bg-primary-700 text-white"
+                                        className="hover:bg-primary-700 text-white"
                                         href="/signup"
                                     >
                                         Sign Up
-                                    </Button>
+                                    </ButtonPrimary>
                                 </>
                             )}
                         </div>

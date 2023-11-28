@@ -29,7 +29,7 @@ function Settings() {
                 <>
                     <MySwitch
                         enabled={isParallaxTiltEnabled}
-                        label="Parallax Tilt Effect"
+                        label="Post Wiggling"
                         desc="All post cards will have a parallax tilt effect on hover"
                         onChange={handleParallaxTiltChange}
                     />

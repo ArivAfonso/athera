@@ -56,7 +56,7 @@
         "yup": "^1.2.0"
     },
     "devDependencies": {
-        "@cloudflare/next-on-pages": "^1.7.2",
+        "@cloudflare/next-on-pages": "^1.8.1",
         "@types/react-modal": "^3.16.0",
         "supabase": "^1.100.1"
     }

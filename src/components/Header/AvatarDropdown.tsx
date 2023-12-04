@@ -27,10 +27,15 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
 
     async function logOut() {
         deleteCookie('username')
-        const { error } = await supabase.auth.signOut()
+        await supabase.auth.signOut()
     }
 
-    const chars = window.screen.width < 640 ? 10 : 20
+    const chars =
+        typeof window !== 'undefined'
+            ? window.screen.width < 640
+                ? 10
+                : 20
+            : 20
 
     useEffect(() => {
         const fetchData = async () => {

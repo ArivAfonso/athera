@@ -19,7 +19,6 @@ async function getPostData(context: { params: { slug: any } }) {
             `
         title,
         id,
-        text,
         rawText,
         created_at,
         estimatedReadingTime,

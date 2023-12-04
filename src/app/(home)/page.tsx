@@ -11,6 +11,8 @@ import PostType from '@/types/PostType'
 import CategoryType from '@/types/CategoryType'
 import AuthorType from '@/types/AuthorType'
 
+const revalidate = 60
+
 async function getData() {
     const supabase = createServerComponentClient({ cookies })
     const { data: posts, error } = await supabase

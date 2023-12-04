@@ -1,42 +1,52 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, use } from 'react'
 import { useForm } from 'react-hook-form'
 import Input from '@/components/Input/Input'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import NcLink from '@/components/NcLink/NcLink'
 import Heading2 from '@/components/Heading/Heading2'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-
-async function recoverPassword(email: string) {
-    const supabase = createClientComponentClient()
-    await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/forgot-pass`,
-    })
-}
-
-async function updatePassword(newPassword: string) {
-    const supabase = createClientComponentClient()
-    const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-    })
-    if (error) {
-        console.log(error)
-    }
-}
+import { useRouter } from 'next/navigation'
 
 const PageForgotPass = ({}) => {
     const [isPasswordRecovery, setIsPasswordRecovery] = useState(false)
+    const [loading, setLoading] = useState(false)
     const { register, handleSubmit } = useForm()
+    const router = useRouter()
 
-    useEffect(() => {
+    async function recoverPassword(email: string) {
+        const supabase = createClientComponentClient()
+        await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/forgot-pass`,
+        })
+    }
+
+    async function getData() {
         const supabase = createClientComponentClient()
         supabase.auth.onAuthStateChange((event, session) => {
             if (event === 'PASSWORD_RECOVERY') {
                 setIsPasswordRecovery(true)
             }
         })
-    }, [])
+        // const { data: session } = await supabase.auth.getSession()
+        // if (session.session !== null) {
+        //     router.push('/login')
+        // }
+    }
+    getData()
+
+    use(getData())
+
+    async function updatePassword(newPassword: string) {
+        const supabase = createClientComponentClient()
+        const { error } = await supabase.auth.updateUser({
+            password: newPassword,
+        })
+        if (error) {
+            console.log(error)
+        }
+    }
 
     const onSubmit = async (data: any) => {
         if (isPasswordRecovery) {
@@ -45,6 +55,8 @@ const PageForgotPass = ({}) => {
             recoverPassword(data.email)
         }
     }
+
+    console.log(loading)
 
     return (
         <>
@@ -98,7 +110,16 @@ const PageForgotPass = ({}) => {
                                 className="mt-1"
                             />
                         </label>
-                        <ButtonPrimary type="submit">Continue</ButtonPrimary>
+                        {loading ? (
+                            <ButtonPrimary
+                                type="submit"
+                                className="text-white bg-blue-500 px-4 py-2 rounded-lg"
+                            >
+                                Change Password
+                            </ButtonPrimary>
+                        ) : (
+                            <ButtonPrimary loading>Submitting...</ButtonPrimary>
+                        )}
                     </form>
                 )}
 

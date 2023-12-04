@@ -47,6 +47,7 @@ async function getData(
         post.likeCount = post.likecount
         post.commentCount = post.commentcount
     })
+    console.log(data)
     return data
 }
 
@@ -170,15 +171,15 @@ const PageSearchV2 = (context: any) => {
     }
 
     return (
-        <div className={`nc-PageSearchV2`}>
+        <div>
             <title>Search results for {s}</title>
-            <meta name="title" content={`Search results for ${s}`} />
+            {/* <meta name="title" content={`Search results for ${s}`} />
             <meta
                 name="description"
                 content={`We found ${data.length} results articles for "${s}"`}
             />
             <meta property="og:type" content="website" />
-            <meta property="og:url" content={window.location.origin} />
+            <meta property="og:url" content={window.location.origin} /> */}
             <div
                 className={`h-24 2xl:h-28 top-0 left-0 right-0 w-full bg-primary-100/50 dark:bg-neutral-900`}
             />
@@ -260,44 +261,6 @@ const PageSearchV2 = (context: any) => {
                             />
                         </div>
                     </div>
-                    {/* CONDITIONALLY RENDER LOADING COMPONENT */}
-                    {tabActive === 'Articles' && loading && (
-                        <div className="flex space-x-8 mt-3">
-                            {[...Array(4)].map((_, index) => (
-                                <div
-                                    key={index}
-                                    className="animate-pulse flex-shrink-0 w-72"
-                                >
-                                    <div className="bg-gray-200 dark:bg-gray-800 h-48 w-full rounded-3xl mb-4" />
-                                    <div className="flex flex-col space-y-2">
-                                        <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded" />
-                                        <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded" />
-                                        <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* CONDITIONALLY RENDER GRID COMPONENT */}
-                    {tabActive === 'Articles' && !loading && (
-                        <div className="grid justify-center items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-8 mt-8 lg:mt-10">
-                            {data.length > 0
-                                ? data.map((post, id) => (
-                                      <div key={id}>
-                                          <div className="hidden sm:block justify-center">
-                                              {/* Render Card11 on larger screens */}
-                                              <Card11 post={post} />
-                                          </div>
-                                          <div className="sm:hidden">
-                                              {/* Render Card6 on smaller screens */}
-                                              <Card6 post={post} />
-                                          </div>
-                                      </div>
-                                  ))
-                                : null}
-                        </div>
-                    )}
                     {tabActive === 'Categories' && categories.length > 0 && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
                             {categories.map((cat, id) => (

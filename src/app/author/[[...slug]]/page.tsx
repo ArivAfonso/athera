@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { use } from 'react'
 import SocialsList from '@/components/SocialsList/SocialsList'
 import Card11 from '@/components/Card11/Card11'
 import {
@@ -92,39 +92,7 @@ async function getData(context: { params: { slug: any } }) {
 }
 
 const PageAuthor = (context: any) => {
-    const [data, setData] = useState<AuthorType>({
-        id: '',
-        name: '',
-        followerCount: 0,
-        username: '',
-        avatar: '',
-        bio: '',
-        website: '',
-        posts: [],
-        verified: false,
-        twitter: '',
-        facebook: '',
-        instagram: '',
-        youtube: '',
-        tiktok: '',
-        twitch: '',
-        pinterest: '',
-        linkedin: '',
-        github: '',
-    })
-
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const res: AuthorType = await getData(context)
-                setData(res)
-            } catch (err) {
-                console.log(err)
-            }
-        }
-        fetchData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    const data: AuthorType = use(getData(context))
     return (
         <div className={`nc-PageAuthor `}>
             <title>{data.name} - Athera</title>

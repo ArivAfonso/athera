@@ -7,7 +7,6 @@ import Image from 'next/image'
 import { FC, Fragment, useEffect, useState } from 'react'
 import Empty from '../Empty'
 import stringToSlug from '@/utils/stringToSlug'
-import ButtonPrimary from '../Button/ButtonPrimary'
 
 interface Props {
     className?: string
@@ -77,6 +76,7 @@ const NotifyDropdown: FC<Props> = ({ className = 'hidden sm:block' }) => {
                         )
                         localStorage.setItem('cacheTime', Date.now().toString())
                     }
+                    setNotifications(notData || [])
                 }
             } catch (err) {
                 console.error(err)

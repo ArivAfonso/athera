@@ -4,7 +4,6 @@ import Navigation from '@/components/Navigation/Navigation'
 import MenuBar from '@/components/MenuBar/MenuBar'
 import SwitchDarkMode from '@/components/SwitchDarkMode/SwitchDarkMode'
 import SearchModal from './SearchModal'
-import Button from '../Button/Button'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import AvatarDropdown from './AvatarDropdown'
@@ -15,10 +14,8 @@ import ButtonPrimary from '../Button/ButtonPrimary'
 async function getUser() {
     const supabase = createServerComponentClient({ cookies })
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
-    return user
+    const { data: session } = await supabase.auth.getSession()
+    return session?.session?.user
 }
 
 export interface MainNavProps {}
@@ -41,16 +38,20 @@ const MainNav: FC<MainNavProps> = ({}) => {
                     <div className="flex-1 flex items-center justify-end text-neutral-700 dark:text-neutral-100 space-x-1">
                         <div className="hidden items-center lg:flex">
                             <SwitchDarkMode />
-                            <NotifyDropdown className="hidden md:block" />
                             <SearchModal />
                             {/* if user exists show avatar dropdown else button */}
                             {user ? (
-                                <AvatarDropdown
-                                    avatar_url={user.user_metadata.avatar_url}
-                                    name={user.user_metadata.name}
-                                    email={user.email ? user.email : ''}
-                                    id={user.id}
-                                />
+                                <>
+                                    <NotifyDropdown className="hidden md:block" />
+                                    <AvatarDropdown
+                                        avatar_url={
+                                            user.user_metadata.avatar_url
+                                        }
+                                        name={user.user_metadata.name}
+                                        email={user.email ? user.email : ''}
+                                        id={user.id}
+                                    />
+                                </>
                             ) : (
                                 <>
                                     <div className="px-1"></div>

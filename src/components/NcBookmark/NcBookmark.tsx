@@ -13,7 +13,7 @@ const NcBookmark: FC<NcBookmarkProps> = ({
     const [isBookmarked, setIsBookmarked] = useState(false)
 
     useEffect(() => {
-        async function fetchInitialBookmarkStatus() {
+        async function fetchAndStoreBookmarks() {
             const supabase = createClientComponentClient()
             const { data: session } = await supabase.auth.getSession()
             const userId = session?.session?.user.id
@@ -22,14 +22,23 @@ const NcBookmark: FC<NcBookmarkProps> = ({
                     .from('bookmarks')
                     .select('post')
                     .eq('user', userId)
-                    .eq('post', postId)
-                if (bookmarks && bookmarks.length > 0 && !error) {
-                    setIsBookmarked(true)
+
+                if (bookmarks) {
+                    // Map the bookmarks to get an array of post ids
+                    const bookmarkedPostIds = bookmarks.map(
+                        (bookmark) => bookmark.post
+                    )
+                    // Update the bookmarks in localStorage
+                    localStorage.setItem(
+                        'bookmarks',
+                        JSON.stringify(bookmarkedPostIds)
+                    )
                 }
             }
         }
-        fetchInitialBookmarkStatus()
-    }, [postId])
+
+        fetchAndStoreBookmarks()
+    }, [])
 
     async function toggleBookmark() {
         const supabase = createClientComponentClient()
@@ -48,6 +57,18 @@ const NcBookmark: FC<NcBookmarkProps> = ({
                     .eq('post', postId)
                 if (!error) {
                     setIsBookmarked(false) // Set isBookmarked to false
+
+                    // Remove the post from the bookmarks in localStorage
+                    const bookmarks = JSON.parse(
+                        localStorage.getItem('bookmarks') || '[]'
+                    )
+                    const updatedBookmarks = bookmarks.filter(
+                        (bookmark: string) => bookmark !== postId
+                    )
+                    localStorage.setItem(
+                        'bookmarks',
+                        JSON.stringify(updatedBookmarks)
+                    )
                 }
             } else {
                 // If not bookmarked, insert a new bookmark into the database
@@ -56,6 +77,13 @@ const NcBookmark: FC<NcBookmarkProps> = ({
                     .insert([{ user: userId, post: postId }])
                 if (!error) {
                     setIsBookmarked(true) // Set isBookmarked to true
+
+                    // Add the post to the bookmarks in localStorage
+                    const bookmarks = JSON.parse(
+                        localStorage.getItem('bookmarks') || '[]'
+                    )
+                    bookmarks.push(postId)
+                    localStorage.setItem('bookmarks', JSON.stringify(bookmarks))
                 }
             }
         } catch (error) {

@@ -5,6 +5,8 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import React, { Suspense } from 'react'
 
+const revalidate = 60
+
 const DashboardBookmarks = async () => {
     const supabase = createServerComponentClient({ cookies })
     const { data: session } = await supabase.auth.getSession()
@@ -15,27 +17,27 @@ const DashboardBookmarks = async () => {
             `
             posts (
                 title,
-        id,
-        created_at,
-        estimatedReadingTime,
-        description,
-        image,
-        author (
-            id,
-            verified,
-            name,
-            username,
-            avatar
-        ),
-        post_categories(category:categories(id,name,color)),
-        bookmarks(user(id)),
-        likeCount:likes(count),
-        commentCount:comments(count),
-        likes(
-            liker(
-                id
-            )
-        )
+                id,
+                created_at,
+                estimatedReadingTime,
+                description,
+                image,
+                author (
+                    id,
+                    verified,
+                    name,
+                    username,
+                    avatar
+                ),
+                post_categories(category:categories(id,name,color)),
+                bookmarks(user(id)),
+                likeCount:likes(count),
+                commentCount:comments(count),
+                likes(
+                    liker(
+                        id
+                    )
+                )
             )
             `
         )

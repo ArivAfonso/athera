@@ -30,7 +30,7 @@
         "@xenova/transformers": "^2.6.2",
         "autoprefixer": "^10.4.14",
         "cookies-next": "^4.0.0",
-        "eslint": "8.36.0",
+        "eslint": "8.55.0",
         "eslint-config-next": "13.2.4",
         "framer-motion": "^10.12.16",
         "html-react-parser": "^5.0.6",

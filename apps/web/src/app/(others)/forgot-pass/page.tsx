@@ -113,7 +113,7 @@ const PageForgotPass = ({}) => {
                         {loading ? (
                             <ButtonPrimary
                                 type="submit"
-                                className="text-white bg-blue-500 px-4 py-2 rounded-lg"
+                                className="text-white px-4 py-2 rounded-lg"
                             >
                                 Change Password
                             </ButtonPrimary>

@@ -103,15 +103,15 @@ const NotifyDropdown: FC<Props> = ({ className = 'hidden sm:block' }) => {
         setNewNots([])
     }
 
+    useEffect(() => {
+        markAllasRead()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     return (
         <div className={className}>
             <Popover className="relative">
                 {({ open }) => {
-                    // Call markAllAsRead when the popover is opened
-                    if (open) {
-                        markAllasRead()
-                    }
-
                     return (
                         <>
                             <Popover.Button

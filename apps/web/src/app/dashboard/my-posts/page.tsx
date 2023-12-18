@@ -12,9 +12,11 @@ import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
 import PostActionDropdown from '@/components/PostActionDropdown/PostActionDropdown'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import Empty from '@/components/Empty'
+import { useRouter } from 'next/navigation'
 
 const DashboardPosts = () => {
     const [posts, setPosts] = React.useState<PostType[]>([])
+    const router = useRouter()
 
     const [showDeleteModal, setShowDeleteModal] = React.useState(false)
     const [postIdToDelete, setPostIdToDelete] = React.useState('')
@@ -101,14 +103,6 @@ const DashboardPosts = () => {
                                             >
                                                 Comments
                                             </th>
-                                            <th
-                                                scope="col"
-                                                className="relative py-3.5 pl-3 pr-4 sm:pr-0"
-                                            >
-                                                <span className="sr-only">
-                                                    Edit
-                                                </span>
-                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 dark:divide-neutral-600">
@@ -136,7 +130,7 @@ const DashboardPosts = () => {
                                                                 />
                                                             </div>
                                                             <div className="ms-4">
-                                                                <div className="font-medium text-gray-900 dark:text-neutral-200 w-96 max-w-sm flex whitespace-normal">
+                                                                <div className="font-medium text-gray-900 dark:text-neutral-200 w-84 max-w-sm flex whitespace-normal">
                                                                     <span
                                                                         dangerouslySetInnerHTML={{
                                                                             __html:
@@ -197,17 +191,13 @@ const DashboardPosts = () => {
                                                             className="rounded-md"
                                                         />
                                                     </td>
-                                                    <td className="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                                                        <PostActionDropdown
-                                                            containerClassName="h-8 w-8 bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-700 rounded-xl"
-                                                            iconClass="h-5 w-5"
-                                                            title={post.title}
-                                                            id={post.id}
-                                                        />
-                                                    </td>
                                                     <td className="px-6 py-2 whitespace-nowrap text-right text-sm font-medium text-neutral-300">
                                                         <button
-                                                            // href={`/edit/${post.id}`}
+                                                            onClick={() => {
+                                                                router.push(
+                                                                    `/edit-post/${post.id}`
+                                                                )
+                                                            }}
                                                             className="text-primary-800 dark:text-primary-500 hover:text-primary-900"
                                                         >
                                                             <PencilSquareIcon className="h-6 w-6" />

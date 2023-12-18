@@ -11,7 +11,8 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useForm, Controller } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
-import { set } from 'lodash'
+import ModalEditUsername from './ModalEditUsername'
+import Button from '@/components/Button/Button'
 
 function isValidHttpUrl(string: string) {
     let url
@@ -31,6 +32,9 @@ function AccountPage() {
     const [error, setError] = useState('')
     const [imageFile, setImageFile] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [showModal, setShowModal] = useState(false)
+    const supabase = createClientComponentClient()
+    const [session, setSession] = useState<any>(null)
 
     const [profile, setProfile] = useState({
         name: '',
@@ -53,8 +57,6 @@ function AccountPage() {
     async function updateProfile(formData: any) {
         setLoading(true)
         setError('')
-        const supabase = createClientComponentClient()
-        const { data: session } = await supabase.auth.getSession()
         try {
             if (formData.website && !isValidHttpUrl(formData.website)) {
                 setError('Invalid website url')
@@ -188,6 +190,7 @@ function AccountPage() {
         async function checkLikedStatus() {
             const supabase = createClientComponentClient()
             const { data: session } = await supabase.auth.getSession()
+            setSession(session)
             const userId = session?.session?.user.id
             // Check if the post is liked by the user
             const { data, error } = await supabase
@@ -199,8 +202,6 @@ function AccountPage() {
         }
         checkLikedStatus()
     }, [])
-
-    console.log(profile.name)
 
     const handleImageSelect = (event: { target: { files: any[] } }) => {
         const file = event.target.files[0]
@@ -214,9 +215,11 @@ function AccountPage() {
             <title>Edit Profile - Athera</title>
             <div className="max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32">
                 <form
-                    onSubmit={handleSubmit(
-                        async (data) => await updateProfile(data)
-                    )}
+                    onSubmit={handleSubmit(async (data) => {
+                        if (Object.keys(data).length > 0) {
+                            await updateProfile(data)
+                        }
+                    })}
                     className={`nc-AccountPage`}
                 >
                     <div className="space-y-10 sm:space-y-12">
@@ -225,7 +228,7 @@ function AccountPage() {
                             Account information
                         </h2>
                         <div className="flex flex-col md:flex-row">
-                            <div className="flex-shrink-0 flex items-start">
+                            <div className="flex-shrink-0 flex flex-col items-center">
                                 {/* AVATAR */}
                                 <div className="relative rounded-full overflow-hidden flex">
                                     <Image
@@ -283,6 +286,15 @@ function AccountPage() {
                                         onChange={handleImageSelect}
                                     />
                                 </div>
+                                <Button
+                                    pattern="white"
+                                    className="mt-2"
+                                    onClick={() => {
+                                        setShowModal(true)
+                                    }}
+                                >
+                                    Change Username
+                                </Button>
                             </div>
                             <div className="flex-grow mt-10 md:mt-0 md:pl-16 max-w-3xl space-y-6">
                                 <div>
@@ -594,17 +606,20 @@ function AccountPage() {
                                         defaultValue={profile.bio}
                                     />
                                 </div>
-                                <div className="pt-2">
+                                <div className="pt-2 flex justify-center">
                                     {loading ? (
-                                        <button
+                                        <ButtonPrimary
+                                            className="text-white px-2 py-1 rounded-lg"
+                                            loading
+                                        >
+                                            Submitting...
+                                        </ButtonPrimary>
+                                    ) : (
+                                        <ButtonPrimary
                                             type="submit"
-                                            className="text-white bg-blue-500 px-4 py-2 rounded-lg"
+                                            className="text-white px-2 py-1 rounded-lg"
                                         >
                                             Update account
-                                        </button>
-                                    ) : (
-                                        <ButtonPrimary loading>
-                                            Submitting...
                                         </ButtonPrimary>
                                     )}
                                 </div>
@@ -614,6 +629,13 @@ function AccountPage() {
                 </form>
                 {success && <Alert type="success" message={success} />}
                 {error && <Alert type="danger" message={error} />}
+                {showModal && (
+                    <ModalEditUsername
+                        show={showModal}
+                        onCloseModal={() => setShowModal(false)}
+                        id={session.session?.user.id}
+                    />
+                )}
             </div>
         </>
     )

@@ -391,17 +391,20 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                             </div>
                         </div>
 
-                        <ButtonPrimary
-                            className="md:col-span-2"
-                            type="submit"
-                            disabled={uploading}
-                        >
+                        <div className="pt-2 flex justify-center">
                             {uploading ? (
-                                <span className="animate-spin">Loading</span>
+                                <ButtonPrimary loading>
+                                    Submitting...
+                                </ButtonPrimary>
                             ) : (
-                                'Submit Category'
+                                <ButtonPrimary
+                                    type="submit"
+                                    className="text-white px-2 py-1 rounded-lg"
+                                >
+                                    Submit Category
+                                </ButtonPrimary>
                             )}
-                        </ButtonPrimary>
+                        </div>
                         {errorMsg && <Alert type="danger" message={errorMsg} />}
                         {success && (
                             <Alert type="success" message="Category uploaded" />

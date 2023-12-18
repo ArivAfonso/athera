@@ -81,90 +81,6 @@ export const MEGAMENU_TEMPLATES: NavItemType[] = [
     },
 ]
 
-const OTHER_PAGE_CHILD: NavItemType[] = [
-    // category pages ----------------
-    {
-        id: randomId(),
-        href: '/category/demo-slug' as Route,
-        name: 'Category pages',
-        type: 'dropdown',
-        children: [
-            {
-                id: randomId(),
-                href: '/category/demo-slug' as Route,
-                name: 'Category page 1',
-            },
-            {
-                id: randomId(),
-                href: '/category-2/demo-slug' as Route,
-                name: 'Category page 2',
-            },
-            {
-                id: randomId(),
-                href: '/category-3/demo-slug' as Route,
-                name: 'Category page 2',
-            },
-        ],
-    },
-
-    // single pages ----------------
-    {
-        id: randomId(),
-        href: '/single/demo-slug' as Route,
-        name: 'Single pages',
-        type: 'dropdown',
-        children: [
-            {
-                id: randomId(),
-                href: '/single/demo-slug' as Route,
-                name: 'Single 1',
-            },
-            {
-                id: randomId(),
-                href: '/single-2/demo-slug' as Route,
-                name: 'Single 2',
-            },
-            {
-                id: randomId(),
-                href: '/single-3/demo-slug' as Route,
-                name: 'Single 3',
-            },
-            {
-                id: randomId(),
-                href: '/single-4/demo-slug' as Route,
-                name: 'Single 4',
-            },
-            {
-                id: randomId(),
-                href: '/single-5/demo-slug' as Route,
-                name: 'Single 5',
-            },
-            {
-                id: randomId(),
-                href: '/single-audio/demo-slug' as Route,
-                name: 'Single Audio',
-            },
-            {
-                id: randomId(),
-                href: '/single-video/demo-slug' as Route,
-                name: 'Single Video',
-            },
-            {
-                id: randomId(),
-                href: '/single-gallery/demo-slug' as Route,
-                name: 'Single Gallery',
-            },
-        ],
-    },
-
-    // author pages ----------------
-    {
-        id: randomId(),
-        href: '/author/demo-slug' as Route,
-        name: 'Author page',
-    },
-]
-
 export const NAVIGATION_DEMO_2: NavItemType[] = [
     //
     {
@@ -172,30 +88,157 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
         href: '/' as Route,
         name: 'Home',
     },
+    {
+        id: randomId(),
+        href: '#',
+        name: 'World',
+        type: 'dropdown',
+        children: [
+            {
+                id: randomId(),
+                href: '/category/USA/1' as Route,
+                name: 'United States',
+            },
+            {
+                id: randomId(),
+                href: '/category/India/1' as Route,
+                name: 'India',
+            },
+            {
+                id: randomId(),
+                href: '/category/China/1' as Route,
+                name: 'China',
+            },
+            {
+                id: randomId(),
+                href: '/category/Japan/1' as Route,
+                name: 'Middle East',
+            },
+            {
+                id: randomId(),
+                href: '/category/Russia/1' as Route,
+                name: 'Russia',
+            },
+            {
+                id: randomId(),
+                href: '/category/UK/1' as Route,
+                name: 'United Kingdom',
+            },
+        ],
+    },
 
     {
         id: randomId(),
-        href: '/category/space/75c8b97c-3cd6-432f-8775-fa8170143f65' as Route,
-        name: 'Space',
+        href: '#',
+        name: 'Tech',
+        type: 'dropdown',
+        children: [
+            {
+                id: randomId(),
+                href: '/category/ai/2573c2ec-abc5-45b6-9819-befd7714a206' as Route,
+                name: 'AI',
+            },
+            {
+                id: randomId(),
+                href: '/category/electric-vehicles/1' as Route,
+                name: 'Electric Vehicles',
+            },
+            {
+                id: randomId(),
+                href: '/category/Apps/1' as Route,
+                name: 'Apps',
+            },
+            {
+                id: randomId(),
+                href: '/category/crypto/1' as Route,
+                name: 'Cryptocurrency',
+            },
+            {
+                id: randomId(),
+                href: '/category/robotics/1' as Route,
+                name: 'Robotics',
+            },
+            {
+                id: randomId(),
+                href: '/category/startups/1' as Route,
+                name: 'Startups',
+            },
+        ],
     },
     {
         id: randomId(),
-        href: '/category/ai/2573c2ec-abc5-45b6-9819-befd7714a206' as Route,
-        name: 'AI',
+        href: '#' as Route,
+        name: 'Business',
+        type: 'dropdown',
+        children: [
+            {
+                id: randomId(),
+                href: '/category/finance/1' as Route,
+                name: 'Finance',
+            },
+            {
+                id: randomId(),
+                href: '/category/stock-market/1' as Route,
+                name: 'Stock Market',
+            },
+            {
+                id: randomId(),
+                href: '/category/real-estate/1' as Route,
+                name: 'Real Estate',
+            },
+            {
+                id: randomId(),
+                href: '/category/management/1' as Route,
+                name: 'Management',
+            },
+            {
+                id: randomId(),
+                href: '/category/marketing/1' as Route,
+                name: 'Marketing',
+            },
+            {
+                id: randomId(),
+                href: '/category/media/1' as Route,
+                name: 'Investing',
+            },
+        ],
     },
     {
         id: randomId(),
-        href: '/category/music/772131eb-340d-44ea-aba9-ae2c91e8ff08' as Route,
-        name: 'Music',
-    },
-    {
-        id: randomId(),
-        href: '/category/sports/c2cb2a4a-6e8d-4d7f-9199-0d268f9ea6c2' as Route,
+        href: '#' as Route,
         name: 'Sports',
-    },
-    {
-        id: randomId(),
-        href: '/category/history/42536f03-8975-4ef6-8e3f-af9d3100aace' as Route,
-        name: 'History',
+        type: 'dropdown',
+        children: [
+            {
+                id: randomId(),
+                href: '/category/cricket/1' as Route,
+                name: 'Cricket',
+            },
+            {
+                id: randomId(),
+                href: '/category/football/1' as Route,
+                name: 'Football',
+            },
+            {
+                id: randomId(),
+                href: '/category/tennis/1' as Route,
+                name: 'Tennis',
+            },
+            {
+                id: randomId(),
+                href: '/category/basketball/1' as Route,
+                name: 'Basketball',
+            },
+            {
+                id: randomId(),
+                href: '/category/golf/1' as Route,
+                name: 'Golf',
+            },
+            {
+                id: randomId(),
+                href: '/category/racing/1' as Route,
+                name: 'Formula One',
+            },
+        ],
     },
 ]

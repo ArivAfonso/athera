@@ -6,6 +6,7 @@ import React, { FC, Fragment, useState } from 'react'
 import { Route } from '@/routers/types'
 import Link from 'next/link'
 import NcImage from '../NcImage/NcImage'
+import { HomeIcon } from '@heroicons/react/24/outline'
 
 export interface NavItemType {
     id: string
@@ -20,33 +21,6 @@ export interface NavItemType {
 export interface NavigationItemProps {
     menuItem: NavItemType
 }
-
-const recentPosts = [
-    {
-        id: 1,
-        title: 'Boost your conversion rate',
-        href: '/single-gallery/demo-slug',
-        date: 'Mar 16, 2023',
-        datetime: '2023-03-16',
-        category: { title: 'Marketing', href: '/category/demo-slug' },
-        imageUrl:
-            'https://images.unsplash.com/photo-1678720175173-f57e293022e4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw0MjJ8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-        description:
-            'Et et dolore officia quis nostrud esse aute cillum irure do esse. Eiusmod ad deserunt cupidatat est magna Lorem.',
-    },
-    {
-        id: 2,
-        title: 'How to use search engine optimization to drive sales',
-        href: '/single-gallery/demo-slug',
-        date: 'Mar 10, 2023',
-        datetime: '2023-03-10',
-        category: { title: 'Sales', href: '/category/demo-slug' },
-        imageUrl:
-            'https://images.unsplash.com/photo-1678846912726-667eda5a850f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwyODh8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-        description:
-            'Optio cum necessitatibus dolor voluptatum provident commodi et.',
-    },
-]
 
 const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     const [menuCurrentHovers, setMenuCurrentHovers] = useState<string[]>([])
@@ -82,9 +56,12 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                                 <div className="flex-1 grid grid-cols-4 gap-6 pr-6 xl:pr-8">
                                     {menu.children.map((item, index) => (
                                         <div key={index}>
-                                            <p className="font-medium text-slate-900 dark:text-neutral-200">
-                                                {item.name}
-                                            </p>
+                                            <HomeIcon
+                                                className="w-5 h-5 mr-2"
+                                                aria-hidden="true"
+                                                aria-label={item.name}
+                                            />
+                                            <p className="font-medium text-slate-900 dark:text-neutral-200"></p>
                                             <ul className="grid space-y-4 mt-4">
                                                 {item.children?.map(
                                                     renderMegaMenuNavlink
@@ -92,68 +69,6 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                                             </ul>
                                         </div>
                                     ))}
-                                </div>
-                                <div className="w-[40%] ">
-                                    <div className="grid grid-cols-1 gap-10 sm:gap-8 lg:grid-cols-2">
-                                        <h3 className="sr-only">
-                                            Recent posts
-                                        </h3>
-                                        {recentPosts.map((post) => (
-                                            <article
-                                                key={post.id}
-                                                className="relative isolate flex max-w-2xl flex-col gap-x-8 gap-y-6 sm:flex-row sm:items-start lg:flex-col lg:items-stretch"
-                                            >
-                                                <div className="relative flex-none">
-                                                    <NcImage
-                                                        containerClassName="aspect-[2/1] w-full rounded-xl bg-gray-100 sm:aspect-[16/9] sm:h-32 lg:h-auto z-0"
-                                                        fill
-                                                        className="rounded-xl object-cover"
-                                                        src={post.imageUrl}
-                                                        sizes="300px"
-                                                        alt=""
-                                                    />
-                                                    <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10" />
-                                                </div>
-                                                <div>
-                                                    <div className="flex items-center gap-x-4">
-                                                        <time
-                                                            dateTime={
-                                                                post.datetime
-                                                            }
-                                                            className="text-sm leading-6 text-gray-600"
-                                                        >
-                                                            {post.date}
-                                                        </time>
-                                                        <Link
-                                                            href={
-                                                                post.category
-                                                                    .href as Route
-                                                            }
-                                                            className="relative z-10 rounded-full bg-gray-50 py-1.5 px-3 text-xs font-medium text-gray-600 hover:bg-gray-100"
-                                                        >
-                                                            {
-                                                                post.category
-                                                                    .title
-                                                            }
-                                                        </Link>
-                                                    </div>
-                                                    <h4 className="mt-2 text-sm font-semibold leading-6 text-gray-900">
-                                                        <Link
-                                                            href={
-                                                                post.href as Route
-                                                            }
-                                                        >
-                                                            <span className="absolute inset-0" />
-                                                            {post.title}
-                                                        </Link>
-                                                    </h4>
-                                                    <p className="mt-2 text-sm leading-6 text-gray-600">
-                                                        {post.description}
-                                                    </p>
-                                                </div>
-                                            </article>
-                                        ))}
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -205,7 +120,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                         >
                             <Popover.Panel
                                 static
-                                className="sub-menu absolute transform z-10 w-56 top-full left-0"
+                                className="sub-menu absolute transform z-10 w-48 top-full left-0"
                             >
                                 <ul className="rounded-2xl shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 text-sm relative bg-white dark:bg-neutral-900 py-4 grid space-y-1">
                                     {menuDropdown.children?.map((i) => {

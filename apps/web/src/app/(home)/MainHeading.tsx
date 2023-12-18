@@ -30,7 +30,7 @@ const MainHeading: React.FC<HeadingProps> = ({
                 }
             >
                 <h2
-                    className={`text-6xl md:text-7xl lg:text-8xl font-bold leading-tight md:leading-tight lg:leading-tight`}
+                    className={`text-6xl md:text-7xl lg:text-8xl font-bold leading-normal md:leading-tight lg:leading-tight`}
                     {...args}
                 >
                     {words?.map((word, index) => (
@@ -64,7 +64,8 @@ const MainHeading: React.FC<HeadingProps> = ({
                 </h2>
                 {desc && (
                     <span className="mt-2 md:mt-3 font-normal block text-base sm:text-xl text-neutral-500 dark:text-neutral-400">
-                        {desc}
+                        <b>A </b> <b>T</b>rue <b>H</b>ome for <b>E</b>xtremely{' '}
+                        <b>R</b>evolting <b>A</b>rticles
                     </span>
                 )}
             </div>

@@ -1,0 +1,2 @@
+medium-api
+google.generativeai

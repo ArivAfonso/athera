@@ -405,7 +405,7 @@ const DashboardSubmitPost = () => {
                     .from('images')
                     .upload(`${user?.id}/${postId}/main-image`, selectedImage)
 
-                const tagsArray = await Promise.all(
+                const tagsArray: any[] = await Promise.all(
                     tags
                         .filter((tag) => tag && tag.length > 0)
                         .map(async (tag: string) => {
@@ -464,7 +464,7 @@ const DashboardSubmitPost = () => {
                     .select('*')
 
                 // Update the inserted post with the image URL
-                const { error: updateError } = await supabase
+                await supabase
                     .from('posts')
                     .update({
                         image:
@@ -473,12 +473,7 @@ const DashboardSubmitPost = () => {
                         rawText: htmlText,
                     })
                     .eq('id', postId)
-                    .select()
 
-                if (updateError) {
-                    setErrorMsg(`Post update failed`)
-                    setUploading(false)
-                }
                 router.push(
                     `/post/${stringToSlug(formData.postTitle)}/${postId}`
                 )
@@ -774,17 +769,23 @@ const DashboardSubmitPost = () => {
                             </div>
                         </label>
 
-                        <ButtonPrimary
-                            className="md:col-span-2"
-                            type="submit"
-                            disabled={uploading}
-                        >
+                        <div className="pt-2 flex justify-center">
                             {uploading ? (
-                                <span className="animate-spin">Loading</span>
+                                <ButtonPrimary
+                                    className="text-white px-2 py-1 rounded-lg"
+                                    loading
+                                >
+                                    Submitting...
+                                </ButtonPrimary>
                             ) : (
-                                'Submit post'
+                                <ButtonPrimary
+                                    type="submit"
+                                    className="text-white px-2 py-1 rounded-lg"
+                                >
+                                    Submit Post
+                                </ButtonPrimary>
                             )}
-                        </ButtonPrimary>
+                        </div>
                         {errorMsg && <Alert type="danger" message={errorMsg} />}
                     </form>
                 </div>

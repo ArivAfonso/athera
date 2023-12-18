@@ -40,7 +40,8 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let username = getCookie('username')
+                const { data: session } = await supabase.auth.getSession()
+                let username = session.session?.user.user_metadata?.username
 
                 if (username == null) {
                     const { data } = await supabase
@@ -49,7 +50,11 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
                         .eq('id', id)
                         .single()
                     username = data?.username
-                    setCookie('username', username)
+                    await supabase.auth.updateUser({
+                        data: {
+                            username: data?.username,
+                        },
+                    })
                 }
                 setUsername(username as string)
             } catch (err) {

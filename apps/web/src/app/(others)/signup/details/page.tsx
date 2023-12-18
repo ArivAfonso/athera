@@ -560,20 +560,21 @@ const DetailsPage = ({}) => {
                                         rows={5}
                                     />
                                 </div>
-                                <div className="pt-2 flex justify-center">
-                                    {loading ? (
-                                        <button
-                                            type="submit"
-                                            className="text-white bg-blue-500 px-4 py-2 rounded-lg"
-                                        >
-                                            Create account
-                                        </button>
-                                    ) : (
-                                        <ButtonPrimary loading>
-                                            Submitting...
-                                        </ButtonPrimary>
-                                    )}
-                                </div>
+                                {loading ? (
+                                    <ButtonPrimary
+                                        className="text-white px-2 py-1 rounded-lg"
+                                        loading
+                                    >
+                                        Submitting...
+                                    </ButtonPrimary>
+                                ) : (
+                                    <ButtonPrimary
+                                        type="submit"
+                                        className="text-white px-2 py-1 rounded-lg"
+                                    >
+                                        Update account
+                                    </ButtonPrimary>
+                                )}
                             </div>
                         </div>
                     </div>

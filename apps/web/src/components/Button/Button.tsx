@@ -33,11 +33,11 @@ const Button: FC<ButtonProps> = ({
     onClick = () => {},
 }) => {
     let colors =
-        'bg-[#2f26d4] hover:bg-blue-500 text-white dark:bg-neutral-100 dark:hover:bg-neutral-50 dark:text-black'
+        'lg:bg-[#2f26d4] bg-[#1821c9] hover:bg-blue-500 text-white dark:bg-neutral-100 dark:hover:bg-neutral-50 dark:text-black'
     switch (pattern) {
         case 'primary':
             colors =
-                'bg-[#2f26d4] hover:bg-blue-500 hover:bg-primary-6000 text-primary-50'
+                'lg:bg-[#2f26d4] bg-[#1821c9] hover:bg-blue-500 hover:bg-primary-6000 text-primary-50'
             break
         case 'secondary':
             colors =
@@ -45,11 +45,11 @@ const Button: FC<ButtonProps> = ({
             break
         case 'white':
             colors =
-                'bg-white dark:bg-[#2f26d4] text-athera-blue dark:text-neutral-200'
+                'bg-white hover:bg-[#1821c9] hover:text-white dark:hover:bg-[#1821c9] dark:bg-neutral-900 text-athera-blue dark:text-neutral-200'
             break
         case 'third':
             colors =
-                'bg-white dark:bg-[#2f26d4]ring-1 ring-neutral-300 hover:ring-neutral-400 dark:ring-neutral-700 dark:hover:ring-neutral-500'
+                'bg-white dark:bg-[#1821c9] dark:lg:bg-[#2f26d4] ring-1 ring-neutral-300 hover:ring-neutral-400 dark:ring-neutral-700 dark:hover:ring-neutral-500'
             break
 
         default:

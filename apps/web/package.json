@@ -15,7 +15,7 @@
         "@headlessui/react": "^1.7.13",
         "@heroicons/react": "^2.1.1",
         "@supabase/auth-helpers-nextjs": "^0.8.3",
-        "@supabase/supabase-js": "^2.38.4",
+        "@supabase/supabase-js": "^2.39.1",
         "@syncfusion/ej2-base": "^23.1.36",
         "@syncfusion/ej2-react-richtexteditor": "^23.1.36",
         "@tailwindcss/aspect-ratio": "^0.4.2",

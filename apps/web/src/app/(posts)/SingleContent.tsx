@@ -1,6 +1,13 @@
 'use client'
 
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react'
+import React, {
+    FC,
+    ReactNode,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react'
 import SingleAuthor from './SingleAuthor'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import PostCardLikeAction from '@/components/PostCardLikeAction/PostCardLikeAction'
@@ -11,6 +18,23 @@ import parse from 'html-react-parser'
 import PostCommentSection from './PostCommentSection'
 import CommentType from '@/types/CommentType'
 
+import Bold from '@tiptap/extension-bold'
+import Document from '@tiptap/extension-document'
+import Paragraph from '@tiptap/extension-paragraph'
+import Text from '@tiptap/extension-text'
+import StarterKit from '@tiptap/starter-kit'
+import Highlight from '@tiptap/extension-highlight'
+import Underline from '@tiptap/extension-underline'
+import Link from '@tiptap/extension-link'
+import Placeholder from '@tiptap/extension-placeholder'
+import TextAlign from '@tiptap/extension-text-align'
+import Image from '@tiptap/extension-image'
+import Table from '@tiptap/extension-table'
+import TableRow from '@tiptap/extension-table-row'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import { generateHTML } from '@tiptap/core'
+
 export interface SingleContentProps {
     body: string
     author: AuthorType
@@ -18,6 +42,7 @@ export interface SingleContentProps {
     isLiked: boolean
     commentCount: number
     id: string
+    json: JSON
     currentUserID: string
 }
 
@@ -26,6 +51,7 @@ const SingleContent: FC<SingleContentProps> = ({
     author,
     likeCount,
     isLiked,
+    json,
     commentCount,
     currentUserID,
     id,
@@ -43,6 +69,25 @@ const SingleContent: FC<SingleContentProps> = ({
         rootMargin: '0%',
         freezeOnceVisible: false,
     })
+
+    const output = useMemo(() => {
+        return generateHTML(json, [
+            Document,
+            Paragraph,
+            Text,
+            Bold,
+            Highlight,
+            Underline,
+            Link,
+            Placeholder,
+            TextAlign,
+            Image,
+            Table,
+            TableCell,
+            TableHeader,
+            TableRow,
+        ])
+    }, [json])
 
     useEffect(() => {
         const handleProgressIndicator = () => {
@@ -90,13 +135,22 @@ const SingleContent: FC<SingleContentProps> = ({
             <div className="relative">
                 <div className="nc-SingleContent space-y-10">
                     {/* ENTRY CONTENT */}
-                    <div
-                        id="single-entry-content"
-                        className="prose lg:prose-lg !max-w-screen-md mx-auto dark:prose-invert"
-                        ref={contentRef}
-                    >
-                        {parse(body)}
-                    </div>
+                    {json ? (
+                        <div
+                            id="single-entry-content"
+                            className="prose lg:prose-lg !max-w-screen-md mx-auto dark:prose-invert"
+                            ref={contentRef}
+                            dangerouslySetInnerHTML={{ __html: output }}
+                        ></div>
+                    ) : (
+                        <div
+                            id="single-entry-content"
+                            className="prose lg:prose-lg !max-w-screen-md mx-auto dark:prose-invert"
+                            ref={contentRef}
+                        >
+                            {parse(body)}
+                        </div>
+                    )}
                     {/* AUTHOR */}
                     <div className="max-w-screen-md mx-auto border-b border-t border-neutral-100 dark:border-neutral-700"></div>
                     <div className="max-w-screen-md mx-auto ">

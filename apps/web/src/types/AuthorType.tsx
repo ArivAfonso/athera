@@ -10,6 +10,7 @@ export default interface AuthorType {
     }[]
     isFollowing?: boolean
     username: string
+    background?: string
     bio?: string
     website?: string
     posts?: PostType[]

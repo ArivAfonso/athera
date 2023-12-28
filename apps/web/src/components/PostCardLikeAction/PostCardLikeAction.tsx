@@ -1,6 +1,8 @@
 import React, { FC, useEffect, useState } from 'react'
 import convertNumbThousand from '@/utils/convertNumbThousand'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import toast, { Toaster } from 'react-hot-toast'
+import Alert from '../Alert/Alert'
 
 export interface PostCardLikeActionProps {
     className?: string
@@ -26,15 +28,20 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
         try {
             const { data: session } = await supabase.auth.getSession()
             const userId = session?.session?.user.id
+            const localLikes = JSON.parse(localStorage.getItem('likes') || '[]')
             // Check if the post is liked by the user
             if (userId) {
-                const { data: likes, error } = await supabase
-                    .from('likes')
-                    .select('id')
-                    .eq('post', postId)
-                    .eq('liker', userId)
-                if (!error) {
-                    setIsLiked(likes.length > 0)
+                if (localLikes) {
+                    setIsLiked(localLikes.includes(postId))
+                } else {
+                    const { data: likes, error } = await supabase
+                        .from('likes')
+                        .select('id')
+                        .eq('post', postId)
+                        .eq('liker', userId)
+                    if (!error) {
+                        setIsLiked(likes.length > 0)
+                    }
                 }
             }
         } catch (error) {
@@ -47,7 +54,16 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
             const { data: session } = await supabase.auth.getSession()
             const userId = session?.session?.user.id
 
-            if (!userId) return
+            if (!userId) {
+                toast.custom(
+                    (t) => (
+                        <Alert type="danger" message="You must be logged in" />
+                    ),
+                    {
+                        duration: 3000,
+                    }
+                )
+            }
 
             if (isLiked) {
                 // Delete the like from the database
@@ -61,8 +77,17 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
                     console.error('Error deleting like:', error)
                     return
                 }
-
                 setIsLiked(false)
+
+                // Update the local like array
+                const localLikes = JSON.parse(
+                    localStorage.getItem('likes') || '[]'
+                )
+                const updatedLocalLikes = localLikes.filter(
+                    (like: string) => like !== postId
+                )
+                localStorage.setItem('likes', JSON.stringify(updatedLocalLikes))
+
                 setLikeCount((prevLikeCount) =>
                     prevLikeCount > 0 ? prevLikeCount - 1 : 0
                 )
@@ -76,6 +101,13 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
                     console.error('Error inserting like:', error)
                     return
                 }
+
+                // Update the local like array
+                const localLikes = JSON.parse(
+                    localStorage.getItem('likes') || '[]'
+                )
+                localLikes.push(postId)
+                localStorage.setItem('likes', JSON.stringify(localLikes))
 
                 setIsLiked(true)
                 setLikeCount((prevLikeCount) => prevLikeCount + 1)

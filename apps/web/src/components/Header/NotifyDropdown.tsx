@@ -26,6 +26,7 @@ const NotifyDropdown: FC<Props> = ({ className = 'hidden sm:block' }) => {
                     Date.now() - Number(cacheTime) < 5 * 60 * 1000
                 ) {
                     setNotifications(JSON.parse(cachedNotifications))
+                    return
                 } else {
                     const supabase = createClientComponentClient()
                     const { data: session } = await supabase.auth.getSession()

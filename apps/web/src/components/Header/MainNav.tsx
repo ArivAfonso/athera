@@ -8,7 +8,6 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import AvatarDropdown from './AvatarDropdown'
 import NotifyDropdown from './NotifyDropdown'
-import { use } from 'react'
 import ButtonPrimary from '../Button/ButtonPrimary'
 
 async function getUser() {
@@ -20,8 +19,11 @@ async function getUser() {
 
 export interface MainNavProps {}
 
-const MainNav: FC<MainNavProps> = ({}) => {
-    const user = use(getUser())
+//@ts-ignore
+const MainNav: FC<MainNavProps> = async ({}) => {
+    const supabase = createServerComponentClient({ cookies })
+    const { data: session } = await supabase.auth.getSession()
+    const user = session?.session?.user
     return (
         <div className="nc-MainNav relative z-10 bg-white dark:bg-slate-900 ">
             <div className="container">

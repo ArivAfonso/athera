@@ -1,21 +1,21 @@
-import React, { FC } from "react";
+import React, { FC } from 'react'
 
 export interface BgGlassmorphismProps {
-  className?: string;
+    className?: string
 }
 
 const BgGlassmorphism: FC<BgGlassmorphismProps> = ({
-  className = "absolute inset-x-0 top-0 min-h-0 pl-10 py-32 flex flex-col overflow-hidden z-0",
+    className = 'absolute inset-0 top-0 min-h-0 pl-10 py-32 flex flex-col overflow-hidden z-0',
 }) => {
-  return (
-    <div
-      className={`nc-BgGlassmorphism ${className}`}
-      data-nc-id="BgGlassmorphism"
-    >
-      <span className="bg-[#ef233c] w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 lg:w-96 lg:h-9w-96" />
-      <span className="bg-[#04868b] w-80 h-80 ml-10 -mt-10 rounded-full mix-blend-multiply filter blur-3xl opacity-20 lg:w-96 lg:h-9w-96 nc-animation-delay-2000" />
-    </div>
-  );
-};
+    return (
+        <div
+            className={`nc-BgGlassmorphism ${className}`}
+            data-nc-id="BgGlassmorphism"
+        >
+            <span className="bg-[#0077b6] w-1/2 h-1/2 mx-auto rounded-full mix-blend-multiply filter blur-3xl opacity-20 lg:w-1/2 lg:h-1/2" />
+            <span className="bg-[#023e8a] w-1/2 h-1/2 mx-auto -mt-10 rounded-full mix-blend-multiply filter blur-3xl opacity-20 lg:w-1/2 lg:h-1/2 nc-animation-delay-2000" />
+        </div>
+    )
+}
 
-export default BgGlassmorphism;
+export default BgGlassmorphism

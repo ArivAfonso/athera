@@ -15,6 +15,7 @@ const MainHeading: React.FC<HeadingProps> = ({
     ...args
 }) => {
     const words = children?.toString().split(' ')
+    const isMobile = window.innerWidth < 768
 
     const highlightWord = 'happening'
 
@@ -30,7 +31,7 @@ const MainHeading: React.FC<HeadingProps> = ({
                 }
             >
                 <h2
-                    className={`text-6xl md:text-7xl lg:text-8xl font-bold leading-normal md:leading-tight lg:leading-tight`}
+                    className={`text-6xl md:text-7xl lg:text-8xl leading-snug md:leading-tight lg:leading-tight`}
                     {...args}
                 >
                     {words?.map((word, index) => (
@@ -39,28 +40,61 @@ const MainHeading: React.FC<HeadingProps> = ({
                                 highlightWord.toLowerCase() && (
                                 <React.Fragment>
                                     <br />
-                                    <span className="text-blue-500 bg-blue-100 dark:bg-blue-950 p-1 rounded-md">
-                                        {word}
+                                    <span className="text-blue-500 font-bold bg-blue-100 dark:bg-blue-950 p-1 rounded-md">
+                                        {word.trim()}
                                     </span>
                                 </React.Fragment>
                             )}
                             {word.toLowerCase() !==
                                 highlightWord.toLowerCase() && (
-                                <span>{word}</span>
+                                <span className="font-bold">{word}</span>
                             )}
                             {index < words.length - 1 && ' '}
                         </React.Fragment>
                     ))}
-                    <span>
+                    {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+                    <link
+                        href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap"
+                        rel="stylesheet"
+                    ></link>
+                    {isMobile ? (
                         <Typing
-                            speed={50}
+                            speed={40}
                             eraseSpeed={70}
-                            eraseDelay={500}
-                            cursorClassName="font-light text-blue-500"
-                            className="text-blue-500"
-                            text={['Music', 'Technology', 'AI', 'the World']}
+                            eraseDelay={600}
+                            cursorClassName="text-blue-500 dark:text-blue-300"
+                            className="dark:text-blue-300 text-6xl md:text-7xl lg:text-8xl font-light font-mono lg:mt-0 md:mt-0 xl:mt-0 sm:mt-[-16px] text-blue-500"
+                            text={[
+                                'Music',
+                                'Tech',
+                                'Finance',
+                                'Space',
+                                'Football',
+                                'History',
+                                'Business',
+                            ]}
                         />
-                    </span>
+                    ) : (
+                        <div>
+                            <Typing
+                                speed={40}
+                                eraseSpeed={70}
+                                eraseDelay={600}
+                                cursorClassName="text-blue-500 dark:text-blue-300"
+                                className="dark:text-blue-300 text-6xl md:text-7xl lg:text-8xl font-light font-mono lg:mt-0 md:mt-0 xl:mt-0 sm:mt-[-16px] text-blue-500"
+                                text={[
+                                    'Music',
+                                    'Technology',
+                                    'Finance',
+                                    'Space',
+                                    'Football',
+                                    'History',
+                                    'Business',
+                                    'the World',
+                                ]}
+                            />
+                        </div>
+                    )}
                 </h2>
                 {desc && (
                     <span className="mt-2 md:mt-3 font-normal block text-base sm:text-xl text-neutral-500 dark:text-neutral-400">

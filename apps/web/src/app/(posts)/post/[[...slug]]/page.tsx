@@ -19,6 +19,7 @@ async function getPostData(context: { params: { slug: any } }) {
             `
         title,
         id,
+        json,
         rawText,
         created_at,
         estimatedReadingTime,
@@ -201,6 +202,7 @@ const PageSingle = async (context: any) => {
                         <SingleContent
                             body={data.rawText}
                             author={data.author}
+                            json={data.json}
                             id={data.id}
                             //@ts-ignore
                             currentUserID={currentUserID ? currentUserID : ''}

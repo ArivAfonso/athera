@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, use } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Input from '@/components/Input/Input'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
@@ -35,8 +35,6 @@ const PageForgotPass = ({}) => {
         // }
     }
     getData()
-
-    use(getData())
 
     async function updatePassword(newPassword: string) {
         const supabase = createClientComponentClient()

@@ -1,45 +1,19 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Input from '@/components/Input/Input'
 import NextImage from 'next/image'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import Textarea from '@/components/Textarea/Textarea'
 import Label from '@/components/Label/Label'
-import { addClass, removeClass, Browser } from '@syncfusion/ej2-base'
-import {
-    RichTextEditorComponent,
-    Toolbar,
-    Inject,
-    Image,
-    Link,
-    HtmlEditor,
-    Count,
-    QuickToolbar,
-    Table,
-    EmojiPicker,
-    PasteCleanupSettingsModel,
-    ImageSettingsModel,
-    PasteCleanup,
-} from '@syncfusion/ej2-react-richtexteditor'
-import {
-    ToolbarSettingsModel,
-    FileManager,
-    FileManagerSettingsModel,
-    QuickToolbarSettingsModel,
-} from '@syncfusion/ej2-react-richtexteditor'
-import { useThemeMode } from '@/hooks/useThemeMode'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Controller, useForm } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
 import { useRouter } from 'next/navigation'
 import { pipeline } from '@xenova/transformers'
-import { registerLicense } from '@syncfusion/ej2-base'
 import stringToSlug from '@/utils/stringToSlug'
-
-registerLicense(
-    'Ngo9BigBOggjHTQxAR8/V1NHaF5cXmVCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdgWH5edXRcQ2BfWE1/XEI='
-)
+import TiptapEditor from '@/components/PostSubmissionEditor/TiptapEditor'
+import toast from 'react-hot-toast'
 
 function strWords(str: string) {
     return str.split(/\s+/).length
@@ -55,180 +29,6 @@ function modifyString(str: string) {
 
 const DashboardSubmitPost = () => {
     const router = useRouter()
-    let rteObj: RichTextEditorComponent
-    const hostUrl: string = 'https://ej2-aspcore-service.azurewebsites.net/'
-    const pasteCleanupSettings: PasteCleanupSettingsModel = {
-        prompt: false,
-        allowedStyleProps: [],
-        keepFormat: false,
-        plainText: false,
-    }
-
-    const insertImageSettings: ImageSettingsModel = {
-        allowedTypes: ['.jpeg', '.jpg', '.png'],
-        display: 'inline',
-        width: 'auto',
-        height: 'auto',
-        saveFormat: 'Base64',
-    }
-
-    // Rich Text Editor items list
-    const items: string[] = [
-        'Undo',
-        'Redo',
-        '|',
-        'Bold',
-        'Italic',
-        'Underline',
-        'StrikeThrough',
-        'FontName',
-        'FontSize',
-        'FontColor',
-        'BackgroundColor',
-        'LowerCase',
-        'UpperCase',
-        '|',
-        'Formats',
-        'Alignments',
-        'NumberFormatList',
-        'BulletFormatList',
-        'Outdent',
-        'Indent',
-        'SuperScript',
-        'SubScript',
-        'EmojiPicker',
-        '|',
-        'CreateTable',
-        'CreateLink',
-        'Image',
-        '|',
-    ]
-    const fileManagerSettings: FileManagerSettingsModel = {
-        enable: true,
-        path: '/Pictures/Food',
-        ajaxSettings: {
-            url: hostUrl + 'api/FileManager/FileOperations',
-            getImageUrl: hostUrl + 'api/FileManager/GetImage',
-            uploadUrl: hostUrl + 'api/FileManager/Upload',
-            downloadUrl: hostUrl + 'api/FileManager/Download',
-        },
-    }
-    const quickToolbarSettings: QuickToolbarSettingsModel = {
-        table: [
-            'TableHeader',
-            'TableRows',
-            'TableColumns',
-            'TableCell',
-            '-',
-            'BackgroundColor',
-            'TableRemove',
-            'TableCellVerticalAlign',
-            'Styles',
-        ],
-    }
-    //Rich Text Editor ToolbarSettings
-    const toolbarSettings: ToolbarSettingsModel = {
-        items: items,
-    }
-    function handleFullScreen(e: any) {
-        // Use optional chaining to handle the possibility of elements not being found
-        let sbCntEle = document.querySelector(
-            '.sb-content.e-view'
-        ) as HTMLElement
-        let sbHdrEle = document.querySelector(
-            '.sb-header.e-view'
-        ) as HTMLElement
-        let leftBar
-        let transformElement
-
-        if (Browser.isDevice) {
-            leftBar = document.querySelector('#right-sidebar') as HTMLElement
-            transformElement = document.querySelector(
-                '.sample-browser.e-view.e-content-animation'
-            ) as HTMLElement
-        } else {
-            leftBar = document.querySelector('#left-sidebar') as HTMLElement
-            transformElement = document.querySelector(
-                '#right-pane'
-            ) as HTMLElement
-        }
-
-        // Check if elements were found before using them
-        if (!sbCntEle || !sbHdrEle || !leftBar || !transformElement) {
-            console.error('One or more required elements not found.')
-            return
-        }
-
-        if (e.targetItem === 'Maximize') {
-            if (Browser.isDevice && Browser.isIos) {
-                // Assuming addClass and removeClass are functions to manipulate CSS classes
-                addClass([sbCntEle, sbHdrEle], ['hide-header'])
-            }
-            addClass([leftBar], ['e-close'])
-            removeClass([leftBar], ['e-open'])
-
-            if (!Browser.isDevice) {
-                // Assuming you want to adjust margin if not on a device
-                transformElement.style.marginLeft = '0px'
-            }
-            transformElement.style.transform = 'inherit'
-        } else if (e.targetItem === 'Minimize') {
-            if (Browser.isDevice && Browser.isIos) {
-                // Assuming addClass and removeClass are functions to manipulate CSS classes
-                removeClass([sbCntEle, sbHdrEle], ['hide-header'])
-            }
-            removeClass([leftBar], ['e-close'])
-
-            if (!Browser.isDevice) {
-                addClass([leftBar], ['e-open'])
-                // Assuming you want to set the margin based on the leftBar's width
-                transformElement.style.marginLeft = leftBar.offsetWidth + 'px'
-            }
-            transformElement.style.transform = 'translateX(0px)'
-        }
-    }
-
-    const { isDarkMode } = useThemeMode()
-
-    useEffect(() => {
-        // Load the appropriate Tailwind CSS file based on the theme mode
-        const linkElement = document.createElement('link')
-        linkElement.rel = 'stylesheet'
-        if (isDarkMode) {
-            linkElement.href =
-                'https://cdn.syncfusion.com/ej2/22.1.34/tailwind-dark.css'
-            const existingLightModeLink = document.querySelector(
-                'link[href="https://cdn.syncfusion.com/ej2/22.1.34/tailwind.css"]'
-            )
-            if (existingLightModeLink) {
-                existingLightModeLink.remove()
-            }
-        } else {
-            linkElement.href =
-                'https://cdn.syncfusion.com/ej2/22.1.34/tailwind.css'
-            const existingDarkModeLink = document.querySelector(
-                'link[href="https://cdn.syncfusion.com/ej2/22.1.34/tailwind-dark.css"]'
-            )
-            if (existingDarkModeLink) {
-                existingDarkModeLink.remove()
-            }
-        }
-        document.head.appendChild(linkElement)
-
-        // Cleanup on unmount
-        return () => {
-            const existingLink = isDarkMode
-                ? document.querySelector(
-                      'link[href="https://cdn.syncfusion.com/ej2/22.1.34/tailwind-dark.css"]'
-                  )
-                : document.querySelector(
-                      'link[href="https://cdn.syncfusion.com/ej2/22.1.34/tailwind.css"]'
-                  )
-            if (existingLink) {
-                existingLink.remove()
-            }
-        }
-    }, [isDarkMode])
 
     const supabase = createClientComponentClient()
 
@@ -238,6 +38,10 @@ const DashboardSubmitPost = () => {
     const [selectedImage, setSelectedImage] = useState(null)
     const [uploading, setUploading] = useState(false)
     const [bigTag, setBigTag] = useState(false)
+    const [json, setJson] = useState('' as any)
+    const [progress, setProgress] = useState(0)
+
+    const isMobile = window.innerWidth < 700
 
     const [tags, setTags] = useState([''])
 
@@ -271,7 +75,9 @@ const DashboardSubmitPost = () => {
 
     async function sendPost(formData: any) {
         setUploading(true)
+        setErrorMsg('')
         const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
+        setProgress(10)
 
         tags.filter((tag) => tag && tag.length > 0).map((tag: string) => {
             if (tag.length == 0 || tag == null || tag.length > 20) {
@@ -289,6 +95,7 @@ const DashboardSubmitPost = () => {
 
         // Extract the embedding output
         const embedding = Array.from(output.data)
+        setProgress(20)
         try {
             if (selectedImage) {
                 // Get the authenticated user
@@ -315,95 +122,41 @@ const DashboardSubmitPost = () => {
 
                 // Retrieve the generated post ID
                 const postId: string = data ? data[0]?.id : null
+                setProgress(30)
 
-                // Define the regular expression pattern to extract base64 image data
-                const pattern = /base64,([^'">]+)/g
+                // // Get all the image blob urls from the editor json
+                // const imageUrls = json
+                //     .filter((block: any) => block.type === 'image')
+                //     .map((block: any) => block.attrs.src)
 
-                // Find all matches of the pattern in the HTML string
-                let match
-                const matches = []
-                while ((match = pattern.exec(htmlText))) {
-                    console.log(match)
-                    matches.push(match[1])
-                }
+                // // Upload the images to Supabase storage and rename the link in the json to the new link
+                // for (let i = 0; i < imageUrls.length; i++) {
+                //     const { data: imagePath } = await supabase.storage
+                //         .from('images')
+                //         .upload(
+                //             `${user?.id}/${data[0].id}/${i}`,
+                //             imageUrls[i].split(',')[1]
+                //         )
 
-                // Function to upload the image to Supabase Storage
-                const uploadToSupabaseStorage = async (
-                    base64Data: string,
-                    index: number
-                ) => {
-                    try {
-                        // Extract the image data type from the base64 string
-                        //data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAoHBwgHBgoICAgLC
-                        const typeMatch = base64Data.match(/^data:(.+);base64,/)
-                        const imageType = typeMatch ? typeMatch[1] : 'image/png' // Set a default value if the type is not matched
+                //     json[i].attrs.src =
+                //         'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                //         imagePath?.path
+                // }
 
-                        // Decode base64 data
-                        const byteCharacters = atob(base64Data)
-                        const byteNumbers = new Array(byteCharacters.length)
-                        for (let i = 0; i < byteCharacters.length; i++) {
-                            byteNumbers[i] = byteCharacters.charCodeAt(i)
-                        }
-                        const byteArray = new Uint8Array(byteNumbers)
+                // if (postInsertError) {
+                //     throw new Error(
+                //         `Post insertion failed: ${postInsertError.message}`
+                //     )
+                // }
 
-                        // Convert the byte array to a Blob
-                        const blob = new Blob([byteArray], { type: imageType })
-
-                        // Upload the Blob to Supabase Storage
-                        const { data, error } = await supabase.storage
-                            .from('images')
-                            .upload(
-                                `${user?.id}/${postId}/image${index}.${
-                                    imageType.split('/')[1]
-                                }`,
-                                blob
-                            )
-
-                        if (error) {
-                            console.error(
-                                `Error uploading image ${index}:`,
-                                error
-                            )
-                        } else {
-                            console.log(imageType)
-                            // Replace the base64 image with the Supabase URL
-                            const supabaseUrl = `https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/${data?.path}`
-                            htmlText = htmlText.replace(
-                                `data:image/jpeg;base64,${base64Data}`,
-                                `${supabaseUrl}`
-                            )
-                            htmlText = htmlText.replace(
-                                `data:image/png;base64,${base64Data}`,
-                                `${supabaseUrl}`
-                            )
-                            htmlText = htmlText.replace(
-                                `data:image/jpg;base64,${base64Data}`,
-                                `${supabaseUrl}`
-                            )
-                            console.log(
-                                `Image ${index} uploaded successfully:`,
-                                data
-                            )
-                        }
-                    } catch (error) {
-                        console.error(`Error processing image ${index}:`, error)
-                    }
-                }
-                // Iterate over the matches and upload images to Supabase Storage
-                matches.forEach(async (base64Data, index) => {
-                    await uploadToSupabaseStorage(base64Data, index)
-                })
-
-                if (postInsertError) {
-                    throw new Error(
-                        `Post insertion failed: ${postInsertError.message}`
-                    )
-                }
+                setProgress(50)
 
                 // Upload the selected image to Supabase storage with the post's ID as the name
                 const { data: imagePath } = await supabase.storage
                     .from('images')
                     .upload(`${user?.id}/${postId}/main-image`, selectedImage)
+
+                setProgress(70)
 
                 const tagsArray: any[] = await Promise.all(
                     tags
@@ -458,10 +211,13 @@ const DashboardSubmitPost = () => {
                             }
                         })
                 )
+
                 await supabase
                     .from('post_categories')
                     .insert(tagsArray)
                     .select('*')
+
+                setProgress(90)
 
                 // Update the inserted post with the image URL
                 await supabase
@@ -470,22 +226,160 @@ const DashboardSubmitPost = () => {
                         image:
                             'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
                             imagePath?.path,
-                        rawText: htmlText,
+                        json: json,
                     })
                     .eq('id', postId)
+
+                setProgress(100)
 
                 router.push(
                     `/post/${stringToSlug(formData.postTitle)}/${postId}`
                 )
             } else {
-                setErrorMsg('Please select an image')
+                toast.custom((t) => (
+                    <Alert
+                        type="danger"
+                        message="Please upload a featured image"
+                    />
+                ))
                 setUploading(false)
             }
         } catch (error) {
-            setErrorMsg('Post could not be created')
+            toast.custom((t) => (
+                <Alert type="danger" message={`Post submission failed`} />
+            ))
             console.log(error)
             setUploading(false)
         }
+    }
+
+    async function sendDraft(formData: any) {
+        setUploading(true)
+        setErrorMsg('')
+
+        tags.filter((tag) => tag && tag.length > 0).map((tag: string) => {
+            if (tag.length > 20) {
+                setUploading(false)
+                toast.custom((t) => (
+                    <Alert
+                        type="danger"
+                        message="Categories must be between 1 and 20 characters"
+                    />
+                ))
+                return
+            }
+        })
+
+        if (!formData.postTitle) {
+            toast.custom((t) => (
+                <Alert type="danger" message="Post title is required" />
+            ))
+            setUploading(false)
+            return
+        }
+
+        // Get the authenticated user
+        const { data: session } = await supabase.auth.getSession()
+
+        // Insert the draft without the image URL
+        const { data, error: draftInsertError } = await supabase
+            .from('drafts')
+            .insert([
+                {
+                    title: formData.postTitle,
+                    author: session.session?.user?.id,
+                    description: formData.postExcerpt,
+                    text: text,
+                    json: json,
+                    estimatedReadingTime: Math.round(strWords(text) / 200),
+                },
+            ])
+            .select()
+
+        // Retrieve the generated draft ID
+        const draftId: string = data ? data[0]?.id : null
+
+        // Upload the selected image to Supabase storage with the post's ID as the name
+        if (selectedImage) {
+            const { data: imagePath } = await supabase.storage
+                .from('images')
+                .upload(
+                    `${session.session?.user?.id}/drafts/${draftId}/main-image`,
+                    selectedImage
+                )
+
+            // Update the inserted draft with the image URL
+            await supabase
+                .from('drafts')
+                .update({
+                    image:
+                        'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                        imagePath?.path,
+                })
+                .eq('id', draftId)
+        }
+
+        const tagsArray: any[] = await Promise.all(
+            tags
+                .filter((tag) => tag && tag.length > 0)
+                .map(async (tag: string) => {
+                    tag = modifyString(tag)
+                    console.log(tag)
+
+                    const { data: isCategory } = await supabase
+                        .from('categories')
+                        .select('id')
+                        .eq('name', tag)
+                    console.log(isCategory)
+
+                    if (isCategory && isCategory.length > 0) {
+                        return {
+                            post: draftId,
+                            category: isCategory[0].id,
+                        }
+                    } else {
+                        // Choose a random element from an array of words
+                        const colors = [
+                            'Red',
+                            'Green',
+                            'Blue',
+                            'Yellow',
+                            'Purple',
+                            'Pink',
+                            'Orange',
+                            'Grey',
+                        ]
+                        const color =
+                            colors[Math.floor(Math.random() * colors.length)]
+                        const { data: newCategory } = await supabase
+                            .from('categories')
+                            .insert({ name: tag, color: color })
+                            .select('*')
+
+                        if (newCategory && newCategory.length > 0) {
+                            return {
+                                post: draftId,
+                                category: newCategory[0].id,
+                            }
+                        } else {
+                            // Handle the case where the category couldn't be created
+                            return null // or any other suitable value
+                        }
+                    }
+                })
+        )
+
+        if (tagsArray.length > 0)
+            await supabase.from('draft_categories').insert(tagsArray)
+
+        setUploading(false)
+        toast.custom((t) => (
+            <Alert
+                type="success"
+                message="Draft saved successfully. You can access it from your dashboard"
+            />
+        ))
+        // router.push(`/draft/${draftId}`)
     }
 
     const handleImageSelect = (event: { target: { files: any[] } }) => {
@@ -509,9 +403,12 @@ const DashboardSubmitPost = () => {
                 setSelectedImage(file)
             } else {
                 // Handle the case when the file type is not supported
-                setErrorMsg(
-                    'Unsupported file type. Please use PNG, JPG, or JPEG.'
-                )
+                toast.custom((t) => (
+                    <Alert
+                        type="danger"
+                        message="File type not supported. Please upload a PNG or JPG file"
+                    />
+                ))
             }
         }
         setIsDragging(false)
@@ -546,13 +443,13 @@ const DashboardSubmitPost = () => {
                     <form
                         className="grid md:grid-cols-2 gap-6"
                         action="#"
-                        onSubmit={handleSubmit(
-                            async (data) => await sendPost(data)
-                        )}
+                        onSubmit={handleSubmit(async (data) => {
+                            await sendPost(data)
+                        })}
                         method="post"
                     >
-                        <label className="block md:col-span-2">
-                            <label>Post Title *</label>
+                        <Label className="block sm:col-span-1 md:col-span-2">
+                            <Label>Post Title *</Label>
                             <Controller
                                 name="postTitle"
                                 control={control}
@@ -567,9 +464,9 @@ const DashboardSubmitPost = () => {
                             {errors.postTitle && (
                                 <Alert type="danger" message="Required" />
                             )}
-                        </label>
-                        <label className="block md:col-span-2">
-                            <label>Post Excerpt</label>
+                        </Label>
+                        <Label className="block sm:col-span-1 md:col-span-2">
+                            <Label>Post Excerpt</Label>
                             <Controller
                                 name="postExcerpt"
                                 control={control}
@@ -583,15 +480,15 @@ const DashboardSubmitPost = () => {
                                     </>
                                 )}
                             />
-                        </label>
-                        <label className="block md:col-span-2">
-                            <label>Categories</label>
+                        </Label>
+                        <Label className="block sm:col-span-1 md:col-span-2">
+                            <Label>Categories</Label>
                             <Controller
                                 name="tags"
                                 control={control}
                                 render={({ field }) => (
                                     <>
-                                        <div className="rounded-l w-min-80vw sm:w-600px mt-4 flex flex-wrap items-center gap-2 bg-transparent">
+                                        <div className="rounded-l w-full sm:w-min-80vw sm:w-600px mt-4 flex flex-wrap items-center gap-2 bg-transparent">
                                             {tags.map((tag, index) =>
                                                 tag ? (
                                                     <div
@@ -628,7 +525,7 @@ const DashboardSubmitPost = () => {
                                     </>
                                 )}
                             />
-                        </label>
+                        </Label>
 
                         <div className="block md:col-span-2">
                             <Label>Featured Image</Label>
@@ -693,97 +590,81 @@ const DashboardSubmitPost = () => {
                                                 </p>
                                             </div>
                                             <p className="text-xs text-neutral-500">
-                                                PNG, JPG up to 10MB
+                                                PNG, JPG up to 1MB
                                             </p>
                                         </>
                                     )}
                                 </div>
                             </div>
                         </div>
-                        <label className="block md:col-span-2">
-                            <Label> Post Content</Label>
-                            <link
-                                href="https://cdn.syncfusion.com/ej2/22.1.34/tailwind.css"
-                                rel="stylesheet"
-                            ></link>
-                            <div className="control-pane dark:bg-blue-950">
-                                <div className="control-section" id="rteTools">
-                                    <div className="rte-control-section">
-                                        <div className="mx-auto custom-rte-styles">
-                                            <RichTextEditorComponent
-                                                id="toolsRTE"
-                                                ref={(richtexteditor) => {
-                                                    rteObj = richtexteditor!
-                                                    if (
-                                                        richtexteditor != null
-                                                    ) {
-                                                        setText(
-                                                            rteObj.getText()
-                                                        )
-                                                        setHtmlText(
-                                                            rteObj.getHtml()
-                                                        )
-                                                    }
-                                                }}
-                                                enablePersistence={true}
-                                                showCharCount={true}
-                                                insertImageSettings={
-                                                    insertImageSettings
-                                                }
-                                                actionBegin={handleFullScreen.bind(
-                                                    this
-                                                )}
-                                                placeholder="Type something"
-                                                maxLength={50000}
-                                                toolbarSettings={
-                                                    toolbarSettings
-                                                }
-                                                fileManagerSettings={
-                                                    fileManagerSettings
-                                                }
-                                                pasteCleanupSettings={
-                                                    pasteCleanupSettings
-                                                }
-                                                quickToolbarSettings={
-                                                    quickToolbarSettings
-                                                }
-                                            >
-                                                <Inject
-                                                    services={[
-                                                        Toolbar,
-                                                        Image,
-                                                        Link,
-                                                        HtmlEditor,
-                                                        Count,
-                                                        QuickToolbar,
-                                                        Table,
-                                                        PasteCleanup,
-                                                        FileManager,
-                                                        EmojiPicker,
-                                                    ]}
-                                                />
-                                            </RichTextEditorComponent>
-                                        </div>
+
+                        {isMobile ? (
+                            <div className="flex-1 relative pb-[700px]">
+                                <div className="absolute inset-0 flex flex-col">
+                                    <Label>Post Content</Label>
+                                    <div className="w-full bg-white dark:bg-neutral-900 rounded-2xl dark:ring dark:ring-neutral-50/10">
+                                        <TiptapEditor
+                                            onUpdate={(editor) => {
+                                                const text = editor.getText()
+                                                setText(text)
+                                                setJson(editor.getJSON())
+                                            }}
+                                        />
                                     </div>
                                 </div>
                             </div>
-                        </label>
+                        ) : (
+                            <div className="block md:col-span-2">
+                                <Label>Post Content</Label>
+                                <div className=" bg-white dark:bg-neutral-900 rounded-2xl dark:ring dark:ring-neutral-50/10">
+                                    <TiptapEditor
+                                        onUpdate={(editor) => {
+                                            const text = editor.getText()
+                                            setText(text)
+                                            setJson(editor.getJSON())
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        )}
 
-                        <div className="pt-2 flex justify-center">
+                        <div className="pt-2 md:col-span-2 flex space-x-12 justify-center">
                             {uploading ? (
-                                <ButtonPrimary
-                                    className="text-white px-2 py-1 rounded-lg"
-                                    loading
-                                >
-                                    Submitting...
-                                </ButtonPrimary>
+                                <>
+                                    <ButtonPrimary
+                                        className="text-white md:col-span-2 rounded-lg"
+                                        loading
+                                    >
+                                        Submitting...
+                                    </ButtonPrimary>
+                                    <div className="md:col-span-2 h-2 relative overflow-hidden rounded-lg w-full mt-4">
+                                        <div className="w-full h-full bg-gray-200 absolute"></div>
+                                        <div
+                                            style={{ width: `${progress}%` }}
+                                            className="h-full bg-blue-500 absolute rounded-lg transition-all duration-500 ease-in-out"
+                                        ></div>
+                                    </div>
+                                </>
                             ) : (
-                                <ButtonPrimary
-                                    type="submit"
-                                    className="text-white px-2 py-1 rounded-lg"
-                                >
-                                    Submit Post
-                                </ButtonPrimary>
+                                <>
+                                    <ButtonPrimary
+                                        type="submit"
+                                        className="text-white px-2 py-1 rounded-lg"
+                                    >
+                                        Submit Post
+                                    </ButtonPrimary>
+                                    <ButtonPrimary
+                                        type="button"
+                                        onClick={handleSubmit(
+                                            async (data, event) => {
+                                                await sendDraft(data)
+                                            }
+                                        )}
+                                        className="text-white px-2 py-1 rounded-lg ml-2"
+                                    >
+                                        Save Draft
+                                    </ButtonPrimary>
+                                </>
                             )}
                         </div>
                         {errorMsg && <Alert type="danger" message={errorMsg} />}

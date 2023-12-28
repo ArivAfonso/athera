@@ -10,8 +10,7 @@ import { cookies } from 'next/headers'
 import PostType from '@/types/PostType'
 import CategoryType from '@/types/CategoryType'
 import AuthorType from '@/types/AuthorType'
-
-const revalidate = 60
+import Particles from '@/components/Particles/Particles'
 
 async function getData() {
     const supabase = createServerComponentClient({ cookies })
@@ -71,8 +70,15 @@ const PageHome = async ({}) => {
     return (
         <div className="PageHome relative overflow-x-hidden">
             <div className="container relative">
+                <div className="absolute inset-0 h-[100vh]">
+                    <Particles
+                        className="pointer-events-none w-full h-full"
+                        quantity={100}
+                    />
+                </div>
+                <div className="absolute inset-x-0 mt-28 m-auto h-80 max-w-lg bg-gradient-to-tr dark:from-indigo-400 dark:via-blue-800 dark:to-blue-200 blur-[118px] from-blue-200 via-blue-300 to-blue-400"></div>
                 <SectionLargeSlider
-                    className="pt-10 pb-16 md:py-16 lg:pb-28 lg:pt-20"
+                    className="pt-6 pb-16 md:py-16 lg:pb-28 lg:pt-12"
                     posts={data.popular_posts.filter((_, i) => i < 3)}
                 />
 

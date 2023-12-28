@@ -36,7 +36,7 @@ const Card2: FC<Card2Props> = ({
                 />
             </div>
 
-            <SocialsShare className="absolute hidden md:grid gap-[5px] right-4 top-4 opacity-0 z-[-1] group-hover:z-10 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* <SocialsShare className="absolute hidden md:grid gap-[5px] right-4 top-4 opacity-0 z-[-1] group-hover:z-10 group-hover:opacity-100 transition-opacity duration-300" /> */}
             <Link href={`/post/${post.title}/${post.id}`} />
 
             <div className="mt-5 px-4 flex flex-col">

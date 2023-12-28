@@ -35,6 +35,8 @@ function AccountPage() {
     const [showModal, setShowModal] = useState(false)
     const supabase = createClientComponentClient()
     const [session, setSession] = useState<any>(null)
+    const [selectedImage, setSelectedImage] = useState(null)
+    const [imgChanged, setImgChanged] = useState(false)
 
     const [profile, setProfile] = useState({
         name: '',
@@ -42,6 +44,7 @@ function AccountPage() {
         website: '',
         bio: '',
         avatar: '',
+        background: '',
         phone: '',
         tiktok: '',
         twitter: '',
@@ -153,6 +156,23 @@ function AccountPage() {
                 })
             }
 
+            if (imgChanged) {
+                const { data: imgPath, error: imgError } =
+                    await supabase.storage.from('avatars').upload(
+                        `${session.session?.user.id}/bg`,
+                        //@ts-ignore
+                        selectedImage
+                    )
+                if (imgError) {
+                    setError('Error uploading image')
+                    setLoading(false)
+                    return
+                }
+                formData.background =
+                    'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/avatars/' +
+                    imgPath.path
+            }
+
             await supabase
                 .from('users')
                 .update([
@@ -164,6 +184,9 @@ function AccountPage() {
                                 : formData.fullName,
                         // email: formData.email,
                         website: formData.website,
+                        background: formData.background
+                            ? formData.background
+                            : profile.background,
                         bio: formData.about,
                         avatar: imgUrl ? imgUrl : profile.avatar,
                         phone: formData.phone,
@@ -202,6 +225,49 @@ function AccountPage() {
         }
         checkLikedStatus()
     }, [])
+
+    const [isDragging, setIsDragging] = useState(false)
+    const [showImg, setShowImg] = useState(null)
+
+    const handleDrop = (event: any) => {
+        event.preventDefault()
+        const file = event.dataTransfer.files[0]
+        if (file) {
+            if (
+                file.type === 'image/png' ||
+                file.type === 'image/jpeg' ||
+                file.type === 'image/jpg'
+            ) {
+                setSelectedImage(file)
+                const reader = new FileReader()
+                reader.onloadend = function () {
+                    //@ts-ignore
+                    setShowImg(reader.result as string)
+                }
+                reader.readAsDataURL(file)
+                setImgChanged(true)
+            } else {
+                // Handle the case when the file type is not supported
+                setError('Unsupported file type. Please use PNG, JPG, or JPEG.')
+            }
+        }
+        setIsDragging(false)
+    }
+
+    const handleDragOver = (event: any) => {
+        event.preventDefault()
+        setIsDragging(true)
+    }
+
+    const handleDragEnter = (event: any) => {
+        event.preventDefault()
+        setIsDragging(true)
+    }
+
+    const handleDragLeave = (event: any) => {
+        event.preventDefault()
+        setIsDragging(false)
+    }
 
     const handleImageSelect = (event: { target: { files: any[] } }) => {
         const file = event.target.files[0]
@@ -307,6 +373,80 @@ function AccountPage() {
                                     />
                                 </div>
                                 {/* Other form fields */}
+                                <div>
+                                    <Label>Featured Image</Label>
+
+                                    <div
+                                        onDrop={handleDrop}
+                                        onDragOver={handleDragOver}
+                                        onDragEnter={handleDragEnter}
+                                        onDragLeave={handleDragLeave}
+                                        className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-md"
+                                    >
+                                        <div className="space-y-1 text-center">
+                                            {selectedImage ? (
+                                                <Image
+                                                    src={URL.createObjectURL(
+                                                        selectedImage
+                                                    )}
+                                                    alt="Selected Image"
+                                                    width={1260} // Adjust the desired width
+                                                    height={750} // Adjust the desired height
+                                                />
+                                            ) : (
+                                                <>
+                                                    <svg
+                                                        className="mx-auto h-12 w-12 text-neutral-400"
+                                                        stroke="currentColor"
+                                                        fill="none"
+                                                        viewBox="0 0 48 48"
+                                                        aria-hidden="true"
+                                                    >
+                                                        {/* Your SVG path here */}
+                                                    </svg>
+                                                    <div className="flex flex-col sm:flex-row text-sm text-neutral-6000">
+                                                        <label
+                                                            htmlFor="file-upload"
+                                                            className={`relative cursor-pointer rounded-md font-medium text-primary-6000 hover:text-primary-800 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 ${
+                                                                isDragging
+                                                                    ? 'border-2 border-primary-500'
+                                                                    : ''
+                                                            }`}
+                                                        >
+                                                            {isDragging ? (
+                                                                <span>
+                                                                    Drop here
+                                                                </span>
+                                                            ) : (
+                                                                <span>
+                                                                    Upload a
+                                                                    file
+                                                                </span>
+                                                            )}
+                                                            <input
+                                                                id="file-upload"
+                                                                name="file-upload"
+                                                                type="file"
+                                                                className="sr-only"
+                                                                //@ts-ignore
+                                                                onChange={
+                                                                    handleImageSelect
+                                                                }
+                                                            />
+                                                        </label>
+                                                        <p className="pl-1">
+                                                            or drag and drop
+                                                        </p>
+                                                    </div>
+                                                    <p className="text-xs text-neutral-500">
+                                                        PNG, JPG up to 1MB
+                                                    </p>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {/* Replace Input and Label components with plain HTML Inputs and Labels */}
                                 <div>
                                     <Label>Email</Label>

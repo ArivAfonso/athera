@@ -17,28 +17,38 @@ const NcBookmark: FC<NcBookmarkProps> = ({
             const supabase = createClientComponentClient()
             const { data: session } = await supabase.auth.getSession()
             const userId = session?.session?.user.id
+            const localBookmarks = JSON.parse(
+                localStorage.getItem('bookmarks') || '[]'
+            )
             if (userId) {
-                const { data: bookmarks, error } = await supabase
-                    .from('bookmarks')
-                    .select('post')
-                    .eq('user', userId)
+                if (localBookmarks) {
+                    // Check if the post is bookmarked
+                    setIsBookmarked(localBookmarks.includes(postId))
+                } else {
+                    const { data: bookmarks, error } = await supabase
+                        .from('bookmarks')
+                        .select('post')
+                        .eq('user', userId)
 
-                if (bookmarks) {
-                    // Map the bookmarks to get an array of post ids
-                    const bookmarkedPostIds = bookmarks.map(
-                        (bookmark) => bookmark.post
-                    )
-                    // Update the bookmarks in localStorage
-                    localStorage.setItem(
-                        'bookmarks',
-                        JSON.stringify(bookmarkedPostIds)
-                    )
+                    if (bookmarks) {
+                        // Map the bookmarks to get an array of post ids
+                        const bookmarkedPostIds = bookmarks.map(
+                            (bookmark) => bookmark.post
+                        )
+                        // Check if the post is bookmarked
+                        setIsBookmarked(bookmarkedPostIds.includes(postId))
+                        // Update the bookmarks in localStorage
+                        localStorage.setItem(
+                            'bookmarks',
+                            JSON.stringify(bookmarkedPostIds)
+                        )
+                    }
                 }
             }
         }
 
         fetchAndStoreBookmarks()
-    }, [])
+    }, [postId])
 
     async function toggleBookmark() {
         const supabase = createClientComponentClient()

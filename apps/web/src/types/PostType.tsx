@@ -7,6 +7,7 @@ export default interface PostType {
     description: string
     text: string
     rawText: string
+    json: JSON
     author: {
         id: string
         verified?: boolean

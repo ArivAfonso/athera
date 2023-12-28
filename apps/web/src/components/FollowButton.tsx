@@ -18,18 +18,31 @@ const FollowButton: FC<FollowButtonProps> = ({
 
     useEffect(() => {
         async function fetchInitialFollowingStatus() {
-            const supabase = createClientComponentClient()
-            const { data: session } = await supabase.auth.getSession()
-            const userId = session?.session?.user.id
+            // Get local followers array
+            const localFollowers = localStorage.getItem('followers')
+                ? JSON.parse(localStorage.getItem('followers') || '')
+                : []
 
-            const { data: follows, error } = await supabase
-                .from('followers')
-                .select('id')
-                .eq('follower', userId)
-                .eq('following', authorId)
+            // Check if authorId is in local followers array
+            if (localFollowers) {
+                const isFollowing = localFollowers.includes(authorId)
+                if (isFollowing) setFollowing(true)
+            } else {
+                const supabase = createClientComponentClient()
+                const { data: session } = await supabase.auth.getSession()
+                const userId = session?.session?.user.id
 
-            if (follows && follows.length > 0 && !error) {
-                setFollowing(true)
+                const { data: follows, error } = await supabase
+                    .from('followers')
+                    .select('id')
+                    .eq('follower', userId)
+                    .eq('following', authorId)
+
+                //Set local followers array
+                if (follows && follows.length > 0 && !error) {
+                    localStorage.setItem('followers', JSON.stringify(follows))
+                    setFollowing(true)
+                }
             }
         }
         fetchInitialFollowingStatus()

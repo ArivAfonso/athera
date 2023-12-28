@@ -1,5 +1,11 @@
-import { SocialType } from '@/components/SocialsShare/SocialsShare'
-import React, { FC } from 'react'
+import React, { FC, ReactNode } from 'react'
+
+export interface SocialType {
+    id: string
+    name: string
+    href: string
+    icon: ReactNode
+}
 
 export interface SocialsListProps {
     className?: string
@@ -167,11 +173,7 @@ const SocialsList: FC<SocialsListProps> = ({
                         rel="noopener noreferrer"
                         title={item.name}
                     >
-                        <div
-                            dangerouslySetInnerHTML={{
-                                __html: item.icon || '',
-                            }}
-                        ></div>
+                        {item.icon}
                     </a>
                 )
             })}

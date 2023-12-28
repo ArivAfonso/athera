@@ -1,49 +1,39 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Input from '@/components/Input/Input'
 import NextImage from 'next/image'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import Textarea from '@/components/Textarea/Textarea'
 import Label from '@/components/Label/Label'
-import { addClass, removeClass, Browser } from '@syncfusion/ej2-base'
-import {
-    RichTextEditorComponent,
-    Toolbar,
-    Inject,
-    Image,
-    Link,
-    HtmlEditor,
-    Count,
-    QuickToolbar,
-    Table,
-    EmojiPicker,
-    PasteCleanupSettingsModel,
-    ImageSettingsModel,
-    PasteCleanup,
-} from '@syncfusion/ej2-react-richtexteditor'
-import {
-    ToolbarSettingsModel,
-    FileManager,
-    FileManagerSettingsModel,
-    QuickToolbarSettingsModel,
-} from '@syncfusion/ej2-react-richtexteditor'
-import { useThemeMode } from '@/hooks/useThemeMode'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Controller, useForm } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
 import { useRouter } from 'next/navigation'
 import { pipeline } from '@xenova/transformers'
-import { registerLicense } from '@syncfusion/ej2-base'
 import stringToSlug from '@/utils/stringToSlug'
 import { useStore } from '@/stores/editPost'
 import PostType from '@/types/PostType'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import Heading2 from '@/components/Heading/Heading2'
-
-registerLicense(
-    'Ngo9BigBOggjHTQxAR8/V1NHaF5cXmVCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdgWH5edXRcQ2BfWE1/XEI='
-)
+import Bold from '@tiptap/extension-bold'
+import Document from '@tiptap/extension-document'
+import Paragraph from '@tiptap/extension-paragraph'
+import Text from '@tiptap/extension-text'
+import StarterKit from '@tiptap/starter-kit'
+import Highlight from '@tiptap/extension-highlight'
+import Underline from '@tiptap/extension-underline'
+import Link from '@tiptap/extension-link'
+import Placeholder from '@tiptap/extension-placeholder'
+import TextAlign from '@tiptap/extension-text-align'
+import Image from '@tiptap/extension-image'
+import Table from '@tiptap/extension-table'
+import TableRow from '@tiptap/extension-table-row'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import { generateHTML } from '@tiptap/core'
+import { generateJSON } from '@tiptap/react'
+import TiptapEditor from '@/components/PostSubmissionEditor/TiptapEditor'
 
 function modifyString(str: string) {
     //Capitalize every word of the string and replace spaces with -
@@ -58,14 +48,6 @@ const EditPost = (context: { params: { slug: any } }) => {
     // Inside your component
     const { post, setPost } = useStore()
     const [editPost, setEditPost] = useState<PostType>()
-    let rteObj: RichTextEditorComponent
-    const hostUrl: string = 'https://ej2-aspcore-service.azurewebsites.net/'
-    const pasteCleanupSettings: PasteCleanupSettingsModel = {
-        prompt: false,
-        allowedStyleProps: [],
-        keepFormat: false,
-        plainText: false,
-    }
 
     const supabase = createClientComponentClient()
 
@@ -76,162 +58,21 @@ const EditPost = (context: { params: { slug: any } }) => {
     const [uploading, setUploading] = useState(false)
     const [bigTag, setBigTag] = useState(false)
     const [imgChanged, setImgChanged] = useState(false)
+    const [json, setJson] = useState('' as any)
+
+    const isMobile = window.innerWidth < 700
 
     let [tags, setTags] = useState([''])
     const [progress, setProgress] = useState(0)
 
-    const insertImageSettings: ImageSettingsModel = {
-        allowedTypes: ['.jpeg', '.jpg', '.png'],
-        display: 'inline',
-        width: 'auto',
-        height: 'auto',
-        saveFormat: 'Base64',
-    }
-
-    // Rich Text Editor items list
-    const items: string[] = [
-        'Undo',
-        'Redo',
-        '|',
-        'Bold',
-        'Italic',
-        'Underline',
-        'StrikeThrough',
-        'FontName',
-        'FontSize',
-        'FontColor',
-        'BackgroundColor',
-        'LowerCase',
-        'UpperCase',
-        '|',
-        'Formats',
-        'Alignments',
-        'NumberFormatList',
-        'BulletFormatList',
-        'Outdent',
-        'Indent',
-        'SuperScript',
-        'SubScript',
-        'EmojiPicker',
-        '|',
-        'CreateTable',
-        'CreateLink',
-        'Image',
-        '|',
-    ]
-    const fileManagerSettings: FileManagerSettingsModel = {
-        enable: true,
-        path: '/Pictures/Food',
-        ajaxSettings: {
-            url: hostUrl + 'api/FileManager/FileOperations',
-            getImageUrl: hostUrl + 'api/FileManager/GetImage',
-            uploadUrl: hostUrl + 'api/FileManager/Upload',
-            downloadUrl: hostUrl + 'api/FileManager/Download',
-        },
-    }
-    const quickToolbarSettings: QuickToolbarSettingsModel = {
-        table: [
-            'TableHeader',
-            'TableRows',
-            'TableColumns',
-            'TableCell',
-            '-',
-            'BackgroundColor',
-            'TableRemove',
-            'TableCellVerticalAlign',
-            'Styles',
-        ],
-    }
-    //Rich Text Editor ToolbarSettings
-    const toolbarSettings: ToolbarSettingsModel = {
-        items: items,
-    }
-    function handleFullScreen(e: any) {
-        // Use optional chaining to handle the possibility of elements not being found
-        let sbCntEle = document.querySelector(
-            '.sb-content.e-view'
-        ) as HTMLElement
-        let sbHdrEle = document.querySelector(
-            '.sb-header.e-view'
-        ) as HTMLElement
-        let leftBar
-        let transformElement
-
-        if (Browser.isDevice) {
-            leftBar = document.querySelector('#right-sidebar') as HTMLElement
-            transformElement = document.querySelector(
-                '.sample-browser.e-view.e-content-animation'
-            ) as HTMLElement
-        } else {
-            leftBar = document.querySelector('#left-sidebar') as HTMLElement
-            transformElement = document.querySelector(
-                '#right-pane'
-            ) as HTMLElement
-        }
-
-        // Check if elements were found before using them
-        if (!sbCntEle || !sbHdrEle || !leftBar || !transformElement) {
-            console.error('One or more required elements not found.')
-            return
-        }
-
-        if (e.targetItem === 'Maximize') {
-            if (Browser.isDevice && Browser.isIos) {
-                // Assuming addClass and removeClass are functions to manipulate CSS classes
-                addClass([sbCntEle, sbHdrEle], ['hide-header'])
-            }
-            addClass([leftBar], ['e-close'])
-            removeClass([leftBar], ['e-open'])
-
-            if (!Browser.isDevice) {
-                // Assuming you want to adjust margin if not on a device
-                transformElement.style.marginLeft = '0px'
-            }
-            transformElement.style.transform = 'inherit'
-        } else if (e.targetItem === 'Minimize') {
-            if (Browser.isDevice && Browser.isIos) {
-                // Assuming addClass and removeClass are functions to manipulate CSS classes
-                removeClass([sbCntEle, sbHdrEle], ['hide-header'])
-            }
-            removeClass([leftBar], ['e-close'])
-
-            if (!Browser.isDevice) {
-                addClass([leftBar], ['e-open'])
-                // Assuming you want to set the margin based on the leftBar's width
-                transformElement.style.marginLeft = leftBar.offsetWidth + 'px'
-            }
-            transformElement.style.transform = 'translateX(0px)'
-        }
-    }
-
-    const { isDarkMode } = useThemeMode()
-
     useEffect(() => {
         async function getData() {
-            // Load the appropriate Tailwind CSS file based on the theme mode
-            const linkElement = document.createElement('link')
-            linkElement.rel = 'stylesheet'
-            if (isDarkMode) {
-                linkElement.href =
-                    'https://cdn.syncfusion.com/ej2/22.1.34/tailwind-dark.css'
-                const existingLightModeLink = document.querySelector(
-                    'link[href="https://cdn.syncfusion.com/ej2/22.1.34/tailwind.css"]'
-                )
-                if (existingLightModeLink) {
-                    existingLightModeLink.remove()
-                }
-            } else {
-                linkElement.href =
-                    'https://cdn.syncfusion.com/ej2/22.1.34/tailwind.css'
-                const existingDarkModeLink = document.querySelector(
-                    'link[href="https://cdn.syncfusion.com/ej2/22.1.34/tailwind-dark.css"]'
-                )
-                if (existingDarkModeLink) {
-                    existingDarkModeLink.remove()
-                }
+            // Get the authenticated user
+            const { data: session } = await supabase.auth.getSession()
+            if (!session.session) {
+                router.push('/login')
+                return
             }
-            document.head.appendChild(linkElement)
-
             if (post) {
                 // rteObj.value = post.rawText
                 setEditPost(post)
@@ -244,12 +85,16 @@ const EditPost = (context: { params: { slug: any } }) => {
                 const { data, error } = await supabase
                     .from('posts')
                     .select(
-                        'title, id, rawText, created_at, description, image, author(name, id, username, avatar), post_categories(category:categories(id,name,color))'
+                        'title, id, created_at, json, description, image, author(name, id, username, avatar), post_categories(category:categories(id,name,color))'
                     )
                     .eq('id', context.params.slug[0])
                     .single()
 
                 const postData: PostType | null = data as unknown as PostType
+
+                if (session.session.user.id !== postData?.author?.id) {
+                    router.push('/')
+                }
 
                 if (postData) {
                     // rteObj.value = postData.rawText
@@ -269,24 +114,10 @@ const EditPost = (context: { params: { slug: any } }) => {
                     setSelectedImage(file)
                 }
             }
-
-            // Cleanup on unmount
-            return () => {
-                const existingLink = isDarkMode
-                    ? document.querySelector(
-                          'link[href="https://cdn.syncfusion.com/ej2/22.1.34/tailwind-dark.css"]'
-                      )
-                    : document.querySelector(
-                          'link[href="https://cdn.syncfusion.com/ej2/22.1.34/tailwind.css"]'
-                      )
-                if (existingLink) {
-                    existingLink.remove()
-                }
-            }
         }
         getData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isDarkMode])
+    }, [])
 
     function handleKeyDown(e: any) {
         setBigTag(false)
@@ -326,6 +157,10 @@ const EditPost = (context: { params: { slug: any } }) => {
         setErrorMsg('')
         setProgress(10)
 
+        if (formData.postTitle == null || formData.postTitle.length == 0) {
+            formData.postTitle = editPost?.title
+        }
+
         // Get the authenticated user
         const {
             data: { user },
@@ -340,7 +175,7 @@ const EditPost = (context: { params: { slug: any } }) => {
                 //@ts-ignore
                 description: editPost?.description,
                 //@ts-ignore
-                rawText: editPost?.rawText,
+                json: editPost?.json,
             },
         ]
 
@@ -368,8 +203,6 @@ const EditPost = (context: { params: { slug: any } }) => {
                     selectedImage
                 )
 
-            console.log(imagePath)
-
             if (uploadError) {
                 console.error('Error uploading image:', uploadError)
                 return
@@ -381,16 +214,12 @@ const EditPost = (context: { params: { slug: any } }) => {
                 imagePath?.path
 
             // Update the inserted post with the image URL
-            console.log(uploadedImageUrl)
-            console.log(context.params.slug[0])
             const { data, error } = await supabase
                 .from('posts')
                 .update({
                     image: uploadedImageUrl,
                 })
                 .eq('id', context.params.slug[0])
-            console.log(data)
-            console.log(error)
         }
         setProgress(30)
 
@@ -403,91 +232,27 @@ const EditPost = (context: { params: { slug: any } }) => {
         })
         setProgress(40)
 
-        if (htmlText !== editPost?.rawText) {
-            try {
-                // Define the regular expression pattern to extract base64 image data
-                const pattern = /base64,([^'">]+)/g
-
-                // Find all matches of the pattern in the HTML string
-                let match
-                const matches = []
-                while ((match = pattern.exec(htmlText))) {
-                    matches.push(match[1])
-                }
-
-                // Function to upload the image to Supabase Storage
-                const uploadToSupabaseStorage = async (
-                    base64Data: string,
-                    index: number
-                ) => {
-                    try {
-                        // Extract the image data type from the base64 string
-                        //data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAoHBwgHBgoICAgLC
-                        const typeMatch = base64Data.match(/^data:(.+);base64,/)
-                        if (typeMatch) {
-                            const imageType = typeMatch
-                                ? typeMatch[1]
-                                : 'image/png' // Set a default value if the type is not matched
-
-                            // Decode base64 data
-                            const byteCharacters = atob(base64Data)
-                            const byteNumbers = new Array(byteCharacters.length)
-                            for (let i = 0; i < byteCharacters.length; i++) {
-                                byteNumbers[i] = byteCharacters.charCodeAt(i)
-                            }
-                            const byteArray = new Uint8Array(byteNumbers)
-
-                            // Convert the byte array to a Blob
-                            const blob = new Blob([byteArray], {
-                                type: imageType,
-                            })
-
-                            // Upload the Blob to Supabase Storage
-                            const { data, error } = await supabase.storage
-                                .from('images')
-                                .upload(
-                                    `${user?.id}/${
-                                        context.params.slug[0]
-                                    }/image${index}.${imageType.split('/')[1]}`,
-                                    blob
-                                )
-
-                            if (error) {
-                                console.error(
-                                    `Error uploading image ${index}:`,
-                                    error
-                                )
-                            } else {
-                                // Replace the base64 image with the Supabase URL
-                                const supabaseUrl = `https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/${data?.path}`
-                                htmlText = htmlText.replace(
-                                    `data:image/jpeg;base64,${base64Data}`,
-                                    `${supabaseUrl}`
-                                )
-                                htmlText = htmlText.replace(
-                                    `data:image/png;base64,${base64Data}`,
-                                    `${supabaseUrl}`
-                                )
-                                htmlText = htmlText.replace(
-                                    `data:image/jpg;base64,${base64Data}`,
-                                    `${supabaseUrl}`
-                                )
-                            }
-                        }
-                    } catch (error) {
-                        console.error(`Error processing image ${index}:`, error)
-                    }
-                }
-                // Iterate over the matches and upload images to Supabase Storage
-                matches.forEach(async (base64Data, index) => {
-                    await uploadToSupabaseStorage(base64Data, index)
-                })
-                setProgress(60)
-
-                newPost[0]['rawText'] = htmlText
-            } catch (error) {
-                console.log(error)
-            }
+        if (json !== editPost?.json) {
+            // const clean = DOMPurify.sanitize(dirty);
+            // TODO: Upload user imgs
+            const output = generateJSON(htmlText, [
+                Document,
+                Paragraph,
+                Text,
+                Bold,
+                Highlight,
+                Underline,
+                Link,
+                Placeholder,
+                TextAlign,
+                Image,
+                Table,
+                TableCell,
+                TableHeader,
+                TableRow,
+            ])
+            //@ts-ignore
+            newPost[0]['json'] = output
         }
         const { data, error } = await supabase
             .from('posts')
@@ -645,8 +410,8 @@ const EditPost = (context: { params: { slug: any } }) => {
                         })}
                         method="post"
                     >
-                        <label className="block md:col-span-2">
-                            <label>Post Title *</label>
+                        <Label className="block md:col-span-2">
+                            <Label>Post Title *</Label>
                             <Controller
                                 name="postTitle"
                                 control={control}
@@ -663,9 +428,9 @@ const EditPost = (context: { params: { slug: any } }) => {
                             {errors.postTitle && (
                                 <Alert type="danger" message="Required" />
                             )}
-                        </label>
-                        <label className="block md:col-span-2">
-                            <label>Post Excerpt</label>
+                        </Label>
+                        <Label className="block md:col-span-2">
+                            <Label>Post Excerpt</Label>
                             <Controller
                                 name="postExcerpt"
                                 control={control}
@@ -683,9 +448,9 @@ const EditPost = (context: { params: { slug: any } }) => {
                                     </>
                                 )}
                             />
-                        </label>
-                        <label className="block md:col-span-2">
-                            <label>Categories</label>
+                        </Label>
+                        <Label className="block md:col-span-2">
+                            <Label>Categories</Label>
                             <Controller
                                 name="tags"
                                 control={control}
@@ -728,7 +493,7 @@ const EditPost = (context: { params: { slug: any } }) => {
                                     </>
                                 )}
                             />
-                        </label>
+                        </Label>
 
                         <div className="group block md:col-span-2">
                             <Label>Featured Image</Label>
@@ -821,99 +586,70 @@ const EditPost = (context: { params: { slug: any } }) => {
                                 </div>
                             </div>
                         </div>
-                        <label className="block md:col-span-2">
-                            <Label> Post Content</Label>
-                            <link
-                                href="https://cdn.syncfusion.com/ej2/22.1.34/tailwind.css"
-                                rel="stylesheet"
-                            ></link>
-                            <div className="control-pane dark:bg-blue-950">
-                                <div className="control-section" id="rteTools">
-                                    <div className="rte-control-section">
-                                        <div className="mx-auto custom-rte-styles">
-                                            <RichTextEditorComponent
-                                                id="toolsRTE"
-                                                ref={(richtexteditor) => {
-                                                    rteObj = richtexteditor!
-                                                    if (
-                                                        richtexteditor != null
-                                                    ) {
-                                                        setText(
-                                                            rteObj.getText()
-                                                        )
-                                                        setHtmlText(
-                                                            rteObj.getHtml()
-                                                        )
-                                                    }
+
+                        {isMobile ? (
+                            <div className="flex-1 relative pb-[700px]">
+                                <div className="absolute inset-0 flex flex-col">
+                                    <Label>Post Content</Label>
+                                    <div className="w-full bg-white dark:bg-neutral-900 rounded-2xl dark:ring dark:ring-neutral-50/10">
+                                        {editPost?.json && (
+                                            <TiptapEditor
+                                                onUpdate={(editor) => {
+                                                    const text =
+                                                        editor.getText()
+                                                    setText(text)
+                                                    setHtmlText(
+                                                        editor.getHTML()
+                                                    )
+                                                    setJson(editor.getJSON())
                                                 }}
-                                                // enablePersistence={true}
-                                                value={editPost?.rawText}
-                                                showCharCount={true}
-                                                insertImageSettings={
-                                                    insertImageSettings
-                                                }
-                                                actionBegin={handleFullScreen.bind(
-                                                    this
-                                                )}
-                                                placeholder="Type something"
-                                                maxLength={50000}
-                                                toolbarSettings={
-                                                    toolbarSettings
-                                                }
-                                                fileManagerSettings={
-                                                    fileManagerSettings
-                                                }
-                                                pasteCleanupSettings={
-                                                    pasteCleanupSettings
-                                                }
-                                                quickToolbarSettings={
-                                                    quickToolbarSettings
-                                                }
-                                            >
-                                                <Inject
-                                                    services={[
-                                                        Toolbar,
-                                                        Image,
-                                                        Link,
-                                                        HtmlEditor,
-                                                        Count,
-                                                        QuickToolbar,
-                                                        Table,
-                                                        PasteCleanup,
-                                                        FileManager,
-                                                        EmojiPicker,
-                                                    ]}
-                                                />
-                                            </RichTextEditorComponent>
-                                        </div>
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             </div>
-                        </label>
-                        {!uploading ? (
-                            <ButtonPrimary
-                                type="submit"
-                                className="text-white md:col-span-2 rounded-lg"
-                            >
-                                Update Post
-                            </ButtonPrimary>
                         ) : (
-                            <>
-                                <ButtonPrimary
-                                    className="text-white md:col-span-2 rounded-lg"
-                                    loading
-                                >
-                                    Updating...
-                                </ButtonPrimary>
-                                <div className="md:col-span-2 h-2 relative overflow-hidden rounded-lg">
-                                    <div className="w-full h-full bg-gray-200 absolute"></div>
-                                    <div
-                                        style={{ width: `${progress}%` }}
-                                        className="h-full bg-blue-500 absolute rounded-lg transition-all duration-500 ease-in-out"
-                                    ></div>
+                            <div className="block md:col-span-2">
+                                <Label>Post Content</Label>
+                                <div className=" bg-white dark:bg-neutral-900 rounded-2xl dark:ring dark:ring-neutral-50/10">
+                                    <TiptapEditor
+                                        onUpdate={(editor) => {
+                                            const text = editor.getText()
+                                            setText(text)
+                                            setHtmlText(editor.getHTML())
+                                            setJson(editor.getJSON())
+                                        }}
+                                        defaultContent={editPost?.json}
+                                    />
                                 </div>
-                            </>
+                            </div>
                         )}
+                        <div className="pt-2 md:col-span-2 flex space-x-12 justify-center flex-wrap">
+                            {!uploading ? (
+                                <ButtonPrimary
+                                    type="submit"
+                                    className="text-white md:col-span-2 rounded-lg"
+                                >
+                                    Update Post
+                                </ButtonPrimary>
+                            ) : (
+                                <>
+                                    <ButtonPrimary
+                                        className="text-white md:col-span-2 rounded-lg"
+                                        loading
+                                    >
+                                        Updating...
+                                    </ButtonPrimary>
+                                    <div className="md:col-span-2 h-2 relative overflow-hidden rounded-lg w-full mt-4">
+                                        <div className="w-full h-full bg-gray-200 absolute"></div>
+                                        <div
+                                            style={{ width: `${progress}%` }}
+                                            className="h-full bg-blue-500 absolute rounded-lg transition-all duration-500 ease-in-out"
+                                        ></div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                         {errorMsg && <Alert type="danger" message={errorMsg} />}
                     </form>
                 </div>

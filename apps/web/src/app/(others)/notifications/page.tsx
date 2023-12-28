@@ -18,11 +18,18 @@ const NotificationsPage = ({}) => {
 
     useEffect(() => {
         const fetchNotifications = async () => {
-            const { data: session } = await supabase.auth.getSession()
-            const { data } = await supabase
-                .from('notifications')
-                .select(
-                    `
+            // Check for local notifications
+            const localNotifications = JSON.parse(
+                localStorage.getItem('notifications') || '[]'
+            )
+            if (localNotifications) {
+                setNotifications(localNotifications)
+            } else {
+                const { data: session } = await supabase.auth.getSession()
+                const { data } = await supabase
+                    .from('notifications')
+                    .select(
+                        `
                     type,
                     id,
                     notifier(name, id, username, avatar),
@@ -30,13 +37,14 @@ const NotificationsPage = ({}) => {
                     created_at,
                     read_at
                 `
-                )
-                .eq('user_id', session?.session?.user.id)
-                .order('read_at', { ascending: true })
-                .order('created_at', { ascending: false })
+                    )
+                    .eq('user_id', session?.session?.user.id)
+                    .order('read_at', { ascending: true })
+                    .order('created_at', { ascending: false })
 
-            //@ts-ignore
-            setNotifications(data || [])
+                //@ts-ignore
+                setNotifications(data || [])
+            }
         }
 
         fetchNotifications()
@@ -68,6 +76,22 @@ const NotificationsPage = ({}) => {
     async function deleteNotification(event: React.MouseEvent, id: string) {
         // Prevent the event from propagating to the parent
         event.stopPropagation()
+
+        // Delete local notification
+        const localNotifications = JSON.parse(
+            localStorage.getItem('notifications') || '[]'
+        )
+        if (localNotifications) {
+            localStorage.setItem(
+                'notifications',
+                JSON.stringify(
+                    localNotifications.filter(
+                        (notification: NotificationType) =>
+                            notification.id !== id
+                    )
+                )
+            )
+        }
 
         const { error } = await supabase
             .from('notifications')

@@ -100,7 +100,10 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
             if (
                 file.type === 'image/png' ||
                 file.type === 'image/jpeg' ||
-                file.type === 'image/jpg'
+                file.type === 'image/jpg' ||
+                file.type === 'image/svg' ||
+                file.type === 'image/webp' ||
+                file.type === 'image/avif'
             ) {
                 setSelectedImage(file)
             } else {

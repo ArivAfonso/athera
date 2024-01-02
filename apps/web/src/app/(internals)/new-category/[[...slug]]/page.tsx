@@ -11,6 +11,7 @@ import NextImage from 'next/image'
 import Label from '@/components/Label/Label'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import Select from '@/components/Select/Select'
+import toast from 'react-hot-toast'
 
 async function getData(context: { params: { slug: any } }) {
     const slug = context.params.slug[0]
@@ -62,6 +63,7 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                     setExists(true)
                 }
                 setData(res)
+                setTags([s])
                 if (data.image) {
                     setSelectedImage(data.image)
                 }
@@ -89,6 +91,35 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
         if (searchValue === '') return
         else if (setSearchValue === s) return
         router.push(`/new-category/${searchValue}`)
+    }
+
+    const [tags, setTags] = useState([''])
+
+    function handleKeyDown(e: any) {
+        setErrorMsg('')
+        // If user did not press enter key, return
+        if (e.key !== 'Enter') return
+        // Get the value of the input
+        e.preventDefault()
+        const value = e.target.value
+        // If the value is empty or longer than 20 characters, show an error message and return
+        if (!value.trim()) {
+            // Show error message for empty input
+            console.error('Input is empty')
+            return
+        } else if (value.length > 20) {
+            // Show error message for tag length more than 20 characters
+            toast.error('Categories must be between 1 and 20 characters')
+            return
+        }
+        // Add the value to the tags array
+        setTags([...tags, modifyString(value)])
+        // Clear the input
+        e.target.value = ''
+    }
+
+    function removeTag(index: number) {
+        setTags(tags.filter((el, i) => i !== index))
     }
 
     const [isDragging, setIsDragging] = useState(false)
@@ -146,75 +177,46 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
         try {
             const supabase = createClientComponentClient()
 
-            if (!exists) {
-                const { data: newCat, error: catError } = await supabase
+            if (selectedImage === null) {
+                toast.error('Please select an image')
+                return
+            }
+
+            const { data: path, error } = await supabase.storage
+                .from('categories')
+                .upload(`${s}/${s}`, selectedImage)
+            //@ts-ignore
+
+            tags.forEach(async (tag) => {
+                const { data: category, error } = await supabase
                     .from('categories')
-                    .insert([
-                        {
-                            name: s,
+                    .select('*')
+                    .eq('name', tag)
+                    .single()
+
+                if (category) {
+                    await supabase
+                        .from('categories')
+                        .update({
                             color: data.color,
+                            image:
+                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/categories/' +
+                                path?.path,
+                        })
+                        .eq('name', tag)
+                    return
+                } else {
+                    await supabase.from('categories').insert([
+                        {
+                            name: tag,
+                            color: data.color,
+                            image:
+                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/categories/' +
+                                path?.path,
                         },
                     ])
-                    .select()
-                if (selectedImage) {
-                    const { data: path, error } = await supabase.storage
-                        .from('categories')
-                        .upload(`${s}`, selectedImage)
-
-                    console.log('Storage' + error)
-
-                    if (!error) {
-                        if (newCat !== null) {
-                            const { data: update, error: updateErr } =
-                                await supabase
-                                    .from('categories')
-                                    .update({
-                                        image:
-                                            'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/categories/' +
-                                            path?.path,
-                                    })
-                                    .eq('id', newCat[0].id)
-                            console.log(updateErr)
-                        }
-                    }
                 }
-            } else {
-                if (selectedImage) {
-                    const { data: path, error } = await supabase.storage
-                        .from('categories')
-                        .upload(`${s}/${s}`, selectedImage)
-
-                    console.log(path)
-
-                    if (!error) {
-                        await supabase
-                            .from('categories')
-                            .update({
-                                image:
-                                    'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/categories/' +
-                                    path?.path,
-                                color: data.color,
-                            })
-                            .eq('name', s)
-                    } else {
-                        const { data: update, error: updateErr } =
-                            await supabase
-                                .from('categories')
-                                .update({ color: data.color })
-                                .eq('name', s)
-                        console.log(update, updateErr)
-                        //@ts-ignore
-                        router.push(`/category/${s}/${update[0].id}`)
-                    }
-                } else {
-                    const { data: newCat } = await supabase
-                        .from('categories')
-                        .update({ color: data.color })
-                        .eq('name', s)
-                    //@ts-ignore
-                    router.push(`/category/${s}/${newCat[0].id}`)
-                }
-            }
+            })
             setUploading(false)
             setSuccess(true)
         } catch (error: any) {
@@ -280,24 +282,45 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                         )}
                         method="post"
                     >
-                        <label className="block md:col-span-2">
-                            <label>Name</label>
+                        <Label className="block sm:col-span-1 md:col-span-2">
+                            <Label>Categories</Label>
                             <Controller
-                                name="catName"
+                                name="tags"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input
-                                        type="text"
-                                        className="mt-2"
-                                        defaultValue={s}
-                                        {...field}
-                                    />
+                                    <>
+                                        <div className="rounded-l w-full sm:w-min-80vw sm:w-600px mt-4 flex flex-wrap items-center gap-2 bg-transparent">
+                                            {tags.map((tag, index) =>
+                                                tag ? (
+                                                    <div
+                                                        className="bg-gray-200 dark:bg-neutral-900 flex items-center rounded-full px-3 py-1"
+                                                        key={index}
+                                                    >
+                                                        <span className="text-black dark:text-gray-400 mr-2">
+                                                            {tag}
+                                                        </span>
+                                                        <span
+                                                            className="h-5 w-5 bg-gray-800 text-white rounded-full flex items-center justify-center text-lg cursor-pointer"
+                                                            onClick={() =>
+                                                                removeTag(index)
+                                                            }
+                                                        >
+                                                            &times;
+                                                        </span>
+                                                    </div>
+                                                ) : null
+                                            )}
+                                            <input
+                                                onKeyDown={handleKeyDown}
+                                                type="text"
+                                                className="flex-grow py-2 rounded-md border-neutral-200 focus:border-primary-300 focus:ring focus:ring-primary-200/50 bg-white dark:border-neutral-500 dark:focus:ring-primary-500/30 dark:bg-neutral-900"
+                                                placeholder="Type something"
+                                            />
+                                        </div>
+                                    </>
                                 )}
                             />
-                            {errors.catName && (
-                                <Alert type="danger" message="Required" />
-                            )}
-                        </label>
+                        </Label>
                         <label className="block">
                             <label>Color</label>
                             <Controller
@@ -305,10 +328,15 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                                 control={control}
                                 render={({ field }) => (
                                     <Select
-                                        defaultValue={data ? data.color : 'Red'}
+                                        defaultValue={
+                                            data ? data.color : 'Choose'
+                                        }
                                         className="mt-1"
                                         {...field}
                                     >
+                                        <option value="Choose" disabled>
+                                            Choose
+                                        </option>
                                         <option value="Red">Red</option>
                                         <option value="Blue">Blue</option>
                                         <option value="Yellow">Yellow</option>

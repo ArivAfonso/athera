@@ -17,7 +17,7 @@
         "@supabase/auth-helpers-nextjs": "^0.8.3",
         "@supabase/supabase-js": "^2.39.1",
         "@syncfusion/ej2-base": "^23.1.36",
-        "@syncfusion/ej2-react-richtexteditor": "^23.1.36",
+        "@syncfusion/ej2-react-richtexteditor": "^24.1.45",
         "@tailwindcss/aspect-ratio": "^0.4.2",
         "@tailwindcss/forms": "^0.5.6",
         "@tailwindcss/line-clamp": "^0.4.2",

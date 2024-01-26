@@ -1,13 +1,6 @@
 'use client'
 
-import React, {
-    FC,
-    ReactNode,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react'
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react'
 import SingleAuthor from './SingleAuthor'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import PostCardLikeAction from '@/components/PostCardLikeAction/PostCardLikeAction'

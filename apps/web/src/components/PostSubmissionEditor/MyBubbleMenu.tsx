@@ -33,7 +33,6 @@ const MyBubbleMenu: FC<MyBubbleMenuProps> = ({ editor }) => {
             action: () => editor.chain().focus().unsetLink().run(),
             isActive: () => editor.isActive('link'),
         },
-
         {
             icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 sm:w-6 sm:h-6"><path fill="none" d="M0 0h24v24H0z"/><path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 0 1-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 0 1-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/></svg>`,
             title: 'Blockquote',
@@ -84,16 +83,16 @@ const MyBubbleMenu: FC<MyBubbleMenuProps> = ({ editor }) => {
                         ? ' is-active text-green-500'
                         : ''
                 }`}
-                onClick={(e) => {
-                    e.preventDefault()
-                    item.action()
-                }}
+                onClick={item.action}
                 title={item.title}
+                type="button"
             >
-                <div
-                    className="menu-item-svg"
-                    dangerouslySetInnerHTML={{ __html: item.icon }}
-                ></div>
+                <img
+                    className="w-6 h-6"
+                    src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                        item.icon
+                    )}`}
+                />
             </button>
         )
     }
@@ -107,7 +106,23 @@ const MyBubbleMenu: FC<MyBubbleMenuProps> = ({ editor }) => {
         >
             {menuItems.map((item, index) => (
                 <Fragment key={item.title}>
-                    {renderItem(item as TiptapBarItem)}
+                    <button
+                        className={`px-1.5 ${
+                            item.isActive && item.isActive()
+                                ? ' is-active text-green-500'
+                                : ''
+                        }`}
+                        onClick={item.action}
+                        title={item.title}
+                        type="button"
+                    >
+                        <img
+                            className="w-6 h-6"
+                            src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                                item.icon
+                            )}`}
+                        />
+                    </button>
                 </Fragment>
             ))}
             <ModalGetLink

@@ -23,7 +23,6 @@ interface Props {
 }
 
 const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
-    console.log('defaultContent', defaultContent)
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -54,7 +53,7 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
         ],
         editorProps: {
             attributes: {
-                class: 'focus:outline-none prose prose-neutral lg:prose-lg dark:prose-invert max-w-screen-md mx-auto min-h-[500px]',
+                class: 'focus:outline-none prose md:px-4 prose-neutral lg:prose-lg dark:prose-invert max-w-screen-md min-h-[500px]',
             },
         },
         content: defaultContent,
@@ -73,7 +72,7 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
 
     return (
         <div className="nc-TiptapEditor ">
-            <div className="editor ">
+            <div className="editor">
                 {editor && <MyBubbleMenu editor={editor} />}
                 {editor && <MenuBar editor={editor} />}
                 <EditorContent

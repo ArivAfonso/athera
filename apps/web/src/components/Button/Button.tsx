@@ -37,7 +37,7 @@ const Button: FC<ButtonProps> = ({
     switch (pattern) {
         case 'primary':
             colors =
-                'lg:bg-[#2f26d4] bg-[#1338be] hover:bg-blue-500 hover:bg-primary-6000 text-primary-50'
+                'bg-blue-700 hover:bg-blue-600 dark:hover:bg-blue-800 hover:bg-primary-6000 text-primary-50'
             break
         case 'secondary':
             colors =

@@ -6,6 +6,7 @@ import MenuItemHeading from './MenuItemHeading'
 import ModalGetIframeUrl from './ModalGetIframeUrl'
 import ModalGetLink from './ModalGetLink'
 import { useWindowSize } from 'react-use'
+import { Menu } from '@headlessui/react'
 
 export interface TiptapBarItem {
     icon: string
@@ -114,7 +115,6 @@ const MenuBar: React.FC<{ editor: Editor }> = ({ editor }) => {
                     editor.chain().focus().setTextAlign('right').run(),
                 isActive: () => editor.isActive({ textAlign: 'right' }),
             },
-
             {
                 type: 'divider',
             },
@@ -178,7 +178,11 @@ const MenuBar: React.FC<{ editor: Editor }> = ({ editor }) => {
             {
                 icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 sm:w-6 sm:h-6"><path fill="none" d="M0 0h24v24H0z"/><path d="M18.172 7H11a6 6 0 1 0 0 12h9v2h-9a8 8 0 1 1 0-16h7.172l-2.536-2.536L17.05 1.05 22 6l-4.95 4.95-1.414-1.414L18.172 7z"/></svg>`,
                 title: 'Redo',
-                action: () => editor.chain().focus().redo().run(),
+                action: () => {
+                    setTimeout(() => {
+                        editor.chain().focus().redo().run()
+                    }, 0)
+                },
             },
         ]
     )
@@ -245,13 +249,13 @@ const MenuBar: React.FC<{ editor: Editor }> = ({ editor }) => {
 
     return (
         <div
-            className="editor__header sticky bg-neutral-100 dark:bg-neutral-800 px-2 lg:px-0 py-5 overflow-hidden lg:overflow-visible flex justify-center z-10"
+            className="editor__header sticky bg-neutral-100 rounded-tl-2xl rounded-tr-2xl dark:bg-neutral-800 px-2 lg:px-0 py-5 overflow-hidden lg:overflow-visible flex justify-center z-10"
             style={{
                 top: windowSizeWidth <= 600 ? 0 : wpadminbarH,
             }}
         >
-            <div className="  w-full max-w-screen-md">
-                <div className="flex items-center overflow-x-auto lg:overflow-x-visible -mx-2.5">
+            <div className=" w-full max-w-screen-md">
+                <div className="flex items-center overflow-x-auto -mx-2.5 lg:overflow-x-visible">
                     {ITEM_STATE.map((item, index) => (
                         <Fragment key={index}>
                             {(item as TiptapBarItemDivider).type ===
@@ -259,13 +263,18 @@ const MenuBar: React.FC<{ editor: Editor }> = ({ editor }) => {
                                 <div className="divider" />
                             ) : (item as TiptapBarItem).title === 'Heading' ? (
                                 <MenuItemHeading
-                                    {...(item as TiptapBarItem)}
+                                    icon={(item as TiptapBarItem).icon}
+                                    action={(item as TiptapBarItem).action}
+                                    title={(item as TiptapBarItem).title}
+                                    isActive={(item as TiptapBarItem).isActive}
                                     editor={editor}
                                 />
                             ) : (
                                 <MenuItem
-                                    {...(item as TiptapBarItem)}
-                                    // editor={editor}
+                                    icon={(item as TiptapBarItem).icon}
+                                    action={(item as TiptapBarItem).action}
+                                    title={(item as TiptapBarItem).title}
+                                    isActive={(item as TiptapBarItem).isActive}
                                 />
                             )}
                         </Fragment>

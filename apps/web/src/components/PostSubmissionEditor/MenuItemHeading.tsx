@@ -98,6 +98,7 @@ const MenuItemHeading: FC<Props> = ({
                                                     : ''
                                             } p-2 flex w-full items-center rounded-lg text-neutral-900 dark:text-white hover:bg-primary-100 dark:hover:bg-neutral-700 hover:text-primary-900 `}
                                             onClick={item.action}
+                                            type="button"
                                         >
                                             <div
                                                 className="menu-item-svg flex flex-shrink-0 items-center justify-center h-6 w-6"

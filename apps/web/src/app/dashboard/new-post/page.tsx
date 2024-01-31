@@ -14,6 +14,9 @@ import { pipeline } from '@xenova/transformers'
 import stringToSlug from '@/utils/stringToSlug'
 import TiptapEditor from '@/components/PostSubmissionEditor/TiptapEditor'
 import toast from 'react-hot-toast'
+import TitleEditor from './TitleEditor'
+import TagsInput from './TagsInput'
+import PostOptionsBtn, { PostOptionsData } from './PostOptionsBtn'
 
 function strWords(str: string) {
     return str.split(/\s+/).length
@@ -40,41 +43,23 @@ const DashboardSubmitPost = () => {
     const [bigTag, setBigTag] = useState(false)
     const [json, setJson] = useState('' as any)
     const [progress, setProgress] = useState(0)
+    const defaultPostOptionsData = {
+        excerptText: '',
+        isAllowComments: true,
+        timeSchedulePublication: undefined,
+    }
+    const [postOptionsData, setPostOptionsData] = useState<PostOptionsData>(
+        defaultPostOptionsData
+    )
 
     const isMobile = window.innerWidth < 700
 
     const [tags, setTags] = useState([''])
-
-    function handleKeyDown(e: any) {
-        setBigTag(false)
-        setErrorMsg('')
-        // If user did not press enter key, return
-        if (e.key !== 'Enter') return
-        // Get the value of the input
-        e.preventDefault()
-        const value = e.target.value
-        // If the value is empty or longer than 20 characters, show an error message and return
-        if (!value.trim()) {
-            // Show error message for empty input
-            console.error('Input is empty')
-            return
-        } else if (value.length > 20) {
-            // Show error message for tag length more than 20 characters
-            setBigTag(true)
-            return
-        }
-        // Add the value to the tags array
-        setTags([...tags, value])
-        // Clear the input
-        e.target.value = ''
-    }
-
-    function removeTag(index: number) {
-        setTags(tags.filter((el, i) => i !== index))
-    }
+    const [title, setTitle] = useState('')
 
     async function sendPost(formData: any) {
         setUploading(true)
+        console.log(tags)
         setErrorMsg('')
         const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
         setProgress(10)
@@ -87,8 +72,14 @@ const DashboardSubmitPost = () => {
             }
         })
 
+        if (!title) {
+            setUploading(false)
+            setErrorMsg('Post title is required')
+            return
+        }
+
         // Generate the embedding from text
-        const output = await pipe(formData.postTitle + formData.postExcerpt, {
+        const output = await pipe(title + postOptionsData.excerptText, {
             pooling: 'mean',
             normalize: true,
         })
@@ -108,9 +99,9 @@ const DashboardSubmitPost = () => {
                     .from('posts')
                     .insert([
                         {
-                            title: formData.postTitle,
+                            title: title,
                             author: user?.id,
-                            description: formData.postExcerpt,
+                            description: postOptionsData.excerptText,
                             text: text,
                             estimatedReadingTime: Math.round(
                                 strWords(text) / 200
@@ -123,31 +114,34 @@ const DashboardSubmitPost = () => {
                 // Retrieve the generated post ID
                 const postId: string = data ? data[0]?.id : null
                 setProgress(30)
+                console.log(json.content)
 
-                // // Get all the image blob urls from the editor json
-                // const imageUrls = json
-                //     .filter((block: any) => block.type === 'image')
-                //     .map((block: any) => block.attrs.src)
+                // Get all the image blob urls from the editor json
+                const imageUrls = json.content
+                    .filter((block: any) => block.type === 'image')
+                    .map((block: any) => block.attrs.src)
 
-                // // Upload the images to Supabase storage and rename the link in the json to the new link
-                // for (let i = 0; i < imageUrls.length; i++) {
-                //     const { data: imagePath } = await supabase.storage
-                //         .from('images')
-                //         .upload(
-                //             `${user?.id}/${data[0].id}/${i}`,
-                //             imageUrls[i].split(',')[1]
-                //         )
+                // Upload the images to Supabase storage and rename the link in the json to the new link
+                for (let i = 0; i < imageUrls.length; i++) {
+                    const { data: imagePath } = await supabase.storage
+                        .from('images')
+                        .upload(
+                            `${user?.id}/${data ? data[0]?.id : ''}/${
+                                imageUrls[i].split(',')[1]
+                            }`,
+                            imageUrls[i].split(',')[1]
+                        )
 
-                //     json[i].attrs.src =
-                //         'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
-                //         imagePath?.path
-                // }
+                    json.content[i].attrs.src =
+                        'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                        imagePath?.path
+                }
 
-                // if (postInsertError) {
-                //     throw new Error(
-                //         `Post insertion failed: ${postInsertError.message}`
-                //     )
-                // }
+                if (postInsertError) {
+                    throw new Error(
+                        `Post insertion failed: ${postInsertError.message}`
+                    )
+                }
 
                 setProgress(50)
 
@@ -169,7 +163,6 @@ const DashboardSubmitPost = () => {
                                 .from('categories')
                                 .select('id')
                                 .eq('name', tag)
-                            console.log(isCategory)
 
                             if (isCategory && isCategory.length > 0) {
                                 return {
@@ -232,9 +225,7 @@ const DashboardSubmitPost = () => {
 
                 setProgress(100)
 
-                router.push(
-                    `/post/${stringToSlug(formData.postTitle)}/${postId}`
-                )
+                router.push(`/post/${stringToSlug(title)}/${postId}`)
             } else {
                 toast.custom((t) => (
                     <Alert
@@ -270,7 +261,7 @@ const DashboardSubmitPost = () => {
             }
         })
 
-        if (!formData.postTitle) {
+        if (!title) {
             toast.custom((t) => (
                 <Alert type="danger" message="Post title is required" />
             ))
@@ -286,9 +277,9 @@ const DashboardSubmitPost = () => {
             .from('drafts')
             .insert([
                 {
-                    title: formData.postTitle,
+                    title: title,
                     author: session.session?.user?.id,
-                    description: formData.postExcerpt,
+                    description: postOptionsData.excerptText,
                     text: text,
                     json: json,
                     estimatedReadingTime: Math.round(strWords(text) / 200),
@@ -379,7 +370,6 @@ const DashboardSubmitPost = () => {
                 message="Draft saved successfully. You can access it from your dashboard"
             />
         ))
-        // router.push(`/draft/${draftId}`)
     }
 
     const handleImageSelect = (event: { target: { files: any[] } }) => {
@@ -387,6 +377,10 @@ const DashboardSubmitPost = () => {
         if (file) {
             setSelectedImage(file)
         }
+    }
+
+    const handleApplyPostOptions = (data: PostOptionsData) => {
+        setPostOptionsData(data)
     }
 
     const [isDragging, setIsDragging] = useState(false)
@@ -429,6 +423,10 @@ const DashboardSubmitPost = () => {
         setIsDragging(false)
     }
 
+    const handleChangeTags = (tags: any) => {
+        setTags(tags)
+    }
+
     const {
         handleSubmit,
         control,
@@ -438,106 +436,40 @@ const DashboardSubmitPost = () => {
     return (
         <>
             <title>New Post - Athera</title>
-            <div className="max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32">
+            <div className="max-w-4xl mx-auto lg:pt-5 pt-10 sm:pt-26 pb-24 lg:pb-32">
                 <div className="rounded-xl md:border md:border-neutral-100 dark:border-neutral-800 md:p-6">
                     <form
-                        className="grid md:grid-cols-2 gap-6"
+                        className="grid md:grid-cols-2 gap-y-6"
                         action="#"
                         onSubmit={handleSubmit(async (data) => {
                             await sendPost(data)
                         })}
                         method="post"
                     >
-                        <Label className="block sm:col-span-1 md:col-span-2">
-                            <Label>Post Title *</Label>
-                            <Controller
-                                name="postTitle"
-                                control={control}
-                                render={({ field }) => (
-                                    <Input
-                                        type="text"
-                                        className="mt-2"
-                                        {...field}
-                                    />
-                                )}
+                        <Label className="block sm:col-span-1 md:col-span-2 whitespace-nowrap overflow-hidden overflow-ellipsis">
+                            <TitleEditor
+                                onUpdate={(editor) => {
+                                    setTitle(editor.getText())
+                                }}
                             />
                             {errors.postTitle && (
                                 <Alert type="danger" message="Required" />
                             )}
                         </Label>
-                        <Label className="block sm:col-span-1 md:col-span-2">
-                            <Label>Post Excerpt</Label>
-                            <Controller
-                                name="postExcerpt"
-                                control={control}
-                                render={({ field }) => (
-                                    <>
-                                        <Textarea rows={4} {...field} />
-                                        <p className="mt-1 text-sm text-neutral-500">
-                                            Brief description for your article.
-                                            URLs are hyperlinked.
-                                        </p>
-                                    </>
-                                )}
-                            />
-                        </Label>
-                        <Label className="block sm:col-span-1 md:col-span-2">
-                            <Label>Categories</Label>
-                            <Controller
-                                name="tags"
-                                control={control}
-                                render={({ field }) => (
-                                    <>
-                                        <div className="rounded-l w-full sm:w-min-80vw sm:w-600px mt-4 flex flex-wrap items-center gap-2 bg-transparent">
-                                            {tags.map((tag, index) =>
-                                                tag ? (
-                                                    <div
-                                                        className="bg-gray-200 dark:bg-neutral-900 flex items-center rounded-full px-3 py-1"
-                                                        key={index}
-                                                    >
-                                                        <span className="text-black dark:text-gray-400 mr-2">
-                                                            {tag}
-                                                        </span>
-                                                        <span
-                                                            className="h-5 w-5 bg-gray-800 text-white rounded-full flex items-center justify-center text-lg cursor-pointer"
-                                                            onClick={() =>
-                                                                removeTag(index)
-                                                            }
-                                                        >
-                                                            &times;
-                                                        </span>
-                                                    </div>
-                                                ) : null
-                                            )}
-                                            <input
-                                                onKeyDown={handleKeyDown}
-                                                type="text"
-                                                className="flex-grow py-2 rounded-md border-neutral-200 focus:border-primary-300 focus:ring focus:ring-primary-200/50 bg-white dark:border-neutral-500 dark:focus:ring-primary-500/30 dark:bg-neutral-900"
-                                                placeholder="Type something"
-                                            />
-                                        </div>
-                                        {bigTag && (
-                                            <Alert
-                                                type="danger"
-                                                message="Categories must be between 1 and 20 characters"
-                                            />
-                                        )}
-                                    </>
-                                )}
-                            />
+
+                        <Label className="flex justify-top sm:col-span-1 md:col-span-2">
+                            <TagsInput onChange={handleChangeTags} />
                         </Label>
 
                         <div className="block md:col-span-2">
-                            <Label>Featured Image</Label>
-
                             <div
                                 onDrop={handleDrop}
                                 onDragOver={handleDragOver}
                                 onDragEnter={handleDragEnter}
                                 onDragLeave={handleDragLeave}
-                                className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-md"
+                                className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-2xl"
                             >
-                                <div className="space-y-1 text-center">
+                                <div className="space-y-1 text-center pb-8">
                                     {selectedImage ? (
                                         <NextImage
                                             src={URL.createObjectURL(
@@ -571,13 +503,14 @@ const DashboardSubmitPost = () => {
                                                         <span>Drop here</span>
                                                     ) : (
                                                         <span>
-                                                            Upload a file
+                                                            Upload an image
                                                         </span>
                                                     )}
                                                     <input
                                                         id="file-upload"
                                                         name="file-upload"
                                                         type="file"
+                                                        accept="image/png, image/jpeg, image/jpg"
                                                         className="sr-only"
                                                         //@ts-ignore
                                                         onChange={
@@ -601,8 +534,7 @@ const DashboardSubmitPost = () => {
                         {isMobile ? (
                             <div className="flex-1 relative pb-[700px]">
                                 <div className="absolute inset-0 flex flex-col">
-                                    <Label>Post Content</Label>
-                                    <div className="w-full bg-white dark:bg-neutral-900 rounded-2xl dark:ring dark:ring-neutral-50/10">
+                                    <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
                                         <TiptapEditor
                                             onUpdate={(editor) => {
                                                 const text = editor.getText()
@@ -615,8 +547,7 @@ const DashboardSubmitPost = () => {
                             </div>
                         ) : (
                             <div className="block md:col-span-2">
-                                <Label>Post Content</Label>
-                                <div className=" bg-white dark:bg-neutral-900 rounded-2xl dark:ring dark:ring-neutral-50/10">
+                                <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
                                     <TiptapEditor
                                         onUpdate={(editor) => {
                                             const text = editor.getText()
@@ -628,7 +559,7 @@ const DashboardSubmitPost = () => {
                             </div>
                         )}
 
-                        <div className="pt-2 md:col-span-2 flex space-x-12 justify-center">
+                        <div className="pt-4 md:col-span-2 flex space-x-12 justify-center ">
                             {uploading ? (
                                 <>
                                     <ButtonPrimary
@@ -641,7 +572,7 @@ const DashboardSubmitPost = () => {
                                         <div className="w-full h-full bg-gray-200 absolute"></div>
                                         <div
                                             style={{ width: `${progress}%` }}
-                                            className="h-full bg-blue-500 absolute rounded-lg transition-all duration-500 ease-in-out"
+                                            className="h-full bg-blue-700 absolute rounded-lg transition-all duration-500 ease-in-out"
                                         ></div>
                                     </div>
                                 </>
@@ -649,7 +580,7 @@ const DashboardSubmitPost = () => {
                                 <>
                                     <ButtonPrimary
                                         type="submit"
-                                        className="text-white px-2 py-1 rounded-lg"
+                                        className="text-white bg-blue-700 px-2 py-1 rounded-lg"
                                     >
                                         Submit Post
                                     </ButtonPrimary>
@@ -664,6 +595,10 @@ const DashboardSubmitPost = () => {
                                     >
                                         Save Draft
                                     </ButtonPrimary>
+                                    <PostOptionsBtn
+                                        defaultData={postOptionsData}
+                                        onSubmit={handleApplyPostOptions}
+                                    />
                                 </>
                             )}
                         </div>

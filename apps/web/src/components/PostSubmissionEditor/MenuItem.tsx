@@ -20,16 +20,21 @@ const MenuItem: FC<Props> = ({
         return (
             <MenuItemImage action={action}>
                 <button
-                    className={`menu-item ${className} ${
+                    className={`flex items-center justify-center rounded-lg ${className} ${
                         isActive && isActive() ? ' is-active' : ''
                     }`}
-                    // onClick={action}
+                    onClick={() => {
+                        action
+                        console.log('action')
+                    }}
                     title={title}
                 >
-                    <div
-                        className="menu-item-svg"
-                        dangerouslySetInnerHTML={{ __html: icon }}
-                    ></div>
+                    <img
+                        className="w-6 h-6"
+                        src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                            icon
+                        )}`}
+                    />
                 </button>
             </MenuItemImage>
         )
@@ -40,16 +45,17 @@ const MenuItem: FC<Props> = ({
             className={`menu-item ${className} ${
                 isActive && isActive() ? ' is-active' : ''
             }`}
-            onClick={(e) => {
-                e.preventDefault()
+            type="button"
+            onClick={() => {
+                console.log('Button clicked')
                 action()
             }}
             title={title}
         >
-            <div
-                className="menu-item-svg"
-                dangerouslySetInnerHTML={{ __html: icon }}
-            ></div>
+            <img
+                className="w-6 h-6"
+                src={`data:image/svg+xml;utf8,${encodeURIComponent(icon)}`}
+            />
         </button>
     )
 }

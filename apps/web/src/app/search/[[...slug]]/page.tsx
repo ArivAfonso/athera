@@ -16,6 +16,7 @@ import { pipeline } from '@xenova/transformers'
 import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
 import Card6 from '@/components/Card6/Card6'
 import Empty from '@/components/Empty'
+import Card11Skeleton from '@/components/Card11/Card11Skeleton'
 
 async function getData(
     context: { params: { slug: any } },
@@ -261,6 +262,42 @@ const PageSearchV2 = (context: any) => {
                             />
                         </div>
                     </div>
+                    {
+                        /* LOADING STATE */
+                        loading && (
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
+                                {[...Array(8)].map((_, id) => (
+                                    <div key={id}>
+                                        <div className="hidden sm:block">
+                                            {/* Render Card11 on larger screens */}
+                                            <Card11Skeleton />
+                                        </div>
+                                        <div className="sm:hidden grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                            {/* Render Card5 on smaller screens */}
+                                            <Card11Skeleton />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )
+                    }
+                    {/* RENDER ARTICLES */}
+                    {tabActive === 'Articles' && data.length > 0 && (
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
+                            {data.map((post, id) => (
+                                <div key={id}>
+                                    <div className="hidden sm:block">
+                                        {/* Render Card11 on larger screens */}
+                                        <Card11 post={post} />
+                                    </div>
+                                    <div className="sm:hidden grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                        {/* Render Card5 on smaller screens */}
+                                        <Card6 post={post} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                     {tabActive === 'Categories' && categories.length > 0 && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
                             {categories.map((cat, id) => (
@@ -276,12 +313,14 @@ const PageSearchV2 = (context: any) => {
                         </div>
                     )}
                     {/* RENDER NO RESULTS COMPONENT */}
-                    {tabActive === 'Articles' && data.length === 0 && (
-                        <Empty
-                            mainText="No Posts Found"
-                            subText="We couldn’t find any results. Try for something else."
-                        />
-                    )}
+                    {tabActive === 'Articles' &&
+                        data.length === 0 &&
+                        !loading && (
+                            <Empty
+                                mainText="No Posts Found"
+                                subText="We couldn’t find any results. Try for something else."
+                            />
+                        )}
                     {tabActive === 'Categories' && categories.length === 0 && (
                         <Empty
                             mainText="No Posts Found"

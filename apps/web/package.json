@@ -81,6 +81,6 @@
         "@cloudflare/next-on-pages": "^1.7.2",
         "@types/react-modal": "^3.16.0",
         "@types/react-simple-maps": "^3.0.4",
-        "supabase": "^1.100.1"
+        "supabase": "^1.142.2"
     }
 }

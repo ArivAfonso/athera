@@ -533,17 +533,17 @@ const DashboardSubmitPost = () => {
 
                         {isMobile ? (
                             <div className="flex-1 relative pb-[700px]">
-                                <div className="absolute inset-0 flex flex-col">
-                                    <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
-                                        <TiptapEditor
-                                            onUpdate={(editor) => {
-                                                const text = editor.getText()
-                                                setText(text)
-                                                setJson(editor.getJSON())
-                                            }}
-                                        />
-                                    </div>
+                                {/* <div className="absolute inset-0 flex flex-col"> */}
+                                <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
+                                    <TiptapEditor
+                                        onUpdate={(editor) => {
+                                            const text = editor.getText()
+                                            setText(text)
+                                            setJson(editor.getJSON())
+                                        }}
+                                    />
                                 </div>
+                                {/* </div> */}
                             </div>
                         ) : (
                             <div className="block md:col-span-2">

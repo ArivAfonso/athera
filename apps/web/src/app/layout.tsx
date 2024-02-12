@@ -10,6 +10,7 @@ import NextTopLoader from 'nextjs-toploader'
 import AuthProvider from '@/providers/AuthProvider'
 import { env } from 'process'
 import { Toaster } from 'react-hot-toast'
+import CustomScrollbar from './CustomScrollbar'
 
 // do not cache this layout
 export const revalidate = 0
@@ -38,16 +39,19 @@ export default async function RootLayout({
     const accessToken = session?.access_token || ''
     return (
         <html lang="en" className={poppins.className}>
-            <body className="bg-[#f8f8f8] text-base dark:bg-neutral-900/95 text-neutral-900 dark:text-neutral-200">
+            <head>{/* Add your head content here */}</head>
+            <body className="bg-[#f8f8f8] flex flex-col h-[100%] text-base dark:bg-neutral-900/95 text-neutral-900 dark:text-neutral-200">
                 <NextTopLoader
                     color="#0018f9"
                     speed={600}
                     showSpinner={false}
                 />
+
                 <Header />
+
                 <AuthProvider accessToken={accessToken}>
                     {/* @ts-ignore */}
-                    {children}
+                    <div className="flex-1 overflow-y-auto">{children}</div>
                 </AuthProvider>
                 <Toaster
                     position="bottom-center"

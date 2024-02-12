@@ -7,6 +7,26 @@ import Card6 from '@/components/Card6/Card6'
 import { cookies } from 'next/headers'
 import { Metadata } from 'next'
 
+async function getCategories(context: { params: { slug: any } }) {
+    const supabase = createServerComponentClient({ cookies })
+
+    const id = context.params.slug[1]
+
+    const { data } = await supabase.rpc('get_category_data', {
+        category_id: id,
+    })
+
+    const catData: CategoryType[] | null = data as unknown as CategoryType[]
+    console.log(catData[0].post_categories)
+
+    //@ts-ignore
+    if (catData[0].post_categories[0].post.title == null) {
+        catData[0].post_categories = []
+    }
+
+    return catData[0]
+}
+
 export async function generateMetadata(
     props: any,
     searchParams: any
@@ -15,53 +35,8 @@ export async function generateMetadata(
 
     return {
         title: data.name + ' - Latest articles on Athera',
+        description: `Read the latest articles on ${data.name}.`,
     }
-}
-
-async function getCategories(context: { params: { slug: any } }) {
-    const supabase = createServerComponentClient({ cookies })
-
-    const id = context.params.slug[1]
-    const { data, error } = await supabase
-        .from('categories')
-        .select(
-            `
-            name,
-            color,
-            image,
-            post_categories(
-                post:posts(
-                    id,
-                    title,
-                    created_at,
-                    description,
-                    image,
-                    likeCount:likes(count),
-                    commentCount:comments(count),
-                    post_categories(category:categories(id,name,color)),
-                    bookmarks(user(id)),
-                    likes(
-                        liker(
-                            id
-                        )
-                    ),
-                    author(
-                        id,
-                        verified,
-                        name,
-                        username,
-                        avatar
-                    )
-                )
-            )
-            `
-        )
-        .eq('id', id)
-        .single()
-
-    const catData: CategoryType | null = data as unknown as CategoryType
-
-    return catData
 }
 
 const PageCategory = async (context: any) => {

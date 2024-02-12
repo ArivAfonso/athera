@@ -53,7 +53,7 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
         ],
         editorProps: {
             attributes: {
-                class: 'focus:outline-none prose md:px-4 prose-neutral lg:prose-lg dark:prose-invert max-w-screen-md min-h-[500px]',
+                class: 'focus:outline-none prose mx-auto prose-neutral lg:prose-lg dark:prose-invert max-w-screen-md min-h-[500px]',
             },
         },
         content: defaultContent,

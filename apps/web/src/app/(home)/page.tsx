@@ -41,6 +41,8 @@ async function getData() {
         )
         .limit(20)
 
+    console.log(error)
+
     const { data: categories, error: categoriesError } = await supabase
         .from('categories')
         .select('id, name, image, color, postCount:post_categories(count)')

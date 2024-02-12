@@ -11,50 +11,18 @@ import stringToSlug from '@/utils/stringToSlug'
 
 async function getPostData(context: { params: { slug: any } }) {
     const supabase = createServerComponentClient({ cookies })
+    const { data: session } = await supabase.auth.getSession()
 
     const id = context.params.slug[1]
-    const { data, error } = await supabase
-        .from('posts')
-        .select(
-            `
-        title,
-        id,
-        json,
-        rawText,
-        created_at,
-        estimatedReadingTime,
-        description,
-        image,
-        author (
-            name,
-            id,
-            username,
-            avatar
-        ),
-        post_categories(category:categories(id,name,color)),
-        likeCount:likes(count),
-        commentCount:comments(count),
-        likes(
-            liker(
-                id
-            )
-        )
-        `
-        )
-        .eq('id', id)
-    const postData: PostType | null = data as unknown as PostType
-    const { data: session } = await supabase.auth.getSession()
-    //@ts-ignore
-    postData[0].isLiked = false
-    //@ts-ignore
-    data[0].likes.forEach((like: any) => {
-        if (like.liker.id === session.session?.user.id) {
-            //@ts-ignore
-            postData[0].isLiked = true
-        }
+    const { data, error: e } = await supabase.rpc('get_post_data', {
+        post_id: id,
+        current_user_id: session.session?.user.id,
     })
+
+    console.log(e)
+    console.log(data)
     //@ts-ignore
-    return postData[0]
+    return data
 }
 
 export async function generateMetadata(
@@ -142,78 +110,44 @@ const PageSingle = async (context: any) => {
     return (
         <>
             <div className={`nc-PageSingle pt-8 lg:pt-16`}>
-                <Suspense
-                    fallback={
-                        <div className="animate-pulse max-w-screen-md mx-auto">
-                            <div className="bg-gray-300 dark:bg-gray-700 h-6 w-3/4 mb-4 rounded-lg"></div>
-                            <div className="bg-gray-300 dark:bg-gray-700 h-4 w-1/2 mb-2 rounded-lg"></div>
-                            <div className="bg-gray-300 dark:bg-gray-700 h-4 w-1/4 mb-2 rounded-lg"></div>
-                            <div className="bg-gray-300 dark:bg-gray-700 h-4 w-3/4 mb-2 rounded-lg"></div>
-                        </div>
-                    }
-                >
-                    <header className="container rounded-xl">
-                        <div className="max-w-screen-md mx-auto">
-                            <SingleHeader
-                                description={data.description}
-                                likes={data.likeCount[0].count as number}
-                                estimatedReadingTime={data.estimatedReadingTime}
-                                title={data.title}
-                                category={data.post_categories}
-                                author={data.author}
-                                created_at={
-                                    data.created_at ? data.created_at : ''
-                                }
-                                comments={data.commentCount[0].count}
-                                id={data.id}
-                            />
-                        </div>
-                    </header>
-                </Suspense>
-
-                <Suspense
-                    fallback={
-                        <div className="animate-pulse container my-10 sm:my-12 flex justify-center items-center rounded-xl">
-                            <div className="bg-gray-300 dark:bg-gray-700 h-48 w-64"></div>
-                        </div>
-                    }
-                >
-                    <NcImage
-                        alt="single"
-                        containerClassName="container my-10 sm:my-12 flex justify-center items-center"
-                        className="rounded-xl"
-                        src={data.image}
-                        width={800} // Adjust the desired width
-                        height={480} // Adjust the desired height
-                    />
-                </Suspense>
-                {/* SINGLE MAIN CONTENT */}
-                <Suspense
-                    fallback={
-                        <div className="animate-pulse">
-                            <div className="bg-gray-300 dark:bg-gray-700 h-4 w-full mb-4 rounded-lg"></div>
-                            <div className="bg-gray-300 dark:bg-gray-700 h-4 w-full mb-4 rounded-lg"></div>
-                            <div className="bg-gray-300 dark:bg-gray-700 h-4 w-full mb-4 rounded-lg"></div>
-                            <div className="bg-gray-300 dark:bg-gray-700 h-4 w-full mb-4 rounded-lg"></div>
-                        </div>
-                    }
-                >
-                    <div className="container mt-10">
-                        <SingleContent
-                            body={data.rawText}
+                <header className="container rounded-xl">
+                    <div className="max-w-screen-md mx-auto">
+                        <SingleHeader
+                            description={data.description}
+                            likes={data.likeCount[0].count as number}
+                            estimatedReadingTime={data.estimatedReadingTime}
+                            title={data.title}
+                            category={data.post_categories}
                             author={data.author}
-                            json={data.json}
+                            created_at={data.created_at ? data.created_at : ''}
+                            comments={data.commentCount[0].count as number}
                             id={data.id}
-                            //@ts-ignore
-                            currentUserID={currentUserID ? currentUserID : ''}
-                            likeCount={data.likeCount[0].count}
-                            isLiked={data.isLiked}
-                            commentCount={
-                                commentData?.length ? commentData.length : 0
-                            }
                         />
                     </div>
-                </Suspense>
+                </header>
+                <NcImage
+                    alt="single"
+                    containerClassName="container my-10 sm:my-12 flex justify-center items-center"
+                    className="rounded-xl"
+                    src={data.image}
+                    width={800} // Adjust the desired width
+                    height={480} // Adjust the desired height
+                />
+                <div className="container mt-10">
+                    <SingleContent
+                        body={data.rawText}
+                        author={data.author}
+                        json={data.json}
+                        id={data.id}
+                        //@ts-ignore
+                        currentUserID={currentUserID ? currentUserID : ''}
+                        likeCount={data.likeCount[0].count as number}
+                        isLiked={data.isLiked}
+                        commentCount={
+                            commentData?.length ? commentData.length : 0
+                        }
+                    />
+                </div>
 
                 {/* RELATED POSTS */}
                 <SingleRelatedPosts id={data.id} authorId={data.author.id} />

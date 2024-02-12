@@ -20,7 +20,7 @@ const MenuItem: FC<Props> = ({
         return (
             <MenuItemImage action={action}>
                 <button
-                    className={`flex items-center justify-center rounded-lg ${className} ${
+                    className={` ${className} ${
                         isActive && isActive() ? ' is-active' : ''
                     }`}
                     onClick={() => {

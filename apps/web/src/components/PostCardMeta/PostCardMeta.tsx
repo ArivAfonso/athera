@@ -16,7 +16,7 @@ const PostCardMeta: FC<PostCardMetaProps> = ({
     className = 'leading-none text-xs',
     meta,
     hiddenAvatar = false,
-    avatarSize = 'h-7 w-7 text-sm',
+    avatarSize = 'h-8 w-8 text-sm',
 }) => {
     const { created_at, author } = meta
     if (author.avatar === undefined) {
@@ -26,35 +26,34 @@ const PostCardMeta: FC<PostCardMetaProps> = ({
             <div
                 className={`nc-PostCardMeta inline-flex items-center flex-wrap text-neutral-800 dark:text-neutral-200 ${className}`}
             >
-                <Link
-                    href={`/author/${author.username}`}
-                    className="relative flex items-center space-x-2"
-                >
-                    {!hiddenAvatar && (
-                        <Avatar
-                            radius="rounded-full"
-                            sizeClass={avatarSize}
-                            imgUrl={author.avatar}
-                            userName={author.name}
-                        />
-                    )}
-                    <span className="block text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white font-medium">
-                        {author.name}
-                    </span>
-                </Link>
-                <>
-                    {author.verified ? (
-                        <VerifyIcon iconClass="w-4 h-4" />
-                    ) : (
-                        <> </>
-                    )}
-                    <span className="text-neutral-500 dark:text-neutral-400 mx-[6px] font-medium">
-                        ·
-                    </span>
-                    <span className="text-neutral-500 dark:text-neutral-400 font-normal">
+                <div className="flex items-center">
+                    <Avatar
+                        radius="rounded-full"
+                        sizeClass={avatarSize}
+                        imgUrl={author.avatar}
+                        userName={author.name}
+                    />
+                </div>
+                <div className="pl-2 flex flex-col justify-center">
+                    <div className="flex items-center space-x-2 line-clamp-1">
+                        <Link
+                            href={`/author/${author.username}`}
+                            className="block text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white font-medium"
+                        >
+                            {author.name}
+                        </Link>
+                        {author.verified && <VerifyIcon iconClass="w-4 h-4" />}
+                        <span className="text-neutral-500 dark:text-neutral-400 font-medium">
+                            ·
+                        </span>
+                        <span className="text-neutral-500 dark:text-neutral-400 font-normal">
+                            @{author.username}
+                        </span>
+                    </div>
+                    <div className="text-neutral-500 pt-1 dark:text-neutral-400 font-normal">
                         {created_at}
-                    </span>
-                </>
+                    </div>
+                </div>
             </div>
         )
     }

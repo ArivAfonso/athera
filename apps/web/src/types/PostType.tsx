@@ -23,24 +23,19 @@ export default interface PostType {
             color: string
         }
     }[]
-    likeCount: {
-        count: number
-    }[]
-    commentCount: {
-        count: number
-    }[]
-    likes: {
-        liker: {
-            id: string
-        }
-    }[]
+    likeCount:
+        | {
+              count: number
+          }[]
+
+    commentCount:
+        | {
+              count: number
+          }[]
     isLiked: boolean
     isBookmarked: boolean
     bookmarkCount: {
         count: number
-    }[]
-    bookmarks: {
-        user: { id: string }
     }[]
     comments?: {
         commenter: {

@@ -90,7 +90,7 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
     },
     {
         id: randomId(),
-        href: '/category/World/1d79bec8-141d-4c3d-a1e6-01f94fd72e27' as Route,
+        href: '/#',
         name: 'World',
         type: 'dropdown',
         children: [
@@ -129,7 +129,7 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
 
     {
         id: randomId(),
-        href: '/category/Tech/027adce1-87f3-4cc2-b1cb-f2cb72eb56d3' as Route,
+        href: '/#',
         name: 'Tech',
         type: 'dropdown',
         children: [
@@ -167,7 +167,7 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
     },
     {
         id: randomId(),
-        href: '/category/Business/4c676630-5d49-439f-8418-71bab6cfa30d' as Route,
+        href: '/#',
         name: 'Business',
         type: 'dropdown',
         children: [
@@ -205,7 +205,7 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
     },
     {
         id: randomId(),
-        href: '/category/Sports/c2cb2a4a-6e8d-4d7f-9199-0d268f9ea6c2' as Route,
+        href: '/#',
         name: 'Sports',
         type: 'dropdown',
         children: [

@@ -6,7 +6,6 @@ import MenuItemHeading from './MenuItemHeading'
 import ModalGetIframeUrl from './ModalGetIframeUrl'
 import ModalGetLink from './ModalGetLink'
 import { useWindowSize } from 'react-use'
-import { Menu } from '@headlessui/react'
 
 export interface TiptapBarItem {
     icon: string
@@ -249,7 +248,7 @@ const MenuBar: React.FC<{ editor: Editor }> = ({ editor }) => {
 
     return (
         <div
-            className="editor__header sticky bg-neutral-100 rounded-tl-2xl rounded-tr-2xl dark:bg-neutral-800 px-2 lg:px-0 py-5 overflow-hidden lg:overflow-visible flex justify-center z-10"
+            className="editor__header sticky rounded-tl-2xl rounded-tr-2xl bg-neutral-100 dark:bg-neutral-800 px-2 lg:px-0 py-5 overflow-hidden lg:overflow-visible flex justify-center z-10"
             style={{
                 top: windowSizeWidth <= 600 ? 0 : wpadminbarH,
             }}

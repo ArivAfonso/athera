@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import Button from '@/components/Button/Button'
-import { HiChevronRight, HiChevronLeft } from 'react-icons/hi'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
 
 export interface HeaderProps {
     className?: string
@@ -82,7 +82,7 @@ const Header = (props: HeaderProps) => {
                         preventFocus && event.preventDefault()
                     }
                 >
-                    <HiChevronLeft /> {/* Add this line */}
+                    <ChevronLeftIcon /> {/* Add this line */}
                 </button>
                 {renderCenter && renderChildren}
                 <button
@@ -99,7 +99,7 @@ const Header = (props: HeaderProps) => {
                         preventFocus && event.preventDefault()
                     }
                 >
-                    <HiChevronRight /> {/* Add this line */}
+                    <ChevronRightIcon /> {/* Add this line */}
                 </button>
             </div>
         </div>

@@ -1,10 +1,9 @@
 import dayjs from 'dayjs'
 import { getStartOfWeek } from './getStartOfWeek'
-import type { FirstDayOfWeek } from '../../@types/date'
 
 export function getWeekdaysNames(
     locale: string,
-    firstDayOfWeek: FirstDayOfWeek = 'monday',
+    firstDayOfWeek: string = 'monday',
     format = 'dd'
 ) {
     const names = []

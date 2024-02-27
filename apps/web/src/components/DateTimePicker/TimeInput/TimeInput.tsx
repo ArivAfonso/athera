@@ -12,8 +12,8 @@ import {
     createAmPmHandler,
     createTimeHandler,
 } from './utils'
-import { HiOutlineClock } from 'react-icons/hi'
 import type { ReactNode, RefObject, Ref } from 'react'
+import { ClockIcon } from '@heroicons/react/24/outline'
 
 type Value = Date | null
 
@@ -66,13 +66,14 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>((props, ref) => {
         // @ts-ignore
         style,
         // @ts-ignore
-        suffix = <HiOutlineClock className="text-lg" />,
+        suffix = <ClockIcon className="w-5 h-5" />,
         timeFieldPlaceholder = '--',
         timeFieldClass,
         value,
         ...rest
     } = props
 
+    //@ts-ignore
     const uuid = useUniqueId(id)
 
     const hoursRef = useRef<HTMLInputElement>()
@@ -194,6 +195,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>((props, ref) => {
                     setValue={(val) =>
                         setTime((current) => ({ ...current, hours: val }))
                     }
+                    //@ts-ignore
                     id={uuid}
                     className={timeFieldClass}
                     max={format === '12' ? 12 : 23}

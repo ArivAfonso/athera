@@ -3,7 +3,6 @@ import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import Input from '../Input/Input'
 import useMergedRef from './hooks/useMergeRef'
-import { HiOutlineCalendar } from 'react-icons/hi'
 // import CloseButton from '../CloseButton'
 import type {
     ReactNode,
@@ -26,6 +25,7 @@ import {
     flip,
     shift,
 } from '@floating-ui/react'
+import { CalendarIcon } from '@heroicons/react/24/outline'
 
 dayjs.extend(localizedFormat)
 
@@ -73,7 +73,7 @@ const BasePicker = forwardRef<HTMLInputElement, BasePickerProps>(
             inputtableBlurClose = true,
             inputLabel,
             inputPrefix,
-            inputSuffix = <HiOutlineCalendar className="text-lg" />,
+            inputSuffix = <CalendarIcon className="w-5 h-5" />,
             name,
             onDropdownOpen,
             onDropdownClose,
@@ -188,6 +188,7 @@ const BasePicker = forwardRef<HTMLInputElement, BasePickerProps>(
                     value={inputLabel}
                     readOnly={!inputtable}
                     suffix={suffixIconSlot}
+                    // @ts-ignore
                     prefix={inputPrefix}
                     autoComplete="off"
                     type={type}

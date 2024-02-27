@@ -226,6 +226,7 @@ const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
                         year={yearSelection as number}
                         minDate={minDate}
                         maxDate={maxDate}
+                        //@ts-ignore
                         className={className}
                         style={style}
                         preventFocus={preventFocus}
@@ -251,6 +252,7 @@ const CalendarBase = forwardRef<HTMLDivElement, CalendarBaseProps>(
                         maxDate={maxDate}
                         enableHeaderLabel={enableHeaderLabel}
                         daysRefs={daysRefs}
+                        //@ts-ignore
                         style={style}
                         dayClassName={dayClassName}
                         dayStyle={dayStyle}

@@ -1,10 +1,9 @@
 import { getStartOfWeek } from './getStartOfWeek'
 import { getEndOfWeek } from './getEndOfWeek'
-import type { FirstDayOfWeek } from '../../@types/date'
 
 export function getMonthDays(
     month: Date,
-    firstDayOfWeek: FirstDayOfWeek = 'monday'
+    firstDayOfWeek: string = 'monday'
 ): Date[][] {
     const currentMonth = month.getMonth()
     const startOfMonth = new Date(month.getFullYear(), currentMonth, 1)

@@ -94,6 +94,20 @@ const DashboardSubmitPost = () => {
                     data: { user },
                 } = await supabase.auth.getUser()
 
+                let scheduled_at = null
+
+                if (postOptionsData.timeSchedulePublication) {
+                    const now = new Date()
+                    const timeSchedulePublicationDate = new Date(
+                        postOptionsData.timeSchedulePublication
+                    )
+
+                    scheduled_at =
+                        timeSchedulePublicationDate >= now
+                            ? postOptionsData.timeSchedulePublication
+                            : null
+                }
+
                 // Insert the post without the image URL
                 const { data, error: postInsertError } = await supabase
                     .from('posts')
@@ -106,6 +120,7 @@ const DashboardSubmitPost = () => {
                             estimatedReadingTime: Math.round(
                                 strWords(text) / 200
                             ),
+                            scheduled_at: scheduled_at,
                             embeddings: embedding,
                         },
                     ])
@@ -533,17 +548,17 @@ const DashboardSubmitPost = () => {
 
                         {isMobile ? (
                             <div className="flex-1 relative pb-[700px]">
-                                {/* <div className="absolute inset-0 flex flex-col"> */}
-                                <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
-                                    <TiptapEditor
-                                        onUpdate={(editor) => {
-                                            const text = editor.getText()
-                                            setText(text)
-                                            setJson(editor.getJSON())
-                                        }}
-                                    />
+                                <div className="absolute inset-0 flex flex-col">
+                                    <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
+                                        <TiptapEditor
+                                            onUpdate={(editor) => {
+                                                const text = editor.getText()
+                                                setText(text)
+                                                setJson(editor.getJSON())
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-                                {/* </div> */}
                             </div>
                         ) : (
                             <div className="block md:col-span-2">

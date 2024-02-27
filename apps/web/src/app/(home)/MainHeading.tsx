@@ -1,3 +1,5 @@
+'use client'
+
 import React, { HTMLAttributes, ReactNode } from 'react'
 import Typing from 'react-typing-effect'
 

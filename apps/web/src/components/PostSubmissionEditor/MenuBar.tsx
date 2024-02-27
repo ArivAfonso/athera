@@ -253,7 +253,7 @@ const MenuBar: React.FC<{ editor: Editor }> = ({ editor }) => {
                 top: windowSizeWidth <= 600 ? 0 : wpadminbarH,
             }}
         >
-            <div className=" w-full max-w-screen-md">
+            <div className="w-full max-w-screen-md">
                 <div className="flex items-center overflow-x-auto -mx-2.5 lg:overflow-x-visible">
                     {ITEM_STATE.map((item, index) => (
                         <Fragment key={index}>

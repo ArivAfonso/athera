@@ -9,11 +9,16 @@ import ButtonThird from '@/components/Button/ButtonThird'
 import Button from '@/components/Button/Button'
 import NcModal from '@/components/NcModal/NcModal'
 import { Cog8ToothIcon } from '@heroicons/react/24/outline'
+import DateTimepicker from '@/components/DateTimePicker/DateTimepicker'
+import dayjs from 'dayjs'
+import Alert from '@/components/Alert/Alert'
+import toast from 'react-hot-toast'
+import NextImage from 'next/image'
 
 export interface PostOptionsData {
     excerptText: string
     isAllowComments: boolean
-    timeSchedulePublication?: string
+    timeSchedulePublication?: Date
 }
 
 interface PostOptionsBtnProps {
@@ -29,6 +34,53 @@ const PostOptionsBtn: FC<PostOptionsBtnProps> = ({ onSubmit, defaultData }) => {
     const [isAllowComments, setIsAllowComments] = useState(
         defaultData.isAllowComments
     )
+
+    const [isDragging, setIsDragging] = useState(false)
+
+    const handleDrop = (event: any) => {
+        event.preventDefault()
+        const file = event.dataTransfer.files[0]
+        if (file) {
+            if (
+                file.type === 'image/png' ||
+                file.type === 'image/jpeg' ||
+                file.type === 'image/jpg'
+            ) {
+                // setSelectedImage(file)
+            } else {
+                // Handle the case when the file type is not supported
+                toast.custom((t) => (
+                    <Alert
+                        type="danger"
+                        message="File type not supported. Please upload a PNG or JPG file"
+                    />
+                ))
+            }
+        }
+        setIsDragging(false)
+    }
+
+    const handleDragOver = (event: any) => {
+        event.preventDefault()
+        setIsDragging(true)
+    }
+
+    const handleDragEnter = (event: any) => {
+        event.preventDefault()
+        setIsDragging(true)
+    }
+
+    const handleDragLeave = (event: any) => {
+        event.preventDefault()
+        setIsDragging(false)
+    }
+
+    const handleImageSelect = (event: { target: { files: any[] } }) => {
+        const file = event.target.files[0]
+        // if (file) {
+        //     setSelectedImage(file)
+        // }
+    }
 
     //
 
@@ -76,20 +128,106 @@ const PostOptionsBtn: FC<PostOptionsBtnProps> = ({ onSubmit, defaultData }) => {
             </div>
         )
     }
+
+    const renderUploadGallery = () => {
+        return (
+            <div>
+                <span className="text-base font-semibold">Gallery images</span>
+                <div className="flex gap-x-2.5 py-2 overflow-x-auto snap-x customScrollBar">
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((item, idx) => (
+                        <div
+                            className="flex-shrink-0 h-full w-48 snap-start flex flex-col"
+                            key={idx}
+                        >
+                            <Label>{`Image ${item}`}</Label>
+                            <div
+                                onDrop={handleDrop}
+                                onDragOver={handleDragOver}
+                                onDragEnter={handleDragEnter}
+                                onDragLeave={handleDragLeave}
+                                className="mt-1 flex justify-center px-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-2xl"
+                            >
+                                <div className="space-y-1 text-center pb-8">
+                                    {/* {selectedImage ? (
+                                        <NextImage
+                                            src={URL.createObjectURL(
+                                                selectedImage
+                                            )}
+                                            alt="Selected Image"
+                                            width={800} // Adjust the desired width
+                                            height={480} // Adjust the desired height
+                                        />
+                                    ) : ( */}
+                                    <>
+                                        <svg
+                                            className="mx-auto h-12 w-12 text-neutral-400"
+                                            stroke="currentColor"
+                                            fill="none"
+                                            viewBox="0 0 48 48"
+                                            aria-hidden="true"
+                                        >
+                                            {/* Your SVG path here */}
+                                        </svg>
+                                        <div className="flex flex-col sm:flex-row text-sm text-neutral-6000">
+                                            <label
+                                                htmlFor="file-upload"
+                                                className={`relative cursor-pointer rounded-md font-medium text-primary-6000 hover:text-primary-800 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 ${
+                                                    isDragging
+                                                        ? 'border-2 border-primary-500'
+                                                        : ''
+                                                }`}
+                                            >
+                                                {isDragging ? (
+                                                    <span>Drop here</span>
+                                                ) : (
+                                                    <span>Upload an image</span>
+                                                )}
+                                                <input
+                                                    id="file-upload"
+                                                    name="file-upload"
+                                                    type="file"
+                                                    accept="image/png, image/jpeg, image/jpg"
+                                                    className="sr-only"
+                                                    //@ts-ignore
+                                                    onChange={handleImageSelect}
+                                                />
+                                            </label>
+                                        </div>
+                                        <p className="text-xs text-neutral-500">
+                                            PNG, JPG up to 1MB
+                                        </p>
+                                    </>
+                                    {/* )} */}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
     const renderSchedulePublication = () => {
+        const dateGap = 7
+
+        // Only able to select previos & future 7 days start from today
+        const minDate = dayjs(new Date())
+            .subtract(dateGap, 'day')
+            .startOf('day')
+            .toDate()
         return (
             <div>
                 <Label>Schedule Publication</Label>
-                <Input
-                    onChange={(event) => {
-                        settimeSchedulePublication(event.currentTarget.value)
+                {/* @ts-ignore */}
+                <DateTimepicker
+                    placeholder="Pick date & time"
+                    minDate={minDate}
+                    value={timeSchedulePublication}
+                    onChange={(date) => {
+                        if (date) {
+                            settimeSchedulePublication(date)
+                        }
                     }}
-                    defaultValue={timeSchedulePublication}
-                    className="mt-1"
-                    type="datetime-local"
-                    id="Schedule-time"
-                    name="Schedule-time"
-                    min={new Date().toISOString().slice(0, 16)}
                 />
             </div>
         )
@@ -128,8 +266,11 @@ const PostOptionsBtn: FC<PostOptionsBtnProps> = ({ onSubmit, defaultData }) => {
                 <div className="relative flex flex-col px-5 py-6 space-y-5">
                     {renderExcerptTextarea()}
 
+                    {renderUploadGallery()}
+
                     {renderSchedulePublication()}
 
+                    {renderAllowCommentSwitch()}
                     {renderAllowCommentSwitch()}
                 </div>
             </div>

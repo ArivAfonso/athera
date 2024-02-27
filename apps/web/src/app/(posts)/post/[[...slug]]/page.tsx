@@ -11,18 +11,50 @@ import stringToSlug from '@/utils/stringToSlug'
 
 async function getPostData(context: { params: { slug: any } }) {
     const supabase = createServerComponentClient({ cookies })
-    const { data: session } = await supabase.auth.getSession()
 
     const id = context.params.slug[1]
-    const { data, error: e } = await supabase.rpc('get_post_data', {
-        post_id: id,
-        current_user_id: session.session?.user.id,
-    })
-
-    console.log(e)
-    console.log(data)
+    const { data, error } = await supabase
+        .from('posts')
+        .select(
+            `
+        title,
+        id,
+        json,
+        rawText,
+        created_at,
+        estimatedReadingTime,
+        description,
+        image,
+        author (
+            name,
+            id,
+            username,
+            avatar
+        ),
+        post_categories(category:categories(id,name,color)),
+        likeCount:likes(count),
+        commentCount:comments(count),
+        likes(
+            liker(
+                id
+            )
+        )
+        `
+        )
+        .eq('id', id)
+    const postData: PostType | null = data as unknown as PostType
+    const { data: session } = await supabase.auth.getSession()
     //@ts-ignore
-    return data
+    postData[0].isLiked = false
+    //@ts-ignore
+    data[0].likes.forEach((like: any) => {
+        if (like.liker.id === session.session?.user.id) {
+            //@ts-ignore
+            postData[0].isLiked = true
+        }
+    })
+    //@ts-ignore
+    return postData[0]
 }
 
 export async function generateMetadata(

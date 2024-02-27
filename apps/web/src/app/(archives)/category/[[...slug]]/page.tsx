@@ -11,20 +11,46 @@ async function getCategories(context: { params: { slug: any } }) {
     const supabase = createServerComponentClient({ cookies })
 
     const id = context.params.slug[1]
+    const { data, error } = await supabase
+        .from('categories')
+        .select(
+            `
+            name,
+            color,
+            image,
+            post_categories(
+                post:posts(
+                    id,
+                    title,
+                    created_at,
+                    description,
+                    image,
+                    likeCount:likes(count),
+                    commentCount:comments(count),
+                    post_categories(category:categories(id,name,color)),
+                    bookmarks(user(id)),
+                    likes(
+                        liker(
+                            id
+                        )
+                    ),
+                    author(
+                        id,
+                        verified,
+                        name,
+                        username,
+                        avatar
+                    )
+                )
+            )
+            `
+        )
+        .eq('id', id)
+        .single()
 
-    const { data } = await supabase.rpc('get_category_data', {
-        category_id: id,
-    })
+    const catData: CategoryType | null = data as unknown as CategoryType
 
-    const catData: CategoryType[] | null = data as unknown as CategoryType[]
-    console.log(catData[0].post_categories)
-
-    //@ts-ignore
-    if (catData[0].post_categories[0].post.title == null) {
-        catData[0].post_categories = []
-    }
-
-    return catData[0]
+    return catData
 }
 
 export async function generateMetadata(

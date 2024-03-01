@@ -65,6 +65,7 @@ const SingleContent: FC<SingleContentProps> = ({
 
     const output = useMemo(() => {
         return generateHTML(json, [
+            StarterKit,
             Document,
             Paragraph,
             Text,

@@ -407,7 +407,10 @@ const DashboardSubmitPost = () => {
             if (
                 file.type === 'image/png' ||
                 file.type === 'image/jpeg' ||
-                file.type === 'image/jpg'
+                file.type === 'image/jpg' ||
+                file.type === 'image/webp' ||
+                file.type === 'image/svg+xml' ||
+                file.type === 'image/avif'
             ) {
                 setSelectedImage(file)
             } else {

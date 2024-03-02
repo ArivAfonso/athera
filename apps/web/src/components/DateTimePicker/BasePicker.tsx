@@ -3,7 +3,6 @@ import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import Input from '../Input/Input'
 import useMergedRef from './hooks/useMergeRef'
-// import CloseButton from '../CloseButton'
 import type {
     ReactNode,
     FocusEvent,

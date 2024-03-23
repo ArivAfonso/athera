@@ -1,13 +1,82 @@
-/* Hide scrollbar for Chrome, Safari and Opera */
-.hiddenScrollbar::-webkit-scrollbar {
-    display: none;
+// /* Hide scrollbar for Chrome, Safari and Opera */
+// .hiddenScrollbar::-webkit-scrollbar {
+//     display: none;
+// }
+
+// /* Hide scrollbar for IE, Edge and Firefox */
+// .hiddenScrollbar {
+//     -ms-overflow-style: none; /* IE and Edge */
+//     scrollbar-width: none; /* Firefox */
+// }
+
+/* custom-scrollbar.css */
+/* This styles the width of the scrollbar */
+::-webkit-scrollbar {
+    width: 20px;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-.hiddenScrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+/* This styles the appearance of the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+    width: 20px;
+    border-radius: 20px;
+    background-color: #d1d5db; /* default background color */
+    border: 6px solid transparent;
+    background-clip: content-box;
 }
+
+/* This styles the appearance of the scrollbar thumb when hovered */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a8bbbf;
+}
+
+/* This styles the background of the scrollbar track */
+::-webkit-scrollbar-track {
+    background-color: transparent; /* Set scrollbar track based on theme mode */
+}
+
+/* This styles the container to overlay the scrollbar track */
+.custom-scrollbar-container {
+    position: relative;
+    background-color: transparent;
+    z-index: 1;
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+    /* This styles the appearance of the scrollbar thumb in dark mode */
+    .dark ::-webkit-scrollbar-thumb {
+        background-color: #374151;
+    }
+
+    /* This styles the appearance of the scrollbar thumb when hovered in dark mode */
+    .dark ::-webkit-scrollbar-thumb:hover {
+        background-color: #475569;
+    }
+
+    /* This styles the appearance of the scrollbar track in dark mode */
+    .dark ::-webkit-scrollbar-track {
+        background-color: transparent; /* Set scrollbar track based on theme mode */
+    }
+}
+
+  
+//   /* ................................................... */
+//   /* Change autocomplete styles in WebKit */
+//   /* ................................................... */
+//   input:-webkit-autofill,
+//   input:-webkit-autofill:hover,
+//   input:-webkit-autofill:focus,
+//   textarea:-webkit-autofill,
+//   textarea:-webkit-autofill:hover,
+//   textarea:-webkit-autofill:focus,
+//   select:-webkit-autofill,
+//   select:-webkit-autofill:hover,
+//   select:-webkit-autofill:focus {
+//     border: 1px solid transparent;
+//     -webkit-text-fill-color: currentColor;
+//     -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+//     transition: background-color 5000s ease-in-out 0s;
+//   }
 
 //
 .nc-card-title {

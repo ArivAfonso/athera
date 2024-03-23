@@ -95,13 +95,13 @@ const Day = forwardRef<HTMLButtonElement, DayProps>((props, ref) => {
                     !selected &&
                     !inRange &&
                     'hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-gray-300',
-                selected && !disabled && `bg-primary-500 text-gray-100`,
+                selected && !disabled && `bg-blue-700 text-gray-100`,
                 inRange &&
                     !disabled &&
                     !firstInRange &&
                     !lastInRange &&
                     !selected &&
-                    `bg-primary-500 bg-opacity-10`,
+                    `bg-blue-700 bg-opacity-10`,
                 !inRange && !firstInRange && !lastInRange && 'rounded-lg',
                 firstInRange &&
                     !disabled &&

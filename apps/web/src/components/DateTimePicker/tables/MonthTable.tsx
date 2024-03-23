@@ -55,7 +55,7 @@ const MonthTable = (props: MonthTableProps) => {
                     'text-center py-2 rounded-lg font-semibold',
                     active &&
                         !disabled &&
-                        `bg-primary-500 text-white month-picker-cell-active`,
+                        `bg-blue-700 text-white month-picker-cell-active`,
                     !active && !disabled && 'hover:bg-gray-100',
                     disabled && 'opacity-30  cursor-not-allowed'
                 )}

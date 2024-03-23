@@ -8,8 +8,6 @@ export default interface CategoryType {
     postCount: {
         count: number
     }[]
-    post_categories?: {
-        post: PostType
-    }[]
+    posts?: PostType[]
     color: string
 }

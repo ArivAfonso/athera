@@ -94,11 +94,11 @@ export default function DashboardLayout({ children }: Props) {
     //   const currentTab = router.query.tab || "published";
 
     const renderItem = (item: NavigationItem) => {
-        const [isHovering, setIsHovering] = useState(false);
 
         return (
             <li key={item.name}>
                 <Link
+                    //@ts-ignore
                     href={item.href}
                     className={classNames(
                         'text-neutral-500 dark:text-neutral-300 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-300',
@@ -121,6 +121,7 @@ export default function DashboardLayout({ children }: Props) {
                                 <li key={child.name} className="relative">
                                     <div className="absolute w-4 h-4 top-2 -start-[10px] border rounded-lg rounded-t-none rounded-e-none border-e-0 border-t-0 border-neutral-200 dark:border-neutral-600"></div>
                                     <Link
+                                        //@ts-ignore
                                         href={child.href}
                                         className={classNames(
                                             'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-300',

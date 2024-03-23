@@ -199,7 +199,7 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                                                     await fetchResults()
                                                 }
                                             }}
-                                            onKeyDown={(event) => {
+                                            onKeyDown={(event:any) => {
                                                 if (
                                                     event.key === 'Enter' &&
                                                     (rawQuery.trim() !== '' ||

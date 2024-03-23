@@ -230,6 +230,7 @@ const DevModal: FC<ModalDeletePostProps> = ({
                                                 defaultValue={true}
                                                 render={({ field }) => (
                                                     <Checkbox
+                                                        //@ts-ignore
                                                         label={extractContent(post.title.rendered)? extractContent(post.title.rendered) : 'No title'}
                                                         defaultChecked={false}
                                                         // @ts-ignore

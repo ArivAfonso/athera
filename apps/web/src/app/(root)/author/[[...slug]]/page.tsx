@@ -207,14 +207,25 @@ const PageAuthor = (context: any) => {
                                         </div>
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-4 text-sm text-neutral-500 dark:text-neutral-400">
-                                                <div className="flex items-center space-x-1 hover:cursor-pointer" onClick={() => setModal(true)}>
+                                                <div className="flex items-center space-x-1">
+                                                    <UserGroupIcon className="h-5 w-5" />
+                                                    <span>
+                                                        {data.followerCount
+                                                            ? data.followerCount
+                                                            : 0}
+                                                    </span>
+                                                    <span className="inline">
+                                                        Followers
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center space-x-1">
                                                     <UserGroupIcon className="h-5 w-5" />
                                                     <span>
                                                         {data.followingCount
                                                             ? data.followingCount
                                                             : 0}
                                                     </span>
-                                                    <span className="hover:underline">
+                                                    <span className="inline">
                                                         Following
                                                     </span>
                                                 </div>

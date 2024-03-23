@@ -55,7 +55,7 @@ const PostOptionsBtn: FC<FollowButtonProps> = ({show, author, type, onCloseModal
                 <div className="flex flex-col sm:items-center sm:justify-between sm:flex-row ">
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
                         {data?.map((author, key) => (
-                            <CardAuthorBox key={key} author={author.follower} />
+                            <CardAuthorBox key={key} author={author} />
                         ))}
                     </div>
                 </div>

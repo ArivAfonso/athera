@@ -18,7 +18,7 @@
         "@react-three/drei": "^9.102.6",
         "@react-three/fiber": "^8.15.19",
         "@supabase/auth-helpers-nextjs": "^0.8.3",
-        "@supabase/supabase-js": "^2.39.1",
+        "@supabase/supabase-js": "^2.40.0",
         "@tailwindcss/aspect-ratio": "^0.4.2",
         "@tailwindcss/forms": "^0.5.6",
         "@tailwindcss/line-clamp": "^0.4.2",

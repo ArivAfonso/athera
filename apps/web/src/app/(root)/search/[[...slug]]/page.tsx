@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 import PostType from '@/types/PostType'
 import CategoryType from '@/types/CategoryType'
 import AuthorType from '@/types/AuthorType'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import { pipeline } from '@xenova/transformers'
 import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
 import Card6 from '@/components/Card6/Card6'
@@ -23,7 +23,7 @@ async function getData(
     filter_option: string
 ) {
     const slug = context.params.slug[0]
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
 
     const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
 
@@ -54,7 +54,7 @@ async function getData(
 
 async function fetchCategoriesData(context: { params: { slug: any } }) {
     const slug = context.params.slug[0]
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
 
     const { data, error } = await supabase
         .from('categories')
@@ -66,7 +66,7 @@ async function fetchCategoriesData(context: { params: { slug: any } }) {
 
 async function fetchAuthorsData(context: { params: { slug: any } }) {
     const slug = context.params.slug[0]
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
 
     const { data, error } = await supabase
         .from('users')
@@ -101,6 +101,7 @@ const PageSearchV2 = (context: any) => {
             } catch (err) {
                 setLoading(false)
             }
+            document.title = `Search for "${context.params.slug[0]}" - Athera`
         }
         fetchData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -114,9 +115,8 @@ const PageSearchV2 = (context: any) => {
         try {
             // Implement the logic to fetch categories data based on the search term
             //@ts-ignore
-            const categoriesData: CategoryType[] = await fetchCategoriesData(
-                context
-            ) // Implement the function to fetch categories
+            const categoriesData: CategoryType[] =
+                await fetchCategoriesData(context) // Implement the function to fetch categories
             setCategories(categoriesData)
         } catch (error) {
             console.error('Failed to fetch categories:', error)
@@ -283,9 +283,14 @@ const PageSearchV2 = (context: any) => {
                     }
                     {/* RENDER ARTICLES */}
                     {tabActive === 'Articles' && data.length > 0 && (
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
+                        <div
+                            className={`gap-6 md:gap-8 mt-8 lg:mt-10 ${data.length < 4 ? 'flex justify-center flex-wrap' : 'grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}
+                        >
                             {data.map((post, id) => (
-                                <div key={id}>
+                                <div
+                                    key={id}
+                                    className={`${data.length < 4 ? 'w-full sm:w-1/2 lg:w-1/3 xl:w-1/4' : ''}`}
+                                >
                                     <div className="hidden sm:block">
                                         {/* Render Card11 on larger screens */}
                                         <Card11 post={post} />

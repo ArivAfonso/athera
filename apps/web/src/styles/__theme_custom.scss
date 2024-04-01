@@ -1,13 +1,13 @@
-// /* Hide scrollbar for Chrome, Safari and Opera */
-// .hiddenScrollbar::-webkit-scrollbar {
-//     display: none;
-// }
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hiddenScrollbar::-webkit-scrollbar {
+    display: none;
+}
 
-// /* Hide scrollbar for IE, Edge and Firefox */
-// .hiddenScrollbar {
-//     -ms-overflow-style: none; /* IE and Edge */
-//     scrollbar-width: none; /* Firefox */
-// }
+/* Hide scrollbar for IE, Edge and Firefox */
+.hiddenScrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
 
 /* custom-scrollbar.css */
 /* This styles the width of the scrollbar */
@@ -31,7 +31,7 @@
 
 /* This styles the background of the scrollbar track */
 ::-webkit-scrollbar-track {
-    background-color: transparent; /* Set scrollbar track based on theme mode */
+    background-color: #ffffff; /* Set scrollbar track based on theme mode */
 }
 
 /* This styles the container to overlay the scrollbar track */
@@ -55,11 +55,10 @@
 
     /* This styles the appearance of the scrollbar track in dark mode */
     .dark ::-webkit-scrollbar-track {
-        background-color: transparent; /* Set scrollbar track based on theme mode */
+        background-color: #1f2937; /* Set scrollbar track based on theme mode */
     }
 }
 
-  
 //   /* ................................................... */
 //   /* Change autocomplete styles in WebKit */
 //   /* ................................................... */
@@ -222,8 +221,10 @@
 }
 
 .nc-google-shadow {
-    box-shadow: 0px 6px 10px 0px rgb(0 0 0 / 14%),
-        0px 1px 18px 0px rgb(0 0 0 / 12%), 0px 3px 5px -1px rgb(0 0 0 / 20%);
+    box-shadow:
+        0px 6px 10px 0px rgb(0 0 0 / 14%),
+        0px 1px 18px 0px rgb(0 0 0 / 12%),
+        0px 3px 5px -1px rgb(0 0 0 / 20%);
 }
 
 //
@@ -306,6 +307,7 @@
 }
 
 .nc-custom-shadow-1 {
-    box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px,
+    box-shadow:
+        rgba(17, 17, 26, 0.1) 0px 4px 16px,
         rgba(17, 17, 26, 0.05) 0px 8px 32px;
 }

@@ -2,16 +2,15 @@
 
 import React, { ReactNode, useEffect, useState } from 'react'
 import NcImage from '@/components/NcImage/NcImage'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import ModalDeletePost from '../ModalDeletePost'
 import PostType from '@/types/PostType'
 import stringToSlug from '@/utils/stringToSlug'
 import Link from 'next/link'
 import Badge from '@/components/Badge/Badge'
 import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
-import DraftType from '@/types/DraftType'
+import { SquarePenIcon, Trash2Icon } from 'lucide-react'
 
 const DashboardPosts = () => {
     const [posts, setPosts] = React.useState<PostType[]>([])
@@ -24,7 +23,7 @@ const DashboardPosts = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const supabase = createClientComponentClient()
+                const supabase = createClient()
                 const { data: session } = await supabase.auth.getSession()
 
                 // First, fetch the posts
@@ -63,7 +62,7 @@ const DashboardPosts = () => {
     }, [])
 
     const handleDeletePost = async (postId: string) => {
-        const supabase = createClientComponentClient() // Change to server component client
+        const supabase = createClient() // Change to server component client
         const { error } = await supabase.from('posts').delete().eq('id', postId)
         const { data: session } = await supabase.auth.getSession()
         await supabase.storage
@@ -219,12 +218,12 @@ const DashboardPosts = () => {
                                                         <button
                                                             onClick={() => {
                                                                 router.push(
-                                                                    `/edit-post/${post.id}`
+                                                                    `/dashboard/edit-post/${post.id}`
                                                                 )
                                                             }}
                                                             className="text-primary-800 dark:text-primary-500 hover:text-primary-900"
                                                         >
-                                                            <PencilSquareIcon className="h-6 w-6" />
+                                                            <SquarePenIcon className="h-6 w-6" />
                                                         </button>
                                                         {` | `}
                                                         <button
@@ -238,7 +237,12 @@ const DashboardPosts = () => {
                                                             }}
                                                             className="text-rose-600 hover:text-rose-900"
                                                         >
-                                                            <TrashIcon className="h-6 w-6" />
+                                                            <Trash2Icon
+                                                                className="h-6 w-6"
+                                                                strokeWidth={
+                                                                    1.5
+                                                                }
+                                                            />
                                                         </button>
                                                     </td>
                                                 </tr>

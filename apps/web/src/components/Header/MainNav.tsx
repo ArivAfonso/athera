@@ -10,13 +10,6 @@ import AvatarDropdown from './AvatarDropdown'
 import NotifyDropdown from './NotifyDropdown'
 import ButtonPrimary from '../Button/ButtonPrimary'
 
-async function getUser() {
-    const supabase = createServerComponentClient({ cookies })
-
-    const { data: session } = await supabase.auth.getSession()
-    return session?.session?.user
-}
-
 export interface MainNavProps {}
 
 //@ts-ignore
@@ -25,7 +18,7 @@ const MainNav: FC<MainNavProps> = async ({}) => {
     const { data: session } = await supabase.auth.getSession()
     const user = session?.session?.user
     return (
-        <div className="nc-MainNav relative z-10 bg-white dark:bg-slate-900 ">
+        <div className="nc-MainNav relative z-9999 bg-white dark:bg-slate-900  border-b border-neutral-200/70 dark:border-transparent">
             <div className="container">
                 <div className="h-20 py-5 flex justify-between items-center">
                     <div className="flex items-center lg:hidden flex-1">
@@ -44,7 +37,7 @@ const MainNav: FC<MainNavProps> = async ({}) => {
                             {/* if user exists show avatar dropdown else button */}
                             {user ? (
                                 <>
-                                    <NotifyDropdown className="hidden md:block" />
+                                    <NotifyDropdown className="hidden md:block z-40" />
                                     <AvatarDropdown
                                         avatar_url={
                                             user.user_metadata.avatar_url

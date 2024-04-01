@@ -1,189 +1,208 @@
 'use client'
 
-import React, { useState, MouseEvent } from 'react'
-import Link from 'next/link'
-import PropTypes from 'prop-types'
-import { customTooltips, chartLinearGradient } from '../utils'
-import DashboardChart from '../Charts/DashboardChart'
+import { useEffect, useRef, useState } from 'react'
+import {
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    Area,
+    ComposedChart,
+} from 'recharts'
+import WidgetCard from '../WidgetCard'
+import { CustomYAxisTick } from '../CustomYAxisTick'
+import { CustomTooltip } from '../CustomTooltip'
+import { RoundedBottomBar } from '../RoundedBottomBar'
+import { RoundedTopBar } from '../RoundedTopBar'
+import useIntersectionObserver from '@/hooks/useIntersectionObserver'
+import { useThemeMode } from '@/hooks/useThemeMode'
 
-const earnings = {
-    today: {
-        users: [20, 36, 28, 50, 40, 55, 40, 75, 35, 40, 35, 58],
-        labels: [
-            '2(h)',
-            '4(h)',
-            '6(h)',
-            '8(h)',
-            '10(h)',
-            '12(h)',
-            '14(h)',
-            '16(h)',
-            '18(h)',
-            '20(h)',
-            '22(h)',
-            '24(h)',
-        ],
+const data = [
+    {
+        month: 'Jan',
+        revenue: 5000,
+        expense: 1500,
     },
-    week: {
-        users: [40, 30, 35, 20, 25, 40, 35],
-        labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    {
+        month: 'Feb',
+        revenue: 4600,
+        expense: 3798,
     },
-    month: {
-        users: [45, 20, 35, 32, 50, 45, 32, 35, 25, 40, 30, 55],
-        labels: ['1-5', '6-10', '11-15', '16-20', '21-25', '26-31'],
+    {
+        month: 'Mar',
+        revenue: 5900,
+        expense: 1300,
     },
-}
+    {
+        month: 'Apr',
+        revenue: 5780,
+        expense: 3908,
+    },
+    {
+        month: 'May',
+        revenue: 4890,
+        expense: 2500,
+    },
+    {
+        month: 'Jun',
+        revenue: 8000,
+        expense: 3200,
+    },
+    {
+        month: 'Jul',
+        revenue: 4890,
+        expense: 2500,
+    },
+    {
+        month: 'Aug',
+        revenue: 3780,
+        expense: 3908,
+    },
+    {
+        month: 'Sep',
+        revenue: 7800,
+        expense: 2800,
+    },
+    {
+        month: 'Oct',
+        revenue: 5780,
+        expense: 1908,
+    },
+    {
+        month: 'Nov',
+        revenue: 2780,
+        expense: 3908,
+    },
+    {
+        month: 'Dec',
+        revenue: 7500,
+        expense: 3000,
+    },
+]
 
-interface MonthlyEarningProps {
-    title?: string
-}
+export default function SalesReport({ className }: { className?: string }) {
+    const isTablet = window.innerWidth < 1024
+    const [isAnimationActive, setIsAnimationActive] = useState(false)
+    const themeMode = useThemeMode()
+    const divRef = useRef<HTMLDivElement>(null)
+    const entry = useIntersectionObserver(divRef, { threshold: 0.1 })
+    const [hasIntersected, setHasIntersected] = useState(false)
 
-const MonthlyEarning: React.FC<MonthlyEarningProps> = ({
-    title = 'Total Views',
-}) => {
-    const [earningsTab, setEarningsTab] = useState<string>('today')
+    useEffect(() => {
+        if (entry?.isIntersecting && !hasIntersected) {
+            setIsAnimationActive(true)
+            setHasIntersected(true)
+            const timer = setTimeout(() => setIsAnimationActive(false), 500)
+            return () => clearTimeout(timer)
+        }
+    }, [themeMode.isDarkMode, entry])
 
-    const handleTabActivation = (value: string, e: MouseEvent) => {
-        e.preventDefault()
-        setEarningsTab(value)
-    }
-
-    const earningsData =
-        earnings !== null
-            ? [
-                  {
-                      //@ts-ignore
-                      data: earnings[earningsTab].users,
-                      borderColor: '#8231D3',
-                      borderWidth: 3,
-                      fill: true,
-                      backgroundColor: () =>
-                          chartLinearGradient(
-                              document.getElementById(
-                                  'athera-views'
-                              ) as HTMLCanvasElement,
-                              300,
-                              {
-                                  start: '#8231D340',
-                                  end: '#ffffff05',
-                              }
-                          ),
-                      label: 'Current period',
-                      pointStyle: 'circle',
-                      pointRadius: '0',
-                      hoverRadius: '9',
-                      pointBorderColor: '#fff',
-                      pointBackgroundColor: '#8231D3',
-                      hoverBorderWidth: 5,
-                      amount: '$7,596',
-                  },
-              ]
-            : []
-
+    useEffect(() => {
+        setIsAnimationActive(true)
+        const timer = setTimeout(() => setIsAnimationActive(false), 500)
+        return () => clearTimeout(timer)
+    }, [themeMode.isDarkMode])
     return (
-        <>
-            {earningsData.length > 0 && (
-                <div className="bg-white dark:bg-[#1b1e2b] m-0 p-0 text-theme-gray dark:text-white60 text-[15px] rounded-xl relative h-full">
-                    <div className="h-[60px] px-[25px] text-dark dark:text-white87 font-medium text-[17px] flex flex-wrap items-center justify-between sm:flex-col sm:h-auto sm:mb-[15px]">
-                        <h1 className="mb-0 inline-flex items-center py-[18px] sm:pb-[5px] overflow-hidden whitespace-nowrap text-ellipsis text-2xl font-semibold">
-                            {title}
-                        </h1>
-                    </div>
-                    <div className="hexadash-chart-container px-[25px] pb-[25px]">
-                        <DashboardChart
-                            id="athera-views"
-                            // @ts-ignore
-                            labels={earnings[earningsTab].labels}
-                            datasets={earningsData}
-                            layout={{
-                                padding: {
-                                    left: -10,
-                                    right: -10,
-                                },
-                            }}
-                            scales={{
-                                y: {
-                                    grid: {
-                                        color: '#485e9029',
-                                        borderDash: [3, 3],
-                                        zeroLineColor: '#485e9029',
-                                        zeroLineWidth: 1,
-                                        zeroLineBorderDash: [3, 3],
-                                        drawTicks: false,
-                                        drawBorder: false,
-                                        borderWidth: 0,
-                                    },
-                                    ticks: {
-                                        beginAtZero: true,
-                                        font: {
-                                            size: 13,
-                                            family: "'Jost', sans-serif",
-                                        },
-                                        color: '#747474',
-                                        max: 80,
-                                        min: 0,
-                                        stepSize: 20,
-                                        padding: 10,
-                                        callback(label: any) {
-                                            return `${label}k`
-                                        },
-                                    },
-                                },
-
-                                x: {
-                                    grid: {
-                                        display: true,
-                                        zeroLineWidth: 2,
-                                        zeroLineColor: 'transparent',
-                                        color: 'transparent',
-                                        z: 1,
-                                        tickMarkLength: 10,
-                                        drawTicks: true,
-                                        drawBorder: false,
-                                    },
-                                    ticks: {
-                                        beginAtZero: true,
-                                        font: {
-                                            size: 13,
-                                            family: "'Jost', sans-serif",
-                                        },
-                                        color: '#747474',
-                                    },
-                                },
-                            }}
-                            tooltip={{
-                                custom: customTooltips,
-                                callbacks: {
-                                    title() {
-                                        return `Total Views`
-                                    },
-                                    label(t: any) {
-                                        const { formattedValue, dataset } = t
-                                        return `${formattedValue}k ${dataset.label}`
-                                    },
-                                },
-                            }}
-                            height={
-                                window.innerWidth < 1399
-                                    ? window.innerWidth < 575
-                                        ? 220
-                                        : 130
-                                    : 90
+        <WidgetCard
+            title={'Views'}
+            description={
+                <>
+                    <span className="inline-block h-3 w-3 rounded-full bg-[#282ECA] mr-1.5"></span>
+                    Revenue
+                    <span className="inline-block h-3 w-3 rounded-full bg-[#B8C3E9] dark:bg-[#7c88b2] ml-4 mr-1.5"></span>
+                    Expense
+                </>
+            }
+            descriptionClassName="text-gray-500 mt-1.5"
+            className={className}
+        >
+            <div
+                className="h-96 w-full pt-9 text-sm overflow-y-auto"
+                ref={divRef}
+            >
+                <ResponsiveContainer
+                    width="100%"
+                    height="100%"
+                    {...(isTablet && { minWidth: '700px' })}
+                >
+                    <ComposedChart
+                        data={data}
+                        barSize={isTablet ? 20 : 24}
+                        className="[&_.recharts-tooltip-cursor]:fill-opacity-20 dark:[&_.recharts-tooltip-cursor]:fill-opacity-10 [&_.recharts-cartesian-axis-tick-value]:fill-gray-500 [&_.recharts-cartesian-axis.yAxis]:-translate-y-3 rtl:[&_.recharts-cartesian-axis.yAxis]:-translate-x-12 [&_.recharts-cartesian-grid-vertical]:opacity-0"
+                    >
+                        <defs>
+                            <linearGradient
+                                id="salesReport"
+                                x1="0"
+                                y1="0"
+                                x2="0"
+                                y2="1"
+                            >
+                                <stop
+                                    offset="5%"
+                                    stopColor="#F0F1FF"
+                                    className=" [stop-opacity:0.1]"
+                                />
+                                <stop
+                                    offset="95%"
+                                    stopColor="#8200E9"
+                                    stopOpacity={0}
+                                />
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid
+                            strokeDasharray="8 10"
+                            strokeOpacity={0.435}
+                        />
+                        <XAxis
+                            dataKey="month"
+                            axisLine={false}
+                            tickLine={false}
+                        />
+                        <YAxis
+                            axisLine={false}
+                            tickLine={false}
+                            tick={<CustomYAxisTick prefix={'$'} />}
+                        />
+                        <Tooltip
+                            content={
+                                <CustomTooltip className="[&_.chart-tooltip-item:last-child]:hidden" />
                             }
                         />
-                    </div>
-                </div>
-            )}
-        </>
+                        <Bar
+                            dataKey="revenue"
+                            fill="#282ECA"
+                            stackId="a"
+                            shape={<RoundedBottomBar />}
+                            animationDuration={500}
+                            isAnimationActive={isAnimationActive}
+                        />
+                        <Bar
+                            dataKey="expense"
+                            stackId="a"
+                            fill="#B8C3E9"
+                            fillOpacity={0.9}
+                            shape={
+                                <RoundedTopBar className="fill-[#B8C3E9] dark:fill-[#7c88b2]" />
+                            }
+                            animationDuration={500}
+                            isAnimationActive={isAnimationActive}
+                        />
+                        <Area
+                            type="bump"
+                            dataKey="revenue"
+                            stroke="#8200E9"
+                            strokeWidth={2}
+                            fillOpacity={1}
+                            fill="url(#salesReport)"
+                            animationDuration={500}
+                            isAnimationActive={isAnimationActive}
+                        />
+                    </ComposedChart>
+                </ResponsiveContainer>
+            </div>
+        </WidgetCard>
     )
 }
-
-MonthlyEarning.defaultProps = {
-    title: 'Total Views',
-}
-
-MonthlyEarning.propTypes = {
-    title: PropTypes.string,
-}
-
-export default MonthlyEarning

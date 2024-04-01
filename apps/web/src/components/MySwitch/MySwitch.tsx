@@ -9,6 +9,7 @@ export interface MySwitchProps {
     desc?: string
     className?: string
     onChange?: (enabled: boolean) => void
+    size?: 'small' | 'medium' | 'large'
 }
 
 const MySwitch: FC<MySwitchProps> = ({
@@ -17,12 +18,20 @@ const MySwitch: FC<MySwitchProps> = ({
     desc = 'You’ll receive bids on this item',
     className = '',
     onChange,
+    size = 'medium',
 }) => {
     const [enabledState, setEnabledState] = useState(false)
 
     useEffect(() => {
         setEnabledState(enabled)
     }, [enabled])
+
+    const switchSize =
+        size === 'small'
+            ? 'h-6 w-[56px]'
+            : size === 'large'
+              ? 'h-10 w-[80px]'
+              : 'h-8 w-[68px]'
 
     return (
         <div
@@ -45,7 +54,7 @@ const MySwitch: FC<MySwitchProps> = ({
                         ? 'bg-blue-700'
                         : 'bg-neutral-400 dark:bg-neutral-6000'
                 }
-          relative inline-flex flex-shrink-0 h-8 w-[68px] border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+          relative inline-flex flex-shrink-0 ${switchSize} border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
             >
                 <span className="sr-only">{label}</span>
                 <span

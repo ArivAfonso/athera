@@ -2,7 +2,7 @@
 
 import { Popover, Transition } from '@/app/headlessui'
 import NotificationType from '@/types/NotificationType'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import Image from 'next/image'
 import { FC, Fragment, useEffect, useState } from 'react'
 import Empty from '../Empty'
@@ -28,7 +28,7 @@ const NotifyDropdown: FC<Props> = ({ className = 'hidden sm:block' }) => {
                     setNotifications(JSON.parse(cachedNotifications))
                     return
                 } else {
-                    const supabase = createClientComponentClient()
+                    const supabase = createClient()
                     const { data: session } = await supabase.auth.getSession()
                     let { data, error } = await supabase
                         .from('notifications')
@@ -91,7 +91,7 @@ const NotifyDropdown: FC<Props> = ({ className = 'hidden sm:block' }) => {
 
     async function markAllasRead() {
         // All ids in the newNots array are marked as read
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         const { data: session } = await supabase.auth.getSession()
         const { data, error } = await supabase
             .from('notifications')
@@ -119,7 +119,7 @@ const NotifyDropdown: FC<Props> = ({ className = 'hidden sm:block' }) => {
                                 className={`
                 ${open ? '' : 'text-opacity-90'}
                  group  p-3 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full inline-flex items-center text-base font-medium hover:text-opacity-100
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 relative`}
+                  focus:outline-none relative`}
                             >
                                 {newNots[0] && (
                                     <span className="w-2 h-2 bg-blue-500 absolute top-2 right-2 rounded-full"></span>

@@ -11,12 +11,12 @@ import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import NcLink from '@/components/NcLink/NcLink'
 import Heading2 from '@/components/Heading/Heading2'
 import Image from 'next/image'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import { Controller, useForm } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
 
 const PageLogin = ({}) => {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     const [errorMsg, setErrorMsg] = useState('')
 
     const {

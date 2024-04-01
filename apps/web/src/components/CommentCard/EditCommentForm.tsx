@@ -4,7 +4,7 @@ import ButtonSecondary from '@/components/Button/ButtonSecondary'
 import Textarea from '@/components/Textarea/Textarea'
 import Button from '@/components/Button/Button'
 import { useForm, Controller } from 'react-hook-form'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 
 export interface SingleCommentFormProps {
     className?: string
@@ -29,7 +29,7 @@ const EditCommentForm: FC<SingleCommentFormProps> = ({
 }) => {
     const { control, handleSubmit } = useForm()
     const onSubmit = async (data: any) => {
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         const { data: commentConfirm, error } = await supabase
             .from('comments')
             .update({ comment: data.comment })

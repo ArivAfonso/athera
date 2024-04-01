@@ -1,8 +1,9 @@
-import React, { FC } from 'react'
+import React, { FC, ReactNode } from 'react'
 import MenuItemImage from './MenuItemImage'
+import { LucideIcon } from 'lucide-react'
 
 interface Props {
-    icon: string
+    icon: ReactNode
     title: string
     action: (args?: any) => void
     isActive?: () => boolean
@@ -20,7 +21,7 @@ const MenuItem: FC<Props> = ({
         return (
             <MenuItemImage action={action}>
                 <button
-                    className={` ${className} ${
+                    className={`menu-item ${className} ${
                         isActive && isActive() ? ' is-active' : ''
                     }`}
                     onClick={() => {
@@ -29,12 +30,7 @@ const MenuItem: FC<Props> = ({
                     }}
                     title={title}
                 >
-                    <img
-                        className="w-6 h-6"
-                        src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                            icon
-                        )}`}
-                    />
+                    {icon}
                 </button>
             </MenuItemImage>
         )
@@ -52,10 +48,7 @@ const MenuItem: FC<Props> = ({
             }}
             title={title}
         >
-            <img
-                className="w-6 h-6"
-                src={`data:image/svg+xml;utf8,${encodeURIComponent(icon)}`}
-            />
+            {icon}
         </button>
     )
 }

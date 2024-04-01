@@ -1,4 +1,4 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import Image from 'next/image'
 import { FC, useDeferredValue, useEffect, useId, useState } from 'react'
 
@@ -48,7 +48,7 @@ const ImageUploadToServer: FC<ImageUploadToServerProps> = ({
             altText: '',
         })
 
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         const { error } = await supabase.storage
             .from('images')
             .remove([id])

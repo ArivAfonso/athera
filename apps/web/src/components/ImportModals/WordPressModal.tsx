@@ -5,17 +5,13 @@ import NcModal from '@/components/NcModal/NcModal'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import ButtonThird from '@/components/Button/ButtonThird'
 import { Controller, useForm } from 'react-hook-form'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import Input from '../Input/Input'
 import Label from '../Label/Label'
 import Button from '../Button/Button'
 import Checkbox from '../Checkbox/Checkbox'
 import CategoryType from '@/types/CategoryType'
 import { generateJSON } from '@tiptap/core'
-import Bold from '@tiptap/extension-bold'
-import Document from '@tiptap/extension-document'
-import Paragraph from '@tiptap/extension-paragraph'
-import Text from '@tiptap/extension-text'
 import StarterKit from '@tiptap/starter-kit'
 import Highlight from '@tiptap/extension-highlight'
 import Underline from '@tiptap/extension-underline'
@@ -31,39 +27,33 @@ import { generateText } from '@tiptap/react'
 import AccordionInfo from '../AccordionInfo/AccordionInfo'
 import Radio from '../Radio/Radio'
 
-function extractContent(html:string) {
-    return new DOMParser()
-        .parseFromString(html, "text/html")
-        .documentElement.textContent;
+function extractContent(html: string) {
+    return new DOMParser().parseFromString(html, 'text/html').documentElement
+        .textContent
 }
 
 const accData = [
     {
         name: 'More Info',
-        component:
+        component: (
             <ul className="list-disc list-inside leading-5">
-                <li>A post already published with the same name on Athera will be assigned as a draft.</li>
                 <li>
-                    Posts without a cover image or topics will be assigned as drafts.
+                    A post already published with the same name on Athera will
+                    be assigned as a draft.
                 </li>
                 <li>
-                    You can find your Dev.to website in your profile URL.
+                    Posts without a cover image or topics will be assigned as
+                    drafts.
                 </li>
+                <li>You can find your Dev.to website in your profile URL.</li>
                 <li>
-                    You can import a certain number of posts at once and/or draft them all in the next section
+                    You can import a certain number of posts at once and/or
+                    draft them all in the next section
                 </li>
             </ul>
-        ,
+        ),
     },
 ]
-
-interface WordPressMediaType {
-    id: number
-    mime_type: string
-    source_url: string
-    alt_text: string
-}
-
 
 interface WordPressPostType {
     date: string
@@ -98,37 +88,24 @@ async function getPosts(website: string) {
     return data
 }
 
-function modifyString(str: string) {
-    //Capitalize every word of the string and replace spaces with -
-    console.log(str)
-    return str
-        .split(' ')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join('-')
-}
-
 export interface ModalDeletePostProps {
     show: boolean
     onCloseModal: () => void
 }
 
-const DevModal: FC<ModalDeletePostProps> = ({
-    show,
-    onCloseModal,
-}) => {
+const DevModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
     const { handleSubmit, register, control, watch, setValue } = useForm()
     const textareaRef = useRef(null)
     const [part2, setPart2] = useState(false)
     const [posts, setPosts] = useState<WordPressPostType[]>()
-    const [progress, setProgress] = useState(0)
-    const [total, setTotal] = useState(0)
+    const [uploading, setUploading] = useState(false)
     const [website, setWebsite] = useState('')
 
-    const supabase = createClientComponentClient()
-
-    const watchedValues = watch();
+    const watchedValues = watch()
 
     const uploadPosts = async (selectedPosts: WordPressPostType[]) => {
+        setUploading(true)
+
         selectedPosts.forEach(async (post) => {
             const output = generateJSON(post.content.rendered, [
                 StarterKit,
@@ -145,7 +122,6 @@ const DevModal: FC<ModalDeletePostProps> = ({
             ])
 
             const text = generateText(output, [
-                Paragraph,
                 StarterKit,
                 Highlight,
                 Underline,
@@ -166,25 +142,28 @@ const DevModal: FC<ModalDeletePostProps> = ({
         })
 
         //Upload posts via api
-        const res = await fetch(`${window.location.origin}/api/import/wordpress`, {
-            method: 'POST',
-            body: JSON.stringify({ selectedPosts, website }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        console.log(res)
+        try {
+            await fetch(`${window.location.origin}/api/import/wordpress`, {
+                method: 'POST',
+                body: JSON.stringify({ selectedPosts, website }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+        } catch (error) {
+            console.error('Failed to upload posts:', error)
+        }
 
+        setUploading(false)
     }
 
     const handleCloseModal = () => {
-        onCloseModal();
+        onCloseModal()
         //wait for 1 sec
         setTimeout(() => {
             setPart2(false)
         }, 1000)
-        setProgress(0)
-        setTotal(0)
+        setUploading(false)
     }
 
     useEffect(() => {
@@ -192,7 +171,7 @@ const DevModal: FC<ModalDeletePostProps> = ({
             setTimeout(() => {
                 const element: HTMLTextAreaElement | null = textareaRef.current
                 if (element) {
-                    ; (element as HTMLTextAreaElement).focus()
+                    ;(element as HTMLTextAreaElement).focus()
                 }
             }, 400)
         }
@@ -204,92 +183,114 @@ const DevModal: FC<ModalDeletePostProps> = ({
         setPart2(true)
     }
     const onPostSubmit = async (data: any) => {
-        const selectedPosts = posts?.filter(post => watchedValues[post.id.toString()]);
-        setTotal(selectedPosts?.length ? selectedPosts.length : 0)
-        await uploadPosts(selectedPosts ? selectedPosts : []);
+        const selectedPosts = posts?.filter(
+            (post) => watchedValues[post.id.toString()]
+        )
+        await uploadPosts(selectedPosts ? selectedPosts : [])
     }
 
     const handleCheckboxChange = (post: any, checked: boolean) => {
-        setValue(post.id.toString(), checked);
+        setValue(post.id.toString(), checked)
     }
 
     const renderContent = () => {
         return (
             <>
-                {
-                    part2 ? (
-                        <form onSubmit={handleSubmit(async (data) => await onPostSubmit(data))}>
-                            <div className="">
-                                <Label>Choose your posts</Label>
-                                {
-                                    posts?.map((post: any) => (
-                                        <div key={post.id} className='mt-3'>
-                                            <Controller
-                                                name={post.id.toString()}
-                                                control={control}
-                                                defaultValue={true}
-                                                render={({ field }) => (
-                                                    <Checkbox
-                                                        //@ts-ignore
-                                                        label={extractContent(post.title.rendered)? extractContent(post.title.rendered) : 'No title'}
-                                                        defaultChecked={false}
-                                                        // @ts-ignore
-                                                        onChange={(e) => handleCheckboxChange(post, e.target.checked)}
-                                                        {...field}
-                                                    />
-                                                )}
-                                            />
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                            {
-                                progress > 0 ? (
-                                    <div className="md:col-span-2 h-2 relative overflow-hidden rounded-lg w-full mt-3">
-                                        <div className="w-full h-full bg-gray-200 dark:bg-neutral-700 absolute"></div>
-                                        <div
-                                            style={{ width: `${(progress / total) * 100}%` }}
-                                            className="h-full bg-blue-500 absolute rounded-lg transition-all duration-500 ease-in-out"
-                                        ></div>
-                                    </div>
-                                ) : (
-                                    <div className="mt-3 flex justify-center">
-                                        <ButtonPrimary type="submit">Submit</ButtonPrimary>
-                                    </div>
-                                )
-                            }
-                        </form>
-                    ) : (
-                        <>
-                            <form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
-                                <Label>Your Wordpress Website</Label>
-                                <div className="mt-1.5 flex">
-                                    <span className="inline-flex items-center px-3 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
-                                        https://
-                                    </span>
+                {part2 ? (
+                    <form
+                        onSubmit={handleSubmit(
+                            async (data) => await onPostSubmit(data)
+                        )}
+                    >
+                        <div className="">
+                            <Label>Choose your posts</Label>
+                            {posts?.map((post: any) => (
+                                <div key={post.id} className="mt-3">
                                     <Controller
-                                        name="website"
+                                        name={post.id.toString()}
                                         control={control}
-                                        defaultValue=""
+                                        defaultValue={true}
                                         render={({ field }) => (
-                                            <Input
+                                            <Checkbox
+                                                //@ts-ignore
+                                                label={
+                                                    extractContent(
+                                                        post.title.rendered
+                                                    )
+                                                        ? extractContent(
+                                                              post.title
+                                                                  .rendered
+                                                          )
+                                                        : 'No title'
+                                                }
+                                                defaultChecked={true}
+                                                // @ts-ignore
+                                                onChange={(e) =>
+                                                    handleCheckboxChange(
+                                                        post,
+                                                        e
+                                                    )
+                                                }
                                                 {...field}
-                                                className="!rounded-l-none"
-                                                placeholder={'example.com'}
                                             />
                                         )}
                                     />
                                 </div>
-                                <div className='mt-4'>
-                                    <AccordionInfo panelClassName="text-sm" data={accData} />
-                                </div>
-                                <div className="mt-4 flex justify-center">
-                                    <ButtonPrimary sizeClass="p-3" type="submit">Continue</ButtonPrimary>
-                                </div>
-                            </form>
-                        </>
-                    )
-                }
+                            ))}
+                        </div>
+                        {uploading ? (
+                            <div className="mt-3 flex justify-center">
+                                <ButtonPrimary loading>
+                                    Submitting
+                                </ButtonPrimary>
+                            </div>
+                        ) : (
+                            <div className="mt-3 flex justify-center">
+                                <ButtonPrimary type="submit">
+                                    Submit
+                                </ButtonPrimary>
+                            </div>
+                        )}
+                    </form>
+                ) : (
+                    <>
+                        <form
+                            onSubmit={handleSubmit(
+                                async (data) => await onSubmit(data)
+                            )}
+                        >
+                            <Label>Your Wordpress Website</Label>
+                            <div className="mt-1.5 flex">
+                                <span className="inline-flex items-center px-3 rounded-l-2xl border border-r-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
+                                    https://
+                                </span>
+                                <Controller
+                                    name="website"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({ field }) => (
+                                        <Input
+                                            {...field}
+                                            className="!rounded-l-none"
+                                            placeholder={'example.com'}
+                                        />
+                                    )}
+                                />
+                            </div>
+                            <div className="mt-4">
+                                <AccordionInfo
+                                    panelClassName="text-sm"
+                                    data={accData}
+                                />
+                            </div>
+                            <div className="mt-4 flex justify-center">
+                                <ButtonPrimary sizeClass="p-3" type="submit">
+                                    Continue
+                                </ButtonPrimary>
+                            </div>
+                        </form>
+                    </>
+                )}
             </>
         )
     }
@@ -311,4 +312,3 @@ const DevModal: FC<ModalDeletePostProps> = ({
 }
 
 export default DevModal
-

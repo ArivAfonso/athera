@@ -4,14 +4,9 @@ import Label from '@/components/Label/Label'
 import React, { FC, useEffect, useState } from 'react'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import Input from '@/components/Input/Input'
-import Select from '@/components/Select/Select'
-import Textarea from '@/components/Textarea/Textarea'
-import Image from 'next/image'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import { useForm, Controller } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
-import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
-import Button from '@/components/Button/Button'
 
 function isValidHttpUrl(string: string) {
     let url
@@ -32,7 +27,7 @@ function Socials() {
     const [imageFile, setImageFile] = useState(null)
     const [loading, setLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     const [session, setSession] = useState<any>(null)
     const [selectedImage, setSelectedImage] = useState(null)
     const [imgChanged, setImgChanged] = useState(false)
@@ -210,7 +205,7 @@ function Socials() {
 
     useEffect(() => {
         async function checkLikedStatus() {
-            const supabase = createClientComponentClient()
+            const supabase = createClient()
             const { data: session } = await supabase.auth.getSession()
             setSession(session)
             const userId = session?.session?.user.id
@@ -224,56 +219,6 @@ function Socials() {
         }
         checkLikedStatus()
     }, [])
-
-    const [isDragging, setIsDragging] = useState(false)
-    const [showImg, setShowImg] = useState(null)
-
-    const handleDrop = (event: any) => {
-        event.preventDefault()
-        const file = event.dataTransfer.files[0]
-        if (file) {
-            if (
-                file.type === 'image/png' ||
-                file.type === 'image/jpeg' ||
-                file.type === 'image/jpg'
-            ) {
-                setSelectedImage(file)
-                const reader = new FileReader()
-                reader.onloadend = function () {
-                    //@ts-ignore
-                    setShowImg(reader.result as string)
-                }
-                reader.readAsDataURL(file)
-                setImgChanged(true)
-            } else {
-                // Handle the case when the file type is not supported
-                setError('Unsupported file type. Please use PNG, JPG, or JPEG.')
-            }
-        }
-        setIsDragging(false)
-    }
-
-    const handleDragOver = (event: any) => {
-        event.preventDefault()
-        setIsDragging(true)
-    }
-
-    const handleDragEnter = (event: any) => {
-        event.preventDefault()
-        setIsDragging(true)
-    }
-
-    const handleDragLeave = (event: any) => {
-        event.preventDefault()
-        setIsDragging(false)
-    }
-
-    const handleImageSelect = (event: { target: { files: any[] } }) => {
-        const file = event.target.files[0]
-        if (file) {
-            setImageFile(file)
-        }
-    }
 
     return (
         <>

@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react'
 import convertNumbThousand from '@/utils/convertNumbThousand'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import toast, { Toaster } from 'react-hot-toast'
 import Alert from '../Alert/Alert'
 
@@ -17,7 +17,7 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
 }) => {
     const [isLiked, setIsLiked] = useState(false)
     const [likeCountState, setLikeCount] = useState(likeCount)
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
 
     useEffect(() => {
         checkLikedStatus()

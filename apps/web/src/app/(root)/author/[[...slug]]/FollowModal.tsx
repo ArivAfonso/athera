@@ -11,16 +11,23 @@ export interface FollowButtonProps {
     onCloseModal: () => void
 }
 
-const PostOptionsBtn: FC<FollowButtonProps> = ({show, author, type, onCloseModal}) => {
-
+const PostOptionsBtn: FC<FollowButtonProps> = ({
+    show,
+    author,
+    type,
+    onCloseModal,
+}) => {
     const supabase = createClientComponentClient()
+
     const [data, setData] = useState<AuthorType[]>()
 
     useEffect(() => {
         async function getData() {
-            if(type=="followers"){
-                const { data, error } = await supabase.from('followers')
-                .select(`
+            if (type == 'followers') {
+                const { data, error } = await supabase
+                    .from('followers')
+                    .select(
+                        `
                      follower(
                         id,
                         username,
@@ -28,8 +35,33 @@ const PostOptionsBtn: FC<FollowButtonProps> = ({show, author, type, onCloseModal
                         name,
                         verified
                      )
-                `)
-                .eq('following', author)
+                    `
+                    )
+                    .eq('following', author)
+                    .single()
+                if (error) {
+                    // Handle the error.
+                    return
+                }
+                //@ts-ignore
+                setData(data)
+                console.log(data)
+            } else {
+                const { data, error } = await supabase
+                    .from('followers')
+                    .select(
+                        `
+                     following(
+                        id,
+                        username,
+                        avatar,
+                        name,
+                        verified
+                     )
+                    `
+                    )
+                    .eq('follower', author)
+                    .single()
                 if (error) {
                     // Handle the error.
                     return
@@ -40,23 +72,52 @@ const PostOptionsBtn: FC<FollowButtonProps> = ({show, author, type, onCloseModal
             }
         }
         getData()
-    }
-    , [author])
+    }, [author])
 
     const renderBtnOpenPopover = (openModal: () => void) => {
-        return (
-            <></>
-        )
+        return <></>
     }
 
     const renderContent = () => {
         return (
             <div className="">
                 <div className="flex flex-col sm:items-center sm:justify-between sm:flex-row ">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
-                        {data?.map((author, key) => (
-                            <CardAuthorBox key={key} author={author} />
-                        ))}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-8 p-5">
+                        {type === 'followers' ? (
+                            <>
+                                {!Array.isArray(data) && data ? (
+                                    //@ts-ignore
+                                    <CardAuthorBox author={data.follower} />
+                                ) : (
+                                    <>
+                                        {data?.map((author, key) => (
+                                            <CardAuthorBox
+                                                key={key}
+                                                //@ts-ignore
+                                                author={author.follower}
+                                            />
+                                        ))}
+                                    </>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                {!Array.isArray(data) && data ? (
+                                    //@ts-ignore
+                                    <CardAuthorBox author={data.following} />
+                                ) : (
+                                    <>
+                                        {data?.map((author, key) => (
+                                            <CardAuthorBox
+                                                key={key}
+                                                //@ts-ignore
+                                                author={author.following}
+                                            />
+                                        ))}
+                                    </>
+                                )}
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
@@ -72,8 +133,10 @@ const PostOptionsBtn: FC<FollowButtonProps> = ({show, author, type, onCloseModal
                 contentExtraClass="max-w-screen-md"
                 renderContent={renderContent}
                 renderTrigger={renderBtnOpenPopover}
-                modalTitle="Post options"
-                onCloseModal={() => {onCloseModal()}}
+                modalTitle={type === 'followers' ? 'Followers' : 'Following'}
+                onCloseModal={() => {
+                    onCloseModal()
+                }}
             />
         </>
     )

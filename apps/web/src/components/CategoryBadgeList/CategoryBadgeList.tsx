@@ -20,6 +20,8 @@ const CategoryBadgeList: FC<CategoryBadgeListProps> = ({
 }) => {
     let renderableCategories = categories
 
+    if (categories.length === 0) return null
+
     if (shorten) {
         let totalCharCount = 0
         renderableCategories = []

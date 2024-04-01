@@ -6,7 +6,7 @@ import Input from '@/components/Input/Input'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import NcLink from '@/components/NcLink/NcLink'
 import Heading2 from '@/components/Heading/Heading2'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 
 const PageForgotPass = ({}) => {
@@ -16,14 +16,14 @@ const PageForgotPass = ({}) => {
     const router = useRouter()
 
     async function recoverPassword(email: string) {
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: `${window.location.origin}/forgot-pass`,
         })
     }
 
     async function getData() {
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         supabase.auth.onAuthStateChange((event, session) => {
             if (event === 'PASSWORD_RECOVERY') {
                 setIsPasswordRecovery(true)
@@ -37,7 +37,7 @@ const PageForgotPass = ({}) => {
     getData()
 
     async function updatePassword(newPassword: string) {
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         const { error } = await supabase.auth.updateUser({
             password: newPassword,
         })
@@ -58,7 +58,7 @@ const PageForgotPass = ({}) => {
 
     return (
         <>
-            <header className="text-center max-w-2xl mx-auto - mb-14 sm:mb-16 lg:mb-20">
+            <header className="text-center max-w-2xl mx-auto mb-14 sm:mb-16 lg:mb-20">
                 {isPasswordRecovery ? (
                     <Heading2>Reset Password</Heading2>
                 ) : (

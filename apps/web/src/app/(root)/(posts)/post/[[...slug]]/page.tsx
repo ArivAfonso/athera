@@ -4,13 +4,13 @@ import SingleHeader from '@/app/(root)/(posts)/SingleHeader'
 import SingleContent from '../../SingleContent'
 import SingleRelatedPosts from '../../SingleRelatedPosts'
 import { Metadata } from 'next'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
 import PostType from '@/types/PostType'
 import stringToSlug from '@/utils/stringToSlug'
 
 async function getPostData(context: { params: { slug: any } }) {
-    const supabase = createServerComponentClient({ cookies })
+    const supabase = createClient(cookies())
 
     const id = context.params.slug[1]
     const { data, error } = await supabase
@@ -89,7 +89,7 @@ export async function generateMetadata(
 }
 
 async function getCommentData(context: { params: { slug: any } }) {
-    const supabase = createServerComponentClient({ cookies })
+    const supabase = createClient(cookies())
     const id = context.params.slug[1]
     const { data, error } = await supabase
         .from('comments')
@@ -128,7 +128,7 @@ async function getCommentData(context: { params: { slug: any } }) {
 }
 
 const PageSingle = async (context: any) => {
-    const supabase = createServerComponentClient({ cookies })
+    const supabase = createClient(cookies())
     const postData = await getPostData(context)
     const commentData = await getCommentData(context)
     const { data: session } = await supabase.auth.getSession()
@@ -141,7 +141,7 @@ const PageSingle = async (context: any) => {
     }
     return (
         <>
-            <div className={`nc-PageSingle -mt-4`}>
+            <div className={`nc-PageSingle pt-8 lg:pt-16`}>
                 <header className="container rounded-xl">
                     <div className="max-w-screen-md mx-auto">
                         <SingleHeader

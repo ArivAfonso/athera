@@ -7,10 +7,10 @@ import NotificationType from '@/types/NotificationType'
 import stringToSlug from '@/utils/stringToSlug'
 import Heading2 from '@/components/Heading/Heading2'
 import { TrashIcon } from '@heroicons/react/24/outline'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 
 const NotificationsPage = ({}) => {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
 
     let [notifications, setNotifications] = useState<NotificationType[] | null>(
         null

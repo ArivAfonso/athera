@@ -5,7 +5,7 @@ import Heading from '@/components/Heading/Heading'
 import Card11 from '@/components/Card11/Card11'
 import PostType from '@/types/PostType'
 import Card9 from '@/components/Card9/Card9'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import MySlider from '@/components/MySlider'
 
 export interface RelatedPostsType {
@@ -13,7 +13,7 @@ export interface RelatedPostsType {
 }
 
 async function getAuthorPosts(id: string) {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     const { data, error } = await supabase
         .from('posts')
         .select(
@@ -44,7 +44,7 @@ async function getAuthorPosts(id: string) {
 }
 
 async function getRelatedPosts(id: string) {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     const { data, error } = await supabase.rpc('related_posts', {
         post_id: id,
         match_threshold: 0.8,

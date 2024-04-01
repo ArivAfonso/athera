@@ -1,7 +1,7 @@
 import './globals.css'
 import '@/styles/index.scss'
 import { Poppins } from 'next/font/google'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
 import NextTopLoader from 'nextjs-toploader'
 
@@ -27,7 +27,7 @@ export default async function RootLayout({
 }: {
     children: React.ReactNode
 }) {
-    const supabase = createServerComponentClient({ cookies })
+    const supabase = createClient(cookies())
 
     const {
         data: { session },
@@ -37,7 +37,7 @@ export default async function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning className={poppins.className}>
             <head>{/* Add your head content here */}</head>
-            <body className="min-h-screen overflow-hidden text-base text-neutral-900 dark:text-neutral-200 hiddenScrollbar">
+            <body className="text-base text-neutral-900 dark:text-neutral-200">
                 <NextTopLoader
                     color="#0018f9"
                     speed={600}
@@ -58,7 +58,6 @@ export default async function RootLayout({
                     }}
                     containerClassName="text-sm"
                 />
-                
             </body>
         </html>
     )

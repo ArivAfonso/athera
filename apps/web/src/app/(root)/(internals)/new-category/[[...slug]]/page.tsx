@@ -3,7 +3,7 @@
 import Alert from '@/components/Alert/Alert'
 import Input from '@/components/Input/Input'
 import CategoryType from '@/types/CategoryType'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -15,7 +15,7 @@ import toast from 'react-hot-toast'
 
 async function getData(context: { params: { slug: any } }) {
     const slug = context.params.slug[0]
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
 
     const { data, error } = await supabase
         .from('categories')
@@ -48,7 +48,7 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
         async function fetchData() {
             try {
                 const res = await getData(context)
-                const supabase = createClientComponentClient()
+                const supabase = createClient()
                 const { data: session } = await supabase.auth.getSession()
                 if (
                     session.session?.user.id !==
@@ -175,7 +175,7 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
         }
         setErrorMsg('')
         try {
-            const supabase = createClientComponentClient()
+            const supabase = createClient()
 
             if (selectedImage === null) {
                 toast.error('Please select an image')

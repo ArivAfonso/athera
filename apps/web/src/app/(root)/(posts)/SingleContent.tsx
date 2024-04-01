@@ -9,8 +9,6 @@ import { ArrowUpIcon } from '@heroicons/react/24/solid'
 import AuthorType from '@/types/AuthorType'
 import parse from 'html-react-parser'
 import PostCommentSection from './PostCommentSection'
-import CommentType from '@/types/CommentType'
-
 import Bold from '@tiptap/extension-bold'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
@@ -27,6 +25,10 @@ import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import { generateHTML } from '@tiptap/core'
+import { Youtube } from '@/components/PostSubmissionEditor/extensions/hypermedia/nodes/youtube/youtube'
+import { SoundCloud } from '@/components/PostSubmissionEditor/extensions/hypermedia/nodes/soundcloud/soundcloud'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import { Twitter } from '@/components/PostSubmissionEditor/extensions/hypermedia/nodes/twitter/twitter'
 
 export interface SingleContentProps {
     body: string
@@ -69,12 +71,16 @@ const SingleContent: FC<SingleContentProps> = ({
             Document,
             Paragraph,
             Text,
+            CodeBlockLowlight,
             Bold,
             Highlight,
             Underline,
             Link,
             Placeholder,
             TextAlign,
+            Twitter,
+            Youtube,
+            SoundCloud,
             Image,
             Table,
             TableCell,
@@ -94,9 +100,8 @@ const SingleContent: FC<SingleContentProps> = ({
 
             const totalEntryH =
                 entryContent.offsetTop + entryContent.offsetHeight
-            let winScroll =
-                document.body.scrollTop || document.documentElement.scrollTop
-            let scrolled = (winScroll / totalEntryH) * 100
+            const winScroll = window.scrollY
+            const scrolled = (winScroll / totalEntryH) * 100
 
             progressBarContent.innerText = scrolled.toFixed(0) + '%'
 
@@ -147,7 +152,10 @@ const SingleContent: FC<SingleContentProps> = ({
                     )}
                     {/* AUTHOR */}
                     <div className="max-w-screen-md mx-auto border-b border-t border-neutral-100 dark:border-neutral-700"></div>
-                    <div className="max-w-screen-md mx-auto ">
+                    <div
+                        className="max-w-screen-md mx-auto"
+                        ref={endedAnchorRef}
+                    >
                         <SingleAuthor author={author} />
                     </div>
                     {/* COMMENT FORM */}
@@ -165,30 +173,30 @@ const SingleContent: FC<SingleContentProps> = ({
                             currentUserID={currentUserID}
                             id={id}
                         />
-                        <div ref={endedAnchorRef}></div>
                     </div>
+                    <div></div>
                 </div>
                 <div
                     className={`sticky mt-8 bottom-8 z-40 justify-center ${
                         showLikeAndCommentSticky ? 'flex' : 'hidden'
                     }`}
                 >
-                    <div className="bg-white dark:bg-neutral-800 shadow- rounded-full p-1.5 flex items-center justify-center space-x-2 text-xs">
+                    <div className="bg-[#f8f8f8] dark:bg-neutral-900/95 rounded-full p-1.5 flex items-center justify-center space-x-2 text-xs">
                         <PostCardLikeAction
-                            className="px-3 h-9 text-xs"
+                            className="px-3 h-9 text-xs bg-white"
                             likeCount={likeCount}
                             postId={id}
                         />
-                        <div className="border-l h-4 border-neutral-200 dark:border-neutral-700"></div>
+                        <div className="border-l h-4 border-neutral-200 dark:border-neutral-800"></div>
                         <PostCardCommentBtn
                             isATagOnSingle
-                            className={` flex px-3 h-9 text-xs`}
+                            className={` flex px-3 h-9 text-xs bg-white`}
                             commentCount={commentCount}
                         />
-                        <div className="border-l h-4 border-neutral-200 dark:border-neutral-700"></div>
+                        <div className="border-l h-4 border-neutral-200 dark:border-neutral-800"></div>
 
                         <button
-                            className={`w-9 h-9 items-center justify-center bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 rounded-full ${
+                            className={`w-9 h-9 items-center justify-center bg-white dark:bg-neutral-800 hover:bg-neutral-100 rounded-full ${
                                 isShowScrollToTop ? 'flex' : 'hidden'
                             }`}
                             onClick={() => {

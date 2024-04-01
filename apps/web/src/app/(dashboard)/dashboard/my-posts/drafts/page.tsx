@@ -2,7 +2,7 @@
 
 import React, { ReactNode, useEffect, useState } from 'react'
 import NcImage from '@/components/NcImage/NcImage'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import ModalDeletePost from '../ModalDeletePost'
 import stringToSlug from '@/utils/stringToSlug'
 import Link from 'next/link'
@@ -24,7 +24,7 @@ const DashboardDrafts = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const supabase = createClientComponentClient()
+                const supabase = createClient()
                 const { data: session } = await supabase.auth.getSession()
 
                 // Fetch the drafts
@@ -65,8 +65,11 @@ const DashboardDrafts = () => {
     }, [])
 
     const handleDeleteDraft = async (draftId: string) => {
-        const supabase = createClientComponentClient() // Change to server component client
-        const { error } = await supabase.from('drafts').delete().eq('id', draftId)
+        const supabase = createClient() // Change to server component client
+        const { error } = await supabase
+            .from('drafts')
+            .delete()
+            .eq('id', draftId)
         const { data: session } = await supabase.auth.getSession()
         await supabase.storage
             .from('drafts')
@@ -76,7 +79,9 @@ const DashboardDrafts = () => {
             console.error('Error deleting draft:', error)
         } else {
             // Remove the deleted draft from the drafts state
-            const updatedDrafts = drafts?.filter((draft) => draft.id !== draftId)
+            const updatedDrafts = drafts?.filter(
+                (draft) => draft.id !== draftId
+            )
             setDrafts(updatedDrafts)
         }
     }
@@ -132,7 +137,7 @@ const DashboardDrafts = () => {
                                                 <tr key={key}>
                                                     <td className="whitespace-nowrap py-4 sm:py-5 ps-4 pe-3 text-sm sm:ps-0">
                                                         <Link
-                                                            href={`/draft/${stringToSlug(
+                                                            href={`/dashboard/edit-draft/${stringToSlug(
                                                                 draft.title
                                                             )}/${draft.id}`}
                                                             className="flex items-center"
@@ -205,7 +210,7 @@ const DashboardDrafts = () => {
                                                         <button
                                                             onClick={() => {
                                                                 router.push(
-                                                                    `/draft/${draft.id}`
+                                                                    `/dashboard/edit-draft/${draft.id}`
                                                                 )
                                                             }}
                                                             className="text-primary-800 dark:text-primary-500 hover:text-primary-900"

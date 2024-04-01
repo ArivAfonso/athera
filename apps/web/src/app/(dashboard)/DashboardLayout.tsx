@@ -1,38 +1,38 @@
 'use client'
 
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import {
-    ArrowsUpDownIcon,
-    Bars3Icon,
-    BellAlertIcon,
-    BookmarkIcon,
-    ClipboardDocumentIcon,
-    ClockIcon,
-    Cog8ToothIcon,
-    DocumentPlusIcon,
-    FolderIcon,
-    FolderOpenIcon,
-    HeartIcon,
-    LightBulbIcon,
-    LinkIcon,
-    LockClosedIcon,
-    PowerIcon,
-    Squares2X2Icon,
-    UserCircleIcon,
-    UserGroupIcon,
-    UserIcon,
-    XMarkIcon,
-} from '@heroicons/react/24/outline'
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import Logo from '@/components/Logo/Logo'
 import LangDropdown from '@/components/Header/LangDropdown'
 import SwitchDarkMode from '@/components/SwitchDarkMode/SwitchDarkMode'
 import AvatarDropdown from '@/components/Header/AvatarDropdown'
 import classNames from '@/utils/classNames'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import CreateBtn from '@/components/Header/CreateBtn'
+import {
+    AlignJustifyIcon,
+    ArrowDownUpIcon,
+    BellRingIcon,
+    BookmarkIcon,
+    CircleUserRoundIcon,
+    Clock4Icon,
+    FilePlusIcon,
+    FilesIcon,
+    FolderIcon,
+    FolderOpenIcon,
+    HeartIcon,
+    LayoutGridIcon,
+    LinkIcon,
+    LockIcon,
+    SearchIcon,
+    SettingsIcon,
+    UserIcon,
+    UserRoundIcon,
+    XIcon,
+} from 'lucide-react'
+import { createClient } from '@/utils/supabase/client'
+import NotifyDropdown from '@/components/Header/NotifyDropdown'
+import { AuthSession } from '@supabase/supabase-js'
 
 interface NavigationItem {
     name: string
@@ -41,47 +41,90 @@ interface NavigationItem {
     children?: NavigationItem[]
 }
 
-
 const navigation: NavigationItem[] = [
     {
         name: 'posts',
         href: '/dashboard/posts/published',
         icon: FolderIcon,
         children: [
-            { name: 'published', href: '/dashboard/my-posts/published', icon: FolderOpenIcon },
-            { name: 'scheduled', href: '/dashboard/my-posts/scheduled', icon: ClockIcon },
-            { name: 'drafts', href: '/dashboard/my-posts/drafts', icon: ClipboardDocumentIcon },
-            { name: 'likes', href: '/dashboard/liked-posts', icon: HeartIcon},
-            { name: 'bookmarks', href: '/dashboard/bookmarks', icon: BookmarkIcon},
-            { name: 'import/export', href: '/dashboard/my-posts/import-export', icon: ArrowsUpDownIcon}
+            {
+                name: 'published',
+                href: '/dashboard/my-posts/published',
+                icon: FolderOpenIcon,
+            },
+            {
+                name: 'scheduled',
+                href: '/dashboard/my-posts/scheduled',
+                icon: Clock4Icon,
+            },
+            {
+                name: 'drafts',
+                href: '/dashboard/my-posts/drafts',
+                icon: FilesIcon,
+            },
+            { name: 'likes', href: '/dashboard/liked-posts', icon: HeartIcon },
+            {
+                name: 'bookmarks',
+                href: '/dashboard/bookmarks',
+                icon: BookmarkIcon,
+            },
+            {
+                name: 'import/export',
+                href: '/dashboard/my-posts/import-export',
+                icon: ArrowDownUpIcon,
+            },
         ],
     },
     {
         name: 'new post',
         href: '/dashboard/new-post',
-        icon: DocumentPlusIcon,
+        icon: FilePlusIcon,
     },
 
     {
         name: 'edit profile',
         href: '/dashboard/edit-profile',
-        icon: UserCircleIcon,
+        icon: CircleUserRoundIcon,
         children: [
-            { name: 'general', href: '/dashboard/edit-profile', icon: UserIcon},
-            { name: 'password', href: '/dashboard/edit-profile/password', icon: LockClosedIcon},
-            { name: 'notifications', href: '/dashboard/edit-profile/notifications', icon: BellAlertIcon },
-            { name: 'social links', href: '/dashboard/edit-profile/socials', icon: LinkIcon },
+            {
+                name: 'general',
+                href: '/dashboard/edit-profile',
+                icon: UserRoundIcon,
+            },
+            {
+                name: 'password',
+                href: '/dashboard/edit-profile/password',
+                icon: LockIcon,
+            },
+            {
+                name: 'notifications',
+                href: '/dashboard/edit-profile/notifications',
+                icon: BellRingIcon,
+            },
+            {
+                name: 'social links',
+                href: '/dashboard/edit-profile/socials',
+                icon: LinkIcon,
+            },
         ],
-    },  
+    },
     {
         name: 'settings',
         href: '/dashboard/settings',
-        icon: Cog8ToothIcon,
+        icon: SettingsIcon,
         children: [
-            {name: 'general', href: '/dashboard/settings', icon: Cog8ToothIcon},
-            {name: 'integrations', href: '/dashboard/settings/integrations', icon: Squares2X2Icon},
-        ]
-    }
+            {
+                name: 'general',
+                href: '/dashboard/settings',
+                icon: SettingsIcon,
+            },
+            {
+                name: 'integrations',
+                href: '/dashboard/settings/integrations',
+                icon: LayoutGridIcon,
+            },
+        ],
+    },
 ]
 
 interface Props {
@@ -90,11 +133,21 @@ interface Props {
 
 export default function DashboardLayout({ children }: Props) {
     const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [session, setSession] = useState<AuthSession>()
     //   const router = useRouter();
     //   const currentTab = router.query.tab || "published";
 
-    const renderItem = (item: NavigationItem) => {
+    useEffect(() => {
+        async function fetchData() {
+            const supabase = createClient()
+            const { data: session } = await supabase.auth.getSession()
+            //@ts-ignore
+            setSession(session.session)
+        }
+        fetchData()
+    }, [])
 
+    const renderItem = (item: NavigationItem) => {
         return (
             <li key={item.name}>
                 <Link
@@ -105,7 +158,11 @@ export default function DashboardLayout({ children }: Props) {
                         'group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-medium capitalize'
                     )}
                 >
-                     <item.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
+                    <item.icon
+                        className="h-6 w-6 shrink-0"
+                        aria-hidden="true"
+                        strokeWidth={1.5}
+                    />
                     {item.name}
                 </Link>
 
@@ -128,7 +185,11 @@ export default function DashboardLayout({ children }: Props) {
                                             'group flex gap-x-3 rounded-md p-2.5 ps-4 text-sm leading-6 font-medium capitalize'
                                         )}
                                     >
-                                         <child.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
+                                        <child.icon
+                                            className="h-6 w-6 shrink-0"
+                                            aria-hidden="true"
+                                            strokeWidth={1.5}
+                                        />
                                         {child.name}
                                     </Link>
                                 </li>
@@ -211,9 +272,10 @@ export default function DashboardLayout({ children }: Props) {
                                                 <span className="sr-only">
                                                     Close sidebar
                                                 </span>
-                                                <XMarkIcon
+                                                <XIcon
                                                     className="h-6 w-6 text-white"
                                                     aria-hidden="true"
+                                                    strokeWidth={1.5}
                                                 />
                                             </button>
                                         </div>
@@ -242,9 +304,10 @@ export default function DashboardLayout({ children }: Props) {
                                 onClick={() => setSidebarOpen(true)}
                             >
                                 <span className="sr-only">Open sidebar</span>
-                                <Bars3Icon
+                                <AlignJustifyIcon
                                     className="h-6 w-6"
                                     aria-hidden="true"
+                                    strokeWidth={1.5}
                                 />
                             </button>
 
@@ -271,9 +334,10 @@ export default function DashboardLayout({ children }: Props) {
                                     >
                                         Search
                                     </label>
-                                    <MagnifyingGlassIcon
+                                    <SearchIcon
                                         className="pointer-events-none absolute inset-y-0 start-0 h-full w-5 text-neutral-400"
                                         aria-hidden="true"
+                                        strokeWidth={1.5}
                                     />
                                     <input
                                         id="search-field"
@@ -294,7 +358,25 @@ export default function DashboardLayout({ children }: Props) {
                                     <div className="flex-1 flex items-center justify-end ">
                                         <CreateBtn />
                                         <SwitchDarkMode />
-                                        {/* <AvatarDropdown /> */}
+                                        <NotifyDropdown className="hidden md:block" />
+                                        {session && (
+                                            <AvatarDropdown
+                                                avatar_url={
+                                                    session.user.user_metadata
+                                                        .avatar_url
+                                                }
+                                                name={
+                                                    session.user.user_metadata
+                                                        .name
+                                                }
+                                                email={
+                                                    session.user.email
+                                                        ? session.user.email
+                                                        : ''
+                                                }
+                                                id={session.user.id}
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -302,7 +384,7 @@ export default function DashboardLayout({ children }: Props) {
                     </div>
 
                     <main className="pb-10">
-                        <div className="mx-auto max-w-7xl">
+                        <div className="mx-auto max-w-7xl px-3">
                             {/* Replace with your content */}
                             {children}
                         </div>

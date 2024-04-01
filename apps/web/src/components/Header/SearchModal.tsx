@@ -12,12 +12,13 @@ import {
 import { Route } from '@/routers/types'
 import { redirect, useRouter } from 'next/navigation'
 import { UrlObject } from 'url'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import PostType from '@/types/PostType'
 import { debounce } from 'lodash'
 import stringToSlug from '@/utils/stringToSlug'
 import CategoryType from '@/types/CategoryType'
 import AuthorType from '@/types/AuthorType'
+import { Search } from 'lucide-react'
 
 interface Props {
     renderTrigger?: () => ReactNode
@@ -37,7 +38,7 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
     const router = useRouter()
 
     const query = rawQuery.toLowerCase().replace(/^[#>]/, '')
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
 
     // ...
 
@@ -177,7 +178,7 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                                 > */}
                                 <Combobox name="searchpallet">
                                     <div className="relative">
-                                        <MagnifyingGlassIcon
+                                        <Search
                                             className="pointer-events-none absolute top-3.5 left-4 h-5 w-5 text-gray-400"
                                             aria-hidden="true"
                                         />
@@ -199,7 +200,7 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                                                     await fetchResults()
                                                 }
                                             }}
-                                            onKeyDown={(event:any) => {
+                                            onKeyDown={(event: any) => {
                                                 if (
                                                     event.key === 'Enter' &&
                                                     (rawQuery.trim() !== '' ||

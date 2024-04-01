@@ -10,10 +10,8 @@ import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import SwitchDarkMode from '@/components/SwitchDarkMode/SwitchDarkMode'
 import Link from 'next/link'
 import Button from '../Button/Button'
-import {
-    Session,
-    createClientComponentClient,
-} from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
+import { AuthSession } from '@supabase/supabase-js'
 
 export interface NavMobileProps {
     data?: NavItemType[]
@@ -169,12 +167,12 @@ const NavMobile: React.FC<NavMobileProps> = ({
         )
     }
 
-    const [session, setSession] = useState<Session>()
+    const [session, setSession] = useState<AuthSession>()
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const supabase = createClientComponentClient()
+                const supabase = createClient()
                 const { data: session } = await supabase.auth.getSession()
                 if (session.session) setSession(session.session)
             } catch (err) {

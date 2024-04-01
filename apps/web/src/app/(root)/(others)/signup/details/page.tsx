@@ -7,16 +7,14 @@ import Textarea from '@/components/Textarea/Textarea'
 import { Controller, useForm } from 'react-hook-form'
 import Image from 'next/image'
 import Label from '@/components/Label/Label'
-import {
-    Session,
-    createClientComponentClient,
-} from '@supabase/auth-helpers-nextjs'
+import { AuthSession } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { getCookie } from 'cookies-next'
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
 import Alert from '@/components/Alert/Alert'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
+import { createClient } from '@/utils/supabase/client'
 
 function isValidHttpUrl(string: string) {
     let url
@@ -31,9 +29,9 @@ function isValidHttpUrl(string: string) {
 }
 
 const DetailsPage = ({}) => {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
 
-    const [session, setSession] = useState<Session>()
+    const [session, setSession] = useState<AuthSession>()
     const router = useRouter()
     const [imageFile, setImageFile] = useState(null)
     const [loading, setLoading] = useState(false)
@@ -57,7 +55,7 @@ const DetailsPage = ({}) => {
                 } else if (username == null) router.push('/signup')
                 else {
                     setSession(session.session)
-                    const supabase = createClientComponentClient()
+                    const supabase = createClient()
                     await supabase
                         .from('users')
                         .update([{ username: username }])
@@ -81,7 +79,7 @@ const DetailsPage = ({}) => {
     async function sendDetails(formData: any) {
         setLoading(true)
         setError('')
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         const { data: session } = await supabase.auth.getSession()
         try {
             if (formData.website && !isValidHttpUrl(formData.website)) {

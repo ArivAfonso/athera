@@ -1,5 +1,10 @@
 import React, { FC, useEffect } from 'react'
-import { useEditor, EditorContent, Editor } from '@tiptap/react'
+import {
+    useEditor,
+    EditorContent,
+    Editor,
+    ReactNodeViewRenderer,
+} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Highlight from '@tiptap/extension-highlight'
 import Underline from '@tiptap/extension-underline'
@@ -12,10 +17,42 @@ import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import Iframe from './Iframe'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import css from 'highlight.js/lib/languages/css'
+import js from 'highlight.js/lib/languages/javascript'
+import ts from 'highlight.js/lib/languages/typescript'
+import html from 'highlight.js/lib/languages/xml'
+import java from 'highlight.js/lib/languages/java'
+import python from 'highlight.js/lib/languages/python'
+import c from 'highlight.js/lib/languages/c'
+import cpp from 'highlight.js/lib/languages/cpp'
+import csharp from 'highlight.js/lib/languages/csharp'
+import ruby from 'highlight.js/lib/languages/ruby'
+import php from 'highlight.js/lib/languages/php'
+import go from 'highlight.js/lib/languages/go'
+import swift from 'highlight.js/lib/languages/swift'
+import kotlin from 'highlight.js/lib/languages/kotlin'
+import rust from 'highlight.js/lib/languages/rust'
+import scala from 'highlight.js/lib/languages/scala'
+import r from 'highlight.js/lib/languages/r'
+// load all highlight.js languages
+import { createLowlight } from 'lowlight'
 //
 import MenuBar from './MenuBar'
 import './styles.scss'
 import MyBubbleMenu from './MyBubbleMenu'
+import {
+    HyperMultimediaKit,
+    imageModal,
+    youtubeModal,
+    vimeoModal,
+    soundCloudModal,
+    twitterModal,
+    videoModal,
+    audioModal,
+} from './extensions/hypermedia'
+import CodeBlockComponent from './CodeBlockComponent'
+import { Twitter } from './extensions/hypermedia/nodes/twitter/twitter'
 
 interface Props {
     onUpdate: (editor: Editor) => void
@@ -23,6 +60,26 @@ interface Props {
 }
 
 const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
+    const lowlight = createLowlight()
+
+    lowlight.register('html', html)
+    lowlight.register('css', css)
+    lowlight.register('js', js)
+    lowlight.register('ts', ts)
+    lowlight.register('java', java)
+    lowlight.register('python', python)
+    lowlight.register('c', c)
+    lowlight.register('cpp', cpp)
+    lowlight.register('csharp', csharp)
+    lowlight.register('ruby', ruby)
+    lowlight.register('php', php)
+    lowlight.register('go', go)
+    lowlight.register('swift', swift)
+    lowlight.register('kotlin', kotlin)
+    lowlight.register('rust', rust)
+    lowlight.register('scala', scala)
+    lowlight.register('r', r)
+
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -32,7 +89,40 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
             TableCell,
             TableHeader,
             TableRow,
+            Twitter,
             Iframe,
+            CodeBlockLowlight.extend({
+                addNodeView() {
+                    return ReactNodeViewRenderer(CodeBlockComponent)
+                },
+            }).configure({ lowlight }),
+            HyperMultimediaKit.configure({
+                Image: false,
+                Video: {
+                    modal: videoModal,
+                    inline: true,
+                },
+                Audio: {
+                    modal: audioModal,
+                    inline: true,
+                },
+                Youtube: {
+                    modal: youtubeModal,
+                    inline: true,
+                },
+                Vimeo: {
+                    modal: vimeoModal,
+                    inline: true,
+                },
+                SoundCloud: {
+                    modal: soundCloudModal,
+                    inline: true,
+                },
+                Twitter: {
+                    modal: twitterModal,
+                    inline: true,
+                },
+            }),
             Link.configure({
                 openOnClick: false,
             }),

@@ -5,10 +5,10 @@ import NcModal from '@/components/NcModal/NcModal'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import ButtonThird from '../Button/ButtonThird'
 import { useForm } from 'react-hook-form'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 
 async function deleteComment(id: string) {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     const { error } = await supabase.from('comments').delete().eq('id', id)
     if (error) {
         // Handle the error.

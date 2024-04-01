@@ -8,7 +8,7 @@ import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import NcLink from '@/components/NcLink/NcLink'
 import Heading2 from '@/components/Heading/Heading2'
 import Image from 'next/image'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import { useForm, Controller } from 'react-hook-form' // Import the necessary functions
 import Input from '@/components/Input/Input'
 import Alert from '@/components/Alert/Alert'
@@ -16,7 +16,7 @@ import { setCookie } from 'cookies-next'
 import Button from '@/components/Button/Button'
 
 const PageSignUp = ({}) => {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     const [errorMsg, setErrorMsg] = useState('')
     const [showPart2, setShowPart2] = useState(false)
     const [usernameExists, setUsernameExists] = useState(false)

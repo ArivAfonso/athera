@@ -6,13 +6,11 @@ import ButtonSecondary from '@/components/Button/ButtonSecondary'
 import Textarea from '@/components/Textarea/Textarea'
 import Button from '@/components/Button/Button'
 import { useForm, Controller } from 'react-hook-form'
-import {
-    Session,
-    createClientComponentClient,
-} from '@supabase/auth-helpers-nextjs'
+import { AuthSession } from '@supabase/supabase-js'
+import { createClient } from '@/utils/supabase/client'
 
 async function getCommentData(id: string) {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     const { data, error } = await supabase
         .from('comments')
         .select(
@@ -74,11 +72,11 @@ const SingleCommentForm: FC<SingleCommentFormProps> = ({
     const [submittedComment, setSubmittedComment] = useState(null) // State to store submitted comment
 
     const [comments, setComments] = useState<CommentType[]>([]) // State to store comments
-    const [session, setSession] = useState<Session>()
+    const [session, setSession] = useState<AuthSession>()
 
     useEffect(() => {
         const getData = async () => {
-            const supabase = createClientComponentClient()
+            const supabase = createClient()
             const data = await getCommentData(id)
             const { data: session } = await supabase.auth.getSession()
             //@ts-ignore
@@ -102,7 +100,7 @@ const SingleCommentForm: FC<SingleCommentFormProps> = ({
     }
 
     const handleDeleteComment = async (commentId: string) => {
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         const { error } = await supabase
             .from('comments')
             .delete()
@@ -120,7 +118,7 @@ const SingleCommentForm: FC<SingleCommentFormProps> = ({
     }
 
     const onSubmit = async (data: any) => {
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         const { data: session } = await supabase.auth.getSession()
 
         const { data: commentConfirm, error } = await supabase

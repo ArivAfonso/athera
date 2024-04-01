@@ -2,16 +2,14 @@
 
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
 import NcModal from '@/components/NcModal/NcModal'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import ButtonThird from '@/components/Button/ButtonThird'
 import { useForm } from 'react-hook-form'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import Input from '@/components/Input/Input'
 import { debounce } from 'lodash'
 import Button from '@/components/Button/Button'
 
 async function changeUsername(username: string, id: string) {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     const { error } = await supabase
         .from('users')
         .update({ username })
@@ -51,7 +49,7 @@ const ModalDeletePost: FC<ModalChangeUsernameProps> = ({
     ) // 300ms debounce time
 
     async function checkUsername(username: string) {
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         console.log('checking')
         if (!username) {
             setIsUsernameTaken(false)

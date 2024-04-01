@@ -16,7 +16,7 @@ import AccountActionDropdown from '@/components/AccountActionDropdown/AccountAct
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import AuthorType from '@/types/AuthorType'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import Card6 from '@/components/Card6/Card6'
 import Empty from '@/components/Empty'
 import NcImage from '@/components/NcImage/NcImage'
@@ -24,7 +24,7 @@ import Loading from './loading'
 import FollowModal from './FollowModal'
 
 async function getData(context: { params: { slug: any } }) {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     //TODO: check if user is current user then add edit button to SOCIALS_DATA
 
     const username = context.params.slug[0]
@@ -100,6 +100,8 @@ const PageAuthor = (context: any) => {
     const [data, setData] = useState<AuthorType>({} as unknown as AuthorType)
     const [loading, setLoading] = useState(true)
     const [modal, setModal] = useState(false)
+    const [followModal, setFollowModal] = useState(false)
+    const [followType, setFollowType] = useState('')
 
     useEffect(() => {
         async function fetchData() {
@@ -207,25 +209,37 @@ const PageAuthor = (context: any) => {
                                         </div>
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-4 text-sm text-neutral-500 dark:text-neutral-400">
-                                                <div className="flex items-center space-x-1">
+                                                <div
+                                                    className="flex items-center space-x-1 hover:underline cursor-pointer"
+                                                    onClick={() => {
+                                                        setFollowModal(true)
+                                                        setFollowType(
+                                                            'followers'
+                                                        )
+                                                    }}
+                                                >
                                                     <UserGroupIcon className="h-5 w-5" />
                                                     <span>
                                                         {data.followerCount
                                                             ? data.followerCount
-                                                            : 0}
-                                                    </span>
-                                                    <span className="inline">
+                                                            : 0}{' '}
                                                         Followers
                                                     </span>
                                                 </div>
-                                                <div className="flex items-center space-x-1">
+                                                <div
+                                                    className="flex items-center space-x-1 hover:underline cursor-pointer"
+                                                    onClick={() => {
+                                                        setFollowModal(true)
+                                                        setFollowType(
+                                                            'following'
+                                                        )
+                                                    }}
+                                                >
                                                     <UserGroupIcon className="h-5 w-5" />
                                                     <span>
                                                         {data.followingCount
                                                             ? data.followingCount
-                                                            : 0}
-                                                    </span>
-                                                    <span className="inline">
+                                                            : 0}{' '}
                                                         Following
                                                     </span>
                                                 </div>
@@ -262,18 +276,22 @@ const PageAuthor = (context: any) => {
                         <FollowModal
                             author={data.id}
                             show={modal}
-                            type='followers'
+                            type="followers"
                             onCloseModal={() => setModal(false)}
                         />
 
                         <div className="container py-16 lg:pb-28 lg:pt-20 space-y-16 lg:space-y-28">
                             <main>
                                 {/* LOOP ITEMS */}
-                                {/* LOOP ITEMS */}
                                 {data.posts ? (
-                                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
+                                    <div
+                                        className={`gap-6 md:gap-8 mt-8 lg:mt-10 ${(data.posts ? data.posts.length : 0) < 4 ? 'flex justify-center flex-wrap' : 'grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}
+                                    >
                                         {data.posts.map((post, id) => (
-                                            <div key={id}>
+                                            <div
+                                                key={id}
+                                                className={`${(data.posts ? data.posts.length : 0) < 4 ? 'w-full sm:w-1/2 lg:w-1/3 xl:w-1/4' : ''}`}
+                                            >
                                                 <div className="hidden sm:block">
                                                     {/* Render Card11 on larger screens */}
                                                     <Card11 post={post} />
@@ -295,6 +313,22 @@ const PageAuthor = (context: any) => {
                             </main>
                         </div>
                     </div>
+                    {followModal && followType === 'followers' && (
+                        <FollowModal
+                            author={data.id}
+                            show={followModal}
+                            type="followers"
+                            onCloseModal={() => setFollowModal(false)}
+                        />
+                    )}
+                    {followModal && followType === 'following' && (
+                        <FollowModal
+                            author={data.id}
+                            show={followModal}
+                            type="following"
+                            onCloseModal={() => setFollowModal(false)}
+                        />
+                    )}
                 </>
             )}
         </>

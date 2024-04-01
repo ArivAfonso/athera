@@ -5,17 +5,15 @@ import SectionSliderNewAuthors from '@/components/SectionSliderNewAthors/Section
 import SectionSliderNewCategories from '@/components/SectionSliderNewCategories/SectionSliderNewCategories'
 import SectionMagazine1 from '@/components/Sections/SectionMagazine1'
 import SectionSliderPosts from '@/components/Sections/SectionSliderPosts'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
 import PostType from '@/types/PostType'
 import CategoryType from '@/types/CategoryType'
 import AuthorType from '@/types/AuthorType'
 import Particles from '@/components/Particles/Particles'
-import { World } from '@/animations/Globe'
-import { Spotlight } from '@/animations/Spotlight'
 
 async function getData() {
-    const supabase = createServerComponentClient({ cookies })
+    const supabase = createClient(cookies())
     const { data: posts, error } = await supabase
         .from('posts')
         .select(
@@ -69,12 +67,10 @@ interface HomeProps {
 }
 
 const PageHome = async ({}) => {
-
-
     //@ts-ignore
     const data: HomeProps = await getData()
     return (
-        <div className="PageHome relative overflow-x-hidden -mt-20">
+        <div className="PageHome relative overflow-x-hidden">
             <div className="container relative">
                 <div className="absolute inset-0 h-[100vh]">
                     <Particles
@@ -87,7 +83,6 @@ const PageHome = async ({}) => {
                     className="pt-6 pb-16 md:py-16 lg:pb-28"
                     posts={data.popular_posts.filter((_, i) => i < 3)}
                 />
-                
 
                 <div className="relative py-16">
                     <BackgroundSection />

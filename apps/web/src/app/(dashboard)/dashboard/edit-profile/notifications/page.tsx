@@ -6,7 +6,7 @@ import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import Input from '@/components/Input/Input'
 import Textarea from '@/components/Textarea/Textarea'
 import Image from 'next/image'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import { useForm, Controller } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
@@ -19,7 +19,7 @@ function AccountPage() {
     const [imageFile, setImageFile] = useState(null)
     const [loading, setLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
     const [session, setSession] = useState<any>(null)
     const [selectedImage, setSelectedImage] = useState(null)
     const [imgChanged, setImgChanged] = useState(false)
@@ -47,7 +47,7 @@ function AccountPage() {
 
     useEffect(() => {
         async function checkLikedStatus() {
-            const supabase = createClientComponentClient()
+            const supabase = createClient()
             const { data: session } = await supabase.auth.getSession()
             setSession(session)
             const userId = session?.session?.user.id

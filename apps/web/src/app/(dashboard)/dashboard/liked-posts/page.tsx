@@ -2,12 +2,12 @@ import Card11 from '@/components/Card11/Card11'
 import Card6 from '@/components/Card6/Card6'
 import Empty from '@/components/Empty'
 import PostType from '@/types/PostType'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
 import React, { Suspense } from 'react'
 
 const DashboardLikedPosts = async () => {
-    const supabase = createServerComponentClient({ cookies })
+    const supabase = createClient(cookies())
     const { data: session } = await supabase.auth.getSession()
 
     const { data, error } = await supabase

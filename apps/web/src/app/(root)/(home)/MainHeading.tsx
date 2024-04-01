@@ -17,10 +17,8 @@ const MainHeading: React.FC<HeadingProps> = ({
     ...args
 }) => {
     const words = children?.toString().split(' ')
-    const isMobile = window.innerWidth < 768
 
     const highlightWord = 'happening'
-                           
 
     return (
         <div
@@ -60,7 +58,7 @@ const MainHeading: React.FC<HeadingProps> = ({
                         href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap"
                         rel="stylesheet"
                     ></link>
-                    {isMobile ? (
+                    <div className="sm:hidden">
                         <Typing
                             speed={40}
                             eraseSpeed={70}
@@ -77,27 +75,26 @@ const MainHeading: React.FC<HeadingProps> = ({
                                 'Business',
                             ]}
                         />
-                    ) : (
-                        <div>
-                            <Typing
-                                speed={40}
-                                eraseSpeed={70}
-                                eraseDelay={600}
-                                cursorClassName="text-blue-500 dark:text-blue-300"
-                                className="dark:text-blue-300 text-6xl md:text-7xl lg:text-8xl font-light font-mono lg:mt-0 md:mt-0 xl:mt-0 sm:mt-[-16px] text-blue-500"
-                                text={[
-                                    'Music',
-                                    'Technology',
-                                    'Finance',
-                                    'Space',
-                                    'Football',
-                                    'History',
-                                    'Business',
-                                    'the World',
-                                ]}
-                            />
-                        </div>
-                    )}
+                    </div>
+                    <div className="hidden sm:block">
+                        <Typing
+                            speed={40}
+                            eraseSpeed={70}
+                            eraseDelay={600}
+                            cursorClassName="text-blue-500 dark:text-blue-300"
+                            className="dark:text-blue-300 text-6xl md:text-7xl lg:text-8xl font-light font-mono lg:mt-0 md:mt-0 xl:mt-0 sm:mt-[-16px] text-blue-500"
+                            text={[
+                                'Music',
+                                'Technology',
+                                'Finance',
+                                'Space',
+                                'Football',
+                                'History',
+                                'Business',
+                                'the World',
+                            ]}
+                        />
+                    </div>
                 </h2>
                 {desc && (
                     <span className="mt-2 md:mt-3 font-normal block text-base sm:text-xl text-neutral-500 dark:text-neutral-400">

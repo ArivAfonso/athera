@@ -6,7 +6,7 @@ import NextImage from 'next/image'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import Textarea from '@/components/Textarea/Textarea'
 import Label from '@/components/Label/Label'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 import { Controller, useForm } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
 import { useRouter } from 'next/navigation'
@@ -14,9 +14,13 @@ import { pipeline } from '@xenova/transformers'
 import stringToSlug from '@/utils/stringToSlug'
 import TiptapEditor from '@/components/PostSubmissionEditor/TiptapEditor'
 import toast from 'react-hot-toast'
-import TitleEditor from './TitleEditor'
-import TagsInput from './TagsInput'
-import PostOptionsBtn, { PostOptionsData } from './PostOptionsBtn'
+import TitleEditor from '@/components/PostSubmissionEditor/TitleEditor'
+import PostOptionsBtn, {
+    PostOptionsData,
+} from '@/components/PostSubmissionEditor/PostOptionsBtn'
+import Head from 'next/head'
+import TagsInput from '@/components/PostSubmissionEditor/TagsInput'
+import { TrashIcon } from 'lucide-react'
 
 function strWords(str: string) {
     return str.split(/\s+/).length
@@ -33,7 +37,7 @@ function modifyString(str: string) {
 const DashboardSubmitPost = () => {
     const router = useRouter()
 
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
 
     const [errorMsg, setErrorMsg] = useState('')
     const [text, setText] = useState('')
@@ -44,15 +48,14 @@ const DashboardSubmitPost = () => {
     const defaultPostOptionsData = {
         excerptText: '',
         isAllowComments: true,
+        license: '--------------',
         timeSchedulePublication: undefined,
     }
     const [postOptionsData, setPostOptionsData] = useState<PostOptionsData>(
         defaultPostOptionsData
     )
 
-    const isMobile = window.innerWidth < 700
-
-    const [tags, setTags] = useState([''])
+    const [tags, setTags] = useState<string[]>([])
     const [title, setTitle] = useState('')
 
     async function sendPost(formData: any) {
@@ -61,6 +64,17 @@ const DashboardSubmitPost = () => {
         setErrorMsg('')
         const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
         setProgress(10)
+
+        if (tags.length == 0) {
+            toast.custom((t) => (
+                <Alert
+                    type="danger"
+                    message="Please add at least one category"
+                />
+            ))
+            setUploading(false)
+            return
+        }
 
         tags.filter((tag) => tag && tag.length > 0).map((tag: string) => {
             if (tag.length == 0 || tag == null || tag.length > 20) {
@@ -452,6 +466,13 @@ const DashboardSubmitPost = () => {
     return (
         <>
             <title>New Post - Athera</title>
+            <Head>
+                <script
+                    async
+                    src="https://platform.twitter.com/widgets.js"
+                    charSet="utf-8"
+                ></script>
+            </Head>
             <div className="max-w-4xl mx-auto lg:pt-5 pt-10 sm:pt-26 pb-24 lg:pb-32">
                 <div className="rounded-xl md:p-6">
                     <form
@@ -474,27 +495,44 @@ const DashboardSubmitPost = () => {
                         </Label>
 
                         <Label className="flex justify-top sm:col-span-1 md:col-span-2">
-                            <TagsInput onChange={handleChangeTags} />
+                            <TagsInput
+                                onChange={handleChangeTags}
+                                defaultValue={tags}
+                            />
                         </Label>
-
-                        <div className="block md:col-span-2">
+                        <div className="group block md:col-span-2">
                             <div
                                 onDrop={handleDrop}
                                 onDragOver={handleDragOver}
                                 onDragEnter={handleDragEnter}
                                 onDragLeave={handleDragLeave}
-                                className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-2xl"
+                                className="relative mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-2xl"
                             >
-                                <div className="space-y-1 text-center pb-8">
+                                <div className="space-y-1 text-center">
                                     {selectedImage ? (
-                                        <NextImage
-                                            src={URL.createObjectURL(
-                                                selectedImage
-                                            )}
-                                            alt="Selected Image"
-                                            width={800} // Adjust the desired width
-                                            height={480} // Adjust the desired height
-                                        />
+                                        <>
+                                            <NextImage
+                                                src={URL.createObjectURL(
+                                                    selectedImage
+                                                )}
+                                                alt="Selected Image"
+                                                width={800} // Adjust the desired width
+                                                height={480} // Adjust the desired height
+                                                className="rounded-md"
+                                            />
+
+                                            <div className="opacity-0 group-hover:opacity-100 absolute z-20 end-2.5 top-2.5 flex gap-1">
+                                                <div
+                                                    className=" p-1.5 bg-black dark:bg-neutral-700 text-white rounded-md cursor-pointer transition-opacity duration-300"
+                                                    title="Delete image"
+                                                    onClick={() => {
+                                                        setSelectedImage(null)
+                                                    }}
+                                                >
+                                                    <TrashIcon className="w-4 h-4" />
+                                                </div>
+                                            </div>
+                                        </>
                                     ) : (
                                         <>
                                             <svg
@@ -538,7 +576,7 @@ const DashboardSubmitPost = () => {
                                                     or drag and drop
                                                 </p>
                                             </div>
-                                            <p className="text-xs text-neutral-500">
+                                            <p className="text-xs text-neutral-500 pb-8">
                                                 PNG, JPG up to 1MB
                                             </p>
                                         </>
@@ -547,22 +585,8 @@ const DashboardSubmitPost = () => {
                             </div>
                         </div>
 
-                        {isMobile ? (
-                            <div className="flex-1 relative pb-[700px]">
-                                <div className="absolute inset-0 flex flex-col">
-                                    <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
-                                        <TiptapEditor
-                                            onUpdate={(editor) => {
-                                                const text = editor.getText()
-                                                setText(text)
-                                                setJson(editor.getJSON())
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="block md:col-span-2">
+                        <div className="flex-1 relative pb-[700px] md:hidden">
+                            <div className="absolute inset-0 flex flex-col">
                                 <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
                                     <TiptapEditor
                                         onUpdate={(editor) => {
@@ -573,7 +597,18 @@ const DashboardSubmitPost = () => {
                                     />
                                 </div>
                             </div>
-                        )}
+                        </div>
+                        <div className="hidden md:block md:col-span-2">
+                            <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
+                                <TiptapEditor
+                                    onUpdate={(editor) => {
+                                        const text = editor.getText()
+                                        setText(text)
+                                        setJson(editor.getJSON())
+                                    }}
+                                />
+                            </div>
+                        </div>
 
                         <div className="pt-4 md:col-span-2 flex space-x-12 justify-center ">
                             {uploading ? (

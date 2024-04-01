@@ -2,7 +2,7 @@ import { PlusCircleIcon } from '@heroicons/react/24/solid'
 import React, { FC, useEffect } from 'react'
 import Button, { ButtonProps } from './Button/Button'
 import ButtonPrimary from './Button/ButtonPrimary'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 
 export interface FollowButtonProps extends ButtonProps {
     authorId: string
@@ -28,7 +28,7 @@ const FollowButton: FC<FollowButtonProps> = ({
                 const isFollowing = localFollowers.includes(authorId)
                 if (isFollowing) setFollowing(true)
             } else {
-                const supabase = createClientComponentClient()
+                const supabase = createClient()
                 const { data: session } = await supabase.auth.getSession()
                 const userId = session?.session?.user.id
 
@@ -49,7 +49,7 @@ const FollowButton: FC<FollowButtonProps> = ({
     }, [authorId])
 
     async function toggleFollowing() {
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         const { data: session } = await supabase.auth.getSession()
         const userId = session?.session?.user.id
 

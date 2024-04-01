@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 
 export interface NcBookmarkProps {
     containerClassName?: string
@@ -14,7 +14,7 @@ const NcBookmark: FC<NcBookmarkProps> = ({
 
     useEffect(() => {
         async function fetchAndStoreBookmarks() {
-            const supabase = createClientComponentClient()
+            const supabase = createClient()
             const { data: session } = await supabase.auth.getSession()
             const userId = session?.session?.user.id
             const localBookmarks = JSON.parse(
@@ -51,7 +51,7 @@ const NcBookmark: FC<NcBookmarkProps> = ({
     }, [postId])
 
     async function toggleBookmark() {
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         const { data: session } = await supabase.auth.getSession()
         const userId = session?.session?.user.id
 

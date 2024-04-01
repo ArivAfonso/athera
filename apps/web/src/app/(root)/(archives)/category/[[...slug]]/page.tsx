@@ -1,14 +1,14 @@
 import React from 'react'
 import Card11 from '@/components/Card11/Card11'
 import CategoryType from '@/types/CategoryType'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/server'
 import Image from 'next/image'
 import Card6 from '@/components/Card6/Card6'
 import { cookies } from 'next/headers'
 import { Metadata } from 'next'
 
 async function getCategories(context: { params: { slug: any } }) {
-    const supabase = createServerComponentClient({ cookies })
+    const supabase = createClient(cookies())
 
     const id = context.params.slug[1]
     const { data, error } = await supabase
@@ -73,7 +73,7 @@ const PageCategory = async (context: any) => {
     return (
         <div className={`nc-PageCategory`}>
             {/* HEADER */}
-            <div className="w-full px-2 -mt-[72px] xl:max-w-screen-2xl mx-auto">
+            <div className="w-full px-2 pt-2 xl:max-w-screen-2xl mx-auto">
                 {catData.image ? (
                     <div className="relative aspect-w-16 aspect-h-13 sm:aspect-h-9 lg:aspect-h-8 xl:aspect-h-5 rounded-3xl md:rounded-[40px] overflow-hidden z-0">
                         <Image
@@ -132,10 +132,15 @@ const PageCategory = async (context: any) => {
                         />
                     )} */}
                     {/* LOOP ITEMS */}
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
+                    <div
+                        className={`gap-6 md:gap-8 mt-8 lg:mt-10 ${(catData.posts ? catData.posts.length : 0) < 4 ? 'flex justify-center flex-wrap' : 'grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}
+                    >
                         {catData.posts &&
                             catData.posts.map((post, id) => (
-                                <div key={id}>
+                                <div
+                                    key={id}
+                                    className={`${(catData.posts ? catData.posts.length : 0) < 4 ? 'w-full sm:w-1/2 lg:w-1/3 xl:w-1/4' : ''}`}
+                                >
                                     <div className="hidden sm:block">
                                         {/* Render Card11 on larger screens */}
                                         <Card11 post={post} />

@@ -9,7 +9,7 @@ import { RadioGroup } from '@/app/headlessui'
 import twFocusClass from '@/utils/twFocusClass'
 import ButtonThird from '../Button/ButtonThird'
 import { Controller, useForm } from 'react-hook-form'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/utils/supabase/client'
 
 export interface ProblemPlan {
     name: string
@@ -77,7 +77,7 @@ const ModalReportComment: FC<ModalReportCommentprops> = ({
     const [uploadErrors, setUploadError] = useState('')
 
     const sendReport = async (data: any) => {
-        const supabase = createClientComponentClient()
+        const supabase = createClient()
         const { data: session } = await supabase.auth.getSession()
         const { error } = await supabase.from('comment_reports').insert([
             {

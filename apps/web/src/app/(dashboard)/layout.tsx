@@ -1,18 +1,13 @@
-import DashboardLayout from "./DashboardLayout"
+import DashboardLayout from './DashboardLayout'
 
 export default async function Layout({
-  children,
+    children,
 }: {
-  children: React.ReactNode
+    children: React.ReactNode
 }) {
-
     return (
-    
-      <div className="bg-white dark:bg-neutral-800 overflow-y-auto h-[100vh]">
-        <DashboardLayout>
-          {children}
-        </DashboardLayout>
-      </div>
-
-    );
-};
+        <div className="bg-white dark:bg-neutral-800 overflow-y-auto h-[100vh]">
+            <DashboardLayout>{children}</DashboardLayout>
+        </div>
+    )
+}

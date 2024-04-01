@@ -24,7 +24,7 @@
         "@tailwindcss/aspect-ratio": "^0.4.2",
         "@tailwindcss/forms": "^0.5.6",
         "@tailwindcss/line-clamp": "^0.4.2",
-        "@tailwindcss/typography": "^0.5.9",
+        "@tailwindcss/typography": "^0.5.12",
         "@tiptap/extension-code-block-lowlight": "^2.2.4",
         "@tiptap/extension-highlight": "^2.1.13",
         "@tiptap/extension-image": "^2.2.4",

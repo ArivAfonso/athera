@@ -16,6 +16,7 @@ import {
     BookmarkIcon,
     CircleUserRoundIcon,
     Clock4Icon,
+    EyeIcon,
     FilePlusIcon,
     FilesIcon,
     FolderIcon,
@@ -63,6 +64,11 @@ const navigation: NavigationItem[] = [
                 icon: FilesIcon,
             },
             { name: 'likes', href: '/dashboard/liked-posts', icon: HeartIcon },
+            {
+                name: 'watch history',
+                href: '/dashboard/watch-history',
+                icon: EyeIcon,
+            },
             {
                 name: 'bookmarks',
                 href: '/dashboard/bookmarks',

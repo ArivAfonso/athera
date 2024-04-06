@@ -1,32 +1,32 @@
-export * from "./utils/media-placement";
+export * from './utils/media-placement'
 
-export * from "./hyperMultimediaKit";
+export * from './hyperMultimediaKit'
 
-export * from "./modals/image";
+export * from './modals/image'
 
-export * from "./modals/youtube";
+export * from './modals/youtube'
 
-export * from "./modals/twitter";
+export * from './modals/twitter'
 
-import { HyperMultimediaKit } from "./hyperMultimediaKit";
+import { HyperMultimediaKit } from './hyperMultimediaKit'
 
-import { imageModal } from "./modals/image";
+import { imageModal } from './modals/image'
 
-import { youtubeModal } from "./modals/youtube";
+import { youtubeModal } from './modals/youtube'
 
-import { twitterModal } from "./modals/twitter";
+import { twitterModal } from './modals/twitter'
 
-export const vimeoModal = youtubeModal;
+export const vimeoModal = youtubeModal
 
-export const soundCloudModal = youtubeModal;
+export const soundCloudModal = youtubeModal
 
-export const videoModal = youtubeModal;
+export const videoModal = youtubeModal
 
-export const audioModal = twitterModal;
+export const audioModal = twitterModal
 
 export default {
-  HyperMultimediaKit,
-  imageModal,
-  youtubeModal,
-  twitterModal,
-};
+    HyperMultimediaKit,
+    imageModal,
+    youtubeModal,
+    twitterModal,
+}

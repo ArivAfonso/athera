@@ -52,7 +52,6 @@ import {
     audioModal,
 } from './extensions/hypermedia'
 import CodeBlockComponent from './CodeBlockComponent'
-import { Twitter } from './extensions/hypermedia/nodes/twitter/twitter'
 
 interface Props {
     onUpdate: (editor: Editor) => void
@@ -89,7 +88,6 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
             TableCell,
             TableHeader,
             TableRow,
-            Twitter,
             Iframe,
             CodeBlockLowlight.extend({
                 addNodeView() {

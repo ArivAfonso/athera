@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Input from '@/components/Input/Input'
 import NextImage from 'next/image'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
@@ -26,6 +26,48 @@ function strWords(str: string) {
     return str.split(/\s+/).length
 }
 
+interface ImageObject {
+    type: string
+    attrs?: {
+        src?: string
+        alt?: string
+        title?: string | null
+    }
+    content?: (TextObject | ImageObject)[]
+}
+
+interface TextObject {
+    type: string
+    text: string
+    attrs?: {
+        href?: string
+        target?: string
+    }
+}
+
+function findImageUrls(json: ImageObject[]): string[] {
+    const urls: string[] = []
+
+    function traverse(
+        obj: ImageObject | TextObject | (ImageObject | TextObject)[]
+    ): void {
+        if (Array.isArray(obj)) {
+            obj.forEach((item) => traverse(item))
+        } else if (typeof obj === 'object' && obj !== null) {
+            //@ts-ignore
+            if (obj.type === 'image' && obj.attrs && obj.attrs.src) {
+                //@ts-ignore
+                urls.push(obj.attrs.src)
+            } else {
+                Object.values(obj).forEach((value) => traverse(value))
+            }
+        }
+    }
+
+    traverse(json)
+    return urls
+}
+
 function modifyString(str: string) {
     //Capitalize every word of the string and replace spaces with -
     return str
@@ -43,7 +85,7 @@ const DashboardSubmitPost = () => {
     const [text, setText] = useState('')
     const [selectedImage, setSelectedImage] = useState(null)
     const [uploading, setUploading] = useState(false)
-    const [json, setJson] = useState('' as any)
+    let [json, setJson] = useState('' as any)
     const [progress, setProgress] = useState(0)
     const defaultPostOptionsData = {
         excerptText: '',
@@ -55,12 +97,15 @@ const DashboardSubmitPost = () => {
         defaultPostOptionsData
     )
 
-    const [tags, setTags] = useState<string[]>([])
+    let [tags, setTags] = useState<string[]>([])
     const [title, setTitle] = useState('')
+
+    useEffect(() => {
+        console.log(json)
+    }, [json])
 
     async function sendPost(formData: any) {
         setUploading(true)
-        console.log(tags)
         setErrorMsg('')
         const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
         setProgress(10)
@@ -128,6 +173,7 @@ const DashboardSubmitPost = () => {
                             title: title,
                             author: user?.id,
                             description: postOptionsData.excerptText,
+                            license: postOptionsData.license,
                             text: text,
                             estimatedReadingTime: Math.round(
                                 strWords(text) / 200
@@ -143,25 +189,38 @@ const DashboardSubmitPost = () => {
                 setProgress(30)
                 console.log(json.content)
 
-                // Get all the image blob urls from the editor json
-                const imageUrls = json.content
-                    .filter((block: any) => block.type === 'image')
-                    .map((block: any) => block.attrs.src)
+                const imageUrls: string[] = findImageUrls(json.content)
+                console.log(imageUrls)
 
                 // Upload the images to Supabase storage and rename the link in the json to the new link
                 for (let i = 0; i < imageUrls.length; i++) {
-                    const { data: imagePath } = await supabase.storage
-                        .from('images')
-                        .upload(
-                            `${user?.id}/${data ? data[0]?.id : ''}/${
-                                imageUrls[i].split(',')[1]
-                            }`,
-                            imageUrls[i].split(',')[1]
-                        )
+                    if (imageUrls[i].includes('blob:')) {
+                        const response = await fetch(imageUrls[i])
+                        const blob = await response.blob()
 
-                    json.content[i].attrs.src =
-                        'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
-                        imagePath?.path
+                        const { data: imagePath } = await supabase.storage
+                            .from('images')
+                            .upload(
+                                `${user?.id}/${data ? data[0]?.id : ''}/${
+                                    //Get the last part of the url
+                                    imageUrls[i].split('/').pop()
+                                }`,
+                                blob
+                            )
+
+                        json.content[i].attrs.src =
+                            'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                            imagePath?.path
+
+                        const text = JSON.stringify(json)
+                        json = JSON.parse(
+                            text.replace(
+                                imageUrls[i],
+                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                                    imagePath?.path
+                            )
+                        )
+                    }
                 }
 
                 if (postInsertError) {
@@ -177,64 +236,27 @@ const DashboardSubmitPost = () => {
                     .from('images')
                     .upload(`${user?.id}/${postId}/main-image`, selectedImage)
 
+                tags = tags.map((tag) => {
+                    return modifyString(tag)
+                })
+
                 setProgress(70)
-
-                const tagsArray: any[] = await Promise.all(
-                    tags
-                        .filter((tag) => tag && tag.length > 0)
-                        .map(async (tag: string) => {
-                            tag = modifyString(tag)
-                            console.log(tag)
-
-                            const { data: isCategory } = await supabase
-                                .from('categories')
-                                .select('id')
-                                .eq('name', tag)
-
-                            if (isCategory && isCategory.length > 0) {
-                                return {
-                                    post: postId,
-                                    category: isCategory[0].id,
-                                }
-                            } else {
-                                // Choose a random element from an array of words
-                                const colors = [
-                                    'Red',
-                                    'Green',
-                                    'Blue',
-                                    'Yellow',
-                                    'Purple',
-                                    'Pink',
-                                    'Orange',
-                                    'Grey',
-                                ]
-                                const color =
-                                    colors[
-                                        Math.floor(
-                                            Math.random() * colors.length
-                                        )
-                                    ]
-                                const { data: newCategory } = await supabase
-                                    .from('categories')
-                                    .insert({ name: tag, color: color })
-                                    .select('*')
-
-                                if (newCategory && newCategory.length > 0) {
-                                    return {
-                                        post: postId,
-                                        category: newCategory[0].id,
-                                    }
-                                } else {
-                                    // Handle the case where the category couldn't be created
-                                    return null // or any other suitable value
-                                }
-                            }
-                        })
+                const { data: tagsArray, error } = await supabase.rpc(
+                    'manage_categories',
+                    {
+                        categories: tags,
+                    }
                 )
+                const finalTags = tagsArray.map((tag: any) => {
+                    return {
+                        post: postId,
+                        category: tag.cat_id,
+                    }
+                })
 
                 await supabase
                     .from('post_categories')
-                    .insert(tagsArray)
+                    .insert(finalTags)
                     .select('*')
 
                 setProgress(90)
@@ -307,6 +329,7 @@ const DashboardSubmitPost = () => {
                     title: title,
                     author: session.session?.user?.id,
                     description: postOptionsData.excerptText,
+                    license: postOptionsData.license,
                     text: text,
                     json: json,
                     estimatedReadingTime: Math.round(strWords(text) / 200),
@@ -337,55 +360,17 @@ const DashboardSubmitPost = () => {
                 .eq('id', draftId)
         }
 
-        const tagsArray: any[] = await Promise.all(
-            tags
-                .filter((tag) => tag && tag.length > 0)
-                .map(async (tag: string) => {
-                    tag = modifyString(tag)
-                    console.log(tag)
-
-                    const { data: isCategory } = await supabase
-                        .from('categories')
-                        .select('id')
-                        .eq('name', tag)
-                    console.log(isCategory)
-
-                    if (isCategory && isCategory.length > 0) {
-                        return {
-                            post: draftId,
-                            category: isCategory[0].id,
-                        }
-                    } else {
-                        // Choose a random element from an array of words
-                        const colors = [
-                            'Red',
-                            'Green',
-                            'Blue',
-                            'Yellow',
-                            'Purple',
-                            'Pink',
-                            'Orange',
-                            'Grey',
-                        ]
-                        const color =
-                            colors[Math.floor(Math.random() * colors.length)]
-                        const { data: newCategory } = await supabase
-                            .from('categories')
-                            .insert({ name: tag, color: color })
-                            .select('*')
-
-                        if (newCategory && newCategory.length > 0) {
-                            return {
-                                post: draftId,
-                                category: newCategory[0].id,
-                            }
-                        } else {
-                            // Handle the case where the category couldn't be created
-                            return null // or any other suitable value
-                        }
-                    }
-                })
+        const { data: tagsArray, error } = await supabase.rpc(
+            'manage_categories',
+            {
+                categories: tags,
+            }
         )
+
+        tagsArray.map((tag: any) => {
+            tag.post = draftId
+            tag.category = tag.cat_id
+        })
 
         if (tagsArray.length > 0)
             await supabase.from('draft_categories').insert(tagsArray)

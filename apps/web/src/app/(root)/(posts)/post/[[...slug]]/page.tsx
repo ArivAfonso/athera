@@ -17,28 +17,29 @@ async function getPostData(context: { params: { slug: any } }) {
         .from('posts')
         .select(
             `
-        title,
-        id,
-        json,
-        rawText,
-        created_at,
-        estimatedReadingTime,
-        description,
-        image,
-        author (
-            name,
+            title,
             id,
-            username,
-            avatar
-        ),
-        post_categories(category:categories(id,name,color)),
-        likeCount:likes(count),
-        commentCount:comments(count),
-        likes(
-            liker(
-                id
+            json,
+            rawText,
+            created_at,
+            estimatedReadingTime,
+            description,
+            image,
+            license,
+            author (
+                name,
+                id,
+                username,
+                avatar
+            ),
+            post_categories(category:categories(id,name,color)),
+            likeCount:likes(count),
+            commentCount:comments(count),
+            likes(
+                liker(
+                    id
+                )
             )
-        )
         `
         )
         .eq('id', id)
@@ -175,6 +176,7 @@ const PageSingle = async (context: any) => {
                         currentUserID={currentUserID ? currentUserID : ''}
                         likeCount={data.likeCount[0].count as number}
                         isLiked={data.isLiked}
+                        license={data.license}
                         commentCount={
                             commentData?.length ? commentData.length : 0
                         }

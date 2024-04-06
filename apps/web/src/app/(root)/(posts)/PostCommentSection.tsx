@@ -100,16 +100,6 @@ const SingleCommentForm: FC<SingleCommentFormProps> = ({
     }
 
     const handleDeleteComment = async (commentId: string) => {
-        const supabase = createClient()
-        const { error } = await supabase
-            .from('comments')
-            .delete()
-            .eq('id', commentId)
-        if (error) {
-            // Handle the error.
-            return
-        }
-
         // Remove the deleted comment from the comments state
         const updatedComments = comments.filter(
             (comment) => comment.id !== commentId

@@ -2,7 +2,7 @@
 
 import CardLarge1 from '@/components/CardLarge1/CardLarge1'
 import MainHeading from './MainHeading'
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import PostType from '@/types/PostType'
 import { useThemeMode } from '@/hooks/useThemeMode'
 import dynamic from 'next/dynamic'
@@ -20,9 +20,14 @@ const SectionLargeSlider: FC<SectionLargeSliderProps> = ({
 }) => {
     const [indexActive, setIndexActive] = useState(0)
     const theme = useThemeMode()
+    const [globe, setGlobe] = useState(false)
 
     const World = dynamic(
-        () => import('@/animations/Globe').then((m) => m.World),
+        () =>
+            import('@/animations/Globe').then((m) => {
+                setGlobe(true)
+                return m.World
+            }),
         {
             ssr: false,
         }
@@ -441,29 +446,27 @@ const SectionLargeSlider: FC<SectionLargeSliderProps> = ({
         },
     ]
 
+    useEffect(() => {
+        console.log(globe)
+    }, [globe])
+
     return (
         <div className="relative">
             <div
                 className={`nc-SectionLargeSlider sm:block md:-mt-48 md:relative ${className}`}
             >
                 <div className="grid grid-cols-3 items-center md:gap-x-8">
-                    {!!heading && (
-                        <MainHeading
-                            className="col-span-2 -mt-8"
-                            isCenter={true}
-                        >
-                            {heading}
-                        </MainHeading>
-                    )}
+                    <MainHeading className="col-span-2 -mt-8" isCenter={true}>
+                        {heading}
+                    </MainHeading>
+
                     <div className="hidden md:block z-0 lg:w-[800px] md:w-[600px] md:h-[600px] lg:h-[800px] md:z-10 md:-ml-10 lg:-ml-32">
                         <World data={sampleArcs} globeConfig={globeConfig} />
                     </div>
                 </div>
             </div>
             <div className="mt-7 md:hidden">
-                {!!heading && (
-                    <MainHeading isCenter={true}>{heading}</MainHeading>
-                )}
+                <MainHeading isCenter={true}>{heading}</MainHeading>
             </div>
             {posts.map((item, index) => {
                 if (indexActive !== index) return null

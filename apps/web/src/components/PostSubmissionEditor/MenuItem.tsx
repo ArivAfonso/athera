@@ -28,6 +28,7 @@ const MenuItem: FC<Props> = ({
                         action
                         console.log('action')
                     }}
+                    type="button"
                     title={title}
                 >
                     {icon}

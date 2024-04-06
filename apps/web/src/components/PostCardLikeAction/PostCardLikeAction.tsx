@@ -24,6 +24,10 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [postId])
 
+    useEffect(() => {
+        setLikeCount(likeCount)
+    }, [likeCount])
+
     async function checkLikedStatus() {
         try {
             const { data: session } = await supabase.auth.getSession()
@@ -50,11 +54,11 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
     }
 
     async function toggleLike() {
+        console.log('toggleLike')
         try {
             const { data: session } = await supabase.auth.getSession()
-            const userId = session?.session?.user.id
 
-            if (!userId) {
+            if (!session.session) {
                 toast.custom(
                     (t) => (
                         <Alert type="danger" message="You must be logged in" />
@@ -65,7 +69,13 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
                 )
             }
 
+            const userId = session?.session?.user.id
+
             if (isLiked) {
+                setLikeCount((prevLikeCount) =>
+                    prevLikeCount > 0 ? prevLikeCount - 1 : 0
+                )
+                setIsLiked(false)
                 // Delete the like from the database
                 const { data, error } = await supabase
                     .from('likes')
@@ -87,18 +97,18 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
                     (like: string) => like !== postId
                 )
                 localStorage.setItem('likes', JSON.stringify(updatedLocalLikes))
-
-                setLikeCount((prevLikeCount) =>
-                    prevLikeCount > 0 ? prevLikeCount - 1 : 0
-                )
             } else {
+                setIsLiked(true)
+                setLikeCount((prevLikeCount) => prevLikeCount + 1)
+
                 // Insert a new like into the database
-                const { data, error } = await supabase
+                const { error } = await supabase
                     .from('likes')
                     .insert([{ post: postId, liker: userId }])
+                    .select()
 
                 if (error) {
-                    console.error('Error inserting like:', error)
+                    console.log('Error inserting like:', error)
                     return
                 }
 
@@ -108,9 +118,6 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
                 )
                 localLikes.push(postId)
                 localStorage.setItem('likes', JSON.stringify(localLikes))
-
-                setIsLiked(true)
-                setLikeCount((prevLikeCount) => prevLikeCount + 1)
             }
         } catch (error) {
             console.error('Error toggling like:', error)

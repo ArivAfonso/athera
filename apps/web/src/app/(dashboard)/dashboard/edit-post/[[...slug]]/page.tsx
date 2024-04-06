@@ -134,6 +134,9 @@ const EditPost = (context: { params: { slug: any } }) => {
             {
                 title: editPost ? editPost.title : 'No Title',
                 description: editPost ? editPost?.description : '',
+                license: postOptionsData.license
+                    ? postOptionsData.license
+                    : null,
                 //@ts-ignore
                 json: editPost ? editPost?.json : '',
             },
@@ -150,8 +153,8 @@ const EditPost = (context: { params: { slug: any } }) => {
             //     }
             // )
         }
-        if (formData.postExcerpt !== editPost?.description) {
-            newPost[0]['description'] = formData.postExcerpt
+        if (postOptionsData.excerptText !== editPost?.description) {
+            newPost[0]['description'] = postOptionsData.excerptText
         }
         setProgress(20)
         if (imgChanged) {
@@ -174,7 +177,7 @@ const EditPost = (context: { params: { slug: any } }) => {
                 imagePath?.path
 
             // Update the inserted post with the image URL
-            const { data, error } = await supabase
+            await supabase
                 .from('posts')
                 .update({
                     image: uploadedImageUrl,
@@ -203,61 +206,27 @@ const EditPost = (context: { params: { slug: any } }) => {
         console.log(error)
         setProgress(70)
 
-        const tagsArray = await Promise.all(
-            tags
-                .filter((tag) => tag && tag.length > 0)
-                .map(async (tag: string) => {
-                    tag = modifyString(tag)
+        tags = tags.map((tag) => {
+            return modifyString(tag)
+        })
 
-                    const { data: isCategory } = await supabase
-                        .from('categories')
-                        .select('id')
-                        .eq('name', tag)
-
-                    if (isCategory && isCategory.length > 0) {
-                        return {
-                            post: context.params.slug[0],
-                            category: isCategory[0].id,
-                        }
-                    } else {
-                        // Choose a random element from an array of words
-                        const colors = [
-                            'Red',
-                            'Green',
-                            'Blue',
-                            'Yellow',
-                            'Purple',
-                            'Pink',
-                            'Orange',
-                            'Grey',
-                        ]
-                        const color =
-                            colors[Math.floor(Math.random() * colors.length)]
-                        const { data: newCategory } = await supabase
-                            .from('categories')
-                            .insert({ name: tag, color: color })
-                            .select('*')
-
-                        if (newCategory && newCategory.length > 0) {
-                            return {
-                                post: context.params.slug[0],
-                                category: newCategory[0].id,
-                            }
-                        } else {
-                            // Handle the case where the category couldn't be created
-                            return null // or any other suitable value
-                        }
-                    }
-                })
-        )
+        const { data: tagsArray } = await supabase.rpc('manage_categories', {
+            categories: tags,
+        })
+        const finalTags = tagsArray.map((tag: any) => {
+            return {
+                post: context.params.slug[0],
+                category: tag.cat_id,
+            }
+        })
         setProgress(90)
 
-        if (tagsArray !== editPost?.post_categories) {
+        if (finalTags !== editPost?.post_categories) {
             await supabase
                 .from('post_categories')
                 .delete()
                 .eq('post', editPost?.id)
-            await supabase.from('post_categories').insert(tagsArray).select('*')
+            await supabase.from('post_categories').insert(finalTags).select('*')
         }
         setProgress(100)
 

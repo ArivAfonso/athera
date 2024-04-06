@@ -29,6 +29,7 @@ import { Youtube } from '@/components/PostSubmissionEditor/extensions/hypermedia
 import { SoundCloud } from '@/components/PostSubmissionEditor/extensions/hypermedia/nodes/soundcloud/soundcloud'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { Twitter } from '@/components/PostSubmissionEditor/extensions/hypermedia/nodes/twitter/twitter'
+import { ScaleIcon } from 'lucide-react'
 
 export interface SingleContentProps {
     body: string
@@ -38,6 +39,7 @@ export interface SingleContentProps {
     commentCount: number
     id: string
     json: JSON
+    license: string | null
     currentUserID: string
 }
 
@@ -48,6 +50,7 @@ const SingleContent: FC<SingleContentProps> = ({
     isLiked,
     json,
     commentCount,
+    license,
     currentUserID,
     id,
 }) => {
@@ -135,12 +138,14 @@ const SingleContent: FC<SingleContentProps> = ({
                 <div className="nc-SingleContent space-y-10">
                     {/* ENTRY CONTENT */}
                     {json ? (
-                        <div
-                            id="single-entry-content"
-                            className="prose lg:prose-lg !max-w-screen-md mx-auto dark:prose-invert"
-                            ref={contentRef}
-                            dangerouslySetInnerHTML={{ __html: output }}
-                        ></div>
+                        <>
+                            <div
+                                id="single-entry-content"
+                                className="prose lg:prose-lg !max-w-screen-md mx-auto dark:prose-invert"
+                                ref={contentRef}
+                                dangerouslySetInnerHTML={{ __html: output }}
+                            ></div>
+                        </>
                     ) : (
                         <div
                             id="single-entry-content"
@@ -156,6 +161,20 @@ const SingleContent: FC<SingleContentProps> = ({
                         className="max-w-screen-md mx-auto"
                         ref={endedAnchorRef}
                     >
+                        {license && (
+                            <div className="prose -mt-10 pb-6 lg:prose-lg !max-w-screen-md mx-auto dark:prose-invert flex items-center">
+                                <ScaleIcon
+                                    strokeWidth="1.5"
+                                    color="currentColor"
+                                />
+                                <p className="inline pb-4  text-gray-500 dark:text-neutral-400 text-sm ml-2">
+                                    {license
+                                        ? license
+                                        : 'Creative Commons 4.0 International License'}
+                                </p>
+                            </div>
+                        )}
+
                         <SingleAuthor author={author} />
                     </div>
                     {/* COMMENT FORM */}

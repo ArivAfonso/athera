@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Card6 from '@/components/Card6/Card6'
 import { cookies } from 'next/headers'
 import { Metadata } from 'next'
+import PostsSection from '@/components/PostsSection/PostsSection'
 
 async function getCategories(context: { params: { slug: any } }) {
     const supabase = createClient(cookies())
@@ -132,26 +133,7 @@ const PageCategory = async (context: any) => {
                         />
                     )} */}
                     {/* LOOP ITEMS */}
-                    <div
-                        className={`gap-6 md:gap-8 mt-8 lg:mt-10 ${(catData.posts ? catData.posts.length : 0) < 4 ? 'flex justify-center flex-wrap' : 'grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}
-                    >
-                        {catData.posts &&
-                            catData.posts.map((post, id) => (
-                                <div
-                                    key={id}
-                                    className={`${(catData.posts ? catData.posts.length : 0) < 4 ? 'w-full sm:w-1/2 lg:w-1/3 xl:w-1/4' : ''}`}
-                                >
-                                    <div className="hidden sm:block">
-                                        {/* Render Card11 on larger screens */}
-                                        <Card11 post={post} />
-                                    </div>
-                                    <div className="sm:hidden grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                        {/* Render Card5 on smaller screens */}
-                                        <Card6 post={post} />
-                                    </div>
-                                </div>
-                            ))}
-                    </div>
+                    <PostsSection posts={catData.posts} />
                 </div>
             </div>
         </div>

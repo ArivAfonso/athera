@@ -269,7 +269,7 @@ const MenuBar: React.FC<{ editor: Editor }> = ({ editor }) => {
 
     return (
         <div
-            className="editor__header sticky rounded-tl-2xl rounded-tr-2xl bg-neutral-100 dark:bg-neutral-800 px-2 lg:px-0 py-5 overflow-hidden lg:overflow-visible flex justify-center z-10"
+            className="editor__header sticky rounded-tl-2xl rounded-tr-2xl border-0 border-b-2 border-neutral-300 dark:border-neutral-700 border-dashed px-2 lg:px-0 py-5 overflow-hidden lg:overflow-visible flex justify-center z-10"
             style={{
                 top: windowSizeWidth <= 600 ? 0 : wpadminbarH,
             }}

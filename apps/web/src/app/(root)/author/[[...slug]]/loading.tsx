@@ -5,7 +5,7 @@ const Loading = () => (
     <div className={`nc-PageAuthor `}>
         {/* HEADER */}
         <div className="w-full">
-            <div className="container -mt-4">
+            <div className="container mt-10 lg:mt-16">
                 <div className="relative bg-white dark:bg-neutral-900 p-5 lg:p-8 rounded-3xl md:rounded-[40px] shadow-xl flex flex-col md:flex-row">
                     <div className="w-32 lg:w-40 flex-shrink-0 mt-12 sm:mt-0">
                         {/* Loading skeleton for avatar */}

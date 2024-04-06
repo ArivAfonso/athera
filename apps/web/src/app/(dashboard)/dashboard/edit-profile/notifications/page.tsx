@@ -1,140 +1,241 @@
 'use client'
 
-import Label from '@/components/Label/Label'
-import React, { FC, useEffect, useState } from 'react'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import Input from '@/components/Input/Input'
-import Textarea from '@/components/Textarea/Textarea'
-import Image from 'next/image'
-import { createClient } from '@/utils/supabase/client'
-import { useForm, Controller } from 'react-hook-form'
-import Alert from '@/components/Alert/Alert'
-import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
+import { useState } from 'react'
+import HorizontalFormBlockWrapper from './FormWrapper'
+import { RadioGroup, Switch } from '@headlessui/react'
+import Radio from '@/components/Radio/Radio'
 import Button from '@/components/Button/Button'
+import Checkbox from '@/components/Checkbox/Checkbox'
+import { Heading3 } from 'lucide-react'
 
-function AccountPage() {
-    const { handleSubmit, register } = useForm()
-    const [success, setSuccess] = useState('')
-    const [error, setError] = useState('')
-    const [imageFile, setImageFile] = useState(null)
-    const [loading, setLoading] = useState(false)
-    const [showModal, setShowModal] = useState(false)
-    const supabase = createClient()
-    const [session, setSession] = useState<any>(null)
-    const [selectedImage, setSelectedImage] = useState(null)
-    const [imgChanged, setImgChanged] = useState(false)
+const generalOptions = [
+    {
+        title: 'I’m mentioned in a message',
+    },
+    {
+        title: 'Someone replies to any message',
+    },
+    {
+        title: 'I’m assigned a task',
+    },
+    {
+        title: 'A task is overdue',
+    },
+    {
+        title: 'A task status is updated',
+    },
+]
 
-    const [profile, setProfile] = useState({
-        name: '',
-        email: '',
-        website: '',
-        bio: '',
-        avatar: '',
-        background: '',
-        phone: '',
-        tiktok: '',
-        twitter: '',
-        facebook: '',
-        youtube: '',
-        github: '',
-        instagram: '',
-        linkedin: '',
-        pinterest: '',
-        twitch: '',
-    })
+const summaryOptions = [
+    {
+        title: 'Daily summary',
+    },
+    {
+        title: 'Weekly summary',
+    },
+    {
+        title: 'Monthly summary',
+    },
+    {
+        title: 'Quaterly summary',
+    },
+]
 
-    async function updateProfile(formData: any) {}
-
-    useEffect(() => {
-        async function checkLikedStatus() {
-            const supabase = createClient()
-            const { data: session } = await supabase.auth.getSession()
-            setSession(session)
-            const userId = session?.session?.user.id
-            // Check if the post is liked by the user
-            const { data, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', userId)
-                .single()
-            setProfile(data)
-        }
-        checkLikedStatus()
-    }, [])
-
-    const [isDragging, setIsDragging] = useState(false)
-    const [showImg, setShowImg] = useState(null)
-
-    const handleDrop = (event: any) => {
-        event.preventDefault()
-        const file = event.dataTransfer.files[0]
-        if (file) {
-            if (
-                file.type === 'image/png' ||
-                file.type === 'image/jpeg' ||
-                file.type === 'image/jpg'
-            ) {
-                setSelectedImage(file)
-                const reader = new FileReader()
-                reader.onloadend = function () {
-                    //@ts-ignore
-                    setShowImg(reader.result as string)
-                }
-                reader.readAsDataURL(file)
-                setImgChanged(true)
-            } else {
-                // Handle the case when the file type is not supported
-                setError('Unsupported file type. Please use PNG, JPG, or JPEG.')
-            }
-        }
-        setIsDragging(false)
-    }
-
-    const handleDragOver = (event: any) => {
-        event.preventDefault()
-        setIsDragging(true)
-    }
-
-    const handleDragEnter = (event: any) => {
-        event.preventDefault()
-        setIsDragging(true)
-    }
-
-    const handleDragLeave = (event: any) => {
-        event.preventDefault()
-        setIsDragging(false)
-    }
-
-    const handleImageSelect = (event: { target: { files: any[] } }) => {
-        const file = event.target.files[0]
-        if (file) {
-            setImageFile(file)
-        }
-    }
+export default function NotificationSettingsView() {
+    const [values, setValues] = useState<string[]>([])
+    const [value, setValue] = useState('')
 
     return (
-        <>
-            <title>Edit Profile - Athera</title>
-            <div className="max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32">
-                <form
-                    onSubmit={handleSubmit(async (data) => {
-                        if (Object.keys(data).length > 0) {
-                            await updateProfile(data)
-                        }
-                    })}
-                >
-                    <div className="space-y-10 sm:space-y-12">
-                        {/* HEADING */}
-                        <h2 className="text-2xl sm:text-3xl font-semibold">
-                            Notification Settings
-                        </h2>
-                    </div>
-                </form>
-                {success && <Alert type="success" message={success} />}
-                {error && <Alert type="danger" message={error} />}
+        <div className="max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32">
+            <div className="flex flex-col sm:items-center sm:justify-between sm:flex-row pb-8">
+                <h2 className="text-2xl sm:text-3xl font-semibold">
+                    Notification Settings
+                </h2>
             </div>
-        </>
+            <HorizontalFormBlockWrapper
+                title="General notifications"
+                description="Select when you’ll be notified when the following changes occur."
+                descriptionClassName="max-w-[344px]"
+            >
+                <div className="col-span-2">
+                    {generalOptions.map((opt, index) => (
+                        <div
+                            key={`generalopt-${index}`}
+                            className="flex items-center justify-between border-b border-muted py-6 last:border-none last:pb-0"
+                        >
+                            <h3 className="text-sm font-medium dark:text-gray-300 text-gray-900">
+                                {opt.title}
+                            </h3>
+                            <ButtonGroup
+                                onChange={(option) =>
+                                    console.log(opt.title, option)
+                                }
+                            />
+                        </div>
+                    ))}
+                </div>
+            </HorizontalFormBlockWrapper>
+            <HorizontalFormBlockWrapper
+                title="Summary notifications"
+                description="Select when you’ll be notified when the following summaries or report are ready."
+                descriptionClassName="max-w-[344px]"
+            >
+                <div className="col-span-2">
+                    {summaryOptions.map((opt, index) => (
+                        <div
+                            key={`summaryopt-${index}`}
+                            className="flex items-center justify-between border-b border-muted py-6 last:border-none last:pb-0"
+                        >
+                            <h4 className="text-sm font-medium dark:text-gray-300 text-gray-900">
+                                {opt.title}
+                            </h4>
+                            <ButtonGroup
+                                onChange={(option) =>
+                                    console.log(opt.title, option)
+                                }
+                            />
+                        </div>
+                    ))}
+                </div>
+            </HorizontalFormBlockWrapper>
+            <HorizontalFormBlockWrapper
+                title="Comments"
+                description="These are notifications for comments on your posts and replies to your comments."
+                descriptionClassName="max-w-[344px]"
+            >
+                <div className="col-span-2">
+                    <Switch name="Do not notify me" />
+                    <Switch
+                        name="Mentions only"
+                        className="font-medium text-sm text-gray-900"
+                    />
+                    <Switch name="All comments" />
+                </div>
+            </HorizontalFormBlockWrapper>
+            <HorizontalFormBlockWrapper
+                title="Notifications from us"
+                description="These are notifications for when someone tags you in a comment, post or story."
+                descriptionClassName="max-w-[344px]"
+            >
+                <div className="col-span-2">
+                    <Checkbox
+                        name="app_notification"
+                        label="News and updates"
+                        className="mb-5"
+                        //   labelClassName="pl-2 text-sm font-medium !text-gray-900"
+                        //   helperClassName="text-gray-500 text-sm mt-3 ms-8"
+                        //   helperText="News about product and feature updates."
+                    />
+                    <Checkbox
+                        name="app_notification"
+                        label="News and updates"
+                        className="mb-5"
+                        //   labelClassName="pl-2 text-sm font-medium !text-gray-900"
+                        //   helperClassName="text-gray-500 text-sm mt-3 ms-8"
+                        //   helperText="News about product and feature updates."
+                    />
+                    <Checkbox
+                        name="app_notification"
+                        label="News and updates"
+                        className="mb-5"
+                        //   labelClassName="pl-2 text-sm font-medium !text-gray-900"
+                        //   helperClassName="text-gray-500 text-sm mt-3 ms-8"
+                        //   helperText="News about product and feature updates."
+                    />
+                </div>
+            </HorizontalFormBlockWrapper>
+            <HorizontalFormBlockWrapper
+                title="Reminders"
+                description="These are notifications to remind you of updates you might have missed."
+                descriptionClassName="max-w-[344px]"
+            >
+                <div className="col-span-2">
+                    <RadioGroup
+                        value={value}
+                        className="justify-center space-x-4 space-y-4"
+                    >
+                        <div className="flex w-full flex-col divide-slate-300 md:w-[500px]">
+                            <Radio
+                                name="reminders"
+                                label="Do not notify me"
+                                id="do_not_notify_reminders"
+                                className="mb-5 pl-2 text-sm font-medium dark:text-gray-300 text-gray-900"
+                                // className="pl-2 text-sm font-medium text-gray-900"
+                            />
+                            <Radio
+                                name="reminders"
+                                label="Do not notify me"
+                                id="do_not_notify_reminders"
+                                className="mb-5 pl-2 text-sm font-medium dark:text-gray-300 text-gray-900"
+                                // className="pl-2 text-sm font-medium text-gray-900"
+                            />
+                            <Radio
+                                name="reminders"
+                                label="Do not notify me"
+                                id="do_not_notify_reminders"
+                                className="mb-5 pl-2 text-sm font-medium dark:text-gray-300 text-gray-900"
+                                // className="pl-2 text-sm font-medium text-gray-900"
+                            />
+                        </div>
+                    </RadioGroup>
+                </div>
+            </HorizontalFormBlockWrapper>
+            <HorizontalFormBlockWrapper
+                title="More activity about you"
+                description="These are notifications for posts on your profile, likes and other reactions to your posts, and more."
+                descriptionClassName="max-w-[344px]"
+                className="border-0 pb-0"
+            >
+                <div className="col-span-2">
+                    <RadioGroup
+                        value={value}
+                        className="justify-center space-x-4 space-y-4"
+                    >
+                        <div className="flex w-full flex-col divide-slate-300 md:w-[500px]">
+                            <Radio
+                                name="reminders"
+                                label="Do not notify me"
+                                id="do_not_notify_reminders"
+                                className="mb-5 pl-2 text-sm font-medium dark:text-gray-300 text-gray-900"
+                                // className="pl-2 text-sm font-medium text-gray-900"
+                            />
+                            <Radio
+                                name="reminders"
+                                label="Do not notify me"
+                                id="do_not_notify_reminders"
+                                className="mb-5 pl-2 text-sm font-medium dark:text-gray-300 text-gray-900"
+                                // className="pl-2 text-sm font-medium text-gray-900"
+                            />
+                        </div>
+                    </RadioGroup>
+                </div>
+            </HorizontalFormBlockWrapper>
+        </div>
     )
 }
 
-export default AccountPage
+const options = ['None', 'In-app', 'Email']
+
+function ButtonGroup({ onChange }: { onChange: (option: string) => void }) {
+    const [selected, setSelected] = useState<string>()
+    function handleOnClick(option: string) {
+        setSelected(option)
+        onChange && onChange(option)
+    }
+
+    return (
+        <div className="inline-flex gap-1">
+            {options.map((option) => (
+                <Button
+                    key={option}
+                    // variant={selected === option ? 'solid' : 'outline'}
+                    className="rounded-md bg-transparent border border-gray-5000"
+                    pattern="white"
+                    onClick={() => handleOnClick(option)}
+                >
+                    {option}
+                </Button>
+            ))}
+        </div>
+    )
+}

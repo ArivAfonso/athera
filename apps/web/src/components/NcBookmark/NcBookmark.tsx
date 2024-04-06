@@ -1,5 +1,7 @@
 import React, { FC, useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
+import toast from 'react-hot-toast'
+import Alert from '../Alert/Alert'
 
 export interface NcBookmarkProps {
     containerClassName?: string
@@ -53,12 +55,22 @@ const NcBookmark: FC<NcBookmarkProps> = ({
     async function toggleBookmark() {
         const supabase = createClient()
         const { data: session } = await supabase.auth.getSession()
-        const userId = session?.session?.user.id
 
-        if (!userId) return
+        if (!session.session) {
+            toast.custom((t) => (
+                <Alert
+                    message="You need to login to bookmark this post"
+                    type="danger"
+                />
+            ))
+            return
+        }
+
+        const userId = session?.session?.user.id
 
         try {
             if (isBookmarked) {
+                setIsBookmarked(false) // Set isBookmarked to false
                 // If already bookmarked, delete the bookmark from the database
                 const { data, error } = await supabase
                     .from('bookmarks')
@@ -66,8 +78,6 @@ const NcBookmark: FC<NcBookmarkProps> = ({
                     .eq('user', userId)
                     .eq('post', postId)
                 if (!error) {
-                    setIsBookmarked(false) // Set isBookmarked to false
-
                     // Remove the post from the bookmarks in localStorage
                     const bookmarks = JSON.parse(
                         localStorage.getItem('bookmarks') || '[]'
@@ -81,13 +91,12 @@ const NcBookmark: FC<NcBookmarkProps> = ({
                     )
                 }
             } else {
+                setIsBookmarked(true) // Set isBookmarked to true
                 // If not bookmarked, insert a new bookmark into the database
                 const { data, error } = await supabase
                     .from('bookmarks')
                     .insert([{ user: userId, post: postId }])
                 if (!error) {
-                    setIsBookmarked(true) // Set isBookmarked to true
-
                     // Add the post to the bookmarks in localStorage
                     const bookmarks = JSON.parse(
                         localStorage.getItem('bookmarks') || '[]'

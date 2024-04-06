@@ -5,17 +5,20 @@ import twFocusClass from '@/utils/twFocusClass'
 import NcDropDown, { NcDropDownItem } from '@/components/NcDropDown/NcDropDown'
 import ModalReportItem from '@/components/ModalReportItem/ModalReportItem'
 import ModalHideAuthor from './ModalHideAuthor'
+import AuthorType from '@/types/AuthorType'
 
 export interface AccountActionDropdownProps {
     containerClassName?: string
     iconClass?: string
     dropdownPositon?: 'up' | 'down'
+    author: AuthorType
 }
 
 const AccountActionDropdown: FC<AccountActionDropdownProps> = ({
     containerClassName = 'h-8 w-8 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700',
     iconClass = 'h-6 w-6',
     dropdownPositon = 'down',
+    author,
 }) => {
     let actions: NcDropDownItem[] = [
         {
@@ -110,6 +113,7 @@ const AccountActionDropdown: FC<AccountActionDropdownProps> = ({
             />
             <ModalHideAuthor
                 show={showModalHideAuthor}
+                author={author}
                 onCloseModalHideAuthor={onCloseModalHideAuthor}
             />
         </div>

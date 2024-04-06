@@ -9,7 +9,33 @@ import { createClient } from '@/utils/supabase/client'
 
 async function DeletePost(id: string) {
     const supabase = createClient()
+    const { data: session } = await supabase.auth.getSession()
+
+    if (!session.session) {
+        return
+    }
     const { error } = await supabase.from('posts').delete().eq('id', id)
+
+    //Delete from supabse storage
+
+    const { data: list } = await supabase.storage
+        .from('images')
+        .list(`${session.session.user.id}/${id}`)
+
+    const filesToRemove = list?.map(
+        (x) => `${session.session.user.id}/${id}/${x.name}`
+    )
+
+    //@ts-ignore
+    if (filesToRemove.length > 0) {
+        const { error } = await supabase.storage
+            .from('images')
+            .remove(filesToRemove ?? [])
+
+        const { data, error: StorageError } = await supabase.storage
+            .from('posts')
+            .remove([`${session.session.user.id}/${id}`])
+    }
     if (error) {
         // Handle the error.
         return

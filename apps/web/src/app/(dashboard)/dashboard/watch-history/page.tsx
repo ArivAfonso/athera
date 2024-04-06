@@ -5,15 +5,19 @@ import PostsSection from '@/components/PostsSection/PostsSection'
 import PostType from '@/types/PostType'
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 import React, { Suspense } from 'react'
 
-const DashboardLikedPosts = async () => {
-    console.log('hi')
+const DashboardWatchHistory = async () => {
     const supabase = createClient(cookies())
     const { data: session } = await supabase.auth.getSession()
 
+    if (!session.session) {
+        redirect('/login')
+    }
+
     const { data, error } = await supabase
-        .from('likes')
+        .from('watch_history')
         .select(
             `
             posts (
@@ -24,9 +28,9 @@ const DashboardLikedPosts = async () => {
                 description,
                 image,
                 author (
-                    name,
                     id,
                     verified,
+                    name,
                     username,
                     avatar
                 ),
@@ -42,34 +46,41 @@ const DashboardLikedPosts = async () => {
             )
             `
         )
-        .eq('liker', session?.session?.user.id)
+        .eq('user_id', session?.session?.user.id)
 
+    console.log(error)
     const myPosts = (data as unknown as { posts: PostType }[]).map(
         (item) => item.posts
     )
 
     return (
-        <div className={`nc-PageCategory`}>
-            <div className="container max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32 space-y-10 sm:space-y-12">
-                {/* HEADING */}
-                <h2 className="text-2xl sm:text-3xl font-semibold">
-                    Liked Posts
-                </h2>
-                <div>
-                    {/* LOOP ITEMS */}
-                    {myPosts[0] ? (
-                        <PostsSection posts={myPosts} rows={3} />
-                    ) : (
-                        <Empty
-                            mainText="No Posts Found"
-                            subText="You haven't liked any posts yet."
-                            className="text-center p-4"
-                        />
-                    )}
+        <>
+            <title>My Bookmarks - Athera</title>
+            <div className={`nc-PageCategory`}>
+                <div className="container max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32 space-y-10 sm:space-y-12">
+                    {/* HEADING */}
+                    <h2 className="text-2xl sm:text-3xl font-semibold">
+                        Bookmarks
+                    </h2>
+                    <div>
+                        {/* LOOP ITEMS */}
+                        {data ? (
+                            <PostsSection
+                                posts={myPosts}
+                                rows={3}
+                                watchOption={true}
+                            />
+                        ) : (
+                            <Empty
+                                mainText="No Posts Found"
+                                subText="You have not bookmarked any posts yet."
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 
-export default DashboardLikedPosts
+export default DashboardWatchHistory

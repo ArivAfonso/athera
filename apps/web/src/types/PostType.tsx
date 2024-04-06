@@ -1,4 +1,5 @@
 export default interface PostType {
+    scheduled_at: string
     id: string
     title: string
     image: string
@@ -23,17 +24,16 @@ export default interface PostType {
             color: string
         }
     }[]
-    likeCount:
-        | {
-              count: number
-          }[]
+    likeCount: {
+        count: number
+    }[]
 
-    commentCount:
-        | {
-              count: number
-          }[]
+    commentCount: {
+        count: number
+    }[]
     isLiked: boolean
     isBookmarked: boolean
+    license: string | null
     bookmarkCount: {
         count: number
     }[]

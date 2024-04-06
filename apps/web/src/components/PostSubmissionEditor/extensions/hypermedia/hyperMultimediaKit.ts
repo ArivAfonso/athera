@@ -22,6 +22,7 @@ export interface HyperMultimediaKitOptions {
         | true
         | false
     Twitter: Partial<TwitterOptions> | true | false
+    Github: Partial<TwitterOptions> | true | false
 }
 
 type MediaExtension =

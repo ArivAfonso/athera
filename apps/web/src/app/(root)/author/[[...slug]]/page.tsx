@@ -22,6 +22,7 @@ import Empty from '@/components/Empty'
 import NcImage from '@/components/NcImage/NcImage'
 import Loading from './loading'
 import FollowModal from './FollowModal'
+import PostsSection from '@/components/PostsSection/PostsSection'
 
 async function getData(context: { params: { slug: any } }) {
     const supabase = createClient()
@@ -120,11 +121,11 @@ const PageAuthor = (context: any) => {
                 <Loading />
             ) : (
                 <>
-                    <div className={`nc-PageAuthor `}>
+                    <div className={`nc-PageAuthor`}>
                         {/* HEADER */}
                         <div className="w-full">
                             {data.background && (
-                                <div className="relative w-full h-40 md:h-60 2xl:h-72">
+                                <div className="relative w-full pt-16 h-40 md:h-60 2xl:h-72">
                                     <NcImage
                                         alt=""
                                         containerClassName="absolute inset-0"
@@ -140,7 +141,7 @@ const PageAuthor = (context: any) => {
                                     />
                                 </div>
                             )}
-                            <div className="container -mt-4">
+                            <div className="container mt-10 lg:mt-16">
                                 <div className="relative bg-white dark:bg-neutral-900 p-5 lg:p-8 rounded-3xl md:rounded-[40px] shadow-xl flex flex-col md:flex-row">
                                     <div className="w-32 lg:w-40 flex-shrink-0 mt-12 sm:mt-0">
                                         <div className="relative flex-shrink-0 inline-flex items-center justify-center overflow-hidden text-neutral-100 uppercase font-semibold rounded-full w-20 h-20 text-xl lg:text-2xl lg:w-36 lg:h-36 ring-4 ring-white dark:ring-0 shadow-2xl z-0">
@@ -266,7 +267,10 @@ const PageAuthor = (context: any) => {
                                             />
                                         </div>
 
-                                        <AccountActionDropdown containerClassName="h-10 w-10 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700" />
+                                        <AccountActionDropdown
+                                            author={data}
+                                            containerClassName="h-10 w-10 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -284,25 +288,7 @@ const PageAuthor = (context: any) => {
                             <main>
                                 {/* LOOP ITEMS */}
                                 {data.posts ? (
-                                    <div
-                                        className={`gap-6 md:gap-8 mt-8 lg:mt-10 ${(data.posts ? data.posts.length : 0) < 4 ? 'flex justify-center flex-wrap' : 'grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}
-                                    >
-                                        {data.posts.map((post, id) => (
-                                            <div
-                                                key={id}
-                                                className={`${(data.posts ? data.posts.length : 0) < 4 ? 'w-full sm:w-1/2 lg:w-1/3 xl:w-1/4' : ''}`}
-                                            >
-                                                <div className="hidden sm:block">
-                                                    {/* Render Card11 on larger screens */}
-                                                    <Card11 post={post} />
-                                                </div>
-                                                <div className="sm:hidden grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                                    {/* Render Card5 on smaller screens */}
-                                                    <Card6 post={post} />
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                                    <PostsSection posts={data.posts} />
                                 ) : (
                                     <Empty
                                         mainText="No Posts Found"

@@ -34,6 +34,9 @@ import TiptapEditor from '@/components/PostSubmissionEditor/TiptapEditor'
 import toast from 'react-hot-toast'
 import TagsInput from '@/components/PostSubmissionEditor/TagsInput'
 import TitleEditor from '@/components/PostSubmissionEditor/TitleEditor'
+import PostOptionsBtn, {
+    PostOptionsData,
+} from '@/components/PostSubmissionEditor/PostOptionsBtn'
 
 function strWords(str: string) {
     return str.split(/\s+/).length
@@ -60,11 +63,18 @@ const EditDraft = (context: { params: { slug: any } }) => {
     const [selectedImage, setSelectedImage] = useState(null)
     let [title, setTitle] = useState('' as any)
     const [uploading, setUploading] = useState(false)
-    const [bigTag, setBigTag] = useState(false)
     const [imgChanged, setImgChanged] = useState(false)
     const [json, setJson] = useState('' as any)
 
-    const isMobile = window.innerWidth < 700
+    const defaultPostOptionsData = {
+        excerptText: '',
+        isAllowComments: true,
+        license: '--------------',
+        timeSchedulePublication: undefined,
+    }
+    const [postOptionsData, setPostOptionsData] = useState<PostOptionsData>(
+        defaultPostOptionsData
+    )
 
     let [tags, setTags] = useState([''])
     const [progress, setProgress] = useState(0)
@@ -118,39 +128,6 @@ const EditDraft = (context: { params: { slug: any } }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    function handleKeyDown(e: any) {
-        setBigTag(false)
-        setErrorMsg('')
-        // If user did not press enter key, return
-        if (e.key !== 'Enter') return
-        // Get the value of the input
-        e.preventDefault()
-        const value = e.target.value
-        // If the value is empty or longer than 20 characters, show an error message and return
-        if (!value.trim()) {
-            // Show error message for empty input
-            console.error('Input is empty')
-            return
-        } else if (value.length > 20) {
-            // Show error message for tag length more than 20 characters
-            setBigTag(true)
-            return
-        }
-        // Check if the tag already exists in the tags array
-        if (tags.includes(value)) {
-            setErrorMsg('Category already added')
-            return
-        }
-        // Add the value to the tags array
-        setTags([...tags, value])
-        // Clear the input
-        e.target.value = ''
-    }
-
-    function removeTag(index: number) {
-        setTags(tags.filter((_, i) => i !== index))
-    }
-
     async function sendDraft(formData: any) {
         setUploading(true)
         setErrorMsg('')
@@ -173,8 +150,8 @@ const EditDraft = (context: { params: { slug: any } }) => {
             },
         ]
 
-        if (formData.draftTitle !== editDraft?.title) {
-            newDraft[0]['title'] = formData.draftTitle
+        if (title !== editDraft?.title) {
+            newDraft[0]['title'] = title
             // // Generate the embedding from text
             // const output = await pipe(
             //     formData.draftTitle + formData.draftExcerpt,
@@ -184,8 +161,8 @@ const EditDraft = (context: { params: { slug: any } }) => {
             //     }
             // )
         }
-        if (formData.draftExcerpt !== editDraft?.description) {
-            newDraft[0]['description'] = formData.draftExcerpt
+        if (postOptionsData.excerptText !== editDraft?.description) {
+            newDraft[0]['description'] = postOptionsData.excerptText
         }
         setProgress(20)
         if (imgChanged) {
@@ -256,56 +233,23 @@ const EditDraft = (context: { params: { slug: any } }) => {
             .from('drafts')
             .update(newDraft[0])
             .eq('id', context.params.slug[0])
+            .select('*')
         console.log(error)
         setProgress(70)
 
-        const tagsArray = await Promise.all(
-            tags
-                .filter((tag) => tag && tag.length > 0)
-                .map(async (tag: string) => {
-                    tag = modifyString(tag)
+        tags = tags.map((tag) => {
+            return modifyString(tag)
+        })
 
-                    const { data: isCategory } = await supabase
-                        .from('categories')
-                        .select('id')
-                        .eq('name', tag)
-
-                    if (isCategory && isCategory.length > 0) {
-                        return {
-                            draft: context.params.slug[0],
-                            category: isCategory[0].id,
-                        }
-                    } else {
-                        // Choose a random element from an array of words
-                        const colors = [
-                            'Red',
-                            'Green',
-                            'Blue',
-                            'Yellow',
-                            'Purple',
-                            'Pink',
-                            'Orange',
-                            'Grey',
-                        ]
-                        const color =
-                            colors[Math.floor(Math.random() * colors.length)]
-                        const { data: newCategory } = await supabase
-                            .from('categories')
-                            .insert({ name: tag, color: color })
-                            .select('*')
-
-                        if (newCategory && newCategory.length > 0) {
-                            return {
-                                draft: context.params.slug[0],
-                                category: newCategory[0].id,
-                            }
-                        } else {
-                            // Handle the case where the category couldn't be created
-                            return null // or any other suitable value
-                        }
-                    }
-                })
-        )
+        const { data: tagsArray } = await supabase.rpc('manage_categories', {
+            categories: tags,
+        })
+        const finalTags = tagsArray.map((tag: any) => {
+            return {
+                post: context.params.slug[0],
+                category: tag.cat_id,
+            }
+        })
         setProgress(90)
 
         if (tagsArray !== editDraft?.draft_categories) {
@@ -315,7 +259,7 @@ const EditDraft = (context: { params: { slug: any } }) => {
                 .eq('draft', editDraft?.id)
             const { data, error } = await supabase
                 .from('draft_categories')
-                .insert(tagsArray)
+                .insert(finalTags)
                 .select('*')
             console.log(error)
         }
@@ -328,11 +272,10 @@ const EditDraft = (context: { params: { slug: any } }) => {
         setErrorMsg('')
         setProgress(10)
 
-        if (!formData.draftTitle) {
-            formData.draftTitle = editDraft?.title
+        if (!title) {
+            title = editDraft?.title
         }
 
-        console.log(formData.draftTitle)
         if (!selectedImage) {
             setUploading(false)
             toast.custom((t) => (
@@ -386,8 +329,9 @@ const EditDraft = (context: { params: { slug: any } }) => {
         // Create a new post in the database
         const { data, error } = await supabase.from('post').insert([
             {
-                title: formData.draftTitle,
-                description: formData.draftExcerpt,
+                title: title,
+                description: postOptionsData.excerptText,
+                license: postOptionsData.license,
                 author: session?.session?.user?.id,
                 json: outputJson,
                 // embedding: embedding,
@@ -450,63 +394,26 @@ const EditDraft = (context: { params: { slug: any } }) => {
 
         setProgress(50)
 
-        const tagsArray: any[] = await Promise.all(
-            tags
-                .filter((tag) => tag && tag.length > 0)
-                .map(async (tag: string) => {
-                    tag = modifyString(tag)
-                    console.log(tag)
+        tags = tags.map((tag) => {
+            return modifyString(tag)
+        })
 
-                    const { data: isCategory } = await supabase
-                        .from('categories')
-                        .select('id')
-                        .eq('name', tag)
-                    console.log(isCategory)
-
-                    if (isCategory && isCategory.length > 0) {
-                        return {
-                            post: postId,
-                            category: isCategory[0].id,
-                        }
-                    } else {
-                        // Choose a random element from an array of words
-                        const colors = [
-                            'Red',
-                            'Green',
-                            'Blue',
-                            'Yellow',
-                            'Purple',
-                            'Pink',
-                            'Orange',
-                            'Grey',
-                        ]
-                        const color =
-                            colors[Math.floor(Math.random() * colors.length)]
-                        const { data: newCategory } = await supabase
-                            .from('categories')
-                            .insert({ name: tag, color: color })
-                            .select('*')
-
-                        if (newCategory && newCategory.length > 0) {
-                            return {
-                                post: postId,
-                                category: newCategory[0].id,
-                            }
-                        } else {
-                            // Handle the case where the category couldn't be created
-                            setUploading(false)
-                            return null // or any other suitable value
-                        }
-                    }
-                })
-        )
+        const { data: tagsArray } = await supabase.rpc('manage_categories', {
+            categories: tags,
+        })
+        const finalTags = tagsArray.map((tag: any) => {
+            return {
+                post: postId,
+                category: tag.cat_id,
+            }
+        })
 
         setProgress(70)
 
         // Insert the tags into the database
         const { data: tagData, error: tagError } = await supabase
             .from('post_categories')
-            .insert(tagsArray)
+            .insert(finalTags)
             .select('*')
 
         if (tagError) {
@@ -540,6 +447,10 @@ const EditDraft = (context: { params: { slug: any } }) => {
 
     const [isDragging, setIsDragging] = useState(false)
     const [showImg, setShowImg] = useState(null)
+
+    const handleApplyPostOptions = (data: PostOptionsData) => {
+        setPostOptionsData(data)
+    }
 
     const handleDrop = (event: any) => {
         event.preventDefault()
@@ -783,6 +694,10 @@ const EditDraft = (context: { params: { slug: any } }) => {
                                     >
                                         Post Draft
                                     </ButtonPrimary>
+                                    <PostOptionsBtn
+                                        defaultData={postOptionsData}
+                                        onSubmit={handleApplyPostOptions}
+                                    />
                                 </>
                             )}
                         </div>

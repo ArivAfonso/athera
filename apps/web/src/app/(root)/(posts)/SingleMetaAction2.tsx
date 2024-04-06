@@ -5,6 +5,7 @@ import PostActionDropdown from '@/components/PostActionDropdown/PostActionDropdo
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
 import NcBookmark from '@/components/NcBookmark/NcBookmark'
 import SocialsShareDropdown from '@/components/SocialsShareDropdown/SocialsShareDropdown'
+import AuthorType from '@/types/AuthorType'
 
 export interface SingleMetaAction2Props {
     className?: string
@@ -12,6 +13,7 @@ export interface SingleMetaAction2Props {
     id: string
     likes: number
     comments: number
+    author: AuthorType
 }
 
 const SingleMetaAction2: FC<SingleMetaAction2Props> = ({
@@ -19,6 +21,7 @@ const SingleMetaAction2: FC<SingleMetaAction2Props> = ({
     title,
     likes = 0,
     comments = 0,
+    author,
     id,
 }) => {
     //Get the current url
@@ -49,6 +52,7 @@ const SingleMetaAction2: FC<SingleMetaAction2Props> = ({
                     iconClass="h-5 w-5"
                     id={id}
                     title={title}
+                    author={author}
                 />
             </div>
         </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC } from 'react'
+import React, { FC, useEffect, useRef } from 'react'
 import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
 import SingleTitle from './SingleTitle'
 import PostMeta2 from '@/components/PostMeta2/PostMeta2'
@@ -9,6 +9,7 @@ import { Route } from '@/routers/types'
 import CategoryType from '@/types/CategoryType'
 import AuthorType from '@/types/AuthorType'
 import PostCategoryType from '@/types/PostCategoryType'
+import { createClient } from '@/utils/supabase/client'
 
 export interface SingleHeaderProps {
     hiddenDesc?: boolean
@@ -39,9 +40,53 @@ const SingleHeader: FC<SingleHeaderProps> = ({
     id,
     author,
 }) => {
+    const ref = useRef(null)
+
+    const onVisible = async () => {
+        const supabase = createClient()
+        const { data: session } = await supabase.auth.getSession()
+
+        if (!session.session) {
+            return
+        }
+        const { data, error } = await supabase
+            .from('watch_history')
+            .upsert(
+                [
+                    {
+                        post: id,
+                        user_id: session.session.user.id,
+                        created_at: new Date(),
+                    },
+                ],
+                { onConflict: 'post, user_id' }
+            )
+            .select('*')
+
+        console.log(data, error)
+    }
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(async ([entry]) => {
+            if (entry.isIntersecting) {
+                await onVisible()
+            }
+        })
+
+        if (ref.current) {
+            observer.observe(ref.current)
+        }
+
+        return () => {
+            if (ref.current) {
+                observer.unobserve(ref.current)
+            }
+        }
+    }, [])
+
     return (
         <>
-            <div className={`nc-SingleHeader ${className}`}>
+            <div ref={ref} className={`nc-SingleHeader ${className}`}>
                 <div className="space-y-5">
                     <CategoryBadgeList
                         itemClass="!px-3"
@@ -75,6 +120,7 @@ const SingleHeader: FC<SingleHeaderProps> = ({
                             likes={likes}
                             title={title}
                             id={id}
+                            author={author}
                             comments={comments}
                         />
                     </div>

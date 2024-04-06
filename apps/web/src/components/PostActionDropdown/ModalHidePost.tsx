@@ -6,29 +6,42 @@ import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import ButtonThird from '../Button/ButtonThird'
 import PostType from '@/types/PostType'
 import { createClient } from '@/utils/supabase/client'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
+import Alert from '../Alert/Alert'
 
 export interface ModalHidePostProps {
-    post: PostType
+    id: string
     show: boolean
+    title: string
     onCloseModalHidePost: () => void
+    onHidePost: (postId: string) => void
 }
 
 const ModalHidePost: FC<ModalHidePostProps> = ({
-    post,
+    id,
+    title,
     show,
     onCloseModalHidePost,
+    onHidePost,
 }) => {
-    const textareaRef = useRef(null)
-
-    const handleClickSubmitForm = async () => {
+    const hidePost = async (id: string) => {
         const supabase = createClient()
 
         const { data: session } = await supabase.auth.getSession()
-        if (!session.session) return
+        if (!session.session) {
+            toast.custom((t) => (
+                <Alert
+                    message="You need to login to hide a post"
+                    type="danger"
+                />
+            ))
+            return
+        }
 
         const { data, error } = await supabase.from('hidden_posts').insert({
             user_id: session.session.user.id,
-            post_id: post.id,
+            post: id,
         })
 
         if (error) {
@@ -42,9 +55,12 @@ const ModalHidePost: FC<ModalHidePostProps> = ({
 
         localStorage.setItem(
             'hiddenPosts',
-            JSON.stringify([...hiddenPosts, post.id])
+            JSON.stringify([...hiddenPosts, id])
         )
     }
+
+    const { handleSubmit } = useForm()
+    const textareaRef = useRef(null)
 
     useEffect(() => {
         if (show) {
@@ -57,22 +73,24 @@ const ModalHidePost: FC<ModalHidePostProps> = ({
         }
     }, [show])
 
+    const onSubmit = async () => {
+        await hidePost(id)
+        onHidePost(id)
+        onCloseModalHidePost()
+    }
+
     const renderContent = () => {
         return (
-            <form action="#">
+            <form onSubmit={handleSubmit(async (data) => await onSubmit())}>
                 <h3 className="text-lg font-semibold line-clamp-1">
-                    Hide {post.title}
+                    Hide {title}
                 </h3>
                 <span className="text-sm">
                     We will no longer see this post in your feed and search (you
                     can only see this post in the author&apos;s page)
                 </span>
                 <div className="mt-4 space-x-3">
-                    <ButtonPrimary
-                        className="!bg-red-500"
-                        onClick={handleClickSubmitForm}
-                        type="submit"
-                    >
+                    <ButtonPrimary className="!bg-red-500" type="submit">
                         Hide this post
                     </ButtonPrimary>
                     <ButtonThird type="button" onClick={onCloseModalHidePost}>

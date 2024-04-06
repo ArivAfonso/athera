@@ -39,13 +39,6 @@ const SectionSliderPosts: FC<SectionSliderPostsProps> = ({
         case 'card9':
             CardComponent = Card9
             break
-        case 'card11':
-            CardComponent = Card11
-            break
-        // case "card10V2":
-        //   CardComponent = Card10V2;
-        //   break;
-
         default:
             break
     }

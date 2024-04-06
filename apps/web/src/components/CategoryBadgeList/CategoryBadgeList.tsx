@@ -58,3 +58,16 @@ const CategoryBadgeList: FC<CategoryBadgeListProps> = ({
 }
 
 export default CategoryBadgeList
+
+{
+    /* <div
+    className={`nc-CategoryBadgeList ${className}`}
+    data-nc-id="CategoryBadgeList"
+>
+    {loading ? (
+        // Render skeleton if loading is true
+        Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton key={index} width={100} height={30} className={itemClass} />
+        ))
+    ) : ( */
+}

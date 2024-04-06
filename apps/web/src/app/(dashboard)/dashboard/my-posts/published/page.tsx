@@ -11,10 +11,12 @@ import Badge from '@/components/Badge/Badge'
 import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
 import { useRouter } from 'next/navigation'
 import { SquarePenIcon, Trash2Icon } from 'lucide-react'
+import LoadingPublishedPosts from './loading'
 
 const DashboardPosts = () => {
     const [posts, setPosts] = React.useState<PostType[]>([])
     const [myPosts, setMyPosts] = React.useState<PostType[]>([])
+    const [loading, setLoading] = React.useState(true)
     const router = useRouter()
 
     const [showDeleteModal, setShowDeleteModal] = React.useState(false)
@@ -45,14 +47,7 @@ const DashboardPosts = () => {
                 })
                 //@ts-ignore
                 setPosts(data)
-
-                // Then, fetch the drafts
-                const { data: draftData, error: draftError } = await supabase
-                    .from('drafts')
-                    .select(
-                        `id, title, created_at, estimatedReadingTime, edited_at, image, draft_categories(category:categories(id,name,color))`
-                    )
-                    .eq('author', session.session?.user.id)
+                setLoading(false)
             } catch (err) {
                 console.log(err)
             }
@@ -82,6 +77,7 @@ const DashboardPosts = () => {
     return (
         <>
             <title>My Posts</title>
+            {loading && <LoadingPublishedPosts />}
             <div className="max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32">
                 <div className="flex flex-col sm:items-center sm:justify-between sm:flex-row pb-8">
                     <h2 className="text-2xl sm:text-3xl font-semibold">

@@ -133,6 +133,7 @@ const MenuItemImage: FC<MenuItemImageProps> = ({ action, children }) => {
                         {catImages.map((category) => (
                             <Tab
                                 key={category}
+                                type="button"
                                 className={({ selected }) =>
                                     `w-full py-2.5 text-sm leading-5 font-medium rounded-lg focus:outline-none focus:ring-2 ring-offset-2 
                   ring-offset-blue-400 ring-white/60 dark:ring-black/0 ${

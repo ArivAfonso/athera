@@ -92,7 +92,7 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                 setPosts(data)
             }
         }
-    }, 500) // 500ms debounce time
+    }, 200) // 500ms debounce time
 
     return (
         <>

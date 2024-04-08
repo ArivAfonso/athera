@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import HorizontalFormBlockWrapper from './FormWrapper'
 import { RadioGroup, Switch } from '@headlessui/react'
+import MySwitch from '@/components/MySwitch/MySwitch'
 import Radio from '@/components/Radio/Radio'
 import Button from '@/components/Button/Button'
 import Checkbox from '@/components/Checkbox/Checkbox'
@@ -61,7 +62,7 @@ export default function NotificationSettingsView() {
                     {generalOptions.map((opt, index) => (
                         <div
                             key={`generalopt-${index}`}
-                            className="flex items-center justify-between border-b border-muted py-6 last:border-none last:pb-0"
+                            className="flex items-center justify-between border-b border-muted border-gray-300 dark:border-neutral-700 py-6 last:border-none last:pb-0"
                         >
                             <h3 className="text-sm font-medium dark:text-gray-300 text-gray-900">
                                 {opt.title}
@@ -84,7 +85,7 @@ export default function NotificationSettingsView() {
                     {summaryOptions.map((opt, index) => (
                         <div
                             key={`summaryopt-${index}`}
-                            className="flex items-center justify-between border-b border-muted py-6 last:border-none last:pb-0"
+                            className="flex items-center justify-between border-b border-muted border-gray-300 dark:border-neutral-700 py-6 last:border-none last:pb-0"
                         >
                             <h4 className="text-sm font-medium dark:text-gray-300 text-gray-900">
                                 {opt.title}
@@ -103,13 +104,10 @@ export default function NotificationSettingsView() {
                 description="These are notifications for comments on your posts and replies to your comments."
                 descriptionClassName="max-w-[344px]"
             >
-                <div className="col-span-2">
-                    <Switch name="Do not notify me" />
-                    <Switch
-                        name="Mentions only"
-                        className="font-medium text-sm text-gray-900"
-                    />
-                    <Switch name="All comments" />
+                <div className="w-[25%] space-y-2">
+                    <MySwitch label="Do not notify me" size="small" />
+                    <MySwitch label="Mentions only" />
+                    <MySwitch label="All comments" />
                 </div>
             </HorizontalFormBlockWrapper>
             <HorizontalFormBlockWrapper
@@ -226,15 +224,13 @@ function ButtonGroup({ onChange }: { onChange: (option: string) => void }) {
     return (
         <div className="inline-flex gap-1">
             {options.map((option) => (
-                <Button
+                <button
                     key={option}
-                    // variant={selected === option ? 'solid' : 'outline'}
-                    className="rounded-md bg-transparent border border-gray-5000"
-                    pattern="white"
+                    className="rounded-md bg-transparent border border-gray-300 dark:border-neutral-700 py-3 px-4 sm:py-3.5 sm:px-6 hover:bg-neutral-100 hover:dark:bg-neutral-700"
                     onClick={() => handleOnClick(option)}
                 >
                     {option}
-                </Button>
+                </button>
             ))}
         </div>
     )

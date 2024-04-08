@@ -84,9 +84,9 @@ const PageCategory = async (context: any) => {
                             className="object-cover w-full h-full rounded-3xl md:rounded-[40px]"
                             sizes="(max-width: 1280px) 100vw, 1536px"
                         />
-                        <div className="absolute inset-0 bg-black text-white bg-opacity-30 flex flex-col items-center justify-center">
-                            <h2 className="inline-block align-middle text-5xl font-semibold md:text-7xl ">
-                                {catData.name}
+                        <div className="flex items-center bg-black text-white bg-opacity-30 flex-col justify-center">
+                            <h2 className="align-middle flex items-center text-5xl font-semibold md:text-7xl text-center justify-center">
+                                {catData.name.replaceAll('-', ' ')}
                             </h2>
                             <span className="block mt-4 text-neutral-300">
                                 {catData.posts?.length} Articles
@@ -112,27 +112,6 @@ const PageCategory = async (context: any) => {
 
             <div className="container pb-16 lg:pb-28 lg:pt-10 space-y-16 lg:space-y-28">
                 <div>
-                    {/* <div className="flex flex-col sm:justify-between sm:flex-row">
-                        <div className="flex space-x-2.5">
-                            {/* Check if data.otherCategories is defined before passing it 
-                            {data.otherCategories && (
-                                <ModalCategories
-                                    categories={data.otherCategories.slice(
-                                        0,
-                                        30
-                                    )}
-                                />
-                            )}
-                        </div>
-                    </div> */}
-                    {/* {trendingPosts && (
-                        <SectionTrending
-                            heading=""
-                            className="py-16 lg:py-28"
-                            posts={trendingPosts}
-                        />
-                    )} */}
-                    {/* LOOP ITEMS */}
                     <PostsSection posts={catData.posts} />
                 </div>
             </div>

@@ -114,6 +114,29 @@ const EditPost = (context: { params: { slug: any } }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    const [changesMade, setChangesMade] = useState(false)
+
+    window.onbeforeunload = () => {
+        return true
+    }
+
+    useEffect(() => {
+        const warnOnLeave = (e: BeforeUnloadEvent) => {
+            e.preventDefault()
+            e.returnValue = true
+        }
+
+        if (isDirty) {
+            window.addEventListener('beforeunload', warnOnLeave)
+        } else {
+            window.removeEventListener('beforeunload', warnOnLeave)
+        }
+
+        return () => {
+            window.removeEventListener('beforeunload', warnOnLeave)
+        }
+    }, [changesMade])
+
     async function sendPost(formData: any) {
         setUploading(true)
         setErrorMsg('')
@@ -303,7 +326,7 @@ const EditPost = (context: { params: { slug: any } }) => {
     const {
         handleSubmit,
         control,
-        formState: { errors },
+        formState: { errors, isDirty },
     } = useForm() // Initialize the hook
 
     return (
@@ -329,6 +352,7 @@ const EditPost = (context: { params: { slug: any } }) => {
                                     <TitleEditor
                                         onUpdate={(editor) => {
                                             setTitle(editor.getText())
+                                            setChangesMade(true)
                                         }}
                                         defaultTitle={editPost?.title}
                                     />
@@ -450,6 +474,7 @@ const EditPost = (context: { params: { slug: any } }) => {
                                                         editor.getText()
                                                     setText(text)
                                                     setJson(editor.getJSON())
+                                                    setChangesMade(true)
                                                 }}
                                                 defaultContent={editPost?.json}
                                             />
@@ -463,6 +488,7 @@ const EditPost = (context: { params: { slug: any } }) => {
                                                 const text = editor.getText()
                                                 setText(text)
                                                 setJson(editor.getJSON())
+                                                setChangesMade(true)
                                             }}
                                             defaultContent={editPost?.json}
                                         />

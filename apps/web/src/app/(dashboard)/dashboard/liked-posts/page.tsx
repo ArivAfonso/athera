@@ -1,5 +1,3 @@
-import Card11 from '@/components/Card11/Card11'
-import Card6 from '@/components/Card6/Card6'
 import Empty from '@/components/Empty'
 import PostsSection from '@/components/PostsSection/PostsSection'
 import PostType from '@/types/PostType'

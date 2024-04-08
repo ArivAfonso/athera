@@ -131,7 +131,12 @@ function PostsSection({ posts, rows = 4, watchOption = false }: Props) {
                         </div>
                         <div className="sm:hidden grid grid-cols-1 sm:grid-cols-2 gap-6">
                             {/* Render Card5 on smaller screens */}
-                            <Card6 post={post} />
+                            <Card6
+                                onHidePost={handleHidePost}
+                                post={post}
+                                onRemoveWatchlist={handleRemoveWatchlist}
+                                watchOption={watchOption}
+                            />
                         </div>
                     </div>
                 ))}

@@ -25,6 +25,8 @@ import {
     LayoutGridIcon,
     LinkIcon,
     LockIcon,
+    PanelLeftClose,
+    PanelRightClose,
     SearchIcon,
     SettingsIcon,
     UserIcon,
@@ -34,6 +36,7 @@ import {
 import { createClient } from '@/utils/supabase/client'
 import NotifyDropdown from '@/components/Header/NotifyDropdown'
 import { AuthSession } from '@supabase/supabase-js'
+import { usePathname } from 'next/navigation'
 
 interface NavigationItem {
     name: string
@@ -139,9 +142,9 @@ interface Props {
 
 export default function DashboardLayout({ children }: Props) {
     const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [sidebarOpenDesktop, setSidebarOpenDesktop] = useState(true)
     const [session, setSession] = useState<AuthSession>()
-    //   const router = useRouter();
-    //   const currentTab = router.query.tab || "published";
+    const pathname = usePathname()
 
     useEffect(() => {
         async function fetchData() {
@@ -154,10 +157,21 @@ export default function DashboardLayout({ children }: Props) {
     }, [])
 
     const renderItem = (item: NavigationItem) => {
+        let isCurrent = false
+        //Check all the children hrefs
+        if (item.children) {
+            item.children.forEach((child) => {
+                if (pathname === child.href) {
+                    isCurrent = true
+                }
+            })
+        }
+        console.log('--------------------------')
+        console.log('pathname', pathname)
+        console.log('item.href', item.href)
         return (
             <li key={item.name}>
                 <Link
-                    //@ts-ignore
                     href={item.href}
                     className={classNames(
                         'text-neutral-500 dark:text-neutral-300 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-300',
@@ -165,7 +179,10 @@ export default function DashboardLayout({ children }: Props) {
                     )}
                 >
                     <item.icon
-                        className="h-6 w-6 shrink-0"
+                        className={classNames(
+                            'text-neutral-400 group-hover:text-primary-600 dark:group-hover:text-neutral-200',
+                            'h-6 w-6 shrink-0'
+                        )}
                         aria-hidden="true"
                         strokeWidth={1.5}
                     />
@@ -184,10 +201,11 @@ export default function DashboardLayout({ children }: Props) {
                                 <li key={child.name} className="relative">
                                     <div className="absolute w-4 h-4 top-2 -start-[10px] border rounded-lg rounded-t-none rounded-e-none border-e-0 border-t-0 border-neutral-200 dark:border-neutral-600"></div>
                                     <Link
-                                        //@ts-ignore
                                         href={child.href}
                                         className={classNames(
-                                            'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-300',
+                                            isCurrent && pathname === child.href
+                                                ? 'bg-neutral-50 text-neutral-900 dark:bg-neutral-700 dark:text-neutral-200'
+                                                : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-300',
                                             'group flex gap-x-3 rounded-md p-2.5 ps-4 text-sm leading-6 font-medium capitalize'
                                         )}
                                     >
@@ -295,106 +313,142 @@ export default function DashboardLayout({ children }: Props) {
                     </Dialog>
                 </Transition.Root>
 
-                {/* Static sidebar for desktop */}
-                <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-                    {/* Sidebar component, swap this element with another sidebar if you like */}
-                    {renderStaticSidebarForDesktop()}
-                </div>
+                <div className="flex items-center">
+                    <div
+                        className={`transform transition-transform duration-200 ease-in-out ${
+                            sidebarOpenDesktop
+                                ? 'translate-x-0'
+                                : '-translate-x-full'
+                        } hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col`}
+                    >
+                        {/* Sidebar component, swap this element with another sidebar if you like */}
+                        {renderStaticSidebarForDesktop()}
+                    </div>
 
-                <div className="lg:ps-72">
-                    <div className="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8">
-                        <div className="flex h-16 sm:h-20 items-center gap-x-4 border-b border-neutral-200 dark:border-neutral-600 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none bg-white dark:bg-neutral-800">
-                            <button
-                                type="button"
-                                className="-m-2.5 p-2.5 text-neutral-700 lg:hidden"
-                                onClick={() => setSidebarOpen(true)}
-                            >
-                                <span className="sr-only">Open sidebar</span>
-                                <AlignJustifyIcon
-                                    className="h-6 w-6"
-                                    aria-hidden="true"
-                                    strokeWidth={1.5}
-                                />
-                            </button>
-
-                            {/* Separator */}
-                            <div
-                                className="h-6 w-px bg-neutral-200 lg:hidden"
-                                aria-hidden="true"
-                            />
-
-                            <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-                                <form
-                                    className="relative flex flex-1"
-                                    action="#"
-                                    onSubmit={(e) => {
-                                        e.preventDefault()
-                                        const search =
-                                            e.currentTarget.search.value
-                                        // router.push(`/search/posts/${search}`);
-                                    }}
+                    <div
+                        className={`flex-grow ${sidebarOpenDesktop ? 'lg:ps-72' : 'lg:ps-0'}`}
+                    >
+                        <div className="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8">
+                            <div className="flex h-16 sm:h-20 items-center gap-x-4 border-b border-neutral-200 dark:border-neutral-600 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none bg-white dark:bg-neutral-800">
+                                <button
+                                    type="button"
+                                    className="-m-2.5 p-2.5 text-neutral-700 lg:hidden"
+                                    onClick={() => setSidebarOpen(true)}
                                 >
-                                    <label
-                                        htmlFor="search-field"
-                                        className="sr-only"
-                                    >
-                                        Search
-                                    </label>
-                                    <SearchIcon
-                                        className="pointer-events-none absolute inset-y-0 start-0 h-full w-5 text-neutral-400"
+                                    <span className="sr-only">
+                                        Open sidebar
+                                    </span>
+                                    <AlignJustifyIcon
+                                        className="h-6 w-6"
                                         aria-hidden="true"
                                         strokeWidth={1.5}
                                     />
-                                    <input
-                                        id="search-field"
-                                        className="block h-full w-full border-0 py-0 ps-8 pe-0 text-neutral-900 placeholder:text-neutral-400 focus:ring-0 sm:text-sm bg-transparent dark:text-white"
-                                        placeholder="Search..."
-                                        type="search"
-                                        name="search"
-                                    />
-                                </form>
-                                <div className="flex items-center gap-x-4 lg:gap-x-6">
-                                    {/* Separator */}
-                                    <div
-                                        className="hidden lg:block lg:h-6 lg:w-px lg:bg-neutral-200 dark:bg-neutral-500"
-                                        aria-hidden="true"
-                                    />
+                                </button>
 
-                                    {/* Profile dropdown */}
-                                    <div className="flex-1 flex items-center justify-end ">
-                                        <CreateBtn />
-                                        <SwitchDarkMode />
-                                        <NotifyDropdown className="hidden md:block" />
-                                        {session && (
-                                            <AvatarDropdown
-                                                avatar_url={
-                                                    session.user.user_metadata
-                                                        .avatar_url
-                                                }
-                                                name={
-                                                    session.user.user_metadata
-                                                        .name
-                                                }
-                                                email={
-                                                    session.user.email
-                                                        ? session.user.email
-                                                        : ''
-                                                }
-                                                id={session.user.id}
-                                            />
-                                        )}
+                                {sidebarOpenDesktop ? (
+                                    <button
+                                        className={`self-center text-2xl md:text-3xl w-12 h-12 rounded-full text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none flex items-center justify-center`}
+                                        onClick={() =>
+                                            setSidebarOpenDesktop(
+                                                !sidebarOpenDesktop
+                                            )
+                                        }
+                                    >
+                                        <PanelLeftClose strokeWidth={1.5} />
+                                    </button>
+                                ) : (
+                                    <button
+                                        className={`self-center text-2xl md:text-3xl w-12 h-12 rounded-full text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none flex items-center justify-center`}
+                                        onClick={() =>
+                                            setSidebarOpenDesktop(
+                                                !sidebarOpenDesktop
+                                            )
+                                        }
+                                    >
+                                        <PanelRightClose strokeWidth={1.5} />
+                                    </button>
+                                )}
+
+                                {/* Separator */}
+                                <div
+                                    className="h-6 w-px bg-neutral-200 lg:hidden"
+                                    aria-hidden="true"
+                                />
+
+                                <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+                                    <form
+                                        className="relative flex flex-1"
+                                        action="#"
+                                        onSubmit={(e) => {
+                                            e.preventDefault()
+                                            const search =
+                                                e.currentTarget.search.value
+                                            // router.push(`/search/posts/${search}`);
+                                        }}
+                                    >
+                                        <label
+                                            htmlFor="search-field"
+                                            className="sr-only"
+                                        >
+                                            Search
+                                        </label>
+                                        <SearchIcon
+                                            className="pointer-events-none absolute inset-y-0 start-0 h-full w-5 text-neutral-400"
+                                            aria-hidden="true"
+                                            strokeWidth={1.5}
+                                        />
+                                        <input
+                                            id="search-field"
+                                            className="block h-full w-full border-0 py-0 ps-8 pe-0 text-neutral-900 placeholder:text-neutral-400 focus:ring-0 sm:text-sm bg-transparent dark:text-white"
+                                            placeholder="Search..."
+                                            type="search"
+                                            name="search"
+                                        />
+                                    </form>
+                                    <div className="flex items-center gap-x-4 lg:gap-x-6">
+                                        {/* Separator */}
+                                        <div
+                                            className="hidden lg:block lg:h-6 lg:w-px lg:bg-neutral-200 dark:bg-neutral-500"
+                                            aria-hidden="true"
+                                        />
+
+                                        {/* Profile dropdown */}
+                                        <div className="flex-1 flex items-center justify-end ">
+                                            <CreateBtn />
+                                            <SwitchDarkMode />
+                                            <NotifyDropdown className="hidden md:block" />
+                                            {session && (
+                                                <AvatarDropdown
+                                                    avatar_url={
+                                                        session.user
+                                                            .user_metadata
+                                                            .avatar_url
+                                                    }
+                                                    name={
+                                                        session.user
+                                                            .user_metadata.name
+                                                    }
+                                                    email={
+                                                        session.user.email
+                                                            ? session.user.email
+                                                            : ''
+                                                    }
+                                                    id={session.user.id}
+                                                />
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <main className="pb-10">
-                        <div className="mx-auto max-w-7xl px-3">
-                            {/* Replace with your content */}
-                            {children}
-                        </div>
-                    </main>
+                        <main className="pb-10">
+                            <div className="mx-auto max-w-7xl px-3">
+                                {/* Replace with your content */}
+                                {children}
+                            </div>
+                        </main>
+                    </div>
                 </div>
             </div>
         </>

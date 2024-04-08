@@ -18,7 +18,7 @@ export default function HorizontalFormBlockWrapper({
     return (
         <div
             className={cn(
-                'border-b border-dashed border-muted py-10 @5xl:grid @5xl:grid-cols-6',
+                'border-b border-dashed border-muted border-gray-300 dark:border-neutral-700 py-10 @5xl:grid @5xl:grid-cols-6',
                 className
             )}
         >

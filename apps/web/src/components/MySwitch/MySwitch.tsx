@@ -15,7 +15,7 @@ export interface MySwitchProps {
 const MySwitch: FC<MySwitchProps> = ({
     enabled = false,
     label = 'Put on sale',
-    desc = 'You’ll receive bids on this item',
+    desc = '',
     className = '',
     onChange,
     size = 'medium',

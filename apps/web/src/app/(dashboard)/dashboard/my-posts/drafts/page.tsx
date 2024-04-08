@@ -161,7 +161,9 @@ const DashboardDrafts = () => {
                                                                         />
                                                                     </>
                                                                 ) : (
-                                                                    <PlaceIcon />
+                                                                    <div className="text-gray-500">
+                                                                        <PlaceIcon fill="#6b7280" />
+                                                                    </div>
                                                                 )}
                                                             </div>
                                                             <div className="ms-4">

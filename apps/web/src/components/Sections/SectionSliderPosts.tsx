@@ -1,6 +1,6 @@
 'use client'
 
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import Heading from '@/components/Heading/Heading'
 import Card9 from '@/components/Card9/Card9'
 // import Card10 from "@/components/Card10/Card10";
@@ -29,6 +29,8 @@ const SectionSliderPosts: FC<SectionSliderPostsProps> = ({
 }) => {
     let CardComponent = Card9
 
+    const [myPosts, setPosts] = useState<PostType[]>([])
+
     switch (postCardName) {
         // case 'card4':
         //     CardComponent = Card4
@@ -43,6 +45,13 @@ const SectionSliderPosts: FC<SectionSliderPostsProps> = ({
             break
     }
 
+    const handleHidePost = (id: string) => {
+        //Filter out the post with the id
+        const filteredPosts = posts.filter((post) => post.id !== id)
+        //Set the new posts
+        setPosts(filteredPosts)
+    }
+
     return (
         <div className={`nc-SectionSliderPosts ${className}`}>
             <Heading desc={subHeading} isCenter>
@@ -50,9 +59,9 @@ const SectionSliderPosts: FC<SectionSliderPostsProps> = ({
             </Heading>
 
             <MySlider
-                data={posts}
+                data={myPosts}
                 renderItem={(item, indx) => (
-                    <CardComponent key={indx} post={item} />
+                    <Card9 key={indx} post={item} onHidePost={handleHidePost} />
                 )}
                 itemPerRow={perView}
             />

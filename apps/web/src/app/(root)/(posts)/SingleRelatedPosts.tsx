@@ -67,6 +67,34 @@ const SingleRelatedPosts: FC<SingleRelatedPostsProps> = ({ id, authorId }) => {
     const [authorPosts, setAuthorPosts] = useState<PostType[]>([])
     const [relatedPosts, setRelatedPosts] = useState<PostType[]>([])
 
+    const handleHideRelatedPost = async (postId: string) => {
+        //Update localStorage
+        const hiddenPostsItem = localStorage.getItem('hiddenPosts')
+        const hiddenPosts = hiddenPostsItem ? JSON.parse(hiddenPostsItem) : []
+
+        localStorage.setItem(
+            'hiddenPosts',
+            JSON.stringify([...hiddenPosts, postId])
+        )
+
+        //Remove the post from the UI
+        setRelatedPosts(relatedPosts?.filter((post) => post.id !== postId))
+    }
+
+    const handleHideAuthorPost = async (postId: string) => {
+        //Update localStorage
+        const hiddenPostsItem = localStorage.getItem('hiddenPosts')
+        const hiddenPosts = hiddenPostsItem ? JSON.parse(hiddenPostsItem) : []
+
+        localStorage.setItem(
+            'hiddenPosts',
+            JSON.stringify([...hiddenPosts, postId])
+        )
+
+        //Remove the post from the UI
+        setAuthorPosts(authorPosts?.filter((post) => post.id !== postId))
+    }
+
     useEffect(() => {
         const getData = async () => {
             const data = await getAuthorPosts(authorId)
@@ -104,7 +132,11 @@ const SingleRelatedPosts: FC<SingleRelatedPostsProps> = ({ id, authorId }) => {
                         <MySlider
                             data={authorPosts}
                             renderItem={(item, indx) => (
-                                <Card9 key={indx} post={item} />
+                                <Card9
+                                    key={indx}
+                                    post={item}
+                                    onHidePost={handleHideRelatedPost}
+                                />
                             )}
                             itemPerRow={4}
                         />
@@ -123,7 +155,11 @@ const SingleRelatedPosts: FC<SingleRelatedPostsProps> = ({ id, authorId }) => {
                         <MySlider
                             data={authorPosts}
                             renderItem={(item, indx) => (
-                                <Card9 key={indx} post={item} />
+                                <Card9
+                                    key={indx}
+                                    post={item}
+                                    onHidePost={handleHideAuthorPost}
+                                />
                             )}
                             itemPerRow={4}
                         />

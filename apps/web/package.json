@@ -60,7 +60,7 @@
         "next": "^14.0.4",
         "next-intl": "^3.10.0",
         "nextjs-toploader": "^1.6.4",
-        "npm": "^10.2.5",
+        "npm": "^10.5.1",
         "plausible-tracker": "^0.3.8",
         "postcss": "^8.4.21",
         "react": "18.2.0",
@@ -92,6 +92,6 @@
         "@types/react-modal": "^3.16.0",
         "@types/react-simple-maps": "^3.0.4",
         "prettier": "^3.2.5",
-        "supabase": "^1.142.2"
+        "supabase": "^1.153.4"
     }
 }

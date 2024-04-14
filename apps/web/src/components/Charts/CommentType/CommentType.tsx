@@ -86,7 +86,7 @@ export default function CommentTypes({ className }: { className?: string }) {
                     <ComposedChart
                         layout="vertical"
                         margin={{ top: 20, bottom: -10, left: -2 }}
-                        barTopicGap={50}
+                        barCategoryGap={50}
                         data={data}
                         className="[&_.recharts-tooltip-cursor]:fill-opacity-20 dark:[&_.recharts-tooltip-cursor]:fill-opacity-10 [&_.recharts-cartesian-axis-tick-value]:fill-gray-500  rtl:[&_.recharts-cartesian-axis.yAxis]:-translate-x-12"
                     >
@@ -97,7 +97,7 @@ export default function CommentTypes({ className }: { className?: string }) {
                         />
                         <YAxis
                             dataKey="country"
-                            type="topic"
+                            type="category"
                             axisLine={false}
                             tickLine={false}
                         />

@@ -83,34 +83,17 @@ const MyBubbleMenu: FC<MyBubbleMenuProps> = ({ editor }) => {
             .run()
     }
 
-    const renderItem = (item: TiptapBarItem) => {
-        return (
-            <button
-                className={`px-1.5 ${
-                    item.isActive && item.isActive()
-                        ? ' is-active text-green-500'
-                        : ''
-                }`}
-                onClick={item.action}
-                title={item.title}
-                type="button"
-            >
-                {item.icon}
-            </button>
-        )
-    }
-
     return (
         //   @ts-ignore
         <BubbleMenu
-            className="p-3 dark:bg-neutral-800 bg-neutral-200 dark:text-neutral-200 text-neutral-900 flex justify-center rounded-xl"
+            className="p-3 dark:bg-neutral-900 bg-neutral-100 dark:text-neutral-200 text-neutral-900 flex justify-center rounded-xl shadow-lg"
             editor={editor}
             tippyOptions={{ duration: 100 }}
         >
             {menuItems.map((item, index) => (
                 <Fragment key={item.title}>
                     <button
-                        className={`px-1.5 ${
+                        className={`menu-item ${
                             item.isActive && item.isActive()
                                 ? ' is-active text-green-500'
                                 : ''
@@ -119,7 +102,9 @@ const MyBubbleMenu: FC<MyBubbleMenuProps> = ({ editor }) => {
                         title={item.title}
                         type="button"
                     >
-                        {item.icon}
+                        <div className="text-neutral-600 dark:text-neutral-400">
+                            {item.icon}
+                        </div>
                     </button>
                 </Fragment>
             ))}

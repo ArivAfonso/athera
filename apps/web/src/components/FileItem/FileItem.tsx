@@ -41,7 +41,7 @@ const FileItem = (props: FileItemProps) => {
         if (type === 'application/zip') {
             return (
                 <span className="text-8xl">
-                    <FileArchive size="40" strokeWidth={1.75} />
+                    <FileArchive size="40" strokeWidth={1.5} />
                 </span>
             )
         }
@@ -49,17 +49,19 @@ const FileItem = (props: FileItemProps) => {
         if (type === 'application/pdf') {
             return (
                 <span className="text-8xl">
-                    <FileArchive size="40" strokeWidth={1.75} />
+                    <FileArchive size="40" strokeWidth={1.5} />
                 </span>
             )
         }
 
         return (
             <span className="text-4xl">
-                <File size="40" strokeWidth={1.75} />
+                <File size="40" strokeWidth={1.5} />
             </span>
         )
     }
+
+    // ...
 
     return (
         <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg mb-2 justify-between p-4">
@@ -68,8 +70,9 @@ const FileItem = (props: FileItemProps) => {
                     {renderThumbnail()}
                 </div>
                 <div className="min-h-8 flex flex-col justify-center ltr:ml-3 rtl:mr-3">
-                    <h6 className="flex text-center text-lg font-semibold">
-                        {name}
+                    <h6 className="flex text-center text-lg font-semibold text-overflow ellipsis whitespace-nowrap">
+                        {/* Add only the first 16 charcters of the name */}
+                        {name.slice(0, 42)}
                     </h6>
                     <span className="upload-file-size text-sm text-gray-500">
                         {getKB(size)} kb
@@ -79,6 +82,8 @@ const FileItem = (props: FileItemProps) => {
             {children}
         </div>
     )
+
+    // ...
 }
 
 FileItem.displayName = 'UploadFileItem'

@@ -20,12 +20,10 @@ const SectionLargeSlider: FC<SectionLargeSliderProps> = ({
 }) => {
     const [indexActive, setIndexActive] = useState(0)
     const theme = useThemeMode()
-    const [globe, setGlobe] = useState(false)
 
     const World = dynamic(
         () =>
             import('@/animations/Globe').then((m) => {
-                setGlobe(true)
                 return m.World
             }),
         {
@@ -58,7 +56,7 @@ const SectionLargeSlider: FC<SectionLargeSliderProps> = ({
         atmosphereColor: '#93c5fd',
         atmosphereAltitude: 0.1,
         emissive: theme.isDarkMode ? '#062056' : '#ffffff',
-        emissiveIntensity: 0.1,
+        emissiveIntensity: theme.isDarkMode ? 0.1 : 3.0,
         shininess: 1.0,
         polygonColor: theme.isDarkMode ? 'rgba(255,255,255,0.7)' : '#062056',
         ambientLight: '#ffffff',
@@ -445,10 +443,6 @@ const SectionLargeSlider: FC<SectionLargeSliderProps> = ({
             color: colors[Math.floor(Math.random() * (colors.length - 1))],
         },
     ]
-
-    useEffect(() => {
-        console.log(globe)
-    }, [globe])
 
     return (
         <div className="relative">

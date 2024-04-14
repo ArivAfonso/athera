@@ -5,29 +5,40 @@ export async function GET(request: NextRequest) {
     const host = searchParams.get('host')
     let postData: any = []
 
-    for (let i = 1; i < 2; i++) {
+    let hasNextPage = true
+    let endCursor = null
+
+    while (hasNextPage) {
         const query = `
-            query Publication {
-                publication(host: "${host}") {
-                    posts(first: 20) {
-                        edges {
-                            node {
-                                title
-                                brief
+        query Publication {
+            publication(host: "${host}") {
+                posts(first: 20, after: ${endCursor ? `"${endCursor}"` : null}) {
+                    edges {
+                        node {
+                            id
+                            title
+                            subtitle
+                            coverImage {
                                 url
-                                tags{
-                                    name
-                                }
+                            }
+                            content {
+                                html
+                                text
+                            }
+                            url
+                            tags{
+                                name
                             }
                         }
-                        pageInfo {
-                            hasNextPage
-                            endCursor
-                        }
+                    }
+                    pageInfo {
+                        hasNextPage
+                        endCursor
                     }
                 }
             }
-        `
+        }
+    `
 
         const res = await fetch('https://gql.hashnode.com/', {
             method: 'POST',
@@ -37,16 +48,23 @@ export async function GET(request: NextRequest) {
             body: JSON.stringify({ query }),
         })
 
-        console.log(res)
-
         const data = await res.json()
-        console.log(data)
 
-        data.data.publication.posts.edges.forEach((post: any, i: number) => {
-            postData[i] = post.node
+        data.data.publication.posts.edges.forEach((post: any) => {
+            postData.push(post.node)
         })
 
-        if (!data.data.publication.posts.pageInfo.hasNextPage) break
+        hasNextPage = data.data.publication.posts.pageInfo.hasNextPage
+        endCursor = data.data.publication.posts.pageInfo.endCursor
     }
-    return postData
+    return new Response(
+        JSON.stringify({
+            postData,
+        }),
+        {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }
+    )
 }

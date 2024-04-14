@@ -109,7 +109,8 @@ const AccountActionDropdown: FC<AccountActionDropdownProps> = ({
 
             <ModalReportItem
                 show={isReporting}
-                onCloseModalReportItem={closeModalReportPost}
+                id={author.id}
+                onCloseModalReportItem={onCloseModalHideAuthor}
             />
             <ModalHideAuthor
                 show={showModalHideAuthor}

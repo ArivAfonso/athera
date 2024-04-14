@@ -252,7 +252,6 @@ export function WebGLRendererConfig() {
 export function World(props: WorldProps) {
     const { globeConfig } = props
     const scene = new Scene()
-    // scene.fog = new Fog(0xffffff, 400, 2000)
     return (
         <Canvas
             scene={scene}

@@ -29,15 +29,9 @@ const SectionSliderPosts: FC<SectionSliderPostsProps> = ({
 }) => {
     let CardComponent = Card9
 
-    const [myPosts, setPosts] = useState<PostType[]>([])
+    const [myPosts, setPosts] = useState<PostType[]>(posts)
 
     switch (postCardName) {
-        // case 'card4':
-        //     CardComponent = Card4
-        //     break
-        // case "card7":
-        //   CardComponent = Card7;
-        //   break;
         case 'card9':
             CardComponent = Card9
             break

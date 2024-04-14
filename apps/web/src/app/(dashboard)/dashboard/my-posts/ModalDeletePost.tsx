@@ -1,52 +1,19 @@
 'use client'
 
-import React, { FC, useEffect, useRef } from 'react'
+import React, { FC, useEffect, useRef, useState } from 'react'
 import NcModal from '@/components/NcModal/NcModal'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import ButtonThird from '@/components/Button/ButtonThird'
 import { useForm } from 'react-hook-form'
 import { createClient } from '@/utils/supabase/client'
-
-async function DeletePost(id: string) {
-    const supabase = createClient()
-    const { data: session } = await supabase.auth.getSession()
-
-    if (!session.session) {
-        return
-    }
-    const { error } = await supabase.from('posts').delete().eq('id', id)
-
-    //Delete from supabse storage
-
-    const { data: list } = await supabase.storage
-        .from('images')
-        .list(`${session.session.user.id}/${id}`)
-
-    const filesToRemove = list?.map(
-        (x) => `${session.session.user.id}/${id}/${x.name}`
-    )
-
-    //@ts-ignore
-    if (filesToRemove.length > 0) {
-        const { error } = await supabase.storage
-            .from('images')
-            .remove(filesToRemove ?? [])
-
-        const { data, error: StorageError } = await supabase.storage
-            .from('posts')
-            .remove([`${session.session.user.id}/${id}`])
-    }
-    if (error) {
-        // Handle the error.
-        return
-    }
-}
+import DraftType from '@/types/DraftType'
 
 export interface ModalDeletePostProps {
     show: boolean
     id: string
     onCloseModalDeletePost: () => void
     onDeletePost: (postId: string) => void // Add this prop
+    type?: 'post' | 'draft'
 }
 
 const ModalDeletePost: FC<ModalDeletePostProps> = ({
@@ -54,9 +21,90 @@ const ModalDeletePost: FC<ModalDeletePostProps> = ({
     id,
     onCloseModalDeletePost,
     onDeletePost, // Add this prop
+    type = 'post',
 }) => {
     const { handleSubmit } = useForm()
     const textareaRef = useRef(null)
+    const [loading, setLoading] = useState(false)
+
+    async function DeletePost(id: string) {
+        setLoading(true)
+        const supabase = createClient()
+        const { data: session } = await supabase.auth.getSession()
+
+        if (!session.session) {
+            return
+        }
+        if (type === 'post') {
+            const { error } = await supabase.from('posts').delete().eq('id', id)
+
+            //Delete from supabase storage
+
+            const { data: list } = await supabase.storage
+                .from('images')
+                .list(`${session.session.user.id}/${id}`)
+
+            const filesToRemove = list?.map(
+                (x) => `${session.session.user.id}/${id}/${x.name}`
+            )
+
+            if (filesToRemove && filesToRemove.length > 0) {
+                await supabase.storage
+                    .from('images')
+                    .remove(filesToRemove ?? [])
+
+                await supabase.storage
+                    .from('posts')
+                    .remove([`${session.session.user.id}/${id}`])
+            }
+            setLoading(false)
+            if (error) {
+                // Handle the error.
+                setLoading(false)
+                return
+            }
+        } else if (type === 'draft') {
+            const { data, error: draftError } = await supabase
+                .from('drafts')
+                .select(`image`)
+                .eq('author', session.session?.user.id)
+
+            const { error } = await supabase
+                .from('drafts')
+                .delete()
+                .eq('id', id)
+
+            const draftData: DraftType | null = data as unknown as DraftType
+
+            //Delete from supabase storage
+
+            if (draftData.image) {
+                const { data: list } = await supabase.storage
+                    .from('images')
+                    .list(`${session.session.user.id}/drafts/${id}`)
+
+                const filesToRemove = list?.map(
+                    (x) => `${session.session.user.id}/drafts/${id}/${x.name}`
+                )
+
+                if (filesToRemove && filesToRemove.length > 0) {
+                    await supabase.storage
+                        .from('images')
+                        .remove(filesToRemove ?? [])
+
+                    await supabase.storage
+                        .from('drafts')
+                        .remove([`${session.session.user.id}/drafts/${id}`])
+                }
+            }
+            setLoading(false)
+            if (error) {
+                // Handle the error.
+                setLoading(false)
+                return
+            }
+        }
+    }
 
     useEffect(() => {
         if (show) {
@@ -86,12 +134,34 @@ const ModalDeletePost: FC<ModalDeletePostProps> = ({
                     this action.
                 </span>
                 <div className="mt-4 space-x-3">
-                    <ButtonPrimary className="!bg-red-500" type="submit">
-                        Delete
-                    </ButtonPrimary>
-                    <ButtonThird type="button" onClick={onCloseModalDeletePost}>
-                        Cancel
-                    </ButtonThird>
+                    {loading ? (
+                        <>
+                            <ButtonPrimary className="!bg-red-500" loading>
+                                Delete
+                            </ButtonPrimary>
+                            <ButtonThird
+                                disabled
+                                onClick={onCloseModalDeletePost}
+                            >
+                                Cancel
+                            </ButtonThird>
+                        </>
+                    ) : (
+                        <>
+                            <ButtonPrimary
+                                className="!bg-red-500"
+                                type="submit"
+                            >
+                                Delete
+                            </ButtonPrimary>
+                            <ButtonThird
+                                type="button"
+                                onClick={onCloseModalDeletePost}
+                            >
+                                Cancel
+                            </ButtonThird>
+                        </>
+                    )}
                 </div>
             </form>
         )

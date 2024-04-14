@@ -83,7 +83,7 @@ const ModalReportComment: FC<ModalReportCommentprops> = ({
             {
                 reporter: session.session?.user.id,
                 comment: id,
-                problem: data.problemSelected,
+                type: problemSelected,
                 message: data.message,
             },
         ])

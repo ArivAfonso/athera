@@ -8,7 +8,6 @@ import { createClient } from '@/utils/supabase/client'
 import { Controller, useForm } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
 import { useRouter } from 'next/navigation'
-import { pipeline } from '@xenova/transformers'
 import stringToSlug from '@/utils/stringToSlug'
 import { useStore } from '@/stores/editPost'
 import PostType from '@/types/PostType'
@@ -151,7 +150,6 @@ const EditPost = (context: { params: { slug: any } }) => {
             data: { user },
         } = await supabase.auth.getUser()
 
-        const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
         //@ts-ignore
         let newPost: PostType[] = [
             {
@@ -167,14 +165,6 @@ const EditPost = (context: { params: { slug: any } }) => {
 
         if (title !== editPost?.title) {
             newPost[0]['title'] = title
-            // // Generate the embedding from text
-            // const output = await pipe(
-            //     title + formData.postExcerpt,
-            //     {
-            //         pooling: 'mean',
-            //         normalize: true,
-            //     }
-            // )
         }
         if (postOptionsData.excerptText !== editPost?.description) {
             newPost[0]['description'] = postOptionsData.excerptText
@@ -229,27 +219,35 @@ const EditPost = (context: { params: { slug: any } }) => {
         console.log(error)
         setProgress(70)
 
-        tags = tags.map((tag) => {
-            return modifyString(tag)
-        })
+        if (tags.length > 0) {
+            tags = tags.map((tag) => {
+                return modifyString(tag)
+            })
 
-        const { data: tagsArray } = await supabase.rpc('manage_categories', {
-            categories: tags,
-        })
-        const finalTags = tagsArray.map((tag: any) => {
-            return {
-                post: context.params.slug[0],
-                category: tag.cat_id,
+            const { data: tagsArray } = await supabase.rpc(
+                'manage_categories',
+                {
+                    categories: tags,
+                }
+            )
+            const finalTags = tagsArray.map((tag: any) => {
+                return {
+                    post: context.params.slug[0],
+                    category: tag.cat_id,
+                }
+            })
+            setProgress(90)
+
+            if (finalTags !== editPost?.post_categories) {
+                await supabase
+                    .from('post_categories')
+                    .delete()
+                    .eq('post', editPost?.id)
+                await supabase
+                    .from('post_categories')
+                    .insert(finalTags)
+                    .select('*')
             }
-        })
-        setProgress(90)
-
-        if (finalTags !== editPost?.post_categories) {
-            await supabase
-                .from('post_categories')
-                .delete()
-                .eq('post', editPost?.id)
-            await supabase.from('post_categories').insert(finalTags).select('*')
         }
         setProgress(100)
 

@@ -1,50 +1,79 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import HorizontalFormBlockWrapper from './FormWrapper'
 import { RadioGroup, Switch } from '@headlessui/react'
 import MySwitch from '@/components/MySwitch/MySwitch'
 import Radio from '@/components/Radio/Radio'
-import Button from '@/components/Button/Button'
 import Checkbox from '@/components/Checkbox/Checkbox'
-import { Heading3 } from 'lucide-react'
+import { createClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/navigation'
+
+interface NotificationSettings {
+    comments: ('None' | 'In App' | 'Email')[]
+    likes: ('None' | 'In App' | 'Email')[]
+    new_follower: ('None' | 'In App' | 'Email')[]
+    following_post: ('None' | 'In App' | 'Email')[]
+    scheduled_post: ('None' | 'In App' | 'Email')[]
+    likes_milestones: ('None' | 'In App' | 'Email')[]
+    comments_milestones: ('None' | 'In App' | 'Email')[]
+    followers_milestones: ('None' | 'In App' | 'Email')[]
+    published_posts_milestones: ('None' | 'In App' | 'Email')[]
+}
 
 const generalOptions = [
     {
-        title: 'I’m mentioned in a message',
+        title: 'My scheduled post is published',
     },
     {
-        title: 'Someone replies to any message',
+        title: 'Someone comments on my post',
     },
     {
-        title: 'I’m assigned a task',
+        title: 'Someone likes my post',
     },
     {
-        title: 'A task is overdue',
-    },
-    {
-        title: 'A task status is updated',
+        title: 'Someone follows me',
     },
 ]
 
-const summaryOptions = [
-    {
-        title: 'Daily summary',
-    },
-    {
-        title: 'Weekly summary',
-    },
-    {
-        title: 'Monthly summary',
-    },
-    {
-        title: 'Quaterly summary',
-    },
-]
+async function getSettings(): Promise<NotificationSettings> {
+    const supabase = createClient()
+    const { data: session } = await supabase.auth.getSession()
+
+    if (!session.session) {
+        //@ts-ignore
+        return null
+    }
+
+    const { data, error } = await supabase
+        .from('notification_settings')
+        .select('*')
+        .eq('user_id', session.session.user.id)
+        .single()
+
+    return data
+}
 
 export default function NotificationSettingsView() {
-    const [values, setValues] = useState<string[]>([])
-    const [value, setValue] = useState('')
+    const [settings, setSettings] = useState<NotificationSettings>()
+    const router = useRouter()
+
+    function handleSettingChange(setting: string, newValue: string) {
+        console.log(setting, newValue)
+    }
+
+    useEffect(() => {
+        async function fetchSettings() {
+            const settings = await getSettings()
+            if (!settings) {
+                router.push('/login')
+                return
+            }
+            setSettings(settings)
+        }
+
+        fetchSettings()
+    }, [])
 
     return (
         <div className="max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32">
@@ -69,30 +98,7 @@ export default function NotificationSettingsView() {
                             </h3>
                             <ButtonGroup
                                 onChange={(option) =>
-                                    console.log(opt.title, option)
-                                }
-                            />
-                        </div>
-                    ))}
-                </div>
-            </HorizontalFormBlockWrapper>
-            <HorizontalFormBlockWrapper
-                title="Summary notifications"
-                description="Select when you’ll be notified when the following summaries or report are ready."
-                descriptionClassName="max-w-[344px]"
-            >
-                <div className="col-span-2">
-                    {summaryOptions.map((opt, index) => (
-                        <div
-                            key={`summaryopt-${index}`}
-                            className="flex items-center justify-between border-b border-muted border-gray-300 dark:border-neutral-700 py-6 last:border-none last:pb-0"
-                        >
-                            <h4 className="text-sm font-medium dark:text-gray-300 text-gray-900">
-                                {opt.title}
-                            </h4>
-                            <ButtonGroup
-                                onChange={(option) =>
-                                    console.log(opt.title, option)
+                                    handleSettingChange(opt.title, option)
                                 }
                             />
                         </div>
@@ -105,114 +111,44 @@ export default function NotificationSettingsView() {
                 descriptionClassName="max-w-[344px]"
             >
                 <div className="w-[25%] space-y-2">
-                    <MySwitch label="Do not notify me" size="small" />
+                    <MySwitch label="Do not notify me" />
                     <MySwitch label="Mentions only" />
                     <MySwitch label="All comments" />
                 </div>
             </HorizontalFormBlockWrapper>
             <HorizontalFormBlockWrapper
-                title="Notifications from us"
-                description="These are notifications for when someone tags you in a comment, post or story."
+                title="Milestones"
+                description="These are notifications for when you reach a milestone."
                 descriptionClassName="max-w-[344px]"
             >
                 <div className="col-span-2">
                     <Checkbox
                         name="app_notification"
-                        label="News and updates"
+                        label="Likes"
                         className="mb-5"
-                        //   labelClassName="pl-2 text-sm font-medium !text-gray-900"
-                        //   helperClassName="text-gray-500 text-sm mt-3 ms-8"
-                        //   helperText="News about product and feature updates."
                     />
                     <Checkbox
                         name="app_notification"
-                        label="News and updates"
+                        label="Comments"
                         className="mb-5"
-                        //   labelClassName="pl-2 text-sm font-medium !text-gray-900"
-                        //   helperClassName="text-gray-500 text-sm mt-3 ms-8"
-                        //   helperText="News about product and feature updates."
                     />
                     <Checkbox
                         name="app_notification"
-                        label="News and updates"
+                        label="Followers"
                         className="mb-5"
-                        //   labelClassName="pl-2 text-sm font-medium !text-gray-900"
-                        //   helperClassName="text-gray-500 text-sm mt-3 ms-8"
-                        //   helperText="News about product and feature updates."
                     />
-                </div>
-            </HorizontalFormBlockWrapper>
-            <HorizontalFormBlockWrapper
-                title="Reminders"
-                description="These are notifications to remind you of updates you might have missed."
-                descriptionClassName="max-w-[344px]"
-            >
-                <div className="col-span-2">
-                    <RadioGroup
-                        value={value}
-                        className="justify-center space-x-4 space-y-4"
-                    >
-                        <div className="flex w-full flex-col divide-slate-300 md:w-[500px]">
-                            <Radio
-                                name="reminders"
-                                label="Do not notify me"
-                                id="do_not_notify_reminders"
-                                className="mb-5 pl-2 text-sm font-medium dark:text-gray-300 text-gray-900"
-                                // className="pl-2 text-sm font-medium text-gray-900"
-                            />
-                            <Radio
-                                name="reminders"
-                                label="Do not notify me"
-                                id="do_not_notify_reminders"
-                                className="mb-5 pl-2 text-sm font-medium dark:text-gray-300 text-gray-900"
-                                // className="pl-2 text-sm font-medium text-gray-900"
-                            />
-                            <Radio
-                                name="reminders"
-                                label="Do not notify me"
-                                id="do_not_notify_reminders"
-                                className="mb-5 pl-2 text-sm font-medium dark:text-gray-300 text-gray-900"
-                                // className="pl-2 text-sm font-medium text-gray-900"
-                            />
-                        </div>
-                    </RadioGroup>
-                </div>
-            </HorizontalFormBlockWrapper>
-            <HorizontalFormBlockWrapper
-                title="More activity about you"
-                description="These are notifications for posts on your profile, likes and other reactions to your posts, and more."
-                descriptionClassName="max-w-[344px]"
-                className="border-0 pb-0"
-            >
-                <div className="col-span-2">
-                    <RadioGroup
-                        value={value}
-                        className="justify-center space-x-4 space-y-4"
-                    >
-                        <div className="flex w-full flex-col divide-slate-300 md:w-[500px]">
-                            <Radio
-                                name="reminders"
-                                label="Do not notify me"
-                                id="do_not_notify_reminders"
-                                className="mb-5 pl-2 text-sm font-medium dark:text-gray-300 text-gray-900"
-                                // className="pl-2 text-sm font-medium text-gray-900"
-                            />
-                            <Radio
-                                name="reminders"
-                                label="Do not notify me"
-                                id="do_not_notify_reminders"
-                                className="mb-5 pl-2 text-sm font-medium dark:text-gray-300 text-gray-900"
-                                // className="pl-2 text-sm font-medium text-gray-900"
-                            />
-                        </div>
-                    </RadioGroup>
+                    <Checkbox
+                        name="app_notification"
+                        label="Published Posts"
+                        className="mb-5"
+                    />
                 </div>
             </HorizontalFormBlockWrapper>
         </div>
     )
 }
 
-const options = ['None', 'In-app', 'Email']
+const options = ['None', 'In App', 'Email']
 
 function ButtonGroup({ onChange }: { onChange: (option: string) => void }) {
     const [selected, setSelected] = useState<string>()

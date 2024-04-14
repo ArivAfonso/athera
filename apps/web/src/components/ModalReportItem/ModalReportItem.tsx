@@ -8,6 +8,8 @@ import ButtonSecondary from '@/components/Button/ButtonSecondary'
 import { RadioGroup } from '@/app/headlessui'
 import twFocusClass from '@/utils/twFocusClass'
 import ButtonThird from '../Button/ButtonThird'
+import { useForm, Controller } from 'react-hook-form'
+import { createClient } from '@/utils/supabase/client'
 
 export interface ProblemPlan {
     name: string
@@ -17,6 +19,7 @@ export interface ProblemPlan {
 export interface ModalReportItemProps {
     show: boolean
     problemPlans?: ProblemPlan[]
+    id: string
     onCloseModalReportItem: () => void
 }
 
@@ -30,11 +33,36 @@ const problemPlansDemo = [
 const ModalReportItem: FC<ModalReportItemProps> = ({
     problemPlans = problemPlansDemo,
     show,
+    id,
     onCloseModalReportItem,
 }) => {
     const textareaRef = useRef(null)
 
     const [problemSelected, setProblemSelected] = useState(problemPlans[0])
+
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm()
+
+    const [uploadErrors, setUploadError] = useState('')
+
+    const sendReport = async (data: any) => {
+        const supabase = createClient()
+        const { data: session } = await supabase.auth.getSession()
+        const { error } = await supabase.from('reports').insert([
+            {
+                reporter: session.session?.user.id,
+                user: id,
+                type: problemSelected,
+                message: data.message,
+            },
+        ])
+        if (error) {
+            setUploadError(error.message)
+        }
+    }
 
     useEffect(() => {
         if (show) {
@@ -66,89 +94,113 @@ const ModalReportItem: FC<ModalReportItemProps> = ({
 
     const renderContent = () => {
         return (
-            <form action="#">
-                {/* RADIO PROBLEM PLANS */}
-                <RadioGroup
-                    value={problemSelected}
-                    onChange={setProblemSelected}
+            <>
+                <form
+                    action="#"
+                    onSubmit={handleSubmit(
+                        async (data) => await sendReport(data)
+                    )}
                 >
-                    <RadioGroup.Label className="sr-only">
-                        Problem Plans
-                    </RadioGroup.Label>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-                        {problemPlans.map((plan) => (
-                            <RadioGroup.Option
-                                key={plan.name}
-                                value={plan}
-                                className={({ checked }) => {
-                                    return (
-                                        `${
-                                            checked
-                                                ? 'bg-primary-6000 text-white dark:bg-primary-700'
-                                                : 'bg-white border-t border-neutral-50 '
-                                        } relative shadow-lg rounded-lg px-3 py-3 cursor-pointer flex sm:px-5 sm:py-4 focus:outline-none ` +
-                                        twFocusClass(true)
-                                    )
-                                }}
-                            >
-                                {({ checked }) => (
-                                    <div className="flex items-center justify-between w-full">
-                                        <div className="flex items-center">
-                                            <div className="text-sm">
-                                                <RadioGroup.Label
-                                                    as="p"
-                                                    className={`font-medium line-clamp-1 ${
-                                                        checked
-                                                            ? 'text-white'
-                                                            : 'text-neutral-900'
-                                                    }`}
-                                                >
-                                                    {plan.label}
-                                                </RadioGroup.Label>
+                    {/* RADIO PROBLEM PLANS */}
+                    <RadioGroup
+                        value={problemSelected}
+                        onChange={setProblemSelected}
+                    >
+                        <RadioGroup.Label className="sr-only">
+                            Problem Plans
+                        </RadioGroup.Label>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                            {problemPlans.map((plan) => (
+                                <div
+                                    key={plan.name}
+                                    className={`${
+                                        problemSelected === plan
+                                            ? 'bg-primary-6000 text-white dark:bg-primary-700'
+                                            : 'bg-white border-t border-neutral-50'
+                                    } relative shadow-lg rounded-lg px-3 py-3 cursor-pointer flex sm:px-5 sm:py-4 focus:outline-none`}
+                                >
+                                    <label>
+                                        <Controller
+                                            name="problemSelected"
+                                            control={control}
+                                            defaultValue={false} // Set the default value based on your initial state
+                                            render={({ field }) => (
+                                                <input
+                                                    type="radio"
+                                                    {...field}
+                                                    className="hidden"
+                                                    // value={plan}
+                                                />
+                                            )}
+                                        />
+                                        <div className="flex items-center justify-between w-full">
+                                            <div className="flex items-center">
+                                                <div className="text-sm">
+                                                    <p
+                                                        className={`font-medium line-clamp-1 ${
+                                                            problemSelected ===
+                                                            plan
+                                                                ? 'text-white'
+                                                                : 'text-neutral-900'
+                                                        }`}
+                                                    >
+                                                        {plan.label}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
-                                        {checked && (
-                                            <div className="flex-shrink-0 text-white">
-                                                {renderCheckIcon()}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </RadioGroup.Option>
-                        ))}
-                    </div>
-                </RadioGroup>
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                    </RadioGroup>
 
-                {/* TEXAREA MESSAGER */}
-                <div className="mt-4">
-                    <h4 className="text-lg font-semibold text-neutral-700 dark:text-neutral-200">
-                        Message
-                    </h4>
-                    <span className="text-sm text-neutral-6000 dark:text-neutral-400">
-                        Please provide any additional information or context
-                        that will help us understand and handle the situation.
-                    </span>
-                    <Textarea
-                        placeholder="..."
-                        className="mt-3"
-                        ref={textareaRef}
-                        required={true}
-                        rows={4}
-                        id="report-message"
-                    />
-                </div>
-                <div className="mt-4 space-x-3">
-                    <ButtonPrimary
-                        onClick={handleClickSubmitForm}
-                        type="submit"
-                    >
-                        Submit
-                    </ButtonPrimary>
-                    <ButtonThird type="button" onClick={onCloseModalReportItem}>
-                        Cancel
-                    </ButtonThird>
-                </div>
-            </form>
+                    {/* TEXAREA MESSAGER */}
+                    <div className="mt-4">
+                        <h4 className="text-lg font-semibold text-neutral-700 dark:text-neutral-200">
+                            Message
+                        </h4>
+                        <span className="text-sm text-neutral-6000 dark:text-neutral-400">
+                            Please provide any additional information or context
+                            that will help us understand and handle the
+                            situation.
+                        </span>
+                        <Controller
+                            name="message"
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => (
+                                <Textarea
+                                    {...field}
+                                    placeholder="..."
+                                    className="mt-3"
+                                    required={true}
+                                    rows={4}
+                                    id="report-message"
+                                />
+                            )}
+                        />
+                        {errors.message && (
+                            <span className="text-red-600">
+                                Message is required
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="mt-4 space-x-3">
+                        <ButtonPrimary type="submit">Submit</ButtonPrimary>
+                        <ButtonThird
+                            type="button"
+                            onClick={onCloseModalReportItem}
+                        >
+                            Cancel
+                        </ButtonThird>
+                    </div>
+                </form>
+                {uploadErrors && (
+                    <div className="text-red-600">{uploadErrors}</div>
+                )}
+            </>
         )
     }
 

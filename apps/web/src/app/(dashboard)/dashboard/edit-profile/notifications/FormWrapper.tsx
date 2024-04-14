@@ -33,7 +33,7 @@ export default function HorizontalFormBlockWrapper({
                 </h5>
                 <span
                     className={cn(
-                        'mt-1 leading-relaxed text-gray-500',
+                        'mt-1 leading-relaxed text-gray-500 text-sm',
                         descriptionClassName
                     )}
                 >

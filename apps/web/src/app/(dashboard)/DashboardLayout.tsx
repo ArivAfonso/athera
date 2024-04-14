@@ -106,11 +106,6 @@ const navigation: NavigationItem[] = [
                 icon: LockIcon,
             },
             {
-                name: 'notifications',
-                href: '/dashboard/edit-profile/notifications',
-                icon: BellRingIcon,
-            },
-            {
                 name: 'social links',
                 href: '/dashboard/edit-profile/socials',
                 icon: LinkIcon,
@@ -128,9 +123,9 @@ const navigation: NavigationItem[] = [
                 icon: SettingsIcon,
             },
             {
-                name: 'integrations',
-                href: '/dashboard/settings/integrations',
-                icon: LayoutGridIcon,
+                name: 'notifications',
+                href: '/dashboard/edit-profile/notifications',
+                icon: BellRingIcon,
             },
         ],
     },
@@ -166,9 +161,6 @@ export default function DashboardLayout({ children }: Props) {
                 }
             })
         }
-        console.log('--------------------------')
-        console.log('pathname', pathname)
-        console.log('item.href', item.href)
         return (
             <li key={item.name}>
                 <Link

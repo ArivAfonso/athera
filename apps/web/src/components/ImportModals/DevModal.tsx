@@ -177,6 +177,9 @@ const DevModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                     .insert({
                         title: post.title,
                         description: post.description,
+                        author: user,
+                        json: output,
+                        text: text,
                     })
                     .select('id')
 

@@ -250,6 +250,7 @@ const DashboardDrafts = () => {
                 {showDeleteModal && (
                     <ModalDeletePost
                         show={showDeleteModal}
+                        type="draft"
                         id={draftIdToDelete}
                         onCloseModalDeletePost={() => setShowDeleteModal(false)}
                         onDeletePost={handleDeleteDraft} // Pass onDeleteDraft method

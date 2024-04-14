@@ -45,9 +45,7 @@ const accData = [
                     Posts without a cover image or topics will be assigned as
                     drafts.
                 </li>
-                <li>
-                    You can find your Hashnode.to username in your profile URL.
-                </li>
+                <li>You can find your Hashnode.to host in your profile URL.</li>
                 <li>
                     You can import a certain number of posts at once and/or
                     draft them all in the next section
@@ -60,40 +58,20 @@ const accData = [
 interface HashnodePostType {
     id: number
     title: string
-    cover_image: string
+    coverImage: {
+        url: string | null
+    }
     published_at: string
     url: string
+    readTimeInMinutes: number
     slug: string
-    tags: string
-    description: string
+    tags: { name: string }[]
     tag_list: string[]
-    canonical_url: string
-    comments_count: number
-    positive_reactions_count: number
-    public_reactions_count: number
-    page_views_count: number
-    published_timestamp: string
-    body_markdown: string
-    user: {
-        name: string
-        username: string
-        twitter_username: string
-        github_username: string
-        website_url: string
-        profile_image: string
+    subtitle: string
+    content: {
+        html: string
+        text: string
     }
-}
-
-async function getPosts(host: string) {
-    console.log(host)
-
-    const res = await fetch(
-        `${window.location.origin}/api/import/hashnode/posts?host=${host}`
-    )
-
-    console.log(res)
-
-    return await res.json()
 }
 
 function modifyString(str: string) {
@@ -117,15 +95,34 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
     const [posts, setPosts] = useState<HashnodePostType[]>()
     const [progress, setProgress] = useState(0)
     const [total, setTotal] = useState(0)
-    const [username, setUsername] = useState('')
+    const [host, setHost] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const supabase = createClient()
 
     const watchedValues = watch()
 
+    async function getPosts(host: string) {
+        setLoading(true)
+
+        const res = await fetch(
+            `${window.location.origin}/api/import/hashnode/posts?host=${host}`
+        )
+
+        const json = await res.json()
+        console.log(json)
+        setLoading(false)
+
+        return json.postData
+    }
+
     const uploadPosts = async (selectedPosts: HashnodePostType[]) => {
         const { data: session } = await supabase.auth.getSession()
         const user = session?.session?.user.id
+
+        posts?.forEach((post) => {
+            post.tag_list = post.tags.map((tag) => tag.name)
+        })
 
         const tags = Array.from(
             new Set(
@@ -142,50 +139,51 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                 categories: tags,
             }
         )
-        console.log(error)
+
         selectedPosts.forEach(async (post) => {
-            const res = await fetch(`https://dev.to/api/articles/${post.id}`)
-            const article_json = await res.json()
+            let img_blob = null
 
-            const body_html = article_json.body_html
+            if (post.coverImage.url) {
+                const blob = await fetch(post.coverImage.url).then((r) =>
+                    r.blob()
+                )
+                if (blob.size > 10000000) {
+                    post.coverImage.url = null
+                } else {
+                    img_blob = blob
+                }
+            }
 
-            const output = generateJSON(body_html, [
-                StarterKit,
-                Highlight,
-                Underline,
-                Link,
-                Placeholder,
-                TextAlign,
-                Image,
-                Table,
-                TableCell,
-                TableHeader,
-                TableRow,
-            ])
-
-            const text = generateText(output, [
-                Paragraph,
-                StarterKit,
-                Highlight,
-                Underline,
-                Link,
-                Placeholder,
-                TextAlign,
-                Image,
-                Table,
-                TableCell,
-                TableHeader,
-                TableRow,
-            ])
+            const output = generateJSON(
+                // @ts-ignore
+                [post.content.html],
+                [
+                    StarterKit,
+                    Highlight,
+                    Underline,
+                    Link,
+                    Placeholder,
+                    TextAlign,
+                    Image,
+                    Table,
+                    TableCell,
+                    TableHeader,
+                    TableRow,
+                ]
+            )
 
             setProgress((prev) => prev + 0.2)
 
-            if (post.cover_image === null || post.tags === null) {
+            if (
+                post.coverImage.url === null ||
+                post.tags === null ||
+                img_blob === null
+            ) {
                 const { data, error } = await supabase
                     .from('drafts')
                     .insert({
                         title: post.title,
-                        description: post.description,
+                        description: post.subtitle,
                     })
                     .select('id')
 
@@ -212,17 +210,13 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                 setProgress((prev) => prev + 0.2)
 
                 //Upload post.cover_image to storage
-                if (post.cover_image !== null) {
-                    const blob = await fetch(post.cover_image).then((r) =>
-                        r.blob()
-                    )
-
+                if (post.coverImage.url !== null && img_blob !== null) {
                     const { data: imagePath, error: imageErr } =
                         await supabase.storage
                             .from('images')
                             .upload(
                                 `${user}/drafts/${draftId}/main-image`,
-                                blob
+                                img_blob
                             )
 
                     //Update the post
@@ -242,8 +236,8 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                     .from('posts')
                     .insert({
                         title: post.title,
-                        description: post.description,
-                        text: text,
+                        description: post.subtitle,
+                        text: post.content.text,
                         json: output,
                         author: user,
                     })
@@ -268,13 +262,10 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
 
                 setProgress((prev) => prev + 0.2)
 
-                //Upload post.cover_image to storage
-                const blob = await fetch(post.cover_image).then((r) => r.blob())
-
                 const { data: imagePath, error: imageErr } =
                     await supabase.storage
                         .from('images')
-                        .upload(`${user}/${postId}/main-image`, blob)
+                        .upload(`${user}/${postId}/main-image`, img_blob)
 
                 //Update the post
                 await supabase
@@ -313,8 +304,8 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
     }, [show])
 
     const onSubmit = async (data: any) => {
-        setPosts(await getPosts(data.username))
-        setUsername(data.username)
+        setPosts(await getPosts(data.host))
+        setHost(data.host)
         setPart2(true)
     }
     const onPostSubmit = async (data: any) => {
@@ -390,12 +381,12 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                                 async (data) => await onSubmit(data)
                             )}
                         >
-                            <Label>Your Hashnode.to Username</Label>
+                            <Label>Your Hashnode.to Host</Label>
                             <Input
-                                {...register('username')}
+                                {...register('host')}
                                 className="mt-1.5"
                                 maxLength={50}
-                                placeholder="username"
+                                placeholder="host"
                             />
                             <div className="mt-4">
                                 <AccordionInfo
@@ -403,11 +394,22 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                                     data={accData}
                                 />
                             </div>
-                            <div className="mt-4 flex justify-center">
-                                <ButtonPrimary sizeClass="p-3" type="submit">
-                                    Continue
-                                </ButtonPrimary>
-                            </div>
+                            {loading ? (
+                                <div className="mt-4 flex justify-center">
+                                    <ButtonPrimary sizeClass="p-3" loading>
+                                        Continue
+                                    </ButtonPrimary>
+                                </div>
+                            ) : (
+                                <div className="mt-4 flex justify-center">
+                                    <ButtonPrimary
+                                        sizeClass="p-3"
+                                        type="submit"
+                                    >
+                                        Continue
+                                    </ButtonPrimary>
+                                </div>
+                            )}
                         </form>
                     </>
                 )}

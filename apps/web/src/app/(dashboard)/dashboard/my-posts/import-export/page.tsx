@@ -8,6 +8,7 @@ import devImg from '@/images/Dev.png'
 import wordpressImg from '@/images/Wordpress.png'
 import substackImg from '@/images/Substack.png'
 import joomlaImg from '@/images/Joomla.png'
+import bloggerImg from '@/images/Blogger.png'
 import NcImage from '@/components/NcImage/NcImage'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import ButtonSecondary from '@/components/Button/ButtonSecondary'
@@ -16,6 +17,7 @@ import DevModal from '@/components/ImportModals/DevModal'
 import WordPressModal from '@/components/ImportModals/WordPressModal'
 import { Hash } from 'crypto'
 import HashnodeModal from '@/components/ImportModals/HashnodeModal'
+import MediumModal from '@/components/ImportModals/MediumModal'
 
 const plans = [
     {
@@ -43,8 +45,8 @@ const plans = [
         img: hashnodeImg,
     },
     {
-        name: 'Joomla',
-        img: joomlaImg,
+        name: 'Blogger',
+        img: bloggerImg,
     },
 ]
 const PageConnectWallet = ({}) => {
@@ -121,15 +123,6 @@ const PageConnectWallet = ({}) => {
                     </div>
                 </div>
             </div>
-
-            <NcModal
-                renderTrigger={() => null}
-                isOpenProp={showModal == 'Medium' || showModal == 'RSS Feed'}
-                renderContent={renderContent}
-                contentExtraClass="max-w-md"
-                onCloseModal={() => setShowModal('')}
-                modalTitle="Connect Wallet"
-            />
             <DevModal
                 show={showModal == 'Dev.to'}
                 onCloseModal={() => setShowModal('')}
@@ -140,6 +133,10 @@ const PageConnectWallet = ({}) => {
             />
             <HashnodeModal
                 show={showModal == 'Hashnode'}
+                onCloseModal={() => setShowModal('')}
+            />
+            <MediumModal
+                show={showModal == 'Medium'}
                 onCloseModal={() => setShowModal('')}
             />
         </div>

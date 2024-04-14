@@ -145,6 +145,7 @@ const PostActionDropdown: FC<PostActionDropdownProps> = ({
             {renderMenu()}
 
             <ModalReportItem
+                id={id}
                 show={isReporting}
                 onCloseModalReportItem={closeModalReportPost}
             />

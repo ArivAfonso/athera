@@ -26,12 +26,13 @@ const MenuItem: FC<Props> = ({
                     }`}
                     onClick={() => {
                         action
-                        console.log('action')
                     }}
                     type="button"
                     title={title}
                 >
-                    {icon}
+                    <div className="text-neutral-600 dark:text-neutral-400">
+                        {icon}
+                    </div>
                 </button>
             </MenuItemImage>
         )
@@ -44,12 +45,11 @@ const MenuItem: FC<Props> = ({
             }`}
             type="button"
             onClick={() => {
-                console.log('Button clicked')
                 action()
             }}
             title={title}
         >
-            {icon}
+            <div className="text-neutral-600 dark:text-neutral-400">{icon}</div>
         </button>
     )
 }

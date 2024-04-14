@@ -10,7 +10,6 @@ import { createClient } from '@/utils/supabase/client'
 import { Controller, useForm } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
 import { useRouter } from 'next/navigation'
-import { pipeline } from '@xenova/transformers'
 import stringToSlug from '@/utils/stringToSlug'
 import TiptapEditor from '@/components/PostSubmissionEditor/TiptapEditor'
 import toast from 'react-hot-toast'
@@ -107,19 +106,7 @@ const DashboardSubmitPost = () => {
     async function sendPost(formData: any) {
         setUploading(true)
         setErrorMsg('')
-        const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
         setProgress(10)
-
-        if (tags.length == 0) {
-            toast.custom((t) => (
-                <Alert
-                    type="danger"
-                    message="Please add at least one category"
-                />
-            ))
-            setUploading(false)
-            return
-        }
 
         tags.filter((tag) => tag && tag.length > 0).map((tag: string) => {
             if (tag.length == 0 || tag == null || tag.length > 20) {
@@ -135,14 +122,6 @@ const DashboardSubmitPost = () => {
             return
         }
 
-        // Generate the embedding from text
-        const output = await pipe(title + postOptionsData.excerptText, {
-            pooling: 'mean',
-            normalize: true,
-        })
-
-        // Extract the embedding output
-        const embedding = Array.from(output.data)
         setProgress(20)
         try {
             if (selectedImage) {
@@ -179,7 +158,6 @@ const DashboardSubmitPost = () => {
                                 strWords(text) / 200
                             ),
                             scheduled_at: scheduled_at,
-                            embeddings: embedding,
                         },
                     ])
                     .select()
@@ -241,23 +219,26 @@ const DashboardSubmitPost = () => {
                 })
 
                 setProgress(70)
-                const { data: tagsArray, error } = await supabase.rpc(
-                    'manage_categories',
-                    {
-                        categories: tags,
-                    }
-                )
-                const finalTags = tagsArray.map((tag: any) => {
-                    return {
-                        post: postId,
-                        category: tag.cat_id,
-                    }
-                })
 
-                await supabase
-                    .from('post_categories')
-                    .insert(finalTags)
-                    .select('*')
+                if (tags.length > 0) {
+                    const { data: tagsArray, error } = await supabase.rpc(
+                        'manage_categories',
+                        {
+                            categories: tags,
+                        }
+                    )
+                    const finalTags = tagsArray.map((tag: any) => {
+                        return {
+                            post: postId,
+                            category: tag.cat_id,
+                        }
+                    })
+
+                    await supabase
+                        .from('post_categories')
+                        .insert(finalTags)
+                        .select('*')
+                }
 
                 setProgress(90)
 

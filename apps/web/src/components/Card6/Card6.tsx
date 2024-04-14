@@ -186,6 +186,7 @@ const Card6: FC<Card6Props> = ({
                 <ModalReportItem
                     show={isReporting}
                     onCloseModalReportItem={closeModalReportPost}
+                    id={post.id}
                 />
                 <ModalHidePost
                     show={showModalHidePost}

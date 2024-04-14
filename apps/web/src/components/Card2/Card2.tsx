@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import PostBookmark from '@/components/PostBookmark/PostBookmark'
 import SocialsShare from '@/components/SocialsShare/SocialsShare'
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
-import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
+import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
 import Link from 'next/link'
 import Image from 'next/image'
 import PostCardMeta from '../PostCardMeta/PostCardMeta'
@@ -29,10 +29,10 @@ const Card2: FC<Card2Props> = ({
                     src={post.image}
                     alt={post.title}
                 />
-                <CategoryBadgeList
+                <TopicBadgeList
                     className="flex flex-wrap space-x-2 absolute top-3 left-3"
                     itemClass="relative"
-                    categories={post.post_categories}
+                    topics={post.post_topics}
                 />
             </div>
 

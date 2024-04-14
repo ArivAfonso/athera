@@ -16,7 +16,7 @@ import { createClient } from '@/utils/supabase/client'
 import PostType from '@/types/PostType'
 import { debounce } from 'lodash'
 import stringToSlug from '@/utils/stringToSlug'
-import CategoryType from '@/types/CategoryType'
+import TopicType from '@/types/TopicType'
 import AuthorType from '@/types/AuthorType'
 import { Search } from 'lucide-react'
 
@@ -32,7 +32,7 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
     const [open, setOpen] = useState(false)
     const [rawQuery, setRawQuery] = useState('')
     const [posts, setPosts] = useState<PostType[]>([])
-    const [categories, setCategories] = useState<CategoryType[]>([])
+    const [topics, setTopics] = useState<TopicType[]>([])
     const [authors, setAuthors] = useState<AuthorType[]>([])
 
     const router = useRouter()
@@ -64,18 +64,18 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                 setAuthors(data)
             }
         } else if (rawQuery.trim().startsWith('#')) {
-            // Fetch categories
+            // Fetch topics
             const { data } = await supabase
-                .from('categories')
+                .from('topics')
                 .select('name, id')
                 .ilike('name', `${query.slice(1).trim()}%`)
                 .limit(10)
 
             if (rawQuery === '' || query !== latestQuery.current) {
-                setCategories([])
+                setTopics([])
             } else if (data) {
                 //@ts-ignore
-                setCategories(data)
+                setTopics(data)
             }
         } else {
             // Fetch posts
@@ -191,7 +191,7 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                                                 if (newQuery.trim() === '') {
                                                     setPosts([])
                                                     setAuthors([])
-                                                    setCategories([])
+                                                    setTopics([])
                                                 } else if (
                                                     newQuery.trim() !== '?' &&
                                                     newQuery !== null
@@ -220,7 +220,7 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                                         />
                                     </div>
                                     {(posts.length > 0 ||
-                                        categories.length > 0 ||
+                                        topics.length > 0 ||
                                         authors.length > 0) && (
                                         <Combobox.Options
                                             static
@@ -285,18 +285,18 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                                                     </ul>
                                                 </li>
                                             )}
-                                            {categories.length > 0 && (
+                                            {topics.length > 0 && (
                                                 <li>
                                                     <h2 className="text-xs font-semibold dark:text-gray-200 text-gray-900">
-                                                        Categories
+                                                        Topics
                                                     </h2>
                                                     <ul className="-mx-4 mt-2 text-sm dark:text-gray-300 text-gray-700">
-                                                        {categories.map(
-                                                            (category, key) => (
+                                                        {topics.map(
+                                                            (topic, key) => (
                                                                 <Combobox.Option
                                                                     key={key}
                                                                     value={
-                                                                        category
+                                                                        topic
                                                                     }
                                                                     className={({
                                                                         active,
@@ -309,10 +309,10 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                                                                     }
                                                                     onClick={() => {
                                                                         router.push(
-                                                                            `/category/${stringToSlug(
-                                                                                category.name
+                                                                            `/topic/${stringToSlug(
+                                                                                topic.name
                                                                             )}/${
-                                                                                category.id
+                                                                                topic.id
                                                                             }`
                                                                         )
                                                                         setOpen(
@@ -335,7 +335,7 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                                                                             />
                                                                             <span className="ml-3 flex-auto truncate">
                                                                                 {
-                                                                                    category.name
+                                                                                    topic.name
                                                                                 }
                                                                             </span>
                                                                         </>
@@ -433,7 +433,7 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                                     {query !== '' &&
                                         rawQuery !== '?' &&
                                         posts.length === 0 &&
-                                        categories.length === 0 &&
+                                        topics.length === 0 &&
                                         authors.length === 0 && (
                                             <div className="py-14 px-6 text-center text-sm sm:px-14">
                                                 <ExclamationTriangleIcon
@@ -463,10 +463,10 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
                                             #
                                         </kbd>{' '}
                                         <span className="sm:hidden">
-                                            for categories,
+                                            for topics,
                                         </span>
                                         <span className="hidden sm:inline">
-                                            to access categories,
+                                            to access topics,
                                         </span>
                                         <kbd
                                             className={classNames(

@@ -9,9 +9,9 @@ export default interface DraftType {
     text: string | null
     rawText: string | null
     json: JSON | null
-    draft_categories:
+    draft_topics:
         | {
-              category: {
+              topic: {
                   name: string
                   id: string
                   color: string

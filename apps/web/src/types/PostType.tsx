@@ -17,8 +17,8 @@ export default interface PostType {
         avatar: string
         description: string
     }
-    post_categories: {
-        category: {
+    post_topics: {
+        topic: {
             name: string
             id: string
             color: string

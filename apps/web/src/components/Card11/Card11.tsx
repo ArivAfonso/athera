@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC, useState } from 'react'
-import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
+import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
 import PostCardMeta from '@/components/PostCardMeta/PostCardMeta'
 import PostFeaturedMedia from '@/components/PostFeaturedMedia/PostFeaturedMedia'
 import Link from 'next/link'
@@ -168,10 +168,7 @@ const Card11: FC<Card11Props> = ({
                     className="absolute inset-0"
                 ></Link>
                 <span className="absolute top-3 inset-x-3 z-10">
-                    <CategoryBadgeList
-                        chars={26}
-                        categories={post.post_categories}
-                    />
+                    <TopicBadgeList chars={26} topics={post.post_topics} />
                 </span>
 
                 {renderMenu()}

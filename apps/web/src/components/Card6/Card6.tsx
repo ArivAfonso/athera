@@ -4,7 +4,7 @@ import React, { FC, useState } from 'react'
 import PostCardMeta from '@/components/PostCardMeta/PostCardMeta'
 import PostBookmark from '@/components/PostBookmark/PostBookmark'
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
-import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
+import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
 import Link from 'next/link'
 import Image from 'next/image'
 import PostType from '@/types/PostType'
@@ -139,10 +139,10 @@ const Card6: FC<Card6Props> = ({
                         </div>
                     )}
                     <div className="space-y-3 mb-4">
-                        <CategoryBadgeList
+                        <TopicBadgeList
                             shorten={true}
                             chars={20}
-                            categories={post.post_categories}
+                            topics={post.post_topics}
                         />
 
                         <h2

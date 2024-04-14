@@ -91,7 +91,7 @@ const EditDraft = (context: { params: { slug: any } }) => {
             const { data, error } = await supabase
                 .from('drafts')
                 .select(
-                    'title, id, created_at, json, description, image, author(name, id), draft_categories(category:categories(id,name,color))'
+                    'title, id, created_at, json, description, image, author(name, id), draft_topics(topic:topics(id,name,color))'
                 )
                 .eq('id', context.params.slug[0])
                 .single()
@@ -105,11 +105,9 @@ const EditDraft = (context: { params: { slug: any } }) => {
             if (draftData) {
                 // rteObj.value = draftData.rawText
                 setEditDraft(draftData)
-                if (draftData.draft_categories) {
+                if (draftData.draft_topics) {
                     setTags(
-                        draftData.draft_categories.map(
-                            (category) => category.category.name
-                        )
+                        draftData.draft_topics.map((topic) => topic.topic.name)
                     )
                 }
                 if (draftData.image) {
@@ -201,7 +199,7 @@ const EditDraft = (context: { params: { slug: any } }) => {
         tags.filter((tag) => tag && tag.length > 0).map((tag: string) => {
             if (tag.length > 20) {
                 setUploading(false)
-                setErrorMsg('Categories must be between 1 and 20 characters')
+                setErrorMsg('Topics must be between 1 and 20 characters')
                 return
             }
         })
@@ -241,24 +239,24 @@ const EditDraft = (context: { params: { slug: any } }) => {
             return modifyString(tag)
         })
 
-        const { data: tagsArray } = await supabase.rpc('manage_categories', {
-            categories: tags,
+        const { data: tagsArray } = await supabase.rpc('manage_topics', {
+            topics: tags,
         })
         const finalTags = tagsArray.map((tag: any) => {
             return {
                 post: context.params.slug[0],
-                category: tag.cat_id,
+                topic: tag.top_id,
             }
         })
         setProgress(90)
 
-        if (tagsArray !== editDraft?.draft_categories) {
+        if (tagsArray !== editDraft?.draft_topics) {
             await supabase
-                .from('draft_categories')
+                .from('draft_topics')
                 .delete()
                 .eq('draft', editDraft?.id)
             const { data, error } = await supabase
-                .from('draft_categories')
+                .from('draft_topics')
                 .insert(finalTags)
                 .select('*')
             console.log(error)
@@ -299,7 +297,7 @@ const EditDraft = (context: { params: { slug: any } }) => {
                 toast.custom((t) => (
                     <Alert
                         type="danger"
-                        message="Categories must be between 1 and 20 characters"
+                        message="Topics must be between 1 and 20 characters"
                     />
                 ))
                 return
@@ -398,13 +396,13 @@ const EditDraft = (context: { params: { slug: any } }) => {
             return modifyString(tag)
         })
 
-        const { data: tagsArray } = await supabase.rpc('manage_categories', {
-            categories: tags,
+        const { data: tagsArray } = await supabase.rpc('manage_topics', {
+            topics: tags,
         })
         const finalTags = tagsArray.map((tag: any) => {
             return {
                 post: postId,
-                category: tag.cat_id,
+                topic: tag.top_id,
             }
         })
 
@@ -412,7 +410,7 @@ const EditDraft = (context: { params: { slug: any } }) => {
 
         // Insert the tags into the database
         const { data: tagData, error: tagError } = await supabase
-            .from('post_categories')
+            .from('post_topics')
             .insert(finalTags)
             .select('*')
 

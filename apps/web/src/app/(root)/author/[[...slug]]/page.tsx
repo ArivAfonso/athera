@@ -69,7 +69,7 @@ async function getData(context: { params: { slug: any } }) {
                 username,
                 avatar
               ),
-              post_categories(category:categories(name,color,id))
+              post_topics(topic:topics(name,color,id))
             )
             `
         )

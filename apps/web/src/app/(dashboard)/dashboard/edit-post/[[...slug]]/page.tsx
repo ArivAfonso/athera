@@ -12,7 +12,6 @@ import stringToSlug from '@/utils/stringToSlug'
 import { useStore } from '@/stores/editPost'
 import PostType from '@/types/PostType'
 import { TrashIcon } from '@heroicons/react/24/solid'
-import Heading2 from '@/components/Heading/Heading2'
 import TiptapEditor from '@/components/PostSubmissionEditor/TiptapEditor'
 import TitleEditor from '@/components/PostSubmissionEditor/TitleEditor'
 import TagsInput from '@/components/PostSubmissionEditor/TagsInput'
@@ -69,16 +68,12 @@ const EditPost = (context: { params: { slug: any } }) => {
             if (post) {
                 // rteObj.value = post.rawText
                 setEditPost(post)
-                setTags(
-                    post.post_categories.map(
-                        (category) => category.category.name
-                    )
-                )
+                setTags(post.post_topics.map((topic) => topic.topic.name))
             } else {
                 const { data, error } = await supabase
                     .from('posts')
                     .select(
-                        'title, id, created_at, json, description, image, author(name, id, username, avatar), post_categories(category:categories(id,name,color))'
+                        'title, id, created_at, json, description, image, author(name, id, username, avatar), post_topics(topic:topics(id,name,color))'
                     )
                     .eq('id', context.params.slug[0])
                     .single()
@@ -93,9 +88,7 @@ const EditPost = (context: { params: { slug: any } }) => {
                     // rteObj.value = postData.rawText
                     setEditPost(postData)
                     setTags(
-                        postData.post_categories.map(
-                            (category) => category.category.name
-                        )
+                        postData.post_topics.map((topic) => topic.topic.name)
                     )
                     // Get the file data from the image url
                     const res = await fetch(postData.image)
@@ -206,7 +199,7 @@ const EditPost = (context: { params: { slug: any } }) => {
         tags.filter((tag) => tag && tag.length > 0).map((tag: string) => {
             if (tag.length == 0 || tag == null || tag.length > 20) {
                 setUploading(false)
-                setErrorMsg('Categories must be between 1 and 20 characters')
+                setErrorMsg('Topics must be between 1 and 20 characters')
                 return
             }
         })
@@ -224,29 +217,23 @@ const EditPost = (context: { params: { slug: any } }) => {
                 return modifyString(tag)
             })
 
-            const { data: tagsArray } = await supabase.rpc(
-                'manage_categories',
-                {
-                    categories: tags,
-                }
-            )
+            const { data: tagsArray } = await supabase.rpc('manage_topics', {
+                topics: tags,
+            })
             const finalTags = tagsArray.map((tag: any) => {
                 return {
                     post: context.params.slug[0],
-                    category: tag.cat_id,
+                    topic: tag.top_id,
                 }
             })
             setProgress(90)
 
-            if (finalTags !== editPost?.post_categories) {
+            if (finalTags !== editPost?.post_topics) {
                 await supabase
-                    .from('post_categories')
+                    .from('post_topics')
                     .delete()
                     .eq('post', editPost?.id)
-                await supabase
-                    .from('post_categories')
-                    .insert(finalTags)
-                    .select('*')
+                await supabase.from('post_topics').insert(finalTags).select('*')
             }
         }
         setProgress(100)

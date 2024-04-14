@@ -1,22 +1,22 @@
 import React, { FC } from 'react'
 import Link from 'next/link'
-import CategoryType from '@/types/CategoryType'
+import TopicType from '@/types/TopicType'
 
-export interface CardCategory1Props {
+export interface CardTopic1Props {
     className?: string
-    category: CategoryType
+    topic: TopicType
     size?: 'large' | 'normal'
 }
 
-const CardCategory1: FC<CardCategory1Props> = ({
+const CardTopic1: FC<CardTopic1Props> = ({
     className = '',
     size = 'normal',
-    category,
+    topic,
 }) => {
     return (
         <Link
-            href={`/category/${encodeURIComponent(category.name)}`}
-            className={`nc-CardCategory1 flex items-center ${className}`}
+            href={`/topic/${encodeURIComponent(topic.name)}`}
+            className={`nc-CardTopic1 flex items-center ${className}`}
         >
             <div>
                 <h2
@@ -24,18 +24,18 @@ const CardCategory1: FC<CardCategory1Props> = ({
                         size === 'large' ? 'text-lg' : 'text-base'
                     } nc-card-title text-neutral-900 dark:text-neutral-100 text-sm sm:text-base font-medium sm:font-semibold`}
                 >
-                    {category.name}
+                    {topic.name}
                 </h2>
                 <span
                     className={`${
                         size === 'large' ? 'text-sm' : 'text-xs'
                     } block mt-[2px] text-neutral-500 dark:text-neutral-400`}
                 >
-                    {category.postCount[0].count} Articles
+                    {topic.postCount[0].count} Articles
                 </span>
             </div>
         </Link>
     )
 }
 
-export default CardCategory1
+export default CardTopic1

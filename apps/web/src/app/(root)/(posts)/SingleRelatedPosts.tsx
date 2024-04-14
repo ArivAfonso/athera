@@ -9,7 +9,7 @@ import { createClient } from '@/utils/supabase/client'
 import MySlider from '@/components/MySlider'
 
 export interface RelatedPostsType {
-    latestPostsInCategory: PostType[]
+    latestPostsInTopic: PostType[]
 }
 
 async function getAuthorPosts(id: string) {
@@ -24,7 +24,7 @@ async function getAuthorPosts(id: string) {
         image,
         likeCount:likes(count),
         commentCount:comments(count),
-        post_categories(category:categories(id,name,color)),
+        post_topics(topic:topics(id,name,color)),
         bookmarks(user(id)),
         likes(
             liker(

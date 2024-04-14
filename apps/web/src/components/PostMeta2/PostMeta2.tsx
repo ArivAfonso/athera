@@ -8,7 +8,7 @@ export interface PostMeta2Props {
     author: AuthorType
     publishedAt: string
     estimatedReadingTime: number
-    hiddenCategories?: boolean
+    hiddenTopics?: boolean
     size?: 'large' | 'normal'
     avatarRounded?: string
 }

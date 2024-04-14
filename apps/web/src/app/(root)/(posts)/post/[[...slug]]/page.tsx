@@ -32,7 +32,7 @@ async function getPostData(context: { params: { slug: any } }) {
                 username,
                 avatar
             ),
-            post_categories(category:categories(id,name,color)),
+            post_topics(topic:topics(id,name,color)),
             likeCount:likes(count),
             commentCount:comments(count),
             likes(
@@ -68,9 +68,7 @@ export async function generateMetadata(
         title: data.title,
         description: data.description,
         authors: [{ name: data.author.name }],
-        keywords: data.post_categories.map(
-            (category) => category.category.name
-        ),
+        keywords: data.post_topics.map((topic) => topic.topic.name),
         openGraph: {
             title: data.title,
             description: data.description,
@@ -150,7 +148,7 @@ const PageSingle = async (context: any) => {
                             likes={data.likeCount[0].count as number}
                             estimatedReadingTime={data.estimatedReadingTime}
                             title={data.title}
-                            category={data.post_categories}
+                            topic={data.post_topics}
                             author={data.author}
                             created_at={data.created_at ? data.created_at : ''}
                             comments={data.commentCount[0].count as number}

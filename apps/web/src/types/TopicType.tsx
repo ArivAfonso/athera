@@ -1,9 +1,9 @@
 import PostType from './PostType'
 
-export default interface CategoryType {
+export default interface TopicType {
     name: string
     id: string
-    otherCategories?: CategoryType[]
+    otherTopics?: TopicType[]
     image?: string
     postCount: {
         count: number

@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react'
 import PostBookmark from '@/components/PostBookmark/PostBookmark'
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
-import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
+import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
 import PostTypeFeaturedIcon from '../PostTypeFeaturedIcon/PostTypeFeaturedIcon'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -177,10 +177,7 @@ const Card9: FC<Card9Props> = ({
                     className="absolute inset-0"
                 ></Link>
                 <div className="mb-3 left-3">
-                    <CategoryBadgeList
-                        chars={29}
-                        categories={post.post_categories}
-                    />
+                    <TopicBadgeList chars={29} topics={post.post_topics} />
                 </div>
                 {renderMeta()}
             </div>

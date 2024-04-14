@@ -6,13 +6,13 @@ import { Listbox, Transition } from '@/app/headlessui'
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
 import Button from '../Button/Button'
 
-export interface CategoryFilterListBoxProps {
+export interface TopicFilterListBoxProps {
     className?: string
     lists: { name: string }[]
     onFilterClick: (name: string) => void
 }
 
-const CategoryFilterListBox: FC<CategoryFilterListBoxProps> = ({
+const TopicFilterListBox: FC<TopicFilterListBoxProps> = ({
     className = '',
     lists,
     onFilterClick,
@@ -23,7 +23,7 @@ const CategoryFilterListBox: FC<CategoryFilterListBoxProps> = ({
         onFilterClick(item.name) // Call the onFilterClick function with the selected filter option
     }
     return (
-        <div className={`nc-CategoryFilterListBox flex-shrink-0 ${className}`}>
+        <div className={`nc-TopicFilterListBox flex-shrink-0 ${className}`}>
             <Listbox value={selected} onChange={setSelected}>
                 <div className="relative">
                     <Listbox.Button as={'div'}>
@@ -86,4 +86,4 @@ const CategoryFilterListBox: FC<CategoryFilterListBoxProps> = ({
     )
 }
 
-export default CategoryFilterListBox
+export default TopicFilterListBox

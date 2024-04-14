@@ -130,9 +130,9 @@ const MenuItemImage: FC<MenuItemImageProps> = ({ action, children }) => {
             <div>
                 <Tab.Group>
                     <Tab.List className="flex p-1 space-x-1 bg-primary-900/10 dark:bg-primary-100/10 rounded-xl">
-                        {catImages.map((category) => (
+                        {catImages.map((topic) => (
                             <Tab
-                                key={category}
+                                key={topic}
                                 type="button"
                                 className={({ selected }) =>
                                     `w-full py-2.5 text-sm leading-5 font-medium rounded-lg focus:outline-none focus:ring-2 ring-offset-2 
@@ -143,7 +143,7 @@ const MenuItemImage: FC<MenuItemImageProps> = ({ action, children }) => {
                   }`
                                 }
                             >
-                                {category}
+                                {topic}
                             </Tab>
                         ))}
                     </Tab.List>

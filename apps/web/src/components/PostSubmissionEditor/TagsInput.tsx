@@ -1,5 +1,5 @@
 import Empty from '@/components/Empty'
-import CategoryType from '@/types/CategoryType'
+import TopicType from '@/types/TopicType'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { createClient } from '@/utils/supabase/client'
 import { debounce, set } from 'lodash'
@@ -47,7 +47,7 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
         async function fetchData() {
             const supabase = createClient()
             const { data, error } = await supabase
-                .from('categories')
+                .from('topics')
                 .select('*')
                 .limit(10)
 
@@ -63,10 +63,10 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
         fetchData()
     }, [])
 
-    const fetchCategories = debounce(async (inputValue: String) => {
+    const fetchTopics = debounce(async (inputValue: String) => {
         const supabase = createClient()
         const { data, error } = await supabase
-            .from('categories')
+            .from('topics')
             .select('name')
             .ilike('name', `${inputValue}%`)
             .limit(10)
@@ -190,7 +190,7 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
                                 ) {
                                     setData(ogTags)
                                 }
-                                fetchCategories(
+                                fetchTopics(
                                     e.currentTarget.value
                                         .charAt(0)
                                         .toUpperCase() +
@@ -245,8 +245,8 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
                         </ul>
                     ) : (
                         <Empty
-                            mainText="No categories found"
-                            subText="Looks like your creating a brand new Category."
+                            mainText="No topics found"
+                            subText="Looks like your creating a brand new Topic."
                             className="text-center p-4"
                         />
                     )}

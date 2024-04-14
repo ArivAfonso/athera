@@ -2,22 +2,18 @@ import React, { FC } from 'react'
 import { TwMainColor } from '@/data/types'
 import Badge from '@/components/Badge/Badge'
 import Link from 'next/link'
-import CategoryType from '@/types/CategoryType'
+import TopicType from '@/types/TopicType'
 import Image from 'next/image'
 
-export interface CardCategory4Props {
+export interface CardTopic4Props {
     className?: string
-    category: CategoryType
+    topic: TopicType
     index?: string
 }
 
-const CardCategory4: FC<CardCategory4Props> = ({
-    className = '',
-    category,
-    index,
-}) => {
+const CardTopic4: FC<CardTopic4Props> = ({ className = '', topic, index }) => {
     const getColorClass = () => {
-        switch (category.color.toLowerCase()) {
+        switch (topic.color.toLowerCase()) {
             case 'pink':
                 return 'bg-pink-500'
             case 'red':
@@ -40,23 +36,23 @@ const CardCategory4: FC<CardCategory4Props> = ({
     }
     return (
         <Link
-            href={`/category/${category.name}/${category.id}`}
-            className={`nc-CardCategory4 flex flex-col ${className}`}
+            href={`/topic/${topic.name}/${topic.id}`}
+            className={`nc-CardTopic4 flex flex-col ${className}`}
         >
             <div className="flex-shrink-0 relative w-full aspect-w-7 aspect-h-5 h-0 rounded-3xl overflow-hidden group">
                 <Image
                     alt="taxonomies"
                     fill
-                    src={category.image ? category.image : ''}
+                    src={topic.image ? topic.image : ''}
                     className="object-cover w-full h-full rounded-2xl"
                     sizes="(min-width: 1024px) 20rem, (min-width: 640px) 16rem, 12rem"
                 />
                 <div>
                     {index && (
                         <Badge
-                            color={category.color.toLowerCase() as TwMainColor}
+                            color={topic.color.toLowerCase() as TwMainColor}
                             name={index}
-                            href={`/category/${category.name}/${category.id}`}
+                            href={`/topic/${topic.name}/${topic.id}`}
                             className="absolute top-3 left-3"
                         />
                     )}
@@ -70,10 +66,10 @@ const CardCategory4: FC<CardCategory4Props> = ({
                 ></div>
                 <div className="ml-4">
                     <h2 className="text-base text-neutral-900 dark:text-neutral-100 font-medium">
-                        {category.name}
+                        {topic.name}
                     </h2>
                     <span className="block text-sm text-neutral-500 dark:text-neutral-400">
-                        {category.postCount[0].count} Articles
+                        {topic.postCount[0].count} Articles
                     </span>
                 </div>
             </div>
@@ -81,4 +77,4 @@ const CardCategory4: FC<CardCategory4Props> = ({
     )
 }
 
-export default CardCategory4
+export default CardTopic4

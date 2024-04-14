@@ -2,7 +2,7 @@
 
 import Alert from '@/components/Alert/Alert'
 import Input from '@/components/Input/Input'
-import CategoryType from '@/types/CategoryType'
+import TopicType from '@/types/TopicType'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -18,7 +18,7 @@ async function getData(context: { params: { slug: any } }) {
     const supabase = createClient()
 
     const { data, error } = await supabase
-        .from('categories')
+        .from('topics')
         .select('*')
         .eq('name', slug)
         .single()
@@ -33,10 +33,10 @@ function modifyString(str: string) {
         .join('-')
 }
 
-const NewCategoryPage = (context: { params: { slug: any } }) => {
+const NewTopicPage = (context: { params: { slug: any } }) => {
     let s = context.params.slug[0]
     s = modifyString(decodeURIComponent(s))
-    const [data, setData] = useState<CategoryType>()
+    const [data, setData] = useState<TopicType>()
     const [loading, setLoading] = useState(true)
     const [selectedImage, setSelectedImage] = useState(null)
     const [uploading, setUploading] = useState(false)
@@ -90,7 +90,7 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
         event.preventDefault()
         if (searchValue === '') return
         else if (setSearchValue === s) return
-        router.push(`/new-category/${searchValue}`)
+        router.push(`/new-topic/${searchValue}`)
     }
 
     const [tags, setTags] = useState([''])
@@ -109,7 +109,7 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
             return
         } else if (value.length > 20) {
             // Show error message for tag length more than 20 characters
-            toast.error('Categories must be between 1 and 20 characters')
+            toast.error('Topics must be between 1 and 20 characters')
             return
         }
         // Add the value to the tags array
@@ -168,7 +168,7 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
         formState: { errors },
     } = useForm() // Initialize the hook
 
-    const sendCategory = async (data: any) => {
+    const sendTopic = async (data: any) => {
         setUploading(true)
         if (data.color === '') {
             data.color = 'Red'
@@ -188,25 +188,25 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
             //@ts-ignore
 
             tags.forEach(async (tag) => {
-                const { data: category, error } = await supabase
-                    .from('categories')
+                const { data: topic, error } = await supabase
+                    .from('topics')
                     .select('*')
                     .eq('name', tag)
                     .single()
 
-                if (category) {
+                if (topic) {
                     await supabase
-                        .from('categories')
+                        .from('topics')
                         .update({
                             color: data.color,
                             image:
-                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/categories/' +
+                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/topics/' +
                                 path?.path,
                         })
                         .eq('name', tag)
                     return
                 } else {
-                    await supabase.from('categories').insert([
+                    await supabase.from('topics').insert([
                         {
                             name: tag,
                             color: data.color,
@@ -278,12 +278,12 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                         className="grid md:grid-cols-2 gap-6"
                         action="#"
                         onSubmit={handleSubmit(
-                            async (data) => await sendCategory(data)
+                            async (data) => await sendTopic(data)
                         )}
                         method="post"
                     >
                         <Label className="block sm:col-span-1 md:col-span-2">
-                            <Label>Categories</Label>
+                            <Label>Topics</Label>
                             <Controller
                                 name="tags"
                                 control={control}
@@ -432,13 +432,13 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
                                     type="submit"
                                     className="text-white px-2 py-1 rounded-lg"
                                 >
-                                    Submit Category
+                                    Submit Topic
                                 </ButtonPrimary>
                             )}
                         </div>
                         {errorMsg && <Alert type="danger" message={errorMsg} />}
                         {success && (
-                            <Alert type="success" message="Category uploaded" />
+                            <Alert type="success" message="Topic uploaded" />
                         )}
                     </form>
                 </div>
@@ -447,4 +447,4 @@ const NewCategoryPage = (context: { params: { slug: any } }) => {
     )
 }
 
-export default NewCategoryPage
+export default NewTopicPage

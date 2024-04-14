@@ -111,7 +111,7 @@ const DashboardSubmitPost = () => {
         tags.filter((tag) => tag && tag.length > 0).map((tag: string) => {
             if (tag.length == 0 || tag == null || tag.length > 20) {
                 setUploading(false)
-                setErrorMsg('Categories must be between 1 and 20 characters')
+                setErrorMsg('Topics must be between 1 and 20 characters')
                 return
             }
         })
@@ -222,20 +222,20 @@ const DashboardSubmitPost = () => {
 
                 if (tags.length > 0) {
                     const { data: tagsArray, error } = await supabase.rpc(
-                        'manage_categories',
+                        'manage_topics',
                         {
-                            categories: tags,
+                            topics: tags,
                         }
                     )
                     const finalTags = tagsArray.map((tag: any) => {
                         return {
                             post: postId,
-                            category: tag.cat_id,
+                            topic: tag.top_id,
                         }
                     })
 
                     await supabase
-                        .from('post_categories')
+                        .from('post_topics')
                         .insert(finalTags)
                         .select('*')
                 }
@@ -284,7 +284,7 @@ const DashboardSubmitPost = () => {
                 toast.custom((t) => (
                     <Alert
                         type="danger"
-                        message="Categories must be between 1 and 20 characters"
+                        message="Topics must be between 1 and 20 characters"
                     />
                 ))
                 return
@@ -341,20 +341,17 @@ const DashboardSubmitPost = () => {
                 .eq('id', draftId)
         }
 
-        const { data: tagsArray, error } = await supabase.rpc(
-            'manage_categories',
-            {
-                categories: tags,
-            }
-        )
+        const { data: tagsArray, error } = await supabase.rpc('manage_topics', {
+            topics: tags,
+        })
 
         tagsArray.map((tag: any) => {
             tag.post = draftId
-            tag.category = tag.cat_id
+            tag.topic = tag.top_id
         })
 
         if (tagsArray.length > 0)
-            await supabase.from('draft_categories').insert(tagsArray)
+            await supabase.from('draft_topics').insert(tagsArray)
 
         setUploading(false)
         toast.custom((t) => (

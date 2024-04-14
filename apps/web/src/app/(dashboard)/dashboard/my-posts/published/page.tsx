@@ -8,7 +8,7 @@ import PostType from '@/types/PostType'
 import stringToSlug from '@/utils/stringToSlug'
 import Link from 'next/link'
 import Badge from '@/components/Badge/Badge'
-import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
+import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
 import { useRouter } from 'next/navigation'
 import { SquarePenIcon, Trash2Icon } from 'lucide-react'
 import LoadingPublishedPosts from './loading'
@@ -32,7 +32,7 @@ const DashboardPosts = () => {
                 const { data, error } = await supabase
                     .from('posts')
                     .select(
-                        `id, title, created_at, image, post_categories(category:categories(id,name,color)), bookmarkCount:bookmarks(count), commentCount:comments(count), likeCount:likes(count)`
+                        `id, title, created_at, image, post_topics(topic:topics(id,name,color)), bookmarkCount:bookmarks(count), commentCount:comments(count), likeCount:likes(count)`
                     )
                     .eq('author', session.session?.user.id)
 
@@ -107,7 +107,7 @@ const DashboardPosts = () => {
                                                 scope="col"
                                                 className="px-3 py-3.5 text-center text-sm font-normal text-neutral-600 dark:text-neutral-400"
                                             >
-                                                Categories
+                                                Topics
                                             </th>
                                             <th
                                                 scope="col"
@@ -178,9 +178,9 @@ const DashboardPosts = () => {
                                                         />
                                                     </td>
                                                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                                        <CategoryBadgeList
-                                                            categories={
-                                                                post.post_categories
+                                                        <TopicBadgeList
+                                                            topics={
+                                                                post.post_topics
                                                             }
                                                             chars={20}
                                                             className="flex space-x-1 justify-center"

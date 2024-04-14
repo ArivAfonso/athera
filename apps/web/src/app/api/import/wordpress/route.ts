@@ -32,7 +32,7 @@ interface WordPressPostType {
     }
     featured_media: string | null
     format: string
-    categories: number[]
+    topics: number[]
     tags: string[]
 }
 
@@ -82,10 +82,8 @@ export async function POST(request: Request) {
     const user = session?.session?.user.id
 
     const tagsPromises = selectedPosts.map((post) =>
-        post.categories.map(async (category) => {
-            let catRes = await fetch(
-                `${website}/wp-json/wp/v2/categories/${category}`
-            )
+        post.topics.map(async (topic) => {
+            let catRes = await fetch(`${website}/wp-json/wp/v2/topics/${topic}`)
             let catData = await catRes.json()
 
             return modifyString(catData.name)
@@ -94,12 +92,9 @@ export async function POST(request: Request) {
 
     const tags = await Promise.all(tagsPromises.flat())
 
-    const { data: categories, error } = await supabase.rpc(
-        'manage_categories',
-        {
-            categories: tags,
-        }
-    )
+    const { data: topics, error } = await supabase.rpc('manage_topics', {
+        topics: tags,
+    })
 
     console.log(tags)
     console.log(error)
@@ -109,10 +104,8 @@ export async function POST(request: Request) {
         post.description = extractContent(post.excerpt.rendered)
         let tagsArray: string[] = []
 
-        post.categories.map(async (category, i) => {
-            let catRes = await fetch(
-                `${website}/wp-json/wp/v2/categories/${category}`
-            )
+        post.topics.map(async (topic, i) => {
+            let catRes = await fetch(`${website}/wp-json/wp/v2/topics/${topic}`)
             let catData = await catRes.json()
 
             tagsArray[i] = modifyString(catData.name)
@@ -142,17 +135,17 @@ export async function POST(request: Request) {
             const draftId: string = data ? data[0]?.id : null
 
             //Create tagsArray if there are any
-            if (post.categories.length > 0) {
+            if (post.topics.length > 0) {
                 const finalTags = await tagsArray.map((tag) => ({
                     post: draftId,
-                    category: categories.find(
-                        (category: any) =>
-                            category.cat_name.toLowerCase() ===
+                    topic: topics.find(
+                        (topic: any) =>
+                            topic.top_name.toLowerCase() ===
                             modifyString(tag).toLowerCase()
-                    ).cat_id,
+                    ).top_id,
                 }))
 
-                await supabase.from('draft_categories').insert(finalTags)
+                await supabase.from('draft_topics').insert(finalTags)
             }
 
             //Upload post.cover_image to storage
@@ -197,20 +190,20 @@ export async function POST(request: Request) {
 
             const postId: string = data ? data[0]?.id : null
 
-            console.log(categories)
+            console.log(topics)
             console.log(tagsArray)
 
             const finalTags = await tagsArray.map((tag) => ({
                 post: postId,
-                category: categories.find(
-                    (category: any) =>
-                        category.cat_name.toLowerCase() ===
+                topic: topics.find(
+                    (topic: any) =>
+                        topic.top_name.toLowerCase() ===
                         modifyString(tag).toLowerCase()
-                ).cat_id,
+                ).top_id,
             }))
 
             const { error: catErr } = await supabase
-                .from('post_categories')
+                .from('post_topics')
                 .insert(finalTags)
 
             if (catErr) {

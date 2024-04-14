@@ -7,7 +7,7 @@ import ModalDeletePost from '../ModalDeletePost'
 import stringToSlug from '@/utils/stringToSlug'
 import Link from 'next/link'
 import Badge from '@/components/Badge/Badge'
-import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
+import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 import DraftType from '@/types/DraftType'
@@ -17,7 +17,7 @@ import LoadingDrafts from './loading'
 const DashboardDrafts = () => {
     const [drafts, setDrafts] = React.useState<DraftType[]>([])
     const router = useRouter()
-    const [draftHasCategory, setDraftHasCategory] = React.useState(false)
+    const [draftHasTopic, setDraftHasTopic] = React.useState(false)
     const [loading, setLoading] = React.useState(true)
 
     const [showDeleteModal, setShowDeleteModal] = React.useState(false)
@@ -33,7 +33,7 @@ const DashboardDrafts = () => {
                 const { data: draftData, error: draftError } = await supabase
                     .from('drafts')
                     .select(
-                        `id, title, created_at, estimatedReadingTime, edited_at, image, draft_categories(category:categories(id,name,color))`
+                        `id, title, created_at, estimatedReadingTime, edited_at, image, draft_topics(topic:topics(id,name,color))`
                     )
                     .eq('author', session.session?.user.id)
 
@@ -52,8 +52,8 @@ const DashboardDrafts = () => {
                         month: 'long',
                         day: 'numeric',
                     })
-                    if (item.draft_categories[0]) {
-                        setDraftHasCategory(true)
+                    if (item.draft_topics[0]) {
+                        setDraftHasTopic(true)
                     }
                 })
                 //@ts-ignore
@@ -113,12 +113,12 @@ const DashboardDrafts = () => {
                                             >
                                                 Draft
                                             </th>
-                                            {draftHasCategory && (
+                                            {draftHasTopic && (
                                                 <th
                                                     scope="col"
                                                     className="px-3 py-3.5 text-center text-sm font-normal text-neutral-600 dark:text-neutral-400"
                                                 >
-                                                    Categories
+                                                    Topics
                                                 </th>
                                             )}
                                             <th
@@ -186,10 +186,10 @@ const DashboardDrafts = () => {
                                                     </td>
 
                                                     <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                                        {draft.draft_categories && (
-                                                            <CategoryBadgeList
-                                                                categories={
-                                                                    draft.draft_categories
+                                                        {draft.draft_topics && (
+                                                            <TopicBadgeList
+                                                                topics={
+                                                                    draft.draft_topics
                                                                 }
                                                                 chars={20}
                                                                 className="flex space-x-1 justify-center"

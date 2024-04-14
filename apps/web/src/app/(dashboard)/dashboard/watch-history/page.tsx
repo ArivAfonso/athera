@@ -34,7 +34,7 @@ const DashboardWatchHistory = async () => {
                     username,
                     avatar
                 ),
-                post_categories(category:categories(id,name,color)),
+                post_topics(topic:topics(id,name,color)),
                 bookmarks(user(id)),
                 likeCount:likes(count),
                 commentCount:comments(count),
@@ -56,7 +56,7 @@ const DashboardWatchHistory = async () => {
     return (
         <>
             <title>My Bookmarks - Athera</title>
-            <div className={`nc-PageCategory`}>
+            <div className={`nc-PageTopic`}>
                 <div className="container max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32 space-y-10 sm:space-y-12">
                     {/* HEADING */}
                     <h2 className="text-2xl sm:text-3xl font-semibold">

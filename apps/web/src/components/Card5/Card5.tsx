@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import CardAuthor2 from '@/components/CardAuthor2/CardAuthor2'
-import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
+import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
 import Link from 'next/link'
 import PostType from '@/types/PostType'
 
@@ -28,7 +28,7 @@ const Card5: FC<Card5Props> = ({ className = '', post }) => {
             ></Link>
 
             <div className="flex flex-col">
-                <CategoryBadgeList categories={post.post_categories} />
+                <TopicBadgeList topics={post.post_topics} />
                 <h2
                     className="block text-base font-semibold text-neutral-800 dark:text-neutral-300 my-4"
                     title={post.title}

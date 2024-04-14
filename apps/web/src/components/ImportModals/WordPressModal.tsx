@@ -10,7 +10,7 @@ import Input from '../Input/Input'
 import Label from '../Label/Label'
 import Button from '../Button/Button'
 import Checkbox from '../Checkbox/Checkbox'
-import CategoryType from '@/types/CategoryType'
+import TopicType from '@/types/TopicType'
 import { generateJSON } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Highlight from '@tiptap/extension-highlight'
@@ -77,7 +77,7 @@ interface WordPressPostType {
     }
     featured_media: string | null
     format: string
-    categories: number[]
+    topics: number[]
     tags: string[]
 }
 

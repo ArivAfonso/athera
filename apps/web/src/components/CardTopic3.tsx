@@ -4,15 +4,15 @@ import Link from 'next/link'
 import Image, { StaticImageData } from 'next/image'
 import dogPng from '@/images/dog.png'
 
-export interface CardCategory3Props {
+export interface CardTopic3Props {
     className?: string
 }
 
-const CardCategory3: FC<CardCategory3Props> = ({ className = '' }) => {
+const CardTopic3: FC<CardTopic3Props> = ({ className = '' }) => {
     return (
         <Link
-            href={'/category/demo-slug'}
-            className={`nc-CardCategory3 block ${className}`}
+            href={'/topic/demo-slug'}
+            className={`nc-CardTopic3 block ${className}`}
         >
             <div
                 className={`relative w-full aspect-w-16 aspect-h-11 sm:aspect-h-9 h-0 rounded-2xl overflow-hidden group bg-sky-100`}
@@ -58,4 +58,4 @@ const CardCategory3: FC<CardCategory3Props> = ({ className = '' }) => {
     )
 }
 
-export default CardCategory3
+export default CardTopic3

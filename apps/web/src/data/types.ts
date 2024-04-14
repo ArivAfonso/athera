@@ -17,7 +17,7 @@ export interface TaxonomyType {
     thumbnail?: string | StaticImageData
     desc?: string
     color?: TwMainColor | string
-    taxonomy: 'category' | 'tag'
+    taxonomy: 'topic' | 'tag'
 }
 
 export interface PostAuthorType {
@@ -39,7 +39,7 @@ export interface PostDataType {
     author: PostAuthorType
     date: string
     href: Route
-    categories: TaxonomyType[]
+    topics: TaxonomyType[]
     title: string
     featuredImage: string | StaticImageData
     desc?: string

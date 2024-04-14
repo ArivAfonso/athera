@@ -2,13 +2,13 @@ import React from 'react'
 import SectionLargeSlider from './SectionLargeSlider'
 import BackgroundSection from '@/components/BackgroundSection/BackgroundSection'
 import SectionSliderNewAuthors from '@/components/SectionSliderNewAthors/SectionSliderNewAuthors'
-import SectionSliderNewCategories from '@/components/SectionSliderNewCategories/SectionSliderNewCategories'
+import SectionSliderNewTopics from '@/components/SectionSliderNewTopics/SectionSliderNewTopics'
 import SectionMagazine1 from '@/components/Sections/SectionMagazine1'
 import SectionSliderPosts from '@/components/Sections/SectionSliderPosts'
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
 import PostType from '@/types/PostType'
-import CategoryType from '@/types/CategoryType'
+import TopicType from '@/types/TopicType'
 import AuthorType from '@/types/AuthorType'
 import Particles from '@/components/Particles/Particles'
 
@@ -24,7 +24,7 @@ async function getData() {
         image,
         likeCount:likes(count),
         commentCount:comments(count),
-        post_categories(category:categories(id,name,color)),
+        post_topics(topic:topics(id,name,color)),
         bookmarks(user(id)),
         likes(
             liker(
@@ -43,9 +43,9 @@ async function getData() {
 
     console.log(error)
 
-    const { data: categories, error: categoriesError } = await supabase
-        .from('categories')
-        .select('id, name, image, color, postCount:post_categories(count)')
+    const { data: topics, error: topicsError } = await supabase
+        .from('topics')
+        .select('id, name, image, color, postCount:post_topics(count)')
         .ilike('image', '%https://%')
         .limit(20)
 
@@ -55,14 +55,14 @@ async function getData() {
         .limit(20)
     return {
         popular_posts: posts,
-        categories: categories,
+        topics: topics,
         authors: authors,
     }
 }
 
 interface HomeProps {
     popular_posts: PostType[]
-    categories: CategoryType[]
+    topics: TopicType[]
     authors: AuthorType[]
 }
 
@@ -93,12 +93,12 @@ const PageHome = async ({}) => {
                     />
                 </div>
 
-                <SectionSliderNewCategories
+                <SectionSliderNewTopics
                     className="py-16 lg:py-28"
-                    heading="Top trending categories"
+                    heading="Top trending topics"
                     subHeading="Discover 233 topics"
-                    categories={data.categories.filter((_, i) => i < 10)}
-                    categoryCardType="card4"
+                    topics={data.topics.filter((_, i) => i < 10)}
+                    topicCardType="card4"
                 />
 
                 <SectionMagazine1

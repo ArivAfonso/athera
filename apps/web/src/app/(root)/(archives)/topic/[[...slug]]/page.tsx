@@ -1,6 +1,6 @@
 import React from 'react'
 import Card11 from '@/components/Card11/Card11'
-import CategoryType from '@/types/CategoryType'
+import TopicType from '@/types/TopicType'
 import { createClient } from '@/utils/supabase/server'
 import Image from 'next/image'
 import Card6 from '@/components/Card6/Card6'
@@ -8,12 +8,12 @@ import { cookies } from 'next/headers'
 import { Metadata } from 'next'
 import PostsSection from '@/components/PostsSection/PostsSection'
 
-async function getCategories(context: { params: { slug: any } }) {
+async function getTopics(context: { params: { slug: any } }) {
     const supabase = createClient(cookies())
 
     const id = context.params.slug[1]
     const { data, error } = await supabase
-        .from('categories')
+        .from('topics')
         .select(
             `
             name,
@@ -28,7 +28,7 @@ async function getCategories(context: { params: { slug: any } }) {
                 image,
                 likeCount:likes(count),
                 commentCount:comments(count),
-                post_categories(category:categories(id,name,color)),
+                post_topics(topic:topics(id,name,color)),
                 bookmarks(user(id)),
                 likes(
                     liker(
@@ -49,7 +49,7 @@ async function getCategories(context: { params: { slug: any } }) {
         .is('posts.scheduled_at', null)
         .single()
 
-    const catData: CategoryType | null = data as unknown as CategoryType
+    const catData: TopicType | null = data as unknown as TopicType
 
     console.log(error, data, catData)
 
@@ -60,7 +60,7 @@ export async function generateMetadata(
     props: any,
     searchParams: any
 ): Promise<Metadata> {
-    const data: CategoryType = await getCategories(props)
+    const data: TopicType = await getTopics(props)
 
     return {
         title: data.name + ' - Latest articles on Athera',
@@ -68,17 +68,17 @@ export async function generateMetadata(
     }
 }
 
-const PageCategory = async (context: any) => {
-    const catData = await getCategories(context)
+const PageTopic = async (context: any) => {
+    const catData = await getTopics(context)
 
     return (
-        <div className={`nc-PageCategory`}>
+        <div className={`nc-PageTopic`}>
             {/* HEADER */}
             <div className="w-full px-2 pt-2 xl:max-w-screen-2xl mx-auto">
                 {catData.image ? (
                     <div className="relative aspect-w-16 aspect-h-13 sm:aspect-h-9 lg:aspect-h-8 xl:aspect-h-5 rounded-3xl md:rounded-[40px] overflow-hidden z-0">
                         <Image
-                            alt="Category header image"
+                            alt="Topic header image"
                             fill
                             src={catData.image || ''}
                             className="object-cover w-full h-full rounded-3xl md:rounded-[40px]"
@@ -119,4 +119,4 @@ const PageCategory = async (context: any) => {
     )
 }
 
-export default PageCategory
+export default PageTopic

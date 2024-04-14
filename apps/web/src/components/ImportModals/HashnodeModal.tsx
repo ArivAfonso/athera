@@ -10,7 +10,7 @@ import Input from '../Input/Input'
 import Label from '../Label/Label'
 import Button from '../Button/Button'
 import Checkbox from '../Checkbox/Checkbox'
-import CategoryType from '@/types/CategoryType'
+import TopicType from '@/types/TopicType'
 import { generateJSON } from '@tiptap/core'
 import Bold from '@tiptap/extension-bold'
 import Document from '@tiptap/extension-document'
@@ -133,12 +133,9 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
             )
         )
 
-        const { data: categories, error } = await supabase.rpc(
-            'manage_categories',
-            {
-                categories: tags,
-            }
-        )
+        const { data: topics, error } = await supabase.rpc('manage_topics', {
+            topics: tags,
+        })
 
         selectedPosts.forEach(async (post) => {
             let img_blob = null
@@ -197,14 +194,14 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                 if (post.tag_list.length > 0) {
                     tagsArray = post.tag_list.map((tag) => ({
                         post: draftId,
-                        category: categories.find(
-                            (category: any) =>
-                                category.cat_name.toLowerCase() ===
+                        topic: topics.find(
+                            (topic: any) =>
+                                topic.top_name.toLowerCase() ===
                                 modifyString(tag).toLowerCase()
-                        ).cat_id,
+                        ).top_id,
                     }))
 
-                    await supabase.from('draft_categories').insert(tagsArray)
+                    await supabase.from('draft_topics').insert(tagsArray)
                 }
 
                 setProgress((prev) => prev + 0.2)
@@ -249,16 +246,16 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                 //Create tagsArray
                 const tagsArray = post.tag_list.map((tag) => ({
                     post: postId,
-                    category: categories.find(
-                        (category: any) =>
-                            category.cat_name.toLowerCase() ===
+                    topic: topics.find(
+                        (topic: any) =>
+                            topic.top_name.toLowerCase() ===
                             modifyString(tag).toLowerCase()
-                    ).cat_id,
+                    ).top_id,
                 }))
 
                 console.log(tagsArray)
 
-                await supabase.from('post_categories').insert(tagsArray)
+                await supabase.from('post_topics').insert(tagsArray)
 
                 setProgress((prev) => prev + 0.2)
 

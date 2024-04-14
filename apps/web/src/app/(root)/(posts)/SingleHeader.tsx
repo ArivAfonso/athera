@@ -1,14 +1,14 @@
 'use client'
 
 import React, { FC, useEffect, useRef } from 'react'
-import CategoryBadgeList from '@/components/CategoryBadgeList/CategoryBadgeList'
+import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
 import SingleTitle from './SingleTitle'
 import PostMeta2 from '@/components/PostMeta2/PostMeta2'
 import SingleMetaAction2 from './SingleMetaAction2'
 import { Route } from '@/routers/types'
-import CategoryType from '@/types/CategoryType'
+import TopicType from '@/types/TopicType'
 import AuthorType from '@/types/AuthorType'
-import PostCategoryType from '@/types/PostCategoryType'
+import PostTopicType from '@/types/PostTopicType'
 import { createClient } from '@/utils/supabase/client'
 
 export interface SingleHeaderProps {
@@ -16,7 +16,7 @@ export interface SingleHeaderProps {
     titleMainClass?: string
     className?: string
     description: string
-    category: PostCategoryType[]
+    topic: PostTopicType[]
     estimatedReadingTime: number
     title: string
     author: AuthorType
@@ -31,7 +31,7 @@ const SingleHeader: FC<SingleHeaderProps> = ({
     hiddenDesc = false,
     className = '',
     description = '',
-    category,
+    topic,
     title = '',
     created_at,
     comments,
@@ -88,9 +88,9 @@ const SingleHeader: FC<SingleHeaderProps> = ({
         <>
             <div ref={ref} className={`nc-SingleHeader ${className}`}>
                 <div className="space-y-5">
-                    <CategoryBadgeList
+                    <TopicBadgeList
                         itemClass="!px-3"
-                        categories={category}
+                        topics={topic}
                         shorten={false}
                     />
                     <SingleTitle mainClass={titleMainClass} title={title} />
@@ -104,7 +104,7 @@ const SingleHeader: FC<SingleHeaderProps> = ({
                         <PostMeta2
                             size="large"
                             className="leading-none flex-shrink-0"
-                            hiddenCategories
+                            hiddenTopics
                             avatarRounded="rounded-full shadow-inner"
                             estimatedReadingTime={estimatedReadingTime}
                             author={author}

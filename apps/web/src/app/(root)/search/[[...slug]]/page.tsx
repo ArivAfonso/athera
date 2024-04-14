@@ -3,13 +3,13 @@
 import React, { FC, useState, useEffect, Suspense } from 'react'
 import Nav from '@/components/Nav/Nav'
 import NavItem from '@/components/NavItem/NavItem'
-import CategoryFilterListBox from '@/components/CategoryFilterListBox/CategoryFilterListBox'
+import TopicFilterListBox from '@/components/TopicFilterListBox/TopicFilterListBox'
 import Input from '@/components/Input/Input'
 import Card11 from '@/components/Card11/Card11'
-import CardCategory2 from '@/components/CardCategory2/CardCategory2'
+import CardTopic2 from '@/components/CardTopic2/CardTopic2'
 import { useRouter } from 'next/navigation'
 import PostType from '@/types/PostType'
-import CategoryType from '@/types/CategoryType'
+import TopicType from '@/types/TopicType'
 import AuthorType from '@/types/AuthorType'
 import { createClient } from '@/utils/supabase/client'
 import { pipeline } from '@xenova/transformers'
@@ -53,13 +53,13 @@ async function getData(
     return data
 }
 
-async function fetchCategoriesData(context: { params: { slug: any } }) {
+async function fetchTopicsData(context: { params: { slug: any } }) {
     const slug = context.params.slug[0]
     const supabase = createClient()
 
     const { data, error } = await supabase
-        .from('categories')
-        .select(`id, name, color, postCount:post_categories(count)`)
+        .from('topics')
+        .select(`id, name, color, postCount:post_topics(count)`)
         .textSearch('name', `${slug}`)
 
     return data
@@ -83,7 +83,7 @@ const FILTERS = [
     { name: 'Most Recent' },
     { name: 'Most Liked' },
 ]
-const TABS = ['Articles', 'Categories', 'Authors']
+const TABS = ['Articles', 'Topics', 'Authors']
 
 const PageSearchV2 = (context: any) => {
     const [data, setData] = useState<PostType[]>([])
@@ -110,17 +110,16 @@ const PageSearchV2 = (context: any) => {
 
     const [tabActive, setTabActive] = useState<string>(TABS[0])
 
-    const [categories, setCategories] = useState<CategoryType[]>([])
+    const [topics, setTopics] = useState<TopicType[]>([])
 
-    const getCategoriesData = async () => {
+    const getTopicsData = async () => {
         try {
-            // Implement the logic to fetch categories data based on the search term
+            // Implement the logic to fetch topics data based on the search term
             //@ts-ignore
-            const categoriesData: CategoryType[] =
-                await fetchCategoriesData(context) // Implement the function to fetch categories
-            setCategories(categoriesData)
+            const topicsData: TopicType[] = await fetchTopicsData(context) // Implement the function to fetch topics
+            setTopics(topicsData)
         } catch (error) {
-            console.error('Failed to fetch categories:', error)
+            console.error('Failed to fetch topics:', error)
         }
     }
 
@@ -143,9 +142,9 @@ const PageSearchV2 = (context: any) => {
         }
         setTabActive(item)
 
-        // Lazy load categories data when the 'Categories' tab is clicked
-        if (item === 'Categories' && categories.length === 0) {
-            getCategoriesData()
+        // Lazy load topics data when the 'Topics' tab is clicked
+        if (item === 'Topics' && topics.length === 0) {
+            getTopicsData()
         } else if (item === 'Authors' && authors.length === 0) {
             getAuthorsData()
         }
@@ -257,7 +256,7 @@ const PageSearchV2 = (context: any) => {
                         </Nav>
                         <div className="block my-4 border-b w-full border-neutral-300 dark:border-neutral-500 sm:hidden"></div>
                         <div className="flex justify-end">
-                            <CategoryFilterListBox
+                            <TopicFilterListBox
                                 lists={FILTERS}
                                 onFilterClick={handleFilterClick}
                             />
@@ -286,10 +285,10 @@ const PageSearchV2 = (context: any) => {
                     {tabActive === 'Articles' && data.length > 0 && (
                         <PostsSection posts={data} />
                     )}
-                    {tabActive === 'Categories' && categories.length > 0 && (
+                    {tabActive === 'Topics' && topics.length > 0 && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
-                            {categories.map((cat, id) => (
-                                <CardCategory2 key={id} category={cat} />
+                            {topics.map((cat, id) => (
+                                <CardTopic2 key={id} topic={cat} />
                             ))}
                         </div>
                     )}
@@ -309,15 +308,15 @@ const PageSearchV2 = (context: any) => {
                                 subText="We couldn’t find any results. Try for something else."
                             />
                         )}
-                    {tabActive === 'Categories' && categories.length === 0 && (
+                    {tabActive === 'Topics' && topics.length === 0 && (
                         <Empty
-                            mainText="No Posts Found"
+                            mainText="No Topics Found"
                             subText="We couldn’t find any results. Try for something else."
                         />
                     )}
                     {tabActive === 'Authors' && authors.length === 0 && (
                         <Empty
-                            mainText="No Posts Found"
+                            mainText="No Authors Found"
                             subText="We couldn’t find any results. Try for something else."
                         />
                     )}

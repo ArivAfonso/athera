@@ -81,6 +81,10 @@ interface DevPostType {
     }
 }
 
+function strWords(str: string) {
+    return str.split(/\s+/).length
+}
+
 async function getPosts(username: string) {
     const res = await fetch(`https://dev.to/api/articles?username=${username}`)
     const data = await res.json()
@@ -130,7 +134,7 @@ const DevModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
         const { data: topics, error } = await supabase.rpc('manage_topics', {
             topics: tags,
         })
-        console.log(error)
+
         selectedPosts.forEach(async (post) => {
             const res = await fetch(`https://dev.to/api/articles/${post.id}`)
             const article_json = await res.json()
@@ -168,7 +172,7 @@ const DevModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
 
             setProgress((prev) => prev + 0.2)
 
-            if (post.cover_image === null || post.tags === null) {
+            if (post.cover_image === null) {
                 const { data, error } = await supabase
                     .from('drafts')
                     .insert({
@@ -177,6 +181,7 @@ const DevModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                         author: user,
                         json: output,
                         text: text,
+                        estimated_reading_time: strWords(text),
                     })
                     .select('id')
 
@@ -244,18 +249,19 @@ const DevModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                 setProgress((prev) => prev + 0.2)
 
                 //Create tagsArray
-                const tagsArray = post.tag_list.map((tag) => ({
-                    post: postId,
-                    topic: topics.find(
-                        (topic: any) =>
-                            topic.top_name.toLowerCase() ===
-                            modifyString(tag).toLowerCase()
-                    ).top_id,
-                }))
+                if (post.tag_list.length > 0) {
+                    const tagsArray = post.tag_list.map((tag) => ({
+                        post: postId,
+                        topic: topics.find(
+                            (topic: any) =>
+                                topic.top_name.toLowerCase() ===
+                                modifyString(tag).toLowerCase()
+                        ).top_id,
+                    }))
+                    console.log(tagsArray)
 
-                console.log(tagsArray)
-
-                await supabase.from('post_topics').insert(tagsArray)
+                    await supabase.from('post_topics').insert(tagsArray)
+                }
 
                 setProgress((prev) => prev + 0.2)
 

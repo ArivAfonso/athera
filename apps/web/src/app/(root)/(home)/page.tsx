@@ -39,6 +39,10 @@ async function getData() {
             avatar
         )`
         )
+        .eq('author.verified', true)
+        .order('created_at', { ascending: false })
+        .is('featured', true)
+        .is('scheduled_at', null)
         .limit(20)
 
     console.log(error)
@@ -80,7 +84,7 @@ const PageHome = async ({}) => {
                 </div>
                 <div className="absolute inset-x-0 mt-72 m-auto h-80 max-w-lg bg-gradient-to-tr dark:from-indigo-400 dark:via-blue-800 dark:to-blue-200 blur-[118px] from-blue-200 via-blue-300 to-blue-400"></div>
                 <SectionLargeSlider
-                    className="pt-6 pb-16 md:py-16 lg:pb-28"
+                    className="md:py-16 lg:pb-28"
                     posts={data.popular_posts.filter((_, i) => i < 3)}
                 />
 
@@ -103,7 +107,7 @@ const PageHome = async ({}) => {
 
                 <SectionMagazine1
                     className="py-16 lg:py-28"
-                    posts={data.popular_posts.filter((_, i) => i < 6)}
+                    posts={data.popular_posts.filter((_, i) => i > 3)}
                 />
                 <div className="relative py-16">
                     <BackgroundSection />

@@ -196,8 +196,7 @@ const CommentCard: FC<CommentCardProps> = ({
                     ) : (
                         <CommentCardLikeReply
                             className={className}
-                            isLiked={is_liked_by_current_user}
-                            likeCount={likes}
+                            id={id}
                             onClickReply={() => setIsReplying(true)}
                         />
                     )}

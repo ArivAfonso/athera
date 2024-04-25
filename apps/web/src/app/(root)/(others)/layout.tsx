@@ -5,7 +5,7 @@ import React, { FC, ReactNode } from 'react'
 const LayoutPage = ({ children }: { children: ReactNode }) => {
     return (
         <>
-            <div className={`nc-LayoutPage relative -mt-20`}>
+            <div className={`nc-LayoutPage relative`}>
                 <div
                     className={`absolute h-[400px] top-0 left-0 right-0 w-full bg-opacity-25 dark:bg-opacity-40`}
                 />

@@ -1,23 +1,140 @@
 'use client'
 
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import convertNumbThousand from '@/utils/convertNumbThousand'
 import twFocusClass from '@/utils/twFocusClass'
+import { createClient } from '@/utils/supabase/client'
+import toast from 'react-hot-toast'
+import Alert from '../Alert/Alert'
 
 export interface CommentCardLikeReplyProps {
     className?: string
     onClickReply: () => void
-    likeCount: number
-    isLiked: boolean
+    id: string
 }
 
 const CommentCardLikeReply: FC<CommentCardLikeReplyProps> = ({
     className = '',
-    likeCount,
-    isLiked: likedProps,
+    id,
     onClickReply = () => {},
 }) => {
-    const [isLiked, setIsLiked] = useState(likedProps)
+    const [isLiked, setIsLiked] = useState(false)
+    const [likeCount, setLikeCount] = useState(0)
+
+    const supabase = createClient()
+
+    useEffect(() => {
+        checkLikedStatus()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id])
+
+    useEffect(() => {
+        setLikeCount(likeCount)
+    }, [likeCount])
+
+    async function checkLikedStatus() {
+        try {
+            const { data: session } = await supabase.auth.getSession()
+            const userId = session?.session?.user.id
+            const localLikes = JSON.parse(
+                localStorage.getItem('comment_likes') || '[]'
+            )
+            // Check if the post is liked by the user
+            if (userId) {
+                if (localLikes) {
+                    setIsLiked(localLikes.includes(id))
+                } else {
+                    const { data: likes, error } = await supabase
+                        .from('comment_likes')
+                        .select('id')
+                        .eq('comment', id)
+                        .eq('liker', userId)
+                    if (!error) {
+                        setIsLiked(likes.length > 0)
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error checking liked status:', error)
+        }
+    }
+
+    async function toggleLike() {
+        console.log('toggleLike')
+        try {
+            const { data: session } = await supabase.auth.getSession()
+
+            if (!session.session) {
+                toast.custom(
+                    (t) => (
+                        <Alert type="danger" message="You must be logged in" />
+                    ),
+                    {
+                        duration: 3000,
+                    }
+                )
+            }
+
+            const userId = session?.session?.user.id
+
+            if (isLiked) {
+                setLikeCount((prevLikeCount) =>
+                    prevLikeCount > 0 ? prevLikeCount - 1 : 0
+                )
+                setIsLiked(false)
+                // Delete the like from the database
+                const { data, error } = await supabase
+                    .from('comment_likes')
+                    .delete()
+                    .eq('comment', id)
+                    .eq('liker', userId)
+
+                if (error) {
+                    console.error('Error deleting like:', error)
+                    return
+                }
+                setIsLiked(false)
+
+                // Update the local like array
+                const localLikes = JSON.parse(
+                    localStorage.getItem('comment_likes') || '[]'
+                )
+                const updatedLocalLikes = localLikes.filter(
+                    (like: string) => like !== id
+                )
+                localStorage.setItem(
+                    'comment_likes',
+                    JSON.stringify(updatedLocalLikes)
+                )
+            } else {
+                setIsLiked(true)
+                setLikeCount((prevLikeCount) => prevLikeCount + 1)
+
+                // Insert a new like into the database
+                const { error } = await supabase
+                    .from('comment_likes')
+                    .insert([{ post: id, liker: userId }])
+                    .select()
+
+                if (error) {
+                    console.log('Error inserting like:', error)
+                    return
+                }
+
+                // Update the local like array
+                const localLikes = JSON.parse(
+                    localStorage.getItem('comment_likes') || '[]'
+                )
+                localLikes.push(id)
+                localStorage.setItem(
+                    'comment_likes',
+                    JSON.stringify(localLikes)
+                )
+            }
+        } catch (error) {
+            console.error('Error toggling like:', error)
+        }
+    }
 
     const renderActionBtns = () => {
         return (
@@ -28,7 +145,7 @@ const CommentCardLikeReply: FC<CommentCardLikeReplyProps> = ({
                             ? 'text-rose-600 bg-rose-50'
                             : 'text-neutral-700 bg-neutral-100 dark:text-neutral-200 dark:bg-neutral-800 hover:bg-rose-50 hover:text-rose-600 dark:hover:text-rose-500'
                     }`}
-                    onClick={() => setIsLiked(!isLiked)}
+                    onClick={toggleLike}
                     title="Liked"
                 >
                     <svg

@@ -71,6 +71,10 @@ function checkForImg(str: string | null) {
     )
 }
 
+function strWords(str: string) {
+    return str.split(/\s+/).length
+}
+
 export async function POST(request: Request) {
     const { selectedPosts, website } = (await request.json()) as {
         selectedPosts: WordPressPostType[]
@@ -180,6 +184,9 @@ export async function POST(request: Request) {
                     description: post.description,
                     text: post.text,
                     json: post.json,
+                    estimated_reading_time: Math.round(
+                        strWords(post.text) / 200
+                    ),
                     author: user,
                 })
                 .select('id')
@@ -228,11 +235,6 @@ export async function POST(request: Request) {
                 .eq('id', postId)
         }
     })
-
-    // //Return status 200
-    // return new Response('Success!', {
-    //     status: 200,
-    // })
 
     //Return literally everything
     return new Response(JSON.stringify({ selectedPosts, tags }), {

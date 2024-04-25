@@ -1,5 +1,6 @@
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
+import MobileBar from '@/components/Header/MobileBar'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
@@ -7,6 +8,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Header />
             {children}
             <Footer />
+            <MobileBar />
         </div>
     )
 }

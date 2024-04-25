@@ -19,7 +19,6 @@ const SectionMagazine1: FC<SectionMagazine1Props> = ({
     className = '',
 }) => {
     const [myPosts, setPosts] = useState<PostType[]>(posts)
-    console.log(myPosts)
 
     const handleHidePost = (id: string) => {
         //Filter out the post with the id

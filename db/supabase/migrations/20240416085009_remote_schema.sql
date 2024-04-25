@@ -14,6 +14,9 @@ CREATE SCHEMA IF NOT EXISTS "public";
 
 ALTER SCHEMA "public" OWNER TO "pg_database_owner";
 
+CREATE EXTENSION IF NOT EXISTS "vector"
+	SCHEMA "public";
+
 CREATE TYPE "public"."authortype" AS (
 	"id" "text",
 	"name" "text",
@@ -453,132 +456,59 @@ $$;
 
 ALTER FUNCTION "public"."get_category_data"("category_id" "uuid") OWNER TO "postgres";
 
-CREATE OR REPLACE FUNCTION "public"."get_home_data"() RETURNS TABLE("popular_posts" "public"."posttype"[], "most_followed_users" "public"."authortype"[], "most_post_categories" "public"."categorytype"[])
+CREATE OR REPLACE FUNCTION "public"."get_home_data"() RETURNS TABLE("id" "uuid", "title" "text", "image" "text", "created_at" timestamp with time zone, "author" "jsonb", "post_topics" "jsonb"[], "likecount" "jsonb"[], "commentcount" "jsonb"[], "bookmarkcount" "jsonb"[])
     LANGUAGE "plpgsql"
     AS $$
 BEGIN
-  -- Logic for getting popular posts
-  SELECT
-    array_to_json(array_agg(JSON_BUILD_OBJECT(
-      'id', p.id,
-      'title', p.title,
-      'image', p.image,
-      'created_at', p.created_at,
-      'author', JSON_BUILD_OBJECT(
-        'id', u.id,
-        'verified', u.verified,
-        'name', u.name,
-        'username', u.username,
-        'avatar', u.avatar,
-        'description', u.bio
-      ),
-      'post_categories', (
-        SELECT
-          array_to_json(array_agg(JSON_BUILD_OBJECT(
-            'category', JSON_BUILD_OBJECT(
-              'name', c.name,
-              'color', c.color
+    RETURN QUERY 
+    SELECT 
+        p.id,
+        p.title,
+        p.image,
+        p.created_at,
+        jsonb_build_object(
+            'id', u.id,
+            'verified', u.verified,
+            'name', u.name,
+            'username', u.username,
+            'avatar', u.avatar
+        ) AS author,
+        jsonb_agg(
+            jsonb_build_object(
+                'topic', jsonb_build_object(
+                    'name', c.name,
+                    'id', c.id,
+                    'color', c.color
+                )
             )
-          )))
-        FROM categories c
-        JOIN post_categories pc ON c.id = pc.category
-        WHERE pc.post = p.id
-      ),
-      'likeCount', (
-        SELECT
-          json_build_object('count', COUNT(*))
-        FROM likes
+        ) AS post_topics,
+        jsonb_build_array(jsonb_build_object('count', COALESCE(lc.count, 0))) AS likeCount,
+        jsonb_build_array(jsonb_build_object('count', COALESCE(cc.count, 0))) AS commentCount,
+        jsonb_build_array(jsonb_build_object('count', COALESCE(bc.count, 0))) AS bookmarkCount
+    FROM 
+        public.posts p
+    JOIN 
+        public.users u ON p.author = u.id
+    LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS count
+        FROM public.likes
         WHERE post = p.id
-      ),
-      'commentCount', (
-        SELECT
-          json_build_object('count', COUNT(*))
-        FROM comments
+    ) lc ON true
+    LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS count
+        FROM public.comments
         WHERE post = p.id
-      ),
-      'isliked', (
-        SELECT
-          EXISTS (
-            SELECT 1
-            FROM likes
-            WHERE post = p.id
-            AND liker = current_user
-          )
-      ),
-      'isBookmarked', (
-        SELECT
-          EXISTS (
-            SELECT 1
-            FROM bookmarks
-            WHERE post = p.id
-            AND user_id = current_user
-          )
-      )
-    )))
-  INTO popular_posts
-  FROM posts p
-  JOIN users u ON p.author = u.id::UUID
-  LIMIT 10;
-
-  -- Logic for getting most followed users
-  SELECT
-    array_to_json(array_agg(JSON_BUILD_OBJECT(
-      'id', u.id,
-      'name', u.name,
-      'followerCount', (
-        SELECT
-          COUNT(*)
-        FROM followers
-        WHERE following = u.id::UUID
-      ),
-      'isFollowing', (
-        SELECT
-          EXISTS (
-            SELECT 1
-            FROM followers
-            WHERE follower = current_user
-            AND following = u.id::UUID
-          )
-      ),
-      'username', u.username,
-      'bio', u.bio,
-      'website', u.website,
-      'avatar', u.avatar,
-      'postCount', (
-        SELECT
-          COUNT(*)
-        FROM posts
-        WHERE author = u.id::UUID
-      ),
-      'verified', u.verified
-    )))
-  INTO most_followed_users
-  FROM users u
-  JOIN followers f ON u.id = f.following
-  GROUP BY u.id
-  ORDER BY COUNT(f.id) DESC
-  LIMIT 10;
-
-  -- Logic for getting categories with the most posts
-  SELECT
-    array_to_json(array_agg(JSON_BUILD_OBJECT(
-      'name', c.name,
-      'postCount', (
-        SELECT
-          COUNT(*)
-        FROM post_categories
-        WHERE category = c.id::UUID
-      ),
-      'color', c.color
-    )))
-  INTO most_post_categories
-  FROM categories c
-  JOIN post_categories pc ON c.id = pc.category
-  GROUP BY c.id
-  ORDER BY COUNT(pc.id) DESC
-  LIMIT 10;
-
-  RETURN;
+    ) cc ON true
+    LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS count
+        FROM public.bookmarks
+        WHERE post = p.id
+    ) bc ON true
+    LEFT JOIN public.post_topics pc ON p.id = pc.post
+    LEFT JOIN public.topics c ON pc.topic = c.id
+    GROUP BY p.id, u.id, u.verified, u.name, u.username, u.avatar
+    ORDER BY COALESCE((SELECT COUNT(*) FROM public.likes WHERE post = p.id), 0) DESC
+    LIMIT 10; -- Change the limit as needed to get top N most liked posts
 END;
 $$;
 
@@ -679,16 +609,16 @@ SET default_tablespace = '';
 
 SET default_table_access_method = "heap";
 
-CREATE TABLE IF NOT EXISTS "public"."categories" (
+CREATE TABLE IF NOT EXISTS "public"."topics" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "name" character varying,
     "color" character varying DEFAULT 'blue'::character varying,
     "image" "text"
 );
 
-ALTER TABLE "public"."categories" OWNER TO "postgres";
+ALTER TABLE "public"."topics" OWNER TO "postgres";
 
-CREATE OR REPLACE FUNCTION "public"."get_or_create_categories"("input_categories" character varying[]) RETURNS SETOF "public"."categories"
+CREATE OR REPLACE FUNCTION "public"."get_or_create_categories"("input_categories" character varying[]) RETURNS SETOF "public"."topics"
     LANGUAGE "plpgsql"
     AS $$
 DECLARE
@@ -1070,6 +1000,36 @@ $$;
 
 ALTER FUNCTION "public"."manage_categories"("categories" character varying[], OUT "cat_id" "uuid", OUT "cat_name" character varying, OUT "cat_color" character varying) OWNER TO "postgres";
 
+CREATE OR REPLACE FUNCTION "public"."manage_topics"("topics" character varying[], OUT "top_id" "uuid", OUT "top_name" character varying, OUT "top_color" character varying) RETURNS SETOF "record"
+    LANGUAGE "plpgsql"
+    AS $$
+BEGIN
+    FOR top_name IN SELECT unnest(topics) LOOP
+        -- Check if topic exists
+        SELECT id, color INTO top_id, top_color FROM public.topics WHERE name = top_name;
+        
+        -- If topic doesn't exist, create it
+        IF NOT FOUND THEN
+            -- Generate random color
+            top_color := CASE floor(random()*4)::int
+                             WHEN 0 THEN 'red'
+                             WHEN 1 THEN 'green'
+                             WHEN 2 THEN 'blue'
+                             ELSE 'yellow'
+                           END;
+            -- Insert new topic
+            INSERT INTO public.topics (id, name, color) VALUES (gen_random_uuid(), top_name, top_color) RETURNING id INTO top_id;
+        END IF;
+        
+        -- Return topic details
+        RETURN NEXT;
+    END LOOP;
+    RETURN;
+END;
+$$;
+
+ALTER FUNCTION "public"."manage_topics"("topics" character varying[], OUT "top_id" "uuid", OUT "top_name" character varying, OUT "top_color" character varying) OWNER TO "postgres";
+
 CREATE OR REPLACE FUNCTION "public"."match_posts"("query_embedding" "public"."vector", "match_threshold" double precision, "match_count" integer) RETURNS TABLE("id" "uuid", "title" "text", "created_at" timestamp with time zone, "description" "text", "likecount" "jsonb", "commentcount" "jsonb", "likes" "jsonb", "bookmarks" "jsonb", "image" "text", "author" "jsonb", "post_categories" "jsonb", "similarity" double precision)
     LANGUAGE "sql" STABLE
     AS $$
@@ -1119,7 +1079,7 @@ $$;
 
 ALTER FUNCTION "public"."match_posts"("query_embedding" "public"."vector", "match_threshold" double precision, "match_count" integer) OWNER TO "postgres";
 
-CREATE OR REPLACE FUNCTION "public"."match_posts"("query_embedding" "public"."vector", "match_threshold" double precision, "match_count" integer, "filter_option" "text") RETURNS TABLE("id" "uuid", "title" "text", "created_at" timestamp with time zone, "description" "text", "likecount" "jsonb", "commentcount" "jsonb", "likes" "jsonb", "bookmarks" "jsonb", "image" "text", "author" "jsonb", "post_categories" "jsonb", "similarity" double precision)
+CREATE OR REPLACE FUNCTION "public"."match_posts"("query_embedding" "public"."vector", "match_threshold" double precision, "match_count" integer, "filter_option" "text") RETURNS TABLE("id" "uuid", "title" "text", "created_at" timestamp with time zone, "description" "text", "likecount" "jsonb", "commentcount" "jsonb", "likes" "jsonb", "bookmarks" "jsonb", "image" "text", "author" "jsonb", "post_topics" "jsonb", "similarity" double precision)
     LANGUAGE "sql" STABLE
     AS $$
   SELECT
@@ -1147,18 +1107,18 @@ CREATE OR REPLACE FUNCTION "public"."match_posts"("query_embedding" "public"."ve
     ) AS author,
     json_agg(
       json_build_object(
-        'category',
+        'topic',
         json_build_object(
-          'name', categories.name,
-          'color', categories.color
+          'name', topics.name,
+          'color', topics.color
         )
       )
-    ) AS post_categories,
+    ) AS post_topics,
     1 - (posts.embeddings <=> query_embedding) AS similarity
   FROM posts
   LEFT JOIN users ON posts.author = users.id
-  LEFT JOIN post_categories ON posts.id = post_categories.post
-  LEFT JOIN categories ON post_categories.category = categories.id
+  LEFT JOIN post_topics ON posts.id = post_topics.post
+  LEFT JOIN topics ON post_topics.topic = topics.id
   LEFT JOIN comments ON posts.id = comments.post
   LEFT JOIN likes ON posts.id = likes.post
   WHERE 1 - (posts.embeddings <=> query_embedding) > match_threshold AND posts.scheduled_at IS null
@@ -1233,7 +1193,7 @@ $$;
 
 ALTER FUNCTION "public"."notify_on_like"() OWNER TO "postgres";
 
-CREATE OR REPLACE FUNCTION "public"."related_posts"("post_id" "uuid", "match_threshold" double precision, "match_count" integer) RETURNS TABLE("id" "uuid", "title" "text", "created_at" timestamp with time zone, "description" "text", "likecount" "jsonb", "commentcount" "jsonb", "likes" "jsonb", "bookmarks" "jsonb", "image" "text", "author" "jsonb", "post_categories" "jsonb", "similarity" double precision)
+CREATE OR REPLACE FUNCTION "public"."related_posts"("post_id" "uuid", "match_threshold" double precision, "match_count" integer) RETURNS TABLE("id" "uuid", "title" "text", "created_at" timestamp with time zone, "description" "text", "likecount" "jsonb", "commentcount" "jsonb", "likes" "jsonb", "bookmarks" "jsonb", "image" "text", "author" "jsonb", "post_topics" "jsonb", "similarity" double precision)
     LANGUAGE "sql" STABLE
     AS $$
   SELECT
@@ -1254,26 +1214,26 @@ CREATE OR REPLACE FUNCTION "public"."related_posts"("post_id" "uuid", "match_thr
     (
       SELECT json_agg(
         json_build_object(
-          'category',
+          'topic',
           json_build_object(
             'name',
-            categories.name,
+            topics.name,
             'color',
-            categories.color
+            topics.color
           )
         )
       )
-      FROM post_categories pc2
-      LEFT JOIN categories ON pc2.category = categories.id
+      FROM post_topics pc2
+      LEFT JOIN topics ON pc2.topic = topics.id
       WHERE pc2.post = posts.id
-    ) AS post_categories,
+    ) AS post_topics,
     1 - (posts.embeddings <=> posts.embeddings) AS similarity
   FROM posts
   LEFT JOIN users ON posts.author = users.id
-  LEFT JOIN post_categories ON posts.id = post_categories.post
-  LEFT JOIN categories ON post_categories.category = categories.id
+  LEFT JOIN post_topics ON posts.id = post_topics.post
+  LEFT JOIN topics ON post_topics.topic = topics.id
   LEFT JOIN comments ON posts.id = comments.post
-  LEFT JOIN post_categories pc ON pc.post = posts.id
+  LEFT JOIN post_topics pc ON pc.post = posts.id
   LEFT JOIN posts related_posts ON related_posts.id = pc.post
   WHERE related_posts.id = post_id
     AND posts.id <> post_id -- Exclude the post with the same ID
@@ -1396,16 +1356,16 @@ ALTER TABLE "public"."comments" ALTER COLUMN "id" ADD GENERATED BY DEFAULT AS ID
     CACHE 1
 );
 
-CREATE TABLE IF NOT EXISTS "public"."draft_categories" (
+CREATE TABLE IF NOT EXISTS "public"."draft_topics" (
     "id" bigint NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "draft" "uuid",
-    "category" "uuid"
+    "topic" "uuid"
 );
 
-ALTER TABLE "public"."draft_categories" OWNER TO "postgres";
+ALTER TABLE "public"."draft_topics" OWNER TO "postgres";
 
-ALTER TABLE "public"."draft_categories" ALTER COLUMN "id" ADD GENERATED BY DEFAULT AS IDENTITY (
+ALTER TABLE "public"."draft_topics" ALTER COLUMN "id" ADD GENERATED BY DEFAULT AS IDENTITY (
     SEQUENCE NAME "public"."draft_categories_id_seq"
     START WITH 1
     INCREMENT BY 1
@@ -1522,12 +1482,12 @@ CREATE TABLE IF NOT EXISTS "public"."notifications" (
 
 ALTER TABLE "public"."notifications" OWNER TO "postgres";
 
-CREATE TABLE IF NOT EXISTS "public"."post_categories" (
+CREATE TABLE IF NOT EXISTS "public"."post_topics" (
     "post" "uuid" NOT NULL,
-    "category" "uuid" NOT NULL
+    "topic" "uuid" NOT NULL
 );
 
-ALTER TABLE "public"."post_categories" OWNER TO "postgres";
+ALTER TABLE "public"."post_topics" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."posts" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
@@ -1668,7 +1628,7 @@ ALTER TABLE ONLY "public"."comment_likes"
 ALTER TABLE ONLY "public"."comments"
     ADD CONSTRAINT "comments_pkey" PRIMARY KEY ("id");
 
-ALTER TABLE ONLY "public"."draft_categories"
+ALTER TABLE ONLY "public"."draft_topics"
     ADD CONSTRAINT "draft_categories_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE ONLY "public"."drafts"
@@ -1689,8 +1649,8 @@ ALTER TABLE ONLY "public"."notification_settings"
 ALTER TABLE ONLY "public"."notifications"
     ADD CONSTRAINT "notifications_pkey" PRIMARY KEY ("id");
 
-ALTER TABLE ONLY "public"."post_categories"
-    ADD CONSTRAINT "post_categories_pkey" PRIMARY KEY ("post", "category");
+ALTER TABLE ONLY "public"."post_topics"
+    ADD CONSTRAINT "post_topics_pkey" PRIMARY KEY ("post", "topic");
 
 ALTER TABLE ONLY "public"."posts"
     ADD CONSTRAINT "posts_index_key" UNIQUE ("index");
@@ -1707,7 +1667,7 @@ ALTER TABLE ONLY "public"."team_members"
 ALTER TABLE ONLY "public"."teams"
     ADD CONSTRAINT "teams_pkey" PRIMARY KEY ("id");
 
-ALTER TABLE ONLY "public"."categories"
+ALTER TABLE ONLY "public"."topics"
     ADD CONSTRAINT "topics_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE ONLY "public"."watch_history"
@@ -1727,6 +1687,8 @@ ALTER TABLE ONLY "public"."users"
 
 ALTER TABLE ONLY "public"."watch_history"
     ADD CONSTRAINT "watch_history_pkey" PRIMARY KEY ("id");
+
+CREATE OR REPLACE TRIGGER "addEmbeddings" AFTER INSERT ON "public"."posts" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://vkruooaeaacsdxvfxwpu.supabase.co/functions/v1/genEmbeds', 'POST', '{"Content-type":"application/json"}', '{}', '5000');
 
 CREATE OR REPLACE TRIGGER "check_banned_email_trigger" AFTER INSERT ON "public"."users" FOR EACH ROW EXECUTE FUNCTION "public"."check_banned_email"();
 
@@ -1750,10 +1712,10 @@ ALTER TABLE ONLY "public"."comments"
 ALTER TABLE ONLY "public"."comments"
     ADD CONSTRAINT "comments_post_fkey" FOREIGN KEY ("post") REFERENCES "public"."posts"("id") ON UPDATE CASCADE ON DELETE CASCADE;
 
-ALTER TABLE ONLY "public"."draft_categories"
-    ADD CONSTRAINT "draft_categories_category_fkey" FOREIGN KEY ("category") REFERENCES "public"."categories"("id") ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY "public"."draft_topics"
+    ADD CONSTRAINT "draft_categories_category_fkey" FOREIGN KEY ("topic") REFERENCES "public"."topics"("id") ON UPDATE CASCADE ON DELETE CASCADE;
 
-ALTER TABLE ONLY "public"."draft_categories"
+ALTER TABLE ONLY "public"."draft_topics"
     ADD CONSTRAINT "draft_categories_draft_fkey" FOREIGN KEY ("draft") REFERENCES "public"."drafts"("id") ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY "public"."drafts"
@@ -1774,10 +1736,10 @@ ALTER TABLE ONLY "public"."notifications"
 ALTER TABLE ONLY "public"."notifications"
     ADD CONSTRAINT "notifications_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON UPDATE CASCADE ON DELETE CASCADE;
 
-ALTER TABLE ONLY "public"."post_categories"
-    ADD CONSTRAINT "post_categories_category_fkey" FOREIGN KEY ("category") REFERENCES "public"."categories"("id") ON DELETE CASCADE;
+ALTER TABLE ONLY "public"."post_topics"
+    ADD CONSTRAINT "post_categories_category_fkey" FOREIGN KEY ("topic") REFERENCES "public"."topics"("id") ON DELETE CASCADE;
 
-ALTER TABLE ONLY "public"."post_categories"
+ALTER TABLE ONLY "public"."post_topics"
     ADD CONSTRAINT "post_categories_post_fkey" FOREIGN KEY ("post") REFERENCES "public"."posts"("id") ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY "public"."posts"
@@ -1832,9 +1794,9 @@ CREATE POLICY "Anyone can access posts" ON "public"."posts" FOR SELECT USING (tr
 
 CREATE POLICY "Enable delete access based on their id" ON "public"."comments" FOR DELETE USING (("auth"."uid"() = "commenter"));
 
-CREATE POLICY "Enable delete for everyone" ON "public"."draft_categories" FOR DELETE USING (true);
+CREATE POLICY "Enable delete for everyone" ON "public"."draft_topics" FOR DELETE USING (true);
 
-CREATE POLICY "Enable delete for everyone" ON "public"."post_categories" FOR DELETE USING (true);
+CREATE POLICY "Enable delete for everyone" ON "public"."post_topics" FOR DELETE USING (true);
 
 CREATE POLICY "Enable delete for users based on liker" ON "public"."likes" FOR DELETE USING (("auth"."uid"() = "liker"));
 
@@ -1856,13 +1818,11 @@ CREATE POLICY "Enable delete for users based on user_id" ON "public"."watch_hist
 
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."bookmarks" FOR INSERT TO "authenticated" WITH CHECK (true);
 
-CREATE POLICY "Enable insert for authenticated users only" ON "public"."categories" FOR INSERT TO "authenticated" WITH CHECK (true);
-
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."comment_likes" FOR INSERT TO "authenticated" WITH CHECK (true);
 
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."comments" FOR INSERT TO "authenticated" WITH CHECK (true);
 
-CREATE POLICY "Enable insert for authenticated users only" ON "public"."draft_categories" FOR INSERT TO "authenticated" WITH CHECK (true);
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."draft_topics" FOR INSERT TO "authenticated" WITH CHECK (true);
 
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."drafts" FOR INSERT TO "authenticated" WITH CHECK (true);
 
@@ -1876,11 +1836,13 @@ CREATE POLICY "Enable insert for authenticated users only" ON "public"."notifica
 
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."notifications" FOR INSERT TO "authenticated" WITH CHECK (true);
 
-CREATE POLICY "Enable insert for authenticated users only" ON "public"."post_categories" FOR INSERT TO "authenticated" WITH CHECK (true);
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."post_topics" FOR INSERT TO "authenticated" WITH CHECK (true);
 
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."posts" FOR INSERT TO "authenticated" WITH CHECK (true);
 
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."team_members" FOR INSERT TO "authenticated" WITH CHECK (true);
+
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."topics" FOR INSERT TO "authenticated" WITH CHECK (true);
 
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."users" FOR INSERT TO "authenticated" WITH CHECK (true);
 
@@ -1892,21 +1854,21 @@ CREATE POLICY "Enable read access based on user_id" ON "public"."drafts" FOR SEL
 
 CREATE POLICY "Enable read access for all users" ON "public"."bookmarks" FOR SELECT USING (true);
 
-CREATE POLICY "Enable read access for all users" ON "public"."categories" FOR SELECT USING (true);
-
 CREATE POLICY "Enable read access for all users" ON "public"."comment_likes" FOR SELECT USING (true);
 
 CREATE POLICY "Enable read access for all users" ON "public"."comments" FOR SELECT USING (true);
 
-CREATE POLICY "Enable read access for all users" ON "public"."draft_categories" FOR SELECT USING (true);
+CREATE POLICY "Enable read access for all users" ON "public"."draft_topics" FOR SELECT USING (true);
 
 CREATE POLICY "Enable read access for all users" ON "public"."followers" FOR SELECT USING (true);
 
 CREATE POLICY "Enable read access for all users" ON "public"."likes" FOR SELECT USING (true);
 
-CREATE POLICY "Enable read access for all users" ON "public"."post_categories" FOR SELECT USING (true);
+CREATE POLICY "Enable read access for all users" ON "public"."post_topics" FOR SELECT USING (true);
 
 CREATE POLICY "Enable read access for all users" ON "public"."team_members" FOR SELECT USING (true);
+
+CREATE POLICY "Enable read access for all users" ON "public"."topics" FOR SELECT USING (true);
 
 CREATE POLICY "Enable read access for all users" ON "public"."users" FOR SELECT USING (true);
 
@@ -1922,7 +1884,7 @@ CREATE POLICY "Enable update access for users based on user_id" ON "public"."not
 
 CREATE POLICY "Enable update based on user's id" ON "public"."users" FOR UPDATE TO "authenticated" USING (("auth"."uid"() = "id")) WITH CHECK (("auth"."uid"() = "id"));
 
-CREATE POLICY "Enable update for authenticated users only" ON "public"."categories" FOR UPDATE TO "authenticated" USING (true) WITH CHECK (true);
+CREATE POLICY "Enable update for authenticated users only" ON "public"."topics" FOR UPDATE TO "authenticated" USING (true) WITH CHECK (true);
 
 CREATE POLICY "Enable update for users based on their id" ON "public"."posts" FOR UPDATE USING (("auth"."uid"() = "author")) WITH CHECK (("auth"."uid"() = "author"));
 
@@ -1936,13 +1898,11 @@ ALTER TABLE "public"."banned_users" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."bookmarks" ENABLE ROW LEVEL SECURITY;
 
-ALTER TABLE "public"."categories" ENABLE ROW LEVEL SECURITY;
-
 ALTER TABLE "public"."comment_likes" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."comments" ENABLE ROW LEVEL SECURITY;
 
-ALTER TABLE "public"."draft_categories" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."draft_topics" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."drafts" ENABLE ROW LEVEL SECURITY;
 
@@ -1956,7 +1916,7 @@ ALTER TABLE "public"."notification_settings" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."notifications" ENABLE ROW LEVEL SECURITY;
 
-ALTER TABLE "public"."post_categories" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."post_topics" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."posts" ENABLE ROW LEVEL SECURITY;
 
@@ -1965,6 +1925,8 @@ ALTER TABLE "public"."reports" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."team_members" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."teams" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "public"."topics" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."users" ENABLE ROW LEVEL SECURITY;
 
@@ -2004,9 +1966,9 @@ GRANT ALL ON FUNCTION "public"."get_home_data"("current_user_uuid" "uuid") TO "a
 GRANT ALL ON FUNCTION "public"."get_home_data"("current_user_uuid" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_home_data"("current_user_uuid" "uuid") TO "service_role";
 
-GRANT ALL ON TABLE "public"."categories" TO "anon";
-GRANT ALL ON TABLE "public"."categories" TO "authenticated";
-GRANT ALL ON TABLE "public"."categories" TO "service_role";
+GRANT ALL ON TABLE "public"."topics" TO "anon";
+GRANT ALL ON TABLE "public"."topics" TO "authenticated";
+GRANT ALL ON TABLE "public"."topics" TO "service_role";
 
 GRANT ALL ON FUNCTION "public"."get_or_create_categories"("input_categories" character varying[]) TO "anon";
 GRANT ALL ON FUNCTION "public"."get_or_create_categories"("input_categories" character varying[]) TO "authenticated";
@@ -2031,6 +1993,10 @@ GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
 GRANT ALL ON FUNCTION "public"."manage_categories"("categories" character varying[], OUT "cat_id" "uuid", OUT "cat_name" character varying, OUT "cat_color" character varying) TO "anon";
 GRANT ALL ON FUNCTION "public"."manage_categories"("categories" character varying[], OUT "cat_id" "uuid", OUT "cat_name" character varying, OUT "cat_color" character varying) TO "authenticated";
 GRANT ALL ON FUNCTION "public"."manage_categories"("categories" character varying[], OUT "cat_id" "uuid", OUT "cat_name" character varying, OUT "cat_color" character varying) TO "service_role";
+
+GRANT ALL ON FUNCTION "public"."manage_topics"("topics" character varying[], OUT "top_id" "uuid", OUT "top_name" character varying, OUT "top_color" character varying) TO "anon";
+GRANT ALL ON FUNCTION "public"."manage_topics"("topics" character varying[], OUT "top_id" "uuid", OUT "top_name" character varying, OUT "top_color" character varying) TO "authenticated";
+GRANT ALL ON FUNCTION "public"."manage_topics"("topics" character varying[], OUT "top_id" "uuid", OUT "top_name" character varying, OUT "top_color" character varying) TO "service_role";
 
 GRANT ALL ON FUNCTION "public"."match_posts"("query_embedding" "public"."vector", "match_threshold" double precision, "match_count" integer) TO "anon";
 GRANT ALL ON FUNCTION "public"."match_posts"("query_embedding" "public"."vector", "match_threshold" double precision, "match_count" integer) TO "authenticated";
@@ -2100,9 +2066,9 @@ GRANT ALL ON SEQUENCE "public"."comments_id_seq" TO "anon";
 GRANT ALL ON SEQUENCE "public"."comments_id_seq" TO "authenticated";
 GRANT ALL ON SEQUENCE "public"."comments_id_seq" TO "service_role";
 
-GRANT ALL ON TABLE "public"."draft_categories" TO "anon";
-GRANT ALL ON TABLE "public"."draft_categories" TO "authenticated";
-GRANT ALL ON TABLE "public"."draft_categories" TO "service_role";
+GRANT ALL ON TABLE "public"."draft_topics" TO "anon";
+GRANT ALL ON TABLE "public"."draft_topics" TO "authenticated";
+GRANT ALL ON TABLE "public"."draft_topics" TO "service_role";
 
 GRANT ALL ON SEQUENCE "public"."draft_categories_id_seq" TO "anon";
 GRANT ALL ON SEQUENCE "public"."draft_categories_id_seq" TO "authenticated";
@@ -2148,9 +2114,9 @@ GRANT ALL ON TABLE "public"."notifications" TO "anon";
 GRANT ALL ON TABLE "public"."notifications" TO "authenticated";
 GRANT ALL ON TABLE "public"."notifications" TO "service_role";
 
-GRANT ALL ON TABLE "public"."post_categories" TO "anon";
-GRANT ALL ON TABLE "public"."post_categories" TO "authenticated";
-GRANT ALL ON TABLE "public"."post_categories" TO "service_role";
+GRANT ALL ON TABLE "public"."post_topics" TO "anon";
+GRANT ALL ON TABLE "public"."post_topics" TO "authenticated";
+GRANT ALL ON TABLE "public"."post_topics" TO "service_role";
 
 GRANT ALL ON TABLE "public"."posts" TO "anon";
 GRANT ALL ON TABLE "public"."posts" TO "authenticated";

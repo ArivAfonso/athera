@@ -34,7 +34,7 @@ const DashboardScheduled = () => {
                         `id, title, created_at, scheduled_at, image, post_topics(topic:topics(id,name,color)), bookmarkCount:bookmarks(count), commentCount:comments(count), likeCount:likes(count)`
                     )
                     .eq('author', session.session?.user.id)
-                    .neq('scheduled_at', null)
+                    .is('posts.scheduled_at', null)
 
                 data?.forEach((item) => {
                     item.created_at = new Date(

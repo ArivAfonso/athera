@@ -1,322 +1,138 @@
-'use client'
-import { useEffect, useRef, useState } from 'react'
-import { Color, Scene, PerspectiveCamera, Vector3 } from 'three'
-import ThreeGlobe from 'three-globe'
-import { useThree, Object3DNode, Canvas, extend } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
-import countries from '@/data/globe.json'
-declare module '@react-three/fiber' {
-    interface ThreeElements {
-        threeGlobe: Object3DNode<ThreeGlobe, typeof ThreeGlobe>
-    }
+import { useThemeMode } from '@/hooks/useThemeMode'
+import createGlobe from 'cobe'
+import { useEffect, useRef } from 'react'
+import { useSpring, SpringConfig } from 'react-spring'
+
+interface Marker {
+    lat: number
+    lon: number
+    color: number[]
 }
 
-extend({ ThreeGlobe })
-
-const RING_PROPAGATION_SPEED = 3
-const aspect = 1.2
-const cameraZ = 300
-
-type Position = {
-    order: number
-    startLat: number
-    startLng: number
-    endLat: number
-    endLng: number
-    arcAlt: number
-    color: string
+interface CobeProps {
+    // Add any additional props here
 }
 
-export type GlobeConfig = {
-    pointSize?: number
-    globeColor?: string
-    showAtmosphere?: boolean
-    atmosphereColor?: string
-    atmosphereAltitude?: number
-    emissive?: string
-    emissiveIntensity?: number
-    shininess?: number
-    polygonColor?: string
-    ambientLight?: string
-    directionalLeftLight?: string
-    directionalTopLight?: string
-    pointLight?: string
-    arcTime?: number
-    arcLength?: number
-    rings?: number
-    maxRings?: number
-    initialPosition?: {
-        lat: number
-        lng: number
-    }
-    autoRotate?: boolean
-    autoRotateSpeed?: number
-}
+function Cobe(props: CobeProps) {
+    const canvasRef = useRef<HTMLCanvasElement>(null)
+    const pointerInteracting = useRef<number | null>(null)
+    const pointerInteractionMovement = useRef<number>(0)
+    const { isDarkMode } = useThemeMode()
 
-interface WorldProps {
-    globeConfig: GlobeConfig
-    data: Position[]
-}
-
-let numbersOfRings = [0]
-
-export function Globe({ globeConfig, data }: WorldProps) {
-    const [globeData, setGlobeData] = useState<
-        | {
-              size: number
-              order: number
-              color: (t: number) => string
-              lat: number
-              lng: number
-          }[]
-        | null
-    >(null)
-
-    const globeRef = useRef<ThreeGlobe | null>(null)
-
-    const defaultProps = {
-        pointSize: 1,
-        atmosphereColor: '#ffffff',
-        globeColor: '#ffffff',
-        showAtmosphere: true,
-        atmosphereAltitude: 0.1,
-        polygonColor: 'rgba(255,255,255,0.7)',
-        emissive: '#000000',
-        emissiveIntensity: 0.1,
-        shininess: 0.9,
-        arcTime: 2000,
-        arcLength: 0.9,
-        rings: 1,
-        maxRings: 3,
-        ...globeConfig,
-    }
+    const [{ r }, api] = useSpring<{ r: number }>(() => ({
+        r: 0,
+        config: {
+            mass: 1,
+            tension: 280,
+            friction: 40,
+            precision: 0.001,
+        },
+    }))
 
     useEffect(() => {
-        if (globeRef.current) {
-            _buildData()
-            _buildMaterial()
-        }
-    }, [globeRef.current])
+        let phi = 0
+        let theta = 0.3
+        let width = 0
 
-    const _buildMaterial = () => {
-        if (!globeRef.current) return
-
-        const globeMaterial = globeRef.current.globeMaterial() as unknown as {
-            color: Color
-            emissive: Color
-            emissiveIntensity: number
-            shininess: number
-        }
-        globeMaterial.color = new Color(globeConfig.globeColor)
-        globeMaterial.emissive = new Color(globeConfig.emissive)
-        globeMaterial.emissiveIntensity = globeConfig.emissiveIntensity || 0.1
-        globeMaterial.shininess = globeConfig.shininess || 0.9
-    }
-
-    const _buildData = () => {
-        const arcs = data
-        let points = []
-        for (let i = 0; i < arcs.length; i++) {
-            const arc = arcs[i]
-            const rgb = hexToRgb(arc.color) as {
-                r: number
-                g: number
-                b: number
-            }
-            points.push({
-                size: defaultProps.pointSize,
-                order: arc.order,
-                color: (t: number) =>
-                    `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${1 - t})`,
-                lat: arc.startLat,
-                lng: arc.startLng,
-            })
-            points.push({
-                size: defaultProps.pointSize,
-                order: arc.order,
-                color: (t: number) =>
-                    `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${1 - t})`,
-                lat: arc.endLat,
-                lng: arc.endLng,
-            })
+        const onResize = () => {
+            if (canvasRef.current) width = canvasRef.current.offsetWidth
         }
 
-        // remove duplicates for same lat and lng
-        const filteredPoints = points.filter(
-            (v, i, a) =>
-                a.findIndex((v2) =>
-                    ['lat', 'lng'].every(
-                        (k) => v2[k as 'lat' | 'lng'] === v[k as 'lat' | 'lng']
-                    )
-                ) === i
-        )
+        window.addEventListener('resize', onResize)
+        onResize()
 
-        setGlobeData(filteredPoints)
-    }
+        //@ts-ignore
+        const globe = createGlobe(canvasRef.current, {
+            devicePixelRatio: 2,
+            baseColor: isDarkMode ? [0.024, 0.125, 0.337] : [0.973, 0.973, 1],
+            width: width * 2,
+            height: width * 2,
+            opacity: isDarkMode ? 0.42 : 0.9,
+            phi: 0,
+            theta: 0.3,
+            dark: isDarkMode ? 1 : 0,
+            diffuse: 1.25,
+            mapSamples: isDarkMode ? 30000 : 40000,
+            mapBrightness: 8.2,
+            scale: 1.0,
+            markerColor: [251 / 255, 100 / 255, 21 / 255],
+            glowColor: isDarkMode
+                ? [0.118, 0.251, 0.686]
+                : [0.376, 0.647, 0.98],
+            markers: [],
+            onRender: (state: any) => {
+                if (!pointerInteracting.current) {
+                    phi += 0.002
+                }
+                state.phi = phi + r.get()
+                state.width = width * 2
+                state.height = width * 2
+            },
+        })
 
-    useEffect(() => {
-        if (globeRef.current && globeData) {
-            globeRef.current
-                .hexPolygonsData(countries.features)
-                .hexPolygonResolution(3)
-                .hexPolygonMargin(0.7)
-                .showAtmosphere(defaultProps.showAtmosphere)
-                .atmosphereColor(defaultProps.atmosphereColor)
-                .atmosphereAltitude(defaultProps.atmosphereAltitude)
-                .hexPolygonColor((e) => {
-                    return defaultProps.polygonColor
-                })
-            startAnimation()
-        }
-    }, [globeData])
-
-    const startAnimation = () => {
-        if (!globeRef.current || !globeData) return
-
-        globeRef.current
-            .arcsData(data)
-            .arcStartLat((d) => (d as { startLat: number }).startLat * 1)
-            .arcStartLng((d) => (d as { startLng: number }).startLng * 1)
-            .arcEndLat((d) => (d as { endLat: number }).endLat * 1)
-            .arcEndLng((d) => (d as { endLng: number }).endLng * 1)
-            .arcColor((e: any) => (e as { color: string }).color)
-            .arcAltitude((e) => {
-                return (e as { arcAlt: number }).arcAlt * 1
-            })
-            .arcStroke((e) => {
-                return [0.32, 0.28, 0.3][Math.round(Math.random() * 2)]
-            })
-            .arcDashLength(defaultProps.arcLength)
-            .arcDashInitialGap((e) => (e as { order: number }).order * 1)
-            .arcDashGap(15)
-            .arcDashAnimateTime((e) => defaultProps.arcTime)
-
-        globeRef.current
-            .pointsData(data)
-            .pointColor((e) => (e as { color: string }).color)
-            .pointsMerge(true)
-            .pointAltitude(0.0)
-            .pointRadius(2)
-
-        globeRef.current
-            .ringsData([])
-            .ringColor((e: any) => (t: any) => e.color(t))
-            .ringMaxRadius(defaultProps.maxRings)
-            .ringPropagationSpeed(RING_PROPAGATION_SPEED)
-            .ringRepeatPeriod(
-                (defaultProps.arcTime * defaultProps.arcLength) /
-                    defaultProps.rings
-            )
-    }
-
-    useEffect(() => {
-        if (!globeRef.current || !globeData) return
-
-        const interval = setInterval(() => {
-            if (!globeRef.current || !globeData) return
-            numbersOfRings = genRandomNumbers(
-                0,
-                data.length,
-                Math.floor((data.length * 4) / 5)
-            )
-
-            globeRef.current.ringsData(
-                globeData.filter((d, i) => numbersOfRings.includes(i))
-            )
-        }, 2000)
+        setTimeout(() => {
+            if (canvasRef.current) canvasRef.current.style.opacity = '1'
+        })
 
         return () => {
-            clearInterval(interval)
+            globe.destroy()
+            window.removeEventListener('resize', onResize)
         }
-    }, [globeRef.current, globeData])
+    }, [isDarkMode])
 
-    return (
-        <>
-            <threeGlobe ref={globeRef} />
-        </>
-    )
-}
-
-export function WebGLRendererConfig() {
-    const { gl, size } = useThree()
-
-    useEffect(() => {
-        gl.setPixelRatio(window.devicePixelRatio)
-        gl.setSize(size.width, size.height)
-        gl.setClearColor(0xffaaff, 0)
-    }, [])
-
-    return null
-}
-
-export function World(props: WorldProps) {
-    const { globeConfig } = props
-    const scene = new Scene()
-    return (
-        <Canvas
-            scene={scene}
-            camera={new PerspectiveCamera(50, aspect, 180, 1800)}
-        >
-            <WebGLRendererConfig />
-            <ambientLight color={globeConfig.ambientLight} intensity={0.6} />
-            <directionalLight
-                color={globeConfig.directionalTopLight}
-                position={new Vector3(-400, 100, 400)}
-            />
-            <directionalLight
-                color={globeConfig.directionalTopLight}
-                position={new Vector3(400, 100, 400)}
-            />
-            <directionalLight
-                color={globeConfig.directionalTopLight}
-                position={new Vector3(-400, 100, -400)}
-            />
-            <directionalLight
-                color={globeConfig.directionalTopLight}
-                position={new Vector3(400, 100, -400)}
-            />
-            <pointLight
-                color={globeConfig.pointLight}
-                position={new Vector3(-200, 500, 200)}
-                intensity={0.8}
-            />
-            <Globe {...props} />
-            <OrbitControls
-                enablePan={false}
-                enableZoom={false}
-                minDistance={cameraZ}
-                maxDistance={cameraZ}
-                autoRotateSpeed={1}
-                autoRotate={true}
-                minPolarAngle={Math.PI / 3.5}
-                maxPolarAngle={Math.PI - Math.PI / 3}
-            />
-        </Canvas>
-    )
-}
-
-export function hexToRgb(hex: string) {
-    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
-    hex = hex.replace(shorthandRegex, function (m, r, g, b) {
-        return r + r + g + g + b + b
-    })
-
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    return result
-        ? {
-              r: parseInt(result[1], 16),
-              g: parseInt(result[2], 16),
-              b: parseInt(result[3], 16),
-          }
-        : null
-}
-
-export function genRandomNumbers(min: number, max: number, count: number) {
-    const arr = []
-    while (arr.length < count) {
-        const r = Math.floor(Math.random() * (max - min)) + min
-        if (arr.indexOf(r) === -1) arr.push(r)
+    const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+        if (canvasRef.current) {
+            pointerInteracting.current =
+                e.clientX - pointerInteractionMovement.current
+            canvasRef.current.style.cursor = 'grabbing'
+        }
     }
 
-    return arr
+    const handlePointerUp = () => {
+        pointerInteracting.current = null
+        if (canvasRef.current) canvasRef.current.style.cursor = 'grab'
+    }
+
+    const handlePointerOut = () => {
+        pointerInteracting.current = null
+        if (canvasRef.current) canvasRef.current.style.cursor = 'grab'
+    }
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        if (pointerInteracting.current !== null) {
+            const delta = e.clientX - pointerInteracting.current
+            pointerInteractionMovement.current = delta
+            api.start({ r: delta / 200 })
+        }
+    }
+
+    const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+        if (pointerInteracting.current !== null && e.touches[0]) {
+            const delta = e.touches[0].clientX - pointerInteracting.current
+            pointerInteractionMovement.current = delta
+            api.start({ r: delta / 100 })
+        }
+    }
+
+    return (
+        <div className="w-full max-w-3xl m-auto relative aspect-[1] space-y-10">
+            <canvas
+                ref={canvasRef}
+                onPointerDown={handlePointerDown}
+                onPointerUp={handlePointerUp}
+                onPointerOut={handlePointerOut}
+                onMouseMove={handleMouseMove}
+                onTouchMove={handleTouchMove}
+                style={{
+                    cursor: 'grab',
+                    contain: 'layout paint size',
+                    opacity: 0,
+                    transition: 'opacity 1s ease',
+                }}
+                className="w-full h-full"
+            />
+        </div>
+    )
 }
+
+export default Cobe

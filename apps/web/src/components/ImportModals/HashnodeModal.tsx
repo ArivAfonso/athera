@@ -74,6 +74,10 @@ interface HashnodePostType {
     }
 }
 
+function strWords(str: string) {
+    return str.split(/\s+/).length
+}
+
 function modifyString(str: string) {
     //Capitalize every word of the string and replace spaces with -
     console.log(str)
@@ -171,11 +175,7 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
 
             setProgress((prev) => prev + 0.2)
 
-            if (
-                post.coverImage.url === null ||
-                post.tags === null ||
-                img_blob === null
-            ) {
+            if (post.coverImage.url === null || img_blob === null) {
                 const { data, error } = await supabase
                     .from('drafts')
                     .insert({
@@ -235,6 +235,9 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                         title: post.title,
                         description: post.subtitle,
                         text: post.content.text,
+                        estimated_reading_time: Math.round(
+                            strWords(post.content.text) / 200
+                        ),
                         json: output,
                         author: user,
                     })
@@ -244,18 +247,17 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                 setProgress((prev) => prev + 0.2)
 
                 //Create tagsArray
-                const tagsArray = post.tag_list.map((tag) => ({
-                    post: postId,
-                    topic: topics.find(
-                        (topic: any) =>
-                            topic.top_name.toLowerCase() ===
-                            modifyString(tag).toLowerCase()
-                    ).top_id,
-                }))
-
-                console.log(tagsArray)
-
-                await supabase.from('post_topics').insert(tagsArray)
+                if (post.tag_list.length > 0) {
+                    const tagsArray = post.tag_list.map((tag) => ({
+                        post: postId,
+                        topic: topics.find(
+                            (topic: any) =>
+                                topic.top_name.toLowerCase() ===
+                                modifyString(tag).toLowerCase()
+                        ).top_id,
+                    }))
+                    await supabase.from('post_topics').insert(tagsArray)
+                }
 
                 setProgress((prev) => prev + 0.2)
 

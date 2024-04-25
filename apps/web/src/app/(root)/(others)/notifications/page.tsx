@@ -51,8 +51,6 @@ const NotificationsPage = ({}) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // Rest of your code
-
     notifications?.forEach((item) => {
         if (item.type === 'follow') {
             item.description = `${item.notifier.name} Followed you!!`
@@ -114,12 +112,6 @@ const NotificationsPage = ({}) => {
         <>
             <title>Your Notifications - Athera</title>
             <div className="p-4">
-                <header className="text-center max-w-2xl mx-auto - mb-7 sm:mb-8 lg:mb-10">
-                    <Heading2>Notifications</Heading2>
-                    <span className="block text-sm mt-2 text-neutral-700 sm:text-base dark:text-neutral-200">
-                        Here are some things you might want to know about
-                    </span>
-                </header>
                 <div>
                     {notifications?.length === 0 ? (
                         <Empty
@@ -129,6 +121,13 @@ const NotificationsPage = ({}) => {
                         />
                     ) : (
                         <>
+                            <header className="text-center max-w-2xl mx-auto mb-7 sm:mb-8 lg:mb-10">
+                                <Heading2>Notifications</Heading2>
+                                <span className="block text-sm mt-2 text-neutral-700 sm:text-base dark:text-neutral-200">
+                                    Here are some things you might want to know
+                                    about
+                                </span>
+                            </header>
                             <div className="space-y-4 sm:mx-4 lg:mx-64">
                                 {notifications?.map((notification, index) => (
                                     <a

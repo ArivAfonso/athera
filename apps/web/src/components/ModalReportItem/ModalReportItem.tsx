@@ -75,8 +75,6 @@ const ModalReportItem: FC<ModalReportItemProps> = ({
         }
     }, [show])
 
-    const handleClickSubmitForm = () => {}
-
     const renderCheckIcon = () => {
         return (
             <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
@@ -111,46 +109,44 @@ const ModalReportItem: FC<ModalReportItemProps> = ({
                         </RadioGroup.Label>
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                             {problemPlans.map((plan) => (
-                                <div
+                                <RadioGroup.Option
                                     key={plan.name}
-                                    className={`${
-                                        problemSelected === plan
-                                            ? 'bg-primary-6000 text-white dark:bg-primary-700'
-                                            : 'bg-white border-t border-neutral-50'
-                                    } relative shadow-lg rounded-lg px-3 py-3 cursor-pointer flex sm:px-5 sm:py-4 focus:outline-none`}
+                                    value={plan}
+                                    className={({ checked }) => {
+                                        return (
+                                            `${
+                                                checked
+                                                    ? 'bg-primary-6000 text-white dark:bg-primary-700'
+                                                    : 'bg-white border-t border-neutral-50 '
+                                            } relative shadow-lg rounded-lg px-3 py-3 cursor-pointer flex sm:px-5 sm:py-4 focus:outline-none ` +
+                                            twFocusClass(true)
+                                        )
+                                    }}
                                 >
-                                    <label>
-                                        <Controller
-                                            name="problemSelected"
-                                            control={control}
-                                            defaultValue={false} // Set the default value based on your initial state
-                                            render={({ field }) => (
-                                                <input
-                                                    type="radio"
-                                                    {...field}
-                                                    className="hidden"
-                                                    // value={plan}
-                                                />
-                                            )}
-                                        />
+                                    {({ checked }) => (
                                         <div className="flex items-center justify-between w-full">
                                             <div className="flex items-center">
                                                 <div className="text-sm">
-                                                    <p
+                                                    <RadioGroup.Label
+                                                        as="p"
                                                         className={`font-medium line-clamp-1 ${
-                                                            problemSelected ===
-                                                            plan
+                                                            checked
                                                                 ? 'text-white'
                                                                 : 'text-neutral-900'
                                                         }`}
                                                     >
                                                         {plan.label}
-                                                    </p>
+                                                    </RadioGroup.Label>
                                                 </div>
                                             </div>
+                                            {checked && (
+                                                <div className="flex-shrink-0 text-white">
+                                                    {renderCheckIcon()}
+                                                </div>
+                                            )}
                                         </div>
-                                    </label>
-                                </div>
+                                    )}
+                                </RadioGroup.Option>
                             ))}
                         </div>
                     </RadioGroup>

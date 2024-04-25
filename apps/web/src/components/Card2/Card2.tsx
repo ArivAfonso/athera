@@ -19,6 +19,14 @@ const Card2: FC<Card2Props> = ({
     size = 'normal',
     post,
 }) => {
+    post.created_at = new Date(
+        post.created_at ? post.created_at : ''
+    ).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    })
+
     return (
         <div className={`nc-Card2 group relative flex flex-col ${className}`}>
             <div className="block flex-shrink-0 flex-grow relative w-full h-0 pt-[75%] sm:pt-[55%] z-0">

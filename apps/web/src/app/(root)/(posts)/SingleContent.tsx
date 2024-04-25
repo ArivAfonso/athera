@@ -196,7 +196,7 @@ const SingleContent: FC<SingleContentProps> = ({
                     <div></div>
                 </div>
                 <div
-                    className={`sticky mt-8 bottom-8 z-40 justify-center ${
+                    className={`sticky mt-8 bottom-14 md:bottom-8 z-40 justify-center ${
                         showLikeAndCommentSticky ? 'flex' : 'hidden'
                     }`}
                 >

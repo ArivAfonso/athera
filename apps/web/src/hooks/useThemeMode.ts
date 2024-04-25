@@ -1,7 +1,11 @@
 import { useEffect } from 'react'
 import { createGlobalState } from 'react-hooks-global-state'
 
-const initialState = { isDarkmode: false }
+const initialState = {
+    isDarkmode:
+        window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches,
+}
 const { useGlobalState } = createGlobalState(initialState)
 
 export const useThemeMode = () => {

@@ -73,7 +73,7 @@ const Header = (props: HeaderProps) => {
                     className={classNames(
                         !hasPrevious &&
                             renderCenter &&
-                            'opacity-0 cursor-default'
+                            'opacity-0 cursor-default pr-3'
                     )}
                     disabled={!hasPrevious}
                     aria-label={previousLabel}
@@ -82,7 +82,8 @@ const Header = (props: HeaderProps) => {
                         preventFocus && event.preventDefault()
                     }
                 >
-                    <ChevronLeftIcon /> {/* Add this line */}
+                    <ChevronLeftIcon width={20} height={20} />{' '}
+                    {/* Add this line */}
                 </button>
                 {renderCenter && renderChildren}
                 <button
@@ -99,7 +100,8 @@ const Header = (props: HeaderProps) => {
                         preventFocus && event.preventDefault()
                     }
                 >
-                    <ChevronRightIcon /> {/* Add this line */}
+                    <ChevronRightIcon width={20} height={20} />{' '}
+                    {/* Add this line */}
                 </button>
             </div>
         </div>

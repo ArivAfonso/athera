@@ -20,6 +20,7 @@ export interface Card9Props {
     onHidePost: (postId: string) => void
     watchOption?: boolean
     onRemoveWatchlist?: (postId: string) => void
+    hover?: boolean
 }
 
 const Card9: FC<Card9Props> = ({
@@ -27,6 +28,7 @@ const Card9: FC<Card9Props> = ({
     ratio = 'aspect-w-3 aspect-h-3 sm:aspect-h-4',
     post,
     hoverClass = '',
+    hover = false,
     onHidePost,
     onRemoveWatchlist,
     hiddenAuthor = false,
@@ -130,9 +132,11 @@ const Card9: FC<Card9Props> = ({
 
     return (
         <div
-            className={`nc-Card9 relative flex flex-col group rounded-3xl overflow-hidden z-0 ${hoverClass} ${className}`}
+            className={`nc-Card9 relative flex flex-col group rounded-3xl overflow-hidden z-0  ${hoverClass} ${className}`}
         >
-            <div className="absolute inset-x-0 top-0 p-3 flex items-center justify-start transition-all opacity-0 z-[-1] group-hover:opacity-100 group-hover:z-10 duration-300">
+            <div
+                className={`absolute inset-x-0 top-0 p-3 flex items-center justify-start transition-all opacity-0 z-[-1] group-hover:opacity-100 group-hover:z-10 duration-300 ${hover ? 'opacity-0 group-hover:opacity-100 transition-opacity' : ''}`}
+            >
                 <PostCardLikeAndComment
                     likes={post.likeCount[0].count}
                     comments={post.commentCount[0].count}
@@ -167,19 +171,23 @@ const Card9: FC<Card9Props> = ({
                 />
                 <span className="absolute inset-0 bg-black bg-opacity-10 opacity-0 group-hover:opacity-100 transition-opacity"></span>
             </Link>
-            <Link
-                href={`/post/${stringToSlug(post.title)}/${post.id}`}
-                className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black opacity-50"
-            ></Link>
-            <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col flex-grow items-start">
+            <div
+                className={`${hover ? 'opacity-0 group-hover:opacity-100 transition-opacity' : ''}`}
+            >
                 <Link
                     href={`/post/${stringToSlug(post.title)}/${post.id}`}
-                    className="absolute inset-0"
+                    className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black opacity-50"
                 ></Link>
-                <div className="mb-3 left-3">
-                    <TopicBadgeList chars={29} topics={post.post_topics} />
+                <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col flex-grow items-start">
+                    <Link
+                        href={`/post/${stringToSlug(post.title)}/${post.id}`}
+                        className="absolute inset-0"
+                    ></Link>
+                    <div className="mb-3 left-3">
+                        <TopicBadgeList chars={29} topics={post.post_topics} />
+                    </div>
+                    {renderMeta()}
                 </div>
-                {renderMeta()}
             </div>
             <ModalReportItem
                 show={isReporting}

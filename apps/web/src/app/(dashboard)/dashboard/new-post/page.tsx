@@ -586,7 +586,7 @@ const DashboardSubmitPost = () => {
                                         <div className="w-full h-full bg-gray-200 absolute"></div>
                                         <div
                                             style={{ width: `${progress}%` }}
-                                            className="h-full bg-blue-700 absolute rounded-lg transition-all duration-500 ease-in-out"
+                                            className="h-full absolute rounded-lg transition-all duration-500 ease-in-out"
                                         ></div>
                                     </div>
                                 </>
@@ -594,7 +594,7 @@ const DashboardSubmitPost = () => {
                                 <>
                                     <ButtonPrimary
                                         type="submit"
-                                        className="text-white bg-blue-700 px-2 py-1 rounded-lg"
+                                        className="text-white  px-2 py-1 rounded-lg"
                                     >
                                         Submit Post
                                     </ButtonPrimary>

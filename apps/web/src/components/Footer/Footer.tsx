@@ -1,7 +1,6 @@
 import React from 'react'
 import Logo from '@/components/Logo/Logo'
 import { CustomLink } from '@/data/types'
-import Link from 'next/link'
 
 export interface WidgetFooterMenu {
     id: string
@@ -78,65 +77,18 @@ const Footer: React.FC = () => {
     }
 
     return (
-        <div className="max-w-screen-lg mx-auto">
-            <footer className="mt-12 py-6 border-t-2 border-light-700 flex flex-col sm:flex-row justify-between">
-                <div>
-                    <Link
-                        className="flex items-center font-bold text-xl text-dark-300"
-                        href="/"
-                    >
-                        <div className="w-auto h-10 mr-4">
-                            <Logo />
-                        </div>
-                    </Link>
+        <div className="nc-Footer relative py-16 lg:py-6 border-t border-neutral-200 dark:border-neutral-700">
+            <p className="text-lg text-center text-neutral-500 dark:text-neutral-400 mt-2 mb-8">
+                Created By Ariv Afonso
+            </p>
+            <div className="container grid grid-cols-2 gap-y-10 gap-x-5 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-5 lg:gap-x-10">
+                <div className="grid grid-cols-4 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col">
+                    <div className="col-span-2 md:col-span-1">
+                        <Logo />
+                    </div>
                 </div>
-                <div className="mt-4 sm:mt-0 flex text-sm sm:text-base space-x-6">
-                    <ul>
-                        <h5 className="pr-10 mb-4 font-semibold text-dark-50">
-                            Menu
-                        </h5>
-                        <li className="py-0.5">
-                            <Link
-                                className="text-gray-400 hover:text-dark-300 transition"
-                                href=""
-                            >
-                                Write
-                            </Link>
-                        </li>
-                        <li className="py-0.5">
-                            <Link
-                                className="text-gray-400 hover:text-dark-300 transition"
-                                href=""
-                            >
-                                All Posts
-                            </Link>
-                        </li>
-                        <li className="py-0.5">
-                            <Link
-                                className="text-gray-400 hover:text-dark-300 transition"
-                                href="/login"
-                            >
-                                Login
-                            </Link>
-                        </li>
-                    </ul>
-
-                    <ul>
-                        <h5 className="pr-10 mb-4 font-semibold text-dark-50">
-                            Open Source
-                        </h5>
-                        <li className="py-0.5">
-                            <Link
-                                className="text-gray-400 hover:text-dark-300 transition"
-                                href="https://github.com/zernonia/keypress"
-                                target="_blank"
-                            >
-                                GitHub
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
-            </footer>
+                {widgetMenus.map(renderWidgetMenuItem)}
+            </div>
         </div>
     )
 }

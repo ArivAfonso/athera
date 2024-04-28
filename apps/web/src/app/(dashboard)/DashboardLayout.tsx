@@ -25,6 +25,7 @@ import {
     LayoutGridIcon,
     LinkIcon,
     LockIcon,
+    PaletteIcon,
     PanelLeftClose,
     PanelRightClose,
     SearchIcon,
@@ -37,6 +38,7 @@ import { createClient } from '@/utils/supabase/client'
 import NotifyDropdown from '@/components/Header/NotifyDropdown'
 import { AuthSession } from '@supabase/supabase-js'
 import { usePathname } from 'next/navigation'
+import SearchModal from '@/components/Header/SearchModal'
 
 interface NavigationItem {
     name: string
@@ -109,6 +111,11 @@ const navigation: NavigationItem[] = [
                 name: 'social links',
                 href: '/dashboard/edit-profile/socials',
                 icon: LinkIcon,
+            },
+            {
+                name: 'customization',
+                href: '/dashboard/edit-profile/customization',
+                icon: PaletteIcon,
             },
         ],
     },
@@ -372,35 +379,7 @@ export default function DashboardLayout({ children }: Props) {
                                 />
 
                                 <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-                                    <form
-                                        className="relative flex flex-1"
-                                        action="#"
-                                        onSubmit={(e) => {
-                                            e.preventDefault()
-                                            const search =
-                                                e.currentTarget.search.value
-                                            // router.push(`/search/posts/${search}`);
-                                        }}
-                                    >
-                                        <label
-                                            htmlFor="search-field"
-                                            className="sr-only"
-                                        >
-                                            Search
-                                        </label>
-                                        <SearchIcon
-                                            className="pointer-events-none absolute inset-y-0 start-0 h-full w-5 text-neutral-400"
-                                            aria-hidden="true"
-                                            strokeWidth={1.5}
-                                        />
-                                        <input
-                                            id="search-field"
-                                            className="block h-full w-full border-0 py-0 ps-8 pe-0 text-neutral-900 placeholder:text-neutral-400 focus:ring-0 sm:text-sm bg-transparent dark:text-white"
-                                            placeholder="Search..."
-                                            type="search"
-                                            name="search"
-                                        />
-                                    </form>
+                                    <SearchModal type="bar" />
                                     <div className="flex items-center gap-x-4 lg:gap-x-6">
                                         {/* Separator */}
                                         <div

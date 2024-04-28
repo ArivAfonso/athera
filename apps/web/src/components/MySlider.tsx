@@ -12,6 +12,7 @@ export interface MySliderProps<T> {
     data: T[]
     renderItem?: (item: T, indx: number) => ReactNode
     arrowBtnClass?: string
+    shiftCount?: number
 }
 
 export default function MySlider<T>({
@@ -20,6 +21,7 @@ export default function MySlider<T>({
     data,
     renderItem = () => <div></div>,
     arrowBtnClass = 'top-1/2 -translate-y-1/2',
+    shiftCount = 1,
 }: MySliderProps<T>) {
     const [currentIndex, setCurrentIndex] = useState(0)
     const [direction, setDirection] = useState(0)
@@ -49,18 +51,24 @@ export default function MySlider<T>({
         } else {
             setDirection(-1)
         }
-        setCurrentIndex(newVal)
+        // Check if newVal would exceed the length of the data array
+        if (newVal > data.length - numberOfItems) {
+            // If it would, set the new index to the last possible index
+            setCurrentIndex(data.length - numberOfItems)
+        } else {
+            setCurrentIndex(newVal)
+        }
     }
 
     const handlers = useSwipeable({
         onSwipedLeft: () => {
-            if (currentIndex < data?.length - 1) {
-                changeItemId(currentIndex + 1)
+            if (currentIndex < data?.length - shiftCount) {
+                changeItemId(currentIndex + shiftCount)
             }
         },
         onSwipedRight: () => {
-            if (currentIndex > 0) {
-                changeItemId(currentIndex - 1)
+            if (currentIndex >= shiftCount) {
+                changeItemId(currentIndex - shiftCount)
             }
         },
         trackMouse: true,
@@ -108,16 +116,27 @@ export default function MySlider<T>({
                         </motion.ul>
                     </div>
 
-                    {currentIndex ? (
+                    {currentIndex >= shiftCount ? (
                         <PrevBtn
-                            onClick={() => changeItemId(currentIndex - 1)}
+                            onClick={() =>
+                                changeItemId(
+                                    Math.max(currentIndex - shiftCount, 0)
+                                )
+                            }
                             className={`w-9 h-9 xl:w-12 xl:h-12 text-lg absolute -left-3 xl:-left-6 z-[1] ${arrowBtnClass}`}
                         />
                     ) : null}
 
                     {data.length > currentIndex + numberOfItems ? (
                         <NextBtn
-                            onClick={() => changeItemId(currentIndex + 1)}
+                            onClick={() =>
+                                changeItemId(
+                                    Math.min(
+                                        currentIndex + shiftCount,
+                                        data.length - numberOfItems
+                                    )
+                                )
+                            }
                             className={`w-9 h-9 xl:w-12 xl:h-12 text-lg absolute -right-3 xl:-right-6 z-[1] ${arrowBtnClass}`}
                         />
                     ) : null}

@@ -47,6 +47,9 @@ async function getData(context: { params: { slug: any } }) {
             pinterest,
             linkedin,
             github,
+            customization (
+                profile_layout
+            ),
             posts (
                 id,
               title,
@@ -288,7 +291,15 @@ const PageAuthor = (context: any) => {
                             <main>
                                 {/* LOOP ITEMS */}
                                 {data.posts ? (
-                                    <PostsSection posts={data.posts} />
+                                    <PostsSection
+                                        posts={data.posts}
+                                        type={
+                                            data.customization
+                                                ? data.customization
+                                                      .profile_layout
+                                                : 'grid'
+                                        }
+                                    />
                                 ) : (
                                     <Empty
                                         mainText="No Posts Found"

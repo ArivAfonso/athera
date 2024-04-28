@@ -3,12 +3,6 @@ import createGlobe from 'cobe'
 import { useEffect, useRef } from 'react'
 import { useSpring, SpringConfig } from 'react-spring'
 
-interface Marker {
-    lat: number
-    lon: number
-    color: number[]
-}
-
 interface CobeProps {
     // Add any additional props here
 }

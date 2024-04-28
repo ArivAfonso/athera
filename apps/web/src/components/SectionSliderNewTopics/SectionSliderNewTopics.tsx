@@ -27,7 +27,7 @@ const SectionSliderNewTopics: FC<SectionSliderNewTopicsProps> = ({
     topicCardType = 'card3',
 }) => {
     const renderCard = (item: TopicType, index: number) => {
-        const topIndex = index < 10 ? `#${index + 1}` : undefined
+        const topIndex = index < 20 ? `#${index + 1}` : undefined
         switch (topicCardType) {
             case 'card1':
                 return <CardTopic1 topic={item} />
@@ -49,6 +49,7 @@ const SectionSliderNewTopics: FC<SectionSliderNewTopicsProps> = ({
                 data={topics}
                 renderItem={(item, indx) => renderCard(item, indx)}
                 itemPerRow={itemPerRow}
+                shiftCount={4}
             />
         </div>
     )

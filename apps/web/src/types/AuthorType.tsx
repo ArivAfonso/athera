@@ -24,6 +24,9 @@ export default interface AuthorType {
     youtube?: string
     tiktok?: string
     pinterest?: string
+    customization?: {
+        profile_layout: string
+    }
     postCount?: {
         count: number
     }[]

@@ -36,8 +36,13 @@ export default async function RootLayout({
     const accessToken = session?.access_token || ''
     return (
         <html lang="en" suppressHydrationWarning className={poppins.className}>
-            <head>{/* Add your head content here */}</head>
-            <body className="text-base text-neutral-900 dark:text-neutral-200">
+            <head>
+                <meta
+                    name="viewport"
+                    content="height=device-height, initial-scale=1, width=device-width, initial-scale=1"
+                />
+            </head>
+            <body className="text-base text-neutral-900 dark:text-neutral-200 bg-white dark:bg-neutral-800">
                 <NextTopLoader
                     color="#0018f9"
                     speed={600}

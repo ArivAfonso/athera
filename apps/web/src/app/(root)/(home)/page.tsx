@@ -11,6 +11,7 @@ import PostType from '@/types/PostType'
 import TopicType from '@/types/TopicType'
 import AuthorType from '@/types/AuthorType'
 import Particles from '@/components/Particles/Particles'
+import SectionImport from '@/components/SectionImport/SectionImport'
 
 async function getData() {
     const supabase = createClient(cookies())
@@ -84,7 +85,7 @@ const PageHome = async ({}) => {
                 </div>
                 <div className="absolute inset-x-0 mt-72 m-auto h-80 max-w-lg bg-gradient-to-tr dark:from-indigo-400 dark:via-blue-800 dark:to-blue-200 blur-[118px] from-blue-200 via-blue-300 to-blue-400"></div>
                 <SectionLargeSlider
-                    className="md:py-16 lg:pb-28"
+                    className="md:py-16 lg:pb-28 pt-4"
                     posts={data.popular_posts.filter((_, i) => i < 3)}
                 />
 
@@ -97,11 +98,15 @@ const PageHome = async ({}) => {
                     />
                 </div>
 
+                <div className="relative py-16">
+                    <SectionImport />
+                </div>
+
                 <SectionSliderNewTopics
                     className="py-16 lg:py-28"
                     heading="Top trending topics"
                     subHeading="Discover 233 topics"
-                    topics={data.topics.filter((_, i) => i < 10)}
+                    topics={data.topics.filter((_, i) => i < 12)}
                     topicCardType="card4"
                 />
 

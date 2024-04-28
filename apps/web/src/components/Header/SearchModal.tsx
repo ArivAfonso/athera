@@ -18,17 +18,18 @@ import { debounce } from 'lodash'
 import stringToSlug from '@/utils/stringToSlug'
 import TopicType from '@/types/TopicType'
 import AuthorType from '@/types/AuthorType'
-import { Search } from 'lucide-react'
+import { Search, SearchIcon } from 'lucide-react'
 
 interface Props {
     renderTrigger?: () => ReactNode
+    type?: 'icon' | 'bar'
 }
 
 function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ')
 }
 
-const SearchModal: FC<Props> = ({ renderTrigger }) => {
+const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
     const [open, setOpen] = useState(false)
     const [rawQuery, setRawQuery] = useState('')
     const [posts, setPosts] = useState<PostType[]>([])
@@ -96,36 +97,64 @@ const SearchModal: FC<Props> = ({ renderTrigger }) => {
 
     return (
         <>
-            <div onClick={() => setOpen(true)} className="cursor-pointer">
-                {renderTrigger ? (
-                    renderTrigger()
-                ) : (
-                    <button className="flex w-10 h-10 sm:w-12 sm:h-12 rounded-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none items-center justify-center">
-                        <svg
-                            width={22}
-                            height={22}
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                            <path
-                                d="M22 22L20 20"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
-                    </button>
-                )}
-            </div>
+            {type === 'icon' && (
+                <div onClick={() => setOpen(true)} className="cursor-pointer">
+                    {renderTrigger ? (
+                        renderTrigger()
+                    ) : (
+                        <button className="flex w-10 h-10 sm:w-12 sm:h-12 rounded-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none items-center justify-center">
+                            <svg
+                                width={22}
+                                height={22}
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                                <path
+                                    d="M22 22L20 20"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
+                        </button>
+                    )}
+                </div>
+            )}
+
+            {type === 'bar' && (
+                <form
+                    className="relative flex flex-1"
+                    autoComplete="off"
+                    onClick={() => setOpen(true)}
+                >
+                    <label htmlFor="search-field" className="sr-only">
+                        Search
+                    </label>
+                    <SearchIcon
+                        className="pointer-events-none absolute inset-y-0 start-0 h-full w-5 text-neutral-400"
+                        aria-hidden="true"
+                        strokeWidth={1.5}
+                    />
+                    <input
+                        id="search-field"
+                        className="block h-full w-full border-0 py-0 ps-8 pe-0 text-neutral-900 placeholder:text-neutral-400 focus:ring-0 sm:text-sm bg-transparent dark:text-white"
+                        placeholder="Search..."
+                        type="search"
+                        inert
+                        style={{ color: 'transparent' }}
+                        name="search"
+                    />
+                </form>
+            )}
 
             <Transition.Root
                 show={open}

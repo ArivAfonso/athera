@@ -5,41 +5,41 @@ import { createClient } from '@/utils/supabase/client'
 import { debounce, set } from 'lodash'
 import React, { FC, useEffect, useRef, useState } from 'react'
 
-interface Tags {
+interface Topics {
     edges: Edge[]
     __typename: string
 }
 interface Edge {
-    node: TagNodeShort
+    node: TopicNodeShort
     __typename: string
 }
 
-export interface TagNodeShort {
+export interface TopicNodeShort {
     name: string
 }
 
-interface TagsInputProps {
-    onChange: (tags: String[]) => void
+interface TopicsInputProps {
+    onChange: (topics: String[]) => void
     defaultValue?: String[]
 }
 
-const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
-    const MAX_TAGS_LENGTH = 5
+const TopicsInput: FC<TopicsInputProps> = ({ onChange, defaultValue }) => {
+    const MAX_TOPICS_LENGTH = 5
     //
     const containerRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
 
     let [isOpen, setIsOpen] = useState(false)
-    const [tags, setTags] = useState<String[]>(defaultValue || [])
-    const [ogTags, setOgTags] = useState<String[]>(defaultValue || [])
+    const [topics, setTopics] = useState<String[]>(defaultValue || [])
+    const [ogTopics, setOgTopics] = useState<String[]>(defaultValue || [])
 
     useEffect(() => {
-        if (tags.length >= MAX_TAGS_LENGTH) {
+        if (topics.length >= MAX_TOPICS_LENGTH) {
             setIsOpen(false)
         }
 
-        onChange(tags)
-    }, [onChange, tags, tags.length])
+        onChange(topics)
+    }, [onChange, topics, topics.length])
 
     const [data, setData] = useState<String[] | null>(null)
 
@@ -58,7 +58,7 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
                 return
             }
             setData(data.map((item) => item.name))
-            setOgTags(data.map((item) => item.name))
+            setOgTopics(data.map((item) => item.name))
         }
         fetchData()
     }, [])
@@ -89,13 +89,13 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
         setIsOpen(true)
     }
 
-    const checkIncludes = (tag: String) => {
-        return tags.some((item) => item === tag)
+    const checkIncludes = (topic: String) => {
+        return topics.some((item) => item === topic)
     }
 
-    const setNewTags = (tag: String) => {
-        if (!checkIncludes(tag)) {
-            setTags((prevTags) => [...prevTags, tag])
+    const setNewTopics = (topic: String) => {
+        if (!checkIncludes(topic)) {
+            setTopics((prevTopics) => [...prevTopics, topic])
         }
 
         if (inputRef.current) {
@@ -106,7 +106,7 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
 
     useEffect(() => {
         if (defaultValue && defaultValue.length > 0) {
-            setTags(defaultValue)
+            setTopics(defaultValue)
         }
         console.log(defaultValue)
     }, [defaultValue])
@@ -139,8 +139,8 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
         setIsOpen(false)
     }
 
-    const handleRemoveTag = (tag: String) => {
-        setTags(tags.filter((t) => t !== tag))
+    const handleRemoveTopic = (topic: String) => {
+        setTopics(topics.filter((t) => t !== topic))
         setTimeout(() => {
             inputRef.current?.focus()
         }, 100)
@@ -149,27 +149,27 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
     return (
         <div className="relative w-full mt--2 text-sm">
             <ul className="flex flex-wrap ">
-                {tags.map((tag, index) => (
+                {topics.map((topic, index) => (
                     <li
                         className="flex items-center justify-center mr-1 my-0.5 px-2 py-1.5 rounded bg-neutral-100 dark:bg-neutral-800"
                         key={index}
                     >
                         #{` `}
-                        {tag}
+                        {topic}
                         <button
                             className="ml-1 px-0.5 text-red-400 text-base flex items-center justify-center"
                             onClick={(event) => {
                                 event.stopPropagation()
-                                handleRemoveTag(tag)
+                                handleRemoveTopic(topic)
                             }}
-                            title="Remove tag"
+                            title="Remove topic"
                         >
                             <XMarkIcon className="w-4 h-4" />
                         </button>
                     </li>
                 ))}
 
-                {tags.length < MAX_TAGS_LENGTH && (
+                {topics.length < MAX_TOPICS_LENGTH && (
                     <li>
                         {/* <Popover.Button>Solutions</Popover.Button> */}
                         <input
@@ -177,9 +177,9 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
                             className="px-0.5 py-1.5 my-0.5 h-full border-none focus:outline-none focus:ring-0 !bg-transparent shadow-none"
                             type="text"
                             placeholder={
-                                !tags.length
-                                    ? `Add tags (${tags.length}/${MAX_TAGS_LENGTH})...`
-                                    : `Add tag (${tags.length}/${MAX_TAGS_LENGTH})`
+                                !topics.length
+                                    ? `Add topics (${topics.length}/${MAX_TOPICS_LENGTH})...`
+                                    : `Add topic (${topics.length}/${MAX_TOPICS_LENGTH})`
                             }
                             maxLength={20}
                             onFocus={openPopover}
@@ -188,7 +188,7 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
                                     e.currentTarget.value.length > 20 ||
                                     e.currentTarget.value.length === 0
                                 ) {
-                                    setData(ogTags)
+                                    setData(ogTopics)
                                 }
                                 fetchTopics(
                                     e.currentTarget.value
@@ -202,7 +202,7 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
                                     return
                                 }
                                 e.preventDefault()
-                                setNewTags(
+                                setNewTopics(
                                     e.currentTarget.value
                                         .charAt(0)
                                         .toUpperCase() +
@@ -219,26 +219,26 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
                     ref={containerRef}
                     className="absolute top-full mt-4 inset-x-0 p-5 bg-white dark:bg-neutral-800 shadow-lg rounded-2xl z-50 ring-1 ring-black/[0.03]"
                 >
-                    <h3 className="text-xl font-semibold">Top tags</h3>
+                    <h3 className="text-xl font-semibold">Top topics</h3>
                     <div className="w-full border-b my-4 border-neutral-300 dark:border-neutral-700"></div>
                     {/* {error && <p className="text-red-500">{error.message}</p>}
           {loading && <CircleLoading />} */}
                     {data && data.length > 0 ? (
                         <ul className="flex flex-wrap">
-                            {data.map((tag, index) => (
+                            {data.map((topic, index) => (
                                 <li key={index}>
                                     <button
                                         className="flex items-center justify-center mr-2 my-1 px-2 py-1.5 rounded bg-neutral-100 disabled:hover:bg-neutral-100 dark:bg-neutral-700 dark:hover:bg-neutral-6000 dark:disabled:hover:bg-neutral-700 hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-70"
                                         onClick={() => {
-                                            if (checkIncludes(tag)) {
+                                            if (checkIncludes(topic)) {
                                                 return
                                             }
-                                            setNewTags(tag)
+                                            setNewTopics(topic)
                                         }}
-                                        disabled={checkIncludes(tag)}
+                                        disabled={checkIncludes(topic)}
                                     >
                                         #{` `}
-                                        {tag}
+                                        {topic}
                                     </button>
                                 </li>
                             ))}
@@ -256,4 +256,4 @@ const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
     )
 }
 
-export default TagsInput
+export default TopicsInput

@@ -149,6 +149,7 @@ const PageSingle = async (context: any) => {
                             estimatedReadingTime={data.estimatedReadingTime}
                             title={data.title}
                             topic={data.post_topics}
+                            //@ts-ignore
                             author={data.author}
                             created_at={data.created_at ? data.created_at : ''}
                             comments={data.commentCount[0].count as number}
@@ -167,6 +168,7 @@ const PageSingle = async (context: any) => {
                 <div className="container mt-10">
                     <SingleContent
                         body={data.rawText}
+                        //@ts-ignore
                         author={data.author}
                         json={data.json}
                         id={data.id}

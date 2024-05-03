@@ -33,7 +33,7 @@ function PostsSection({
     const [postsState, setPosts] = useState<PostType[] | null | undefined>(
         posts
     )
-    const [addPostsFinished, setAddPostsFinished] = useState(false)
+    const [addPostsFinished, setAddPostsFinished] = useState(posts.length < 24)
 
     useEffect(() => {
         async function filterPostsAndAuthors() {
@@ -100,11 +100,15 @@ function PostsSection({
         useInfiniteQuery({
             queryKey: [id],
             queryFn: async ({ pageParam = 1 }) => {
-                if (addPostsFinished) return Promise.resolve([])
-                //@ts-ignore
-                const response = await postFn(pageParam)
-                if (response.length === 0) setAddPostsFinished(true)
-                return response
+                if (addPostsFinished && posts.length > 23)
+                    return Promise.resolve([])
+                else {
+                    //@ts-ignore
+                    const response = await postFn(pageParam)
+                    if (response.length === 0 || response.length % 24 != 0)
+                        setAddPostsFinished(true)
+                    return response
+                }
             },
             getNextPageParam: (lastPage, allPages) => {
                 return allPages.length + 1
@@ -203,7 +207,7 @@ function PostsSection({
                                 </div>
                             </div>
                         ))}
-                    <div ref={lastPostRef}></div>
+                    {!addPostsFinished && <div ref={lastPostRef}></div>}
                     {isFetchingNextPage &&
                         _posts.length !== 0 &&
                         _posts.length % 24 === 0 && <CircleLoading />}

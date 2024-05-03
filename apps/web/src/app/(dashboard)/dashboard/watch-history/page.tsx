@@ -43,8 +43,6 @@ async function getPosts() {
         .order('created_at', { ascending: false })
         .limit(24)
 
-    console.log(data)
-
     return (data as unknown as { posts: PostType }[]).map((item) => item.posts)
 }
 
@@ -119,7 +117,7 @@ const DashboardWatchHistory = () => {
                             <PostsSection
                                 posts={myPosts}
                                 rows={3}
-                                id="watch history"
+                                id="watch-history"
                                 watchOption={true}
                                 postFn={addPosts}
                             />

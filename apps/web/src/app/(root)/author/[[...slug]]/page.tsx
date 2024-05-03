@@ -107,13 +107,10 @@ const PageAuthor = (context: any) => {
     const [modal, setModal] = useState(false)
     const [followModal, setFollowModal] = useState(false)
     const [followType, setFollowType] = useState('')
-    const [count, setCount] = useState(1)
 
     const username = context.params.slug[0]
 
     async function addPosts(pageParam: number) {
-        console.log(pageParam)
-
         const supabase = createClient()
         const { data, error } = await supabase
             .from('posts')
@@ -145,7 +142,7 @@ const PageAuthor = (context: any) => {
             )
             .eq('author.username', username)
             .order('created_at', { ascending: false })
-            .range((pageParam - 1) * 24 + 1, pageParam * 24 - 1)
+            .range((pageParam - 1) * 24 + 2, pageParam * 24 - 1)
 
         const newPosts = data as unknown as PostType[]
 

@@ -20,7 +20,6 @@ async function getPostData(context: { params: { slug: any } }) {
             title,
             id,
             json,
-            rawText,
             created_at,
             estimatedReadingTime,
             description,
@@ -44,6 +43,7 @@ async function getPostData(context: { params: { slug: any } }) {
         )
         .eq('id', id)
     const postData: PostType | null = data as unknown as PostType
+    console.log(postData, error)
     const { data: session } = await supabase.auth.getSession()
     //@ts-ignore
     postData[0].isLiked = false

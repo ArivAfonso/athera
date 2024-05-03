@@ -19,7 +19,7 @@ const PostCardMeta: FC<PostCardMetaProps> = ({
     avatarSize = 'h-8 w-8 text-sm',
 }) => {
     const { created_at, author } = meta
-    if (author.avatar === undefined) {
+    if (!author) {
         return <h1>undefined</h1>
     } else {
         return (

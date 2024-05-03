@@ -8,6 +8,7 @@ import NextTopLoader from 'nextjs-toploader'
 import AuthProvider from '@/providers/AuthProvider'
 
 import { Toaster } from 'react-hot-toast'
+import { ReactQueryClientProvider } from '@/providers/ReactQueryClientProvider'
 
 // do not cache this layout
 export const revalidate = 0
@@ -48,11 +49,12 @@ export default async function RootLayout({
                     speed={600}
                     showSpinner={false}
                 />
-
-                <AuthProvider accessToken={accessToken}>
-                    {/* @ts-ignore */}
-                    {children}
-                </AuthProvider>
+                <ReactQueryClientProvider>
+                    <AuthProvider accessToken={accessToken}>
+                        {/* @ts-ignore */}
+                        {children}
+                    </AuthProvider>
+                </ReactQueryClientProvider>
                 <Toaster
                     position="bottom-center"
                     toastOptions={{

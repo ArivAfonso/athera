@@ -6,6 +6,12 @@ const LoadingPublishedPosts = () => {
                     <h2 className="text-2xl sm:text-3xl font-semibold bg-gray-300 dark:bg-gray-600 h-8 w-32 animate-pulse"></h2>
                 </div>
                 <div className="flex flex-col space-y-8">
+                    <div className="flex-1 text-slate-900 dark:text-slate-200">
+                        <div className="bg-gray-300 dark:bg-gray-600 flex items-center space-x-1 py-2 px-4 rounded-xl h-full animate-pulse">
+                            <div className="h-7 w-5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                            <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-full"></div>
+                        </div>
+                    </div>
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                             <table className="min-w-full divide-y divide-gray-300 dark:divide-neutral-600">

@@ -41,6 +41,8 @@ const DashboardBookmarks = async () => {
         )
         .eq('user', session?.session?.user.id)
 
+    console.log(data)
+
     const myPosts = (data as unknown as { posts: PostType }[]).map(
         (item) => item.posts
     )
@@ -57,7 +59,11 @@ const DashboardBookmarks = async () => {
                     <div>
                         {/* LOOP ITEMS */}
                         {myPosts[0] ? (
-                            <PostsSection posts={myPosts} rows={3} />
+                            <PostsSection
+                                posts={myPosts}
+                                rows={3}
+                                id="bookmarks"
+                            />
                         ) : (
                             <Empty
                                 mainText="No Posts Found"

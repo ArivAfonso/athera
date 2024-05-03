@@ -1,22 +1,19 @@
 'use client'
 
 import React, { ReactNode, useEffect, useState } from 'react'
-import NcImage from '@/components/NcImage/NcImage'
 import { createClient } from '@/utils/supabase/client'
 import ModalDeletePost from '../ModalDeletePost'
 import PostType from '@/types/PostType'
-import stringToSlug from '@/utils/stringToSlug'
-import Link from 'next/link'
-import Badge from '@/components/Badge/Badge'
-import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
 import { useRouter } from 'next/navigation'
-import { SquarePenIcon, Trash2Icon } from 'lucide-react'
+import { SearchIcon, SquarePenIcon, Trash2Icon } from 'lucide-react'
 import LoadingScheduled from './loading'
+import { debounce } from 'lodash'
+import PostsSection from '@/components/PostsSection/PostsSection'
 
 const DashboardScheduled = () => {
     const [posts, setPosts] = React.useState<PostType[]>([])
+    const [myPosts, setMyPosts] = React.useState<PostType[]>([])
     const [loading, setLoading] = React.useState(true)
-    const router = useRouter()
 
     const [showDeleteModal, setShowDeleteModal] = React.useState(false)
     const [postIdToDelete, setPostIdToDelete] = React.useState('')
@@ -34,7 +31,7 @@ const DashboardScheduled = () => {
                         `id, title, created_at, scheduled_at, image, post_topics(topic:topics(id,name,color)), bookmarkCount:bookmarks(count), commentCount:comments(count), likeCount:likes(count)`
                     )
                     .eq('author', session.session?.user.id)
-                    .is('posts.scheduled_at', null)
+                    .neq('scheduled_at', null)
 
                 data?.forEach((item) => {
                     item.created_at = new Date(
@@ -47,6 +44,8 @@ const DashboardScheduled = () => {
                 })
                 //@ts-ignore
                 setPosts(data)
+                //@ts-ignore
+                setMyPosts(data)
                 setLoading(false)
             } catch (err) {
                 console.log(err)
@@ -55,6 +54,64 @@ const DashboardScheduled = () => {
         fetchData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    const addPosts = async (pageParam: number) => {
+        const supabase = createClient()
+        const { data: session } = await supabase.auth.getSession()
+
+        const { data, error } = await supabase
+            .from('posts')
+            .select(
+                `id, title, created_at, image, post_topics(topic:topics(id,name,color)), bookmarkCount:bookmarks(count), commentCount:comments(count), likeCount:likes(count)`
+            )
+            .neq('scheduled_at', null)
+            .eq('author', session.session?.user.id)
+            .range(pageParam * 24, (pageParam + 1) * 24 - 1)
+
+        data?.forEach((item) => {
+            item.created_at = new Date(
+                item.created_at ? item.created_at : ''
+            ).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            })
+        })
+
+        return data as unknown as PostType[]
+    }
+
+    const fetchPosts = debounce(async (inputValue: String) => {
+        const supabase = createClient()
+        const { data: session } = await supabase.auth.getSession()
+
+        const { data, error } = await supabase
+            .from('posts')
+            .select(
+                `id, title, created_at, image, post_topics(topic:topics(id,name,color)), bookmarkCount:bookmarks(count), commentCount:comments(count), likeCount:likes(count)`
+            )
+            .neq('scheduled_at', null)
+            .ilike('title', `${inputValue}%`)
+            .eq('author', session.session?.user.id)
+
+        data?.forEach((item) => {
+            item.created_at = new Date(
+                item.created_at ? item.created_at : ''
+            ).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            })
+        })
+
+        if (error) {
+            console.log(error)
+            return
+        }
+
+        //@ts-ignore
+        setPosts(data)
+    }, 300) // 500ms delay
 
     const handleDeletePost = async (postId: string) => {
         const supabase = createClient() // Change to server component client
@@ -73,6 +130,11 @@ const DashboardScheduled = () => {
         }
     }
 
+    const onDeletePost = (postId: string) => {
+        setShowDeleteModal(true)
+        setPostIdToDelete(postId)
+    }
+
     return (
         <>
             <title>My Scheduled Posts</title>
@@ -83,156 +145,67 @@ const DashboardScheduled = () => {
                         My Scheduled Posts
                     </h2>
                 </div>
-                {posts && posts.length > 0 && (
-                    <div className="flex flex-col space-y-8">
-                        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                                <table className="min-w-full divide-y divide-gray-300 dark:divide-neutral-600">
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                scope="col"
-                                                className="py-3.5 pl-4 pr-3 text-start text-sm font-normal text-neutral-600 dark:text-neutral-400 sm:pl-0 capitalize"
-                                            >
-                                                Post
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-3 py-3.5 text-center text-sm font-normal text-neutral-600 dark:text-neutral-400"
-                                            >
-                                                Topics
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-3 py-3.5 text-center text-sm font-normal text-neutral-600 dark:text-neutral-400"
-                                            >
-                                                Scheduled At
-                                            </th>
-                                            <th
-                                                scope="col"
-                                                className="px-3 py-3.5 text-center text-sm font-normal text-neutral-600 dark:text-neutral-400"
-                                            >
-                                                Time
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200 dark:divide-neutral-600">
-                                        {posts.map((post, key) => {
-                                            return (
-                                                <tr key={key}>
-                                                    <td className="whitespace-nowrap py-4 sm:py-5 ps-4 pe-3 text-sm sm:ps-0">
-                                                        <Link
-                                                            href={`/post/${stringToSlug(
-                                                                post.title
-                                                            )}/${post.id}`}
-                                                            className="flex items-center"
-                                                        >
-                                                            <div className="h-12 w-12 sm:h-16 sm:w-16 relative flex-shrink-0">
-                                                                <NcImage
-                                                                    src={
-                                                                        post.image ||
-                                                                        ''
-                                                                    }
-                                                                    alt={
-                                                                        post.title
-                                                                    }
-                                                                    className="rounded-md object-cover w-full h-full"
-                                                                    fill
-                                                                />
-                                                            </div>
-                                                            <div className="ms-4">
-                                                                <div className="font-medium text-gray-900 dark:text-neutral-200 w-84 max-w-sm flex whitespace-normal">
-                                                                    <span
-                                                                        dangerouslySetInnerHTML={{
-                                                                            __html:
-                                                                                post.title ||
-                                                                                '',
-                                                                        }}
-                                                                    ></span>
-                                                                </div>
-                                                                <div className="mt-1 text-gray-500">
-                                                                    {
-                                                                        post.created_at
-                                                                    }
-                                                                </div>
-                                                            </div>
-                                                        </Link>
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                                        <Badge
-                                                            name={
-                                                                (post
-                                                                    .likeCount[0]
-                                                                    .count as ReactNode) ||
-                                                                0
-                                                            }
-                                                            color="red"
-                                                            className="rounded-md"
-                                                        />
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                                                        <TopicBadgeList
-                                                            topics={
-                                                                post.post_topics
-                                                            }
-                                                            chars={20}
-                                                            className="flex space-x-1 justify-center"
-                                                        />
-                                                    </td>
-                                                    <td className="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500">
-                                                        {post.scheduled_at}
-                                                    </td>
+                <div className="flex flex-col space-y-8">
+                    <form
+                        action=""
+                        method="POST"
+                        className="flex-1 text-slate-900 dark:text-slate-200"
+                    >
+                        <div className="bg-slate-50 dark:bg-neutral-700 flex items-center space-x-1 py-2 px-4 rounded-xl h-full">
+                            <SearchIcon strokeWidth={1.5} />
+                            <input
+                                type="search"
+                                placeholder="Type and press enter"
+                                className="border-none bg-transparent focus:outline-none focus:ring-0 w-full text-sm "
+                                onChange={(e) => {
+                                    if (e.target.value === '') {
+                                        setPosts(myPosts)
+                                        return
+                                    }
 
-                                                    <td className="whitespace-nowrap text-center px-3 py-5 text-sm text-gray-500">
-                                                        <Badge
-                                                            name={
-                                                                post.estimatedReadingTime +
-                                                                ' mins'
-                                                            }
-                                                            color="blue"
-                                                            className="rounded-md"
-                                                        />
-                                                    </td>
-                                                    <td className="px-6 py-2 whitespace-nowrap text-right text-sm font-medium text-neutral-300">
-                                                        <button
-                                                            onClick={() => {
-                                                                router.push(
-                                                                    `/dashboard/edit-post/${post.id}`
-                                                                )
-                                                            }}
-                                                            className="text-primary-800 dark:text-primary-500 hover:text-primary-900"
-                                                        >
-                                                            <SquarePenIcon className="h-6 w-6" />
-                                                        </button>
-                                                        {` | `}
-                                                        <button
-                                                            onClick={() => {
-                                                                setShowDeleteModal(
-                                                                    true
-                                                                )
-                                                                setPostIdToDelete(
-                                                                    post.id
-                                                                )
-                                                            }}
-                                                            className="text-rose-600 hover:text-rose-900"
-                                                        >
-                                                            <Trash2Icon
-                                                                className="h-6 w-6"
-                                                                strokeWidth={
-                                                                    1.5
-                                                                }
-                                                            />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            )
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
+                                    fetchPosts(e.target.value)
+                                }}
+                            />
                         </div>
-                    </div>
-                )}
+                    </form>
+                    {posts && posts.length > 0 && (
+                        <>
+                            <form
+                                action=""
+                                method="POST"
+                                className="flex-1 text-slate-900 dark:text-slate-200"
+                            >
+                                <div className="bg-slate-50 dark:bg-neutral-700 flex items-center space-x-1 py-2 px-4 rounded-xl h-full">
+                                    <SearchIcon strokeWidth={1.5} />
+                                    <input
+                                        type="search"
+                                        placeholder="Type and press enter"
+                                        className="border-none bg-transparent focus:outline-none focus:ring-0 w-full text-sm "
+                                        onChange={(e) => {
+                                            if (e.target.value === '') {
+                                                setPosts(myPosts)
+                                                return
+                                            }
+
+                                            fetchPosts(e.target.value)
+                                        }}
+                                    />
+                                </div>
+                            </form>
+                            <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                    <PostsSection
+                                        posts={posts}
+                                        //@ts-ignore
+                                        onDeletePost={onDeletePost}
+                                        postFn={addPosts}
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </div>
+
                 {showDeleteModal && (
                     <ModalDeletePost
                         show={showDeleteModal}

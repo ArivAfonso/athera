@@ -3,28 +3,37 @@
 import PostType from '@/types/PostType'
 import Card11 from '../Card11/Card11'
 import Card6 from '../Card6/Card6'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import Card2 from '../Card2/Card2'
 import Card9 from '../Card9/Card9'
 import Card8 from '../Card8/Card8'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { initial, set } from 'lodash'
+import useIntersectionObserver from '@/hooks/useIntersectionObserver'
+import CircleLoading from '../CircleLoading/CircleLoading'
 
 interface Props {
-    posts: PostType[] | null | undefined
+    posts: PostType[]
+    id: string
     rows?: number
     type?: string
     watchOption?: boolean
+    postFn?: (param: number) => Promise<PostType[]>
 }
 
 function PostsSection({
     posts,
+    id,
     rows = 4,
     watchOption = false,
     type = 'grid',
+    postFn,
 }: Props) {
     const [postsState, setPosts] = useState<PostType[] | null | undefined>(
         posts
     )
+    const [addPostsFinished, setAddPostsFinished] = useState(false)
 
     useEffect(() => {
         async function filterPostsAndAuthors() {
@@ -86,6 +95,42 @@ function PostsSection({
         filterPostsAndAuthors()
     }, [posts])
 
+    //Set up infinite query
+    const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
+        useInfiniteQuery({
+            queryKey: [id],
+            queryFn: async ({ pageParam = 1 }) => {
+                if (addPostsFinished) return Promise.resolve([])
+                //@ts-ignore
+                const response = await postFn(pageParam)
+                if (response.length === 0) setAddPostsFinished(true)
+                return response
+            },
+            getNextPageParam: (lastPage, allPages) => {
+                return allPages.length + 1
+            },
+            initialPageParam: 1, //THIS LINE HERE!
+            initialData: {
+                pages: posts ? [posts] : [],
+                pageParams: [1],
+            },
+        })
+
+    const lastPostRef = useRef(null)
+    const entry = useIntersectionObserver(lastPostRef, {
+        root: null,
+        rootMargin: '600px',
+        threshold: 0.1,
+    })
+
+    const _posts = data.pages?.flatMap((page) => page)
+
+    useEffect(() => {
+        if (entry?.isIntersecting && hasNextPage) {
+            fetchNextPage()
+        }
+    }, [entry?.isIntersecting, hasNextPage])
+
     const handleHidePost = async (postId: string) => {
         //Update localStorage
         const hiddenPostsItem = localStorage.getItem('hiddenPosts')
@@ -123,13 +168,15 @@ function PostsSection({
         <>
             {type === 'grid' && (
                 <div
-                    className={`gap-6 md:gap-8 mt-8 lg:mt-10 ${(posts ? posts.length : 0) < rows ? 'flex justify-center flex-wrap' : `grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-${rows}`}`}
+                    className={`gap-6 md:gap-8 mt-8 lg:mt-10 ${(posts ? posts.length : 0) < rows ? 'flex justify-center flex-wrap' : `grid lg:grid-cols-3 xl:grid-cols-${rows}`}`}
                 >
-                    {postsState &&
-                        postsState.map((post, id) => (
+                    {_posts &&
+                        postsState &&
+                        _posts.map((post: PostType, id: number) => (
                             <div
                                 key={id}
                                 className={`${(posts ? posts.length : 0) < rows ? `w-full sm:w-1/2 lg:w-1/3 xl:w-1/${rows}` : ''}`}
+                                // Assign the ref to the div if the post is the third last one
                             >
                                 <div className="hidden sm:block">
                                     {/* Render Card11 on larger screens */}
@@ -143,7 +190,7 @@ function PostsSection({
                                     />
                                 </div>
 
-                                <div className="sm:hidden grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div className="sm:hidden grid grid-cols-1 gap-6">
                                     {/* Render Card5 on smaller screens */}
                                     <Card6
                                         onHidePost={handleHidePost}
@@ -156,6 +203,10 @@ function PostsSection({
                                 </div>
                             </div>
                         ))}
+                    <div ref={lastPostRef}></div>
+                    {isFetchingNextPage &&
+                        _posts.length !== 0 &&
+                        _posts.length % 24 === 0 && <CircleLoading />}
                 </div>
             )}
             {type === 'magazine' && (
@@ -175,6 +226,15 @@ function PostsSection({
                                         <div
                                             key={i}
                                             className={`flex ${i % 2 === 0 ? '' : 'flex-row-reverse'} gap-6 md:gap-8`}
+                                            ref={
+                                                i ===
+                                                Math.ceil(
+                                                    postsState.length / 3
+                                                ) -
+                                                    4
+                                                    ? lastPostRef
+                                                    : null
+                                            }
                                         >
                                             {/* Render Card2 for the first post if there are three posts in the group */}
                                             {posts.length === 3 ? (
@@ -263,7 +323,14 @@ function PostsSection({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mt-8 lg:mt-10">
                     {postsState &&
                         postsState.map((post, id) => (
-                            <div key={id}>
+                            <div
+                                key={id}
+                                ref={
+                                    id === postsState.length - 4
+                                        ? lastPostRef
+                                        : null
+                                }
+                            >
                                 <Card6
                                     onHidePost={handleHidePost}
                                     post={post}
@@ -290,6 +357,15 @@ function PostsSection({
                                         !isLastIteration ? (
                                             <div
                                                 key={i}
+                                                ref={
+                                                    i ===
+                                                    Math.ceil(
+                                                        postsState.length / 3
+                                                    ) -
+                                                        4
+                                                        ? lastPostRef
+                                                        : null
+                                                }
                                                 className={`flex flex-col md:flex-row ${i % 2 === 0 ? '' : 'md:flex-row-reverse'} gap-6 mb-8 md:gap-8`}
                                             >
                                                 <div className="w-full">

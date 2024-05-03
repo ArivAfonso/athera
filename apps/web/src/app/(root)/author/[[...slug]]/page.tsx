@@ -23,6 +23,7 @@ import NcImage from '@/components/NcImage/NcImage'
 import Loading from './loading'
 import FollowModal from './FollowModal'
 import PostsSection from '@/components/PostsSection/PostsSection'
+import PostType from '@/types/PostType'
 
 async function getData(context: { params: { slug: any } }) {
     const supabase = createClient()
@@ -78,10 +79,10 @@ async function getData(context: { params: { slug: any } }) {
         )
         .eq('username', username)
         .is('posts.scheduled_at', null)
+        .limit(24, { referencedTable: 'posts' })
+        .order('created_at', { referencedTable: 'posts', ascending: false })
         .single()
     const userData: AuthorType | null = data as unknown as AuthorType
-
-    console.log(userData.id)
 
     const { count: followerData, error: followerErr } = await supabase
         .from('followers')
@@ -106,16 +107,65 @@ const PageAuthor = (context: any) => {
     const [modal, setModal] = useState(false)
     const [followModal, setFollowModal] = useState(false)
     const [followType, setFollowType] = useState('')
+    const [count, setCount] = useState(1)
+
+    const username = context.params.slug[0]
+
+    async function addPosts(pageParam: number) {
+        console.log(pageParam)
+
+        const supabase = createClient()
+        const { data, error } = await supabase
+            .from('posts')
+            .select(
+                `
+                id,
+                title,
+                created_at,
+                  scheduled_at,
+                description,
+                likeCount:likes(count),
+                commentCount:comments(count),
+                likes(
+                  liker(
+                      id
+                  )
+                ),
+                bookmarks(user(id)),
+                image,
+                author(
+                  verified,
+                  id,
+                  name,
+                  username,
+                  avatar
+                ),
+                post_topics(topic:topics(name,color,id))
+            `
+            )
+            .eq('author.username', username)
+            .order('created_at', { ascending: false })
+            .range((pageParam - 1) * 24 + 1, pageParam * 24 - 1)
+
+        const newPosts = data as unknown as PostType[]
+
+        return newPosts
+    }
 
     useEffect(() => {
         async function fetchData() {
             const author: AuthorType = await getData(context)
             if (author !== undefined) setData(author)
             setLoading(false)
-            document.title = `${data.name} - Athera`
         }
         fetchData()
     }, [context, data.name])
+
+    useEffect(() => {
+        if (data?.name) {
+            document.title = `${data.name} - Athera`
+        }
+    }, [data])
 
     return (
         <>
@@ -293,12 +343,14 @@ const PageAuthor = (context: any) => {
                                 {data.posts ? (
                                     <PostsSection
                                         posts={data.posts}
+                                        id={`author-${data.id}`}
                                         type={
                                             data.customization
                                                 ? data.customization
                                                       .profile_layout
                                                 : 'grid'
                                         }
+                                        postFn={addPosts}
                                     />
                                 ) : (
                                     <Empty

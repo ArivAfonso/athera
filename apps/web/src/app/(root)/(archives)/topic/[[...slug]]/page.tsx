@@ -1,21 +1,67 @@
-import React from 'react'
+'use client'
+
+import React, { useEffect, useState } from 'react'
 import Card11 from '@/components/Card11/Card11'
 import TopicType from '@/types/TopicType'
-import { createClient } from '@/utils/supabase/server'
 import Image from 'next/image'
 import Card6 from '@/components/Card6/Card6'
-import { cookies } from 'next/headers'
 import { Metadata } from 'next'
 import PostsSection from '@/components/PostsSection/PostsSection'
+import PostType from '@/types/PostType'
+import { createClient } from '@/utils/supabase/client'
+import Loading from './loading'
+import CircleLoading from '@/components/CircleLoading/CircleLoading'
+
+async function addPosts(pageParam: number) {
+    const supabase = createClient()
+
+    const { data, error } = await supabase
+        .from('posts')
+        .select(
+            `
+            id,
+            title,
+            created_at,
+            scheduled_at,
+            description,
+            image,
+            likeCount:likes(count),
+            commentCount:comments(count),
+            post_topics(topic:topics(id,name,color)),
+            bookmarks(user(id)),
+            likes(
+                liker(
+                    id
+                )
+            ),
+            author(
+                id,
+                verified,
+                name,
+                username,
+                avatar
+            )
+            `
+        )
+        .eq('post_topics.topic_id', 1)
+        .is('scheduled_at', null)
+        .order('created_at', { ascending: false })
+        .range(pageParam * 24, (pageParam + 1) * 24 - 1)
+
+    const newPosts = data as unknown as PostType[]
+
+    return newPosts
+}
 
 async function getTopics(context: { params: { slug: any } }) {
-    const supabase = createClient(cookies())
+    const supabase = createClient()
 
     const id = context.params.slug[1]
     const { data, error } = await supabase
         .from('topics')
         .select(
             `
+            id,
             name,
             color,
             image,
@@ -56,63 +102,84 @@ async function getTopics(context: { params: { slug: any } }) {
     return catData
 }
 
-export async function generateMetadata(
-    props: any,
-    searchParams: any
-): Promise<Metadata> {
-    const data: TopicType = await getTopics(props)
+// export async function generateMetadata(
+//     props: any,
+//     searchParams: any
+// ): Promise<Metadata> {
+//     const data: TopicType = await getTopics(props)
 
-    return {
-        title: data.name + ' - Latest articles on Athera',
-        description: `Read the latest articles on ${data.name}.`,
-    }
-}
+//     return {
+//         title: data.name + ' - Latest articles on Athera',
+//         description: `Read the latest articles on ${data.name}.`,
+//     }
+// }
 
 const PageTopic = async (context: any) => {
-    const catData = await getTopics(context)
+    const [catData, setCatData] = useState<TopicType>()
+
+    useEffect(() => {
+        async function getData() {
+            const data = await getTopics(context)
+            setCatData(data)
+        }
+
+        getData()
+    }, [context])
+
+    useEffect(() => {
+        if (catData?.name) {
+            document.title = `${catData.name} - Latest articles on Athera`
+        }
+    }, [catData])
 
     return (
         <div className={`nc-PageTopic`}>
-            {/* HEADER */}
             <div className="w-full px-2 pt-2 xl:max-w-screen-2xl mx-auto">
-                {catData.image ? (
-                    <div className="relative aspect-w-16 aspect-h-13 sm:aspect-h-9 lg:aspect-h-8 xl:aspect-h-5 rounded-3xl md:rounded-[40px] overflow-hidden z-0">
-                        <Image
-                            alt="Topic header image"
-                            fill
-                            src={catData.image || ''}
-                            className="object-cover w-full h-full rounded-3xl md:rounded-[40px]"
-                            sizes="(max-width: 1280px) 100vw, 1536px"
-                        />
-                        <div className="flex items-center bg-black text-white bg-opacity-30 flex-col justify-center">
-                            <h2 className="align-middle flex items-center text-5xl font-semibold md:text-7xl text-center justify-center">
-                                {catData.name.replaceAll('-', ' ')}
-                            </h2>
-                            <span className="block mt-4 text-neutral-300">
-                                {catData.posts?.length} Articles
-                            </span>
-                        </div>
-                    </div>
+                {!catData ? (
+                    <CircleLoading />
                 ) : (
-                    <div className="flex flex-col justify-center items-center h-48">
-                        {' '}
-                        {/* Adjust the height (h-48) as needed */}
-                        <h1 className="text-center text-7xl font-semibold md:text-8xl mb-2">
-                            {' '}
-                            {/* Add margin-bottom (mb-2) */}
-                            {catData.name}
-                        </h1>
-                        <h2 className="text-center text-2xl md:text-3xl">
-                            Found {catData.posts?.length} posts
-                        </h2>
-                    </div>
+                    <>
+                        {catData.image ? (
+                            <div className="relative aspect-w-16 aspect-h-13 sm:aspect-h-9 lg:aspect-h-8 xl:aspect-h-5 rounded-3xl md:rounded-[40px] overflow-hidden z-0">
+                                <Image
+                                    alt="Topic header image"
+                                    fill
+                                    src={catData.image || ''}
+                                    className="object-cover w-full h-full rounded-3xl md:rounded-[40px]"
+                                    sizes="(max-width: 1280px) 100vw, 1536px"
+                                />
+                                <div className="flex items-center bg-black text-white bg-opacity-30 flex-col justify-center">
+                                    <h2 className="align-middle flex items-center text-5xl font-semibold md:text-7xl text-center justify-center">
+                                        {catData.name.replaceAll('-', ' ')}
+                                    </h2>
+                                    <span className="block mt-4 text-neutral-300">
+                                        {catData.posts?.length} Articles
+                                    </span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col justify-center items-center h-48">
+                                <h1 className="text-center text-7xl font-semibold md:text-8xl mb-2">
+                                    {catData?.name}
+                                </h1>
+                                <h2 className="text-center text-2xl md:text-3xl">
+                                    Found {catData?.posts?.length} posts
+                                </h2>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
-            {/* ====================== END HEADER ====================== */}
 
             <div className="container pb-16 lg:pb-28 lg:pt-10 space-y-16 lg:space-y-28">
                 <div>
-                    <PostsSection posts={catData.posts} />
+                    {catData?.posts && (
+                        <PostsSection
+                            postFn={addPosts}
+                            posts={catData.posts}
+                            id={`topic-${catData.id}`}
+                        />
+                    )}
                 </div>
             </div>
         </div>

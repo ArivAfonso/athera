@@ -29,7 +29,6 @@ module.exports = {
 
         extend: {
             colors: {
-                'athera-blue': '#2f26d4',
                 primary: {
                     50: customColors('--c-primary-50'),
                     100: customColors('--c-primary-100'),
@@ -68,20 +67,20 @@ module.exports = {
                 },
             },
             animation: {
-                spotlight: "spotlight 2s ease .75s 1 forwards",
-              },
-              keyframes: {
+                spotlight: 'spotlight 2s ease .75s 1 forwards',
+            },
+            keyframes: {
                 spotlight: {
-                  "0%": {
-                    opacity: 0,
-                    transform: "translate(-72%, -62%) scale(0.5)",
-                  },
-                  "100%": {
-                    opacity: 1,
-                    transform: "translate(-50%,-40%) scale(1)",
-                  },
+                    '0%': {
+                        opacity: 0,
+                        transform: 'translate(-72%, -62%) scale(0.5)',
+                    },
+                    '100%': {
+                        opacity: 1,
+                        transform: 'translate(-50%,-40%) scale(1)',
+                    },
                 },
-              },
+            },
         },
     },
     variants: {

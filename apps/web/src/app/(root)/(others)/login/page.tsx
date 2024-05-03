@@ -14,6 +14,7 @@ import Image from 'next/image'
 import { createClient } from '@/utils/supabase/client'
 import { Controller, useForm } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
+import Button from '@/components/Button/Button'
 
 const PageLogin = ({}) => {
     const supabase = createClient()
@@ -171,7 +172,11 @@ const PageLogin = ({}) => {
                             )}
                         />
                     </label>
-                    <ButtonPrimary type="submit">Continue</ButtonPrimary>
+                    <div className="flex justify-center items-center">
+                        <Button type="submit" pattern="third">
+                            Continue
+                        </Button>
+                    </div>
                 </form>
                 {errorMsg && <Alert message={errorMsg} type="danger" />}
                 {/* ==== */}

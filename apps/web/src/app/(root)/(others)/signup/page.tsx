@@ -150,7 +150,7 @@ const PageSignUp = ({}) => {
                             <Button type="submit">Next Step</Button>
                         </form>
 
-                        <span className="block text-center text-neutral-700 dark:text-neutral-300">
+                        <span className="block text-center text-neutral-700 dark:text-neutral-500">
                             Already have an account? {` `}
                             <NcLink href="/login">Sign in</NcLink>
                         </span>
@@ -288,9 +288,11 @@ const PageSignUp = ({}) => {
                                     <div className="text-red-500">Required</div>
                                 )}
                             </label>
-                            <ButtonPrimary type="submit">
-                                Continue
-                            </ButtonPrimary>
+                            <div className="flex justify-center items-center">
+                                <Button type="submit" pattern="third">
+                                    Continue
+                                </Button>
+                            </div>
                         </form>
                         {errorMsg && <Alert message={errorMsg} type="danger" />}
                         {emailConfirm && (
@@ -300,7 +302,7 @@ const PageSignUp = ({}) => {
                             />
                         )}
                         {/* ==== */}
-                        <span className="block text-center text-neutral-700 dark:text-neutral-300">
+                        <span className="block text-center text-neutral-700 dark:text-neutral-500">
                             Already have an account? {` `}
                             <NcLink href="/login">Sign in</NcLink>
                         </span>

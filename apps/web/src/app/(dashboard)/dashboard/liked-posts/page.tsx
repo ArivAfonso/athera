@@ -6,7 +6,6 @@ import { cookies } from 'next/headers'
 import React, { Suspense } from 'react'
 
 const DashboardLikedPosts = async () => {
-    console.log('hi')
     const supabase = createClient(cookies())
     const { data: session } = await supabase.auth.getSession()
 
@@ -56,7 +55,7 @@ const DashboardLikedPosts = async () => {
                 <div>
                     {/* LOOP ITEMS */}
                     {myPosts[0] ? (
-                        <PostsSection posts={myPosts} rows={3} />
+                        <PostsSection posts={myPosts} id="likes" rows={3} />
                     ) : (
                         <Empty
                             mainText="No Posts Found"

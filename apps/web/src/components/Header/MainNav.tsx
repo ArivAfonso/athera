@@ -9,6 +9,7 @@ import { cookies } from 'next/headers'
 import AvatarDropdown from './AvatarDropdown'
 import NotifyDropdown from './NotifyDropdown'
 import ButtonPrimary from '../Button/ButtonPrimary'
+import Button from '../Button/Button'
 
 export interface MainNavProps {}
 
@@ -50,13 +51,14 @@ const MainNav: FC<MainNavProps> = async ({}) => {
                             ) : (
                                 <>
                                     <div className="px-1"></div>
-                                    <ButtonPrimary
+                                    <Button
                                         sizeClass="py-3 px-4 sm:px-6"
-                                        className="hover:bg-primary-700 text-white"
+                                        //className="hover:bg-neutral-200 bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-gray-200"
                                         href="/signup"
+                                        pattern="third"
                                     >
                                         Sign Up
-                                    </ButtonPrimary>
+                                    </Button>
                                 </>
                             )}
                         </div>

@@ -37,10 +37,12 @@ async function getData(
     // Extract the embedding output
     const embedding = Array.from(output.data)
 
+    console.log(embedding)
+
     const { data, error } = await supabase
         .rpc('match_posts', {
             query_embedding: embedding,
-            match_threshold: 0.8,
+            match_threshold: 0.85,
             match_count: 10,
             filter_option: filter_option,
         })
@@ -49,7 +51,7 @@ async function getData(
         post.likeCount = post.likecount
         post.commentCount = post.commentcount
     })
-    console.log(data)
+    console.log(data, error)
     return data
 }
 
@@ -174,13 +176,6 @@ const PageSearchV2 = (context: any) => {
     return (
         <div>
             <title>Search results for {s}</title>
-            {/* <meta name="title" content={`Search results for ${s}`} />
-            <meta
-                name="description"
-                content={`We found ${data.length} results articles for "${s}"`}
-            />
-            <meta property="og:type" content="website" />
-            <meta property="og:url" content={window.location.origin} /> */}
             <div
                 className={`h-24 2xl:h-28 top-0 left-0 right-0 w-full bg-primary-100/50 dark:bg-neutral-900`}
             />
@@ -283,7 +278,10 @@ const PageSearchV2 = (context: any) => {
                     }
                     {/* RENDER ARTICLES */}
                     {tabActive === 'Articles' && data.length > 0 && (
-                        <PostsSection posts={data} />
+                        <PostsSection
+                            id={`search-${searchValue}`}
+                            posts={data}
+                        />
                     )}
                     {tabActive === 'Topics' && topics.length > 0 && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">

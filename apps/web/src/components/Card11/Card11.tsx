@@ -23,6 +23,7 @@ export interface Card11Props {
     onHidePost: (postId: string) => void
     watchOption?: boolean
     onRemoveWatchlist?: (postId: string) => void
+    innerRef?: any
 }
 
 const Card11: FC<Card11Props> = ({
@@ -33,6 +34,7 @@ const Card11: FC<Card11Props> = ({
     ratio = 'aspect-w-4 aspect-h-3',
     onHidePost,
     onRemoveWatchlist,
+    innerRef,
 }) => {
     const [isHover, setIsHover] = useState(false)
     const [dropdownVisible, setDropdownVisible] = useState(false)
@@ -155,6 +157,7 @@ const Card11: FC<Card11Props> = ({
                 className={`nc-Card11 relative flex flex-col group rounded-3xl overflow-hidden border dark:border-transparent border-neutral-100 dark:bg-neutral-900 ${className}`}
                 onMouseEnter={() => setIsHover(true)}
                 onMouseLeave={() => setIsHover(false)}
+                ref={innerRef}
             >
                 <div
                     className={`block flex-shrink-0 relative w-full rounded-t-3xl overflow-hidden z-10 ${ratio}`}

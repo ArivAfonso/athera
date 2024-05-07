@@ -21,9 +21,11 @@ import Card6 from '@/components/Card6/Card6'
 import Empty from '@/components/Empty'
 import NcImage from '@/components/NcImage/NcImage'
 import Loading from './loading'
-import FollowModal from './FollowModal'
+import FollowModal from './FollowersModal'
 import PostsSection from '@/components/PostsSection/PostsSection'
 import PostType from '@/types/PostType'
+import FollowersModal from './FollowersModal'
+import FollowingModal from './FollowingModal'
 
 async function getData(context: { params: { slug: any } }) {
     const supabase = createClient()
@@ -326,14 +328,6 @@ const PageAuthor = (context: any) => {
                             </div>
                         </div>
                         {/* ====================== END HEADER ====================== */}
-
-                        <FollowModal
-                            author={data.id}
-                            show={modal}
-                            type="followers"
-                            onCloseModal={() => setModal(false)}
-                        />
-
                         <div className="container py-16 lg:pb-28 lg:pt-20 space-y-16 lg:space-y-28">
                             <main>
                                 {/* LOOP ITEMS */}
@@ -360,20 +354,24 @@ const PageAuthor = (context: any) => {
                         </div>
                     </div>
                     {followModal && followType === 'followers' && (
-                        <FollowModal
+                        <FollowersModal
                             author={data.id}
                             show={followModal}
-                            type="followers"
                             onCloseModal={() => setFollowModal(false)}
                         />
                     )}
                     {followModal && followType === 'following' && (
-                        <FollowModal
-                            author={data.id}
-                            show={followModal}
-                            type="following"
-                            onCloseModal={() => setFollowModal(false)}
-                        />
+                        <div
+                            onMouseEnter={(e) => {
+                                console.log(followType)
+                            }}
+                        >
+                            <FollowingModal
+                                author={data.id}
+                                show={followModal}
+                                onCloseModal={() => setFollowModal(false)}
+                            />
+                        </div>
                     )}
                 </>
             )}

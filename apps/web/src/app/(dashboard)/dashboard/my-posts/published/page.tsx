@@ -168,7 +168,10 @@ const DashboardPosts = () => {
                                         placeholder="Type and press enter"
                                         className="border-none bg-transparent focus:outline-none focus:ring-0 w-full text-sm "
                                         onChange={(e) => {
-                                            if (e.target.value === '') {
+                                            if (
+                                                e.target.value.trim().length ===
+                                                0
+                                            ) {
                                                 setPosts(myPosts)
                                                 return
                                             }

@@ -51,8 +51,6 @@ const TopicsInput: FC<TopicsInputProps> = ({ onChange, defaultValue }) => {
                 .select('*')
                 .limit(10)
 
-            console.log(data)
-
             if (error) {
                 console.log(error)
                 return
@@ -70,8 +68,6 @@ const TopicsInput: FC<TopicsInputProps> = ({ onChange, defaultValue }) => {
             .select('name')
             .ilike('name', `${inputValue}%`)
             .limit(10)
-
-        console.log(data)
 
         if (error) {
             console.log(error)
@@ -108,8 +104,7 @@ const TopicsInput: FC<TopicsInputProps> = ({ onChange, defaultValue }) => {
         if (defaultValue && defaultValue.length > 0) {
             setTopics(defaultValue)
         }
-        console.log(defaultValue)
-    }, [defaultValue])
+    }, [])
 
     useEffect(() => {
         if (eventClickOutsideDiv) {
@@ -158,10 +153,10 @@ const TopicsInput: FC<TopicsInputProps> = ({ onChange, defaultValue }) => {
                         {topic}
                         <button
                             className="ml-1 px-0.5 text-red-400 text-base flex items-center justify-center"
-                            onClick={(event) => {
-                                event.stopPropagation()
+                            onClick={() => {
                                 handleRemoveTopic(topic)
                             }}
+                            type="button"
                             title="Remove topic"
                         >
                             <XMarkIcon className="w-4 h-4" />
@@ -221,8 +216,7 @@ const TopicsInput: FC<TopicsInputProps> = ({ onChange, defaultValue }) => {
                 >
                     <h3 className="text-xl font-semibold">Top topics</h3>
                     <div className="w-full border-b my-4 border-neutral-300 dark:border-neutral-700"></div>
-                    {/* {error && <p className="text-red-500">{error.message}</p>}
-          {loading && <CircleLoading />} */}
+
                     {data && data.length > 0 ? (
                         <ul className="flex flex-wrap">
                             {data.map((topic, index) => (

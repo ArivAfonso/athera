@@ -109,7 +109,7 @@ const PostActionDropdown: FC<PostActionDropdownProps> = ({
             return openModalReportPost()
         }
         if (item.id === 'edit') {
-            router.push(`/edit-post/${id}`)
+            router.push(`/dashboard/edit-post/${id}`)
         }
 
         return

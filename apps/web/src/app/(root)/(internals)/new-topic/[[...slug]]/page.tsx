@@ -211,7 +211,7 @@ const NewTopicPage = (context: { params: { slug: any } }) => {
                             name: tag,
                             color: data.color,
                             image:
-                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/categories/' +
+                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/topics/' +
                                 path?.path,
                         },
                     ])

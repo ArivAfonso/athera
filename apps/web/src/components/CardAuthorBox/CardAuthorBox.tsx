@@ -33,7 +33,7 @@ const CardAuthorBox: FC<CardAuthorBoxProps> = ({ className = '', author }) => {
                     @{author.username}
                 </span>
             </div>
-            <div className="py-2 px-4 pb-2 mt-4 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center leading-none text-xs font-medium">
+            <div className="py-2 px-4 mb-2 mt-4 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center leading-none text-xs font-medium">
                 {author.postCount ? author.postCount[0].count : 0}{' '}
                 <ArrowRightIcon className="w-5 h-5 text-yellow-600 ml-3" />
             </div>

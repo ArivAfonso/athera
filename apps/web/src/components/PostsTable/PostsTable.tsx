@@ -1,6 +1,7 @@
+'use client'
+
 import stringToSlug from '@/utils/stringToSlug'
 import { SquarePenIcon, Trash2Icon } from 'lucide-react'
-import router from 'next/router'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import NcImage from '../NcImage/NcImage'
 import TopicBadgeList from '../TopicBadgeList/TopicBadgeList'
@@ -10,6 +11,7 @@ import PostType from '@/types/PostType'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import CircleLoading from '../CircleLoading/CircleLoading'
+import { useRouter } from 'next/navigation'
 
 interface PostsTableProps {
     posts: PostType[]
@@ -19,6 +21,8 @@ interface PostsTableProps {
 
 function PostsTable({ posts, onDeletePost, postFn }: PostsTableProps) {
     const [addPostsFinished, setAddPostsFinished] = useState(false)
+
+    const router = useRouter()
 
     //Set up infinite query
     const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =

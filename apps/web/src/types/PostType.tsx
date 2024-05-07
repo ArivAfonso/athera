@@ -34,6 +34,7 @@ export default interface PostType {
     isLiked: boolean
     isBookmarked: boolean
     license: string | null
+    comments_allowed: boolean
     bookmarkCount: {
         count: number
     }[]

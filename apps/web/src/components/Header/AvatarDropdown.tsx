@@ -117,9 +117,13 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
                                             />
 
                                             <div className="flex-grow">
-                                                <h4 className="font-semibold">
-                                                    {name}
-                                                </h4>
+                                                <Link
+                                                    href={`/author/${username}`}
+                                                >
+                                                    <h4 className="font-semibold hover:underline">
+                                                        {name}
+                                                    </h4>
+                                                </Link>
                                                 <p className="text-xs mt-0.5 overflow-hidden whitespace-nowrap overflow-ellipsis">
                                                     @
                                                     {username.length > chars

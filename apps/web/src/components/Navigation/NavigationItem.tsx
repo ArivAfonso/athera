@@ -11,7 +11,7 @@ import { HomeIcon } from '@heroicons/react/24/outline'
 export interface NavItemType {
     id: string
     name: string
-    href: Route
+    href?: Route
     targetBlank?: boolean
     children?: NavItemType[]
     type?: 'dropdown' | 'megaMenu' | 'none'
@@ -81,14 +81,20 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
     const renderMegaMenuNavlink = (item: NavItemType) => {
         return (
             <li key={item.id} className={`${item.isNew ? 'menuIsNew' : ''}`}>
-                <Link
-                    className="font-normal text-slate-600 hover:text-black dark:text-slate-400 dark:hover:text-white "
-                    href={{
-                        pathname: item.href || undefined,
-                    }}
-                >
-                    {item.name}
-                </Link>
+                {item.href ? (
+                    <Link
+                        className="font-normal text-slate-600 hover:text-black dark:text-slate-400 dark:hover:text-white "
+                        href={{
+                            pathname: item.href || undefined,
+                        }}
+                    >
+                        {item.name}
+                    </Link>
+                ) : (
+                    <p className="font-normal text-slate-600 hover:text-black dark:text-slate-400 dark:hover:text-white">
+                        {item.name}
+                    </p>
+                )}
             </li>
         )
     }
@@ -120,7 +126,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ menuItem }) => {
                         >
                             <Popover.Panel
                                 static
-                                className="sub-menu absolute transform z-10 w-48 top-full left-0"
+                                className="sub-menu absolute transform z-50 w-48 top-full left-0"
                             >
                                 <ul className="rounded-2xl shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 text-sm relative bg-white dark:bg-neutral-900 py-4 grid space-y-1">
                                     {menuDropdown.children?.map((i) => {

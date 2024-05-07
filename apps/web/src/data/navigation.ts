@@ -90,7 +90,6 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
     },
     {
         id: randomId(),
-        href: '/#',
         name: 'World',
         type: 'dropdown',
         children: [
@@ -129,7 +128,6 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
 
     {
         id: randomId(),
-        href: '/#',
         name: 'Tech',
         type: 'dropdown',
         children: [
@@ -167,7 +165,6 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
     },
     {
         id: randomId(),
-        href: '/#',
         name: 'Business',
         type: 'dropdown',
         children: [
@@ -205,7 +202,6 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
     },
     {
         id: randomId(),
-        href: '/#',
         name: 'Sports',
         type: 'dropdown',
         children: [

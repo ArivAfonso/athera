@@ -25,10 +25,6 @@ const plans = [
         img: mediumImg,
     },
     {
-        name: 'RSS Feed',
-        img: rssImg,
-    },
-    {
         name: 'Dev.to',
         img: devImg,
     },
@@ -37,16 +33,8 @@ const plans = [
         img: wordpressImg,
     },
     {
-        name: 'Substack',
-        img: substackImg,
-    },
-    {
         name: 'Hashnode',
         img: hashnodeImg,
-    },
-    {
-        name: 'Blogger',
-        img: bloggerImg,
     },
 ]
 const PageConnectWallet = ({}) => {

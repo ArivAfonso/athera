@@ -139,9 +139,11 @@ const PostOptionsBtn: FC<PostOptionsBtnProps> = ({ onSubmit, defaultData }) => {
                     onChange={setPostLicenseSelected}
                 >
                     <div className="relative z-10 mt-1">
-                        <Listbox.Button className="focus:outline-none relative w-full cursor-default rounded-full py-2 pl-3 pr-10 text-left border border-neutral-100 hover:border-neutral-300 dark:border-neutral-700 dark:hover:border-neutral-600">
+                        <Listbox.Button className="focus:outline-none relative w-full cursor-default rounded-full py-2 pl-3 pr-10 text-left border border-neutral-100 hover:border-neutral-300 dark:border-neutral-700 dark:hover:border-neutral-600 text-gray-600 dark:text-gray-300">
                             <span className="block truncate capitalize">
-                                {postLicenseSelected}
+                                {postLicenseSelected
+                                    ? postLicenseSelected
+                                    : 'Select a license'}
                             </span>
                             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                 <ChevronUpDownIcon
@@ -156,7 +158,7 @@ const PostOptionsBtn: FC<PostOptionsBtnProps> = ({ onSubmit, defaultData }) => {
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                         >
-                            <Listbox.Options className="focus:outline-none absolute mt-2 max-h-60 w-full overflow-auto rounded-2xl bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 sm:text-sm">
+                            <Listbox.Options className="focus:outline-none absolute hiddenScrollbar mt-2 max-h-60 w-full overflow-auto rounded-2xl bg-white dark:bg-neutral-800 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 sm:text-sm">
                                 {licenses.map((license, key) => (
                                     <Listbox.Option
                                         key={key}

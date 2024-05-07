@@ -200,7 +200,7 @@ const NewTopicPage = (context: { params: { slug: any } }) => {
                         .update({
                             color: data.color,
                             image:
-                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/topics/' +
+                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/categories/' +
                                 path?.path,
                         })
                         .eq('name', tag)
@@ -211,7 +211,7 @@ const NewTopicPage = (context: { params: { slug: any } }) => {
                             name: tag,
                             color: data.color,
                             image:
-                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/topics/' +
+                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/categories/' +
                                 path?.path,
                         },
                     ])

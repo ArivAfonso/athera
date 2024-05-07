@@ -1,4 +1,4 @@
-# Athera
+# Athera - A True Home for Extremely Revolting Articles 
 
 ![image](/apps/web/public/full-logo-transparent.png)
 

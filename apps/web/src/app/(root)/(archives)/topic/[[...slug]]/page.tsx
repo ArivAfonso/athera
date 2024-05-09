@@ -9,8 +9,9 @@ import { Metadata } from 'next'
 import PostsSection from '@/components/PostsSection/PostsSection'
 import PostType from '@/types/PostType'
 import { createClient } from '@/utils/supabase/client'
-import Loading from './loading'
 import CircleLoading from '@/components/CircleLoading/CircleLoading'
+import Heading2 from '@/components/Heading/Heading2'
+import Empty from '@/components/Empty'
 
 async function addPosts(pageParam: number) {
     const supabase = createClient()
@@ -95,7 +96,7 @@ async function getTopics(context: { params: { slug: any } }) {
         .is('posts.scheduled_at', null)
         .single()
 
-    const catData: TopicType | null = data as unknown as TopicType
+    const catData: TopicType = data as unknown as TopicType
 
     console.log(error, data, catData)
 
@@ -133,7 +134,7 @@ const PageTopic = async (context: any) => {
     }, [catData])
 
     return (
-        <div className={`nc-PageTopic`}>
+        <div className="nc-PageTopic">
             <div className="w-full px-2 pt-2 xl:max-w-screen-2xl mx-auto">
                 {!catData ? (
                     <CircleLoading />
@@ -159,10 +160,11 @@ const PageTopic = async (context: any) => {
                             </div>
                         ) : (
                             <div className="flex flex-col justify-center items-center h-48">
-                                <h1 className="text-center text-7xl font-semibold md:text-8xl mb-2">
+                                <Heading2 className="mb-2 underline decoration-blue-200 dark:decoration-blue-800">
                                     {catData?.name}
-                                </h1>
-                                <h2 className="text-center text-2xl md:text-3xl">
+                                </Heading2>
+
+                                <h2 className="text-center font-medium text-sm">
                                     Found {catData?.posts?.length} posts
                                 </h2>
                             </div>
@@ -173,13 +175,21 @@ const PageTopic = async (context: any) => {
 
             <div className="container pb-16 lg:pb-28 lg:pt-10 space-y-16 lg:space-y-28">
                 <div>
-                    {catData?.posts && (
-                        <PostsSection
-                            postFn={addPosts}
-                            posts={catData.posts}
-                            id={`topic-${catData.id}`}
-                        />
-                    )}
+                    {
+                        //@ts-ignore
+                        catData?.posts[0] ? (
+                            <PostsSection
+                                postFn={addPosts}
+                                posts={catData.posts}
+                                id={`topic-${catData.id}`}
+                            />
+                        ) : (
+                            <Empty
+                                mainText="No posts found"
+                                subText="This topic doesn't have any posts yet."
+                            />
+                        )
+                    }
                 </div>
             </div>
         </div>

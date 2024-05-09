@@ -62,6 +62,31 @@ const NewTopicPage = (context: { params: { slug: any } }) => {
                 if (data.color) {
                     setExists(true)
                 }
+                // //Get all the topics that Have the same name twice
+                // const { data: topics, error } = await supabase
+                //     .from('topics')
+                //     .select('name')
+
+                // if (error) {
+                //     console.error('Failed to fetch topics:', error.message)
+                //     return
+                // }
+
+                // const duplicates = topics.reduce((acc, topic, index, arr) => {
+                //     if (
+                //         arr.find(
+                //             (t, i) =>
+                //                 t.name.toLowerCase() ===
+                //                     topic.name.toLowerCase() && i !== index
+                //         )
+                //     ) {
+                //         acc.push(topic)
+                //     }
+                //     return acc
+                // }, [])
+
+                // console.log('Duplicate topics:', duplicates)
+
                 setData(res)
                 setTags([s])
                 if (data.image) {

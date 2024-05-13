@@ -117,7 +117,7 @@ const ModalReportItem: FC<ModalReportItemProps> = ({
                                             `${
                                                 checked
                                                     ? 'bg-primary-6000 text-white dark:bg-primary-700'
-                                                    : 'bg-white border-t border-neutral-50 '
+                                                    : 'bg-white dark:bg-neutral-900 border-t border-neutral-50 dark:border-neutral-950'
                                             } relative shadow-lg rounded-lg px-3 py-3 cursor-pointer flex sm:px-5 sm:py-4 focus:outline-none ` +
                                             twFocusClass(true)
                                         )
@@ -132,7 +132,7 @@ const ModalReportItem: FC<ModalReportItemProps> = ({
                                                         className={`font-medium line-clamp-1 ${
                                                             checked
                                                                 ? 'text-white'
-                                                                : 'text-neutral-900'
+                                                                : 'text-neutral-900 dark:text-white'
                                                         }`}
                                                     >
                                                         {plan.label}

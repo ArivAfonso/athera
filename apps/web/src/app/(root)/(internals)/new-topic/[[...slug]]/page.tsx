@@ -410,9 +410,9 @@ const NewTopicPage = (context: { params: { slug: any } }) => {
                                             <div className="flex flex-col sm:flex-row text-sm text-neutral-6000">
                                                 <label
                                                     htmlFor="file-upload"
-                                                    className={`relative cursor-pointer rounded-md font-medium text-primary-6000 hover:text-primary-800 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 ${
+                                                    className={`relative cursor-pointer rounded-md font-medium text-blue-700 hover:text-blue-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 ${
                                                         isDragging
-                                                            ? 'border-2 border-primary-500'
+                                                            ? 'border-2 border-blue-700'
                                                             : ''
                                                     }`}
                                                 >

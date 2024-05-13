@@ -392,7 +392,7 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                                                         classNames(
                                                                             'flex select-none items-center px-4 py-2 cursor-pointer',
                                                                             active &&
-                                                                                'bg-indigo-600 text-white'
+                                                                                'bg-zz-600 text-white'
                                                                         )
                                                                     }
                                                                     onClick={() => {

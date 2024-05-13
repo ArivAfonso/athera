@@ -12,6 +12,7 @@ import TopicType from '@/types/TopicType'
 import AuthorType from '@/types/AuthorType'
 import Particles from '@/components/Particles/Particles'
 import SectionImport from '@/components/SectionImport/SectionImport'
+import SectionNewPosts from '@/components/SectionNewPosts/SectionNewPosts'
 
 async function getData() {
     const supabase = createClient(cookies())
@@ -40,13 +41,13 @@ async function getData() {
             avatar
         )`
         )
-        .eq('author.verified', true)
         .order('created_at', { ascending: false })
         .is('featured', true)
         .is('scheduled_at', null)
         .limit(20)
 
     console.log(error)
+    console.log(posts)
 
     const { data: topics, error: topicsError } = await supabase
         .from('topics')
@@ -80,7 +81,7 @@ const PageHome = async ({}) => {
             <div className="container relative">
                 <div className="absolute inset-0 h-[100vh]">
                     <Particles
-                        className="pointer-events-none w-full h-full"
+                        className="pointer-events-none w-full md:h-[full] sm:h-[50%]"
                         quantity={200}
                     />
                 </div>
@@ -89,15 +90,6 @@ const PageHome = async ({}) => {
                     className="md:py-16 lg:pb-28 pt-4"
                     posts={data.popular_posts.filter((_, i) => i < 3)}
                 />
-
-                <div className="relative py-16">
-                    <BackgroundSection />
-                    <SectionSliderNewAuthors
-                        heading="All of our authors"
-                        subHeading=""
-                        authors={data.authors.filter((_, i) => i < 10)}
-                    />
-                </div>
 
                 <div className="relative py-16">
                     <SectionImport />
@@ -115,6 +107,9 @@ const PageHome = async ({}) => {
                     className="py-16 lg:py-28"
                     posts={data.popular_posts.filter((_, i) => i > 3)}
                 />
+
+                <SectionNewPosts posts={data.popular_posts} />
+
                 <div className="relative py-16">
                     <BackgroundSection />
                     <SectionSliderPosts

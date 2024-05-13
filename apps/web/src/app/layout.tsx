@@ -45,7 +45,7 @@ export default async function RootLayout({
             </head>
             <body className="text-base text-neutral-900 dark:text-neutral-200 bg-white dark:bg-neutral-800">
                 <NextTopLoader
-                    color="#0018f9"
+                    color="#1d4ed8"
                     speed={600}
                     showSpinner={false}
                 />

@@ -92,12 +92,19 @@ const PageSearchV2 = (context: any) => {
     const [loading, setLoading] = useState(true)
     const router = useRouter()
 
-    let s = context.params.slug[0]
-    s = decodeURIComponent(s)
+    let s = ''
+
+    if (!context.params.slug) {
+        s = ''
+    } else {
+        s = context.params.slug[0]
+        s = decodeURIComponent(s)
+    }
 
     useEffect(() => {
         async function fetchData() {
             try {
+                if (s === '') return
                 const res: PostType[] = await getData(context, 'most_relevant')
                 setData(res)
                 setLoading(false)
@@ -169,7 +176,7 @@ const PageSearchV2 = (context: any) => {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         if (searchValue === '') return
-        else if (setSearchValue === s) return
+        else if (searchValue === s) return
         router.push(`/search/${searchValue}`)
     }
 
@@ -219,70 +226,81 @@ const PageSearchV2 = (context: any) => {
                             </span>
                         </label>
                     </form>
-                    <span className="block text-sm mt-4 text-neutral-500 dark:text-neutral-300">
-                        We found{' '}
-                        <strong className="font-semibold text-neutral-800 dark:text-neutral-100">
-                            {data.length}
-                        </strong>{' '}
-                        results articles for{' '}
-                        <strong className="font-semibold text-neutral-800 dark:text-neutral-100">
-                            {`"${s}"`}
-                        </strong>
-                    </span>
+                    {searchValue !== '' && (
+                        <span className="block text-lg mt-4 text-neutral-500 dark:text-neutral-300">
+                            We found{' '}
+                            <strong className="font-semibold text-neutral-800 dark:text-neutral-100">
+                                {data.length}
+                            </strong>{' '}
+                            results articles for{' '}
+                            <strong className="font-semibold text-neutral-800 dark:text-neutral-100">
+                                {`"${s}"`}
+                            </strong>
+                        </span>
+                    )}
                 </header>
             </div>
             <div className="container py-16 lg:py-28 space-y-16 lg:space-y-28">
                 <main>
                     {/* TABS FILTER */}
-                    <div className="flex flex-col sm:items-center sm:justify-between sm:flex-row ">
-                        <Nav
-                            containerClassName="w-full overflow-x-auto hiddenScrollbar"
-                            className=" sm:space-x-2"
-                        >
-                            {TABS.map((item, index) => (
-                                <NavItem
-                                    key={index}
-                                    isActive={tabActive === item}
-                                    onClick={() => handleClickTab(item)}
-                                >
-                                    {item}
-                                </NavItem>
-                            ))}
-                        </Nav>
-                        <div className="block my-4 border-b w-full border-neutral-300 dark:border-neutral-500 sm:hidden"></div>
-                        <div className="flex justify-end">
-                            <TopicFilterListBox
-                                lists={FILTERS}
-                                onFilterClick={handleFilterClick}
-                            />
-                        </div>
-                    </div>
-                    {
-                        /* LOADING STATE */
-                        loading && (
-                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
-                                {[...Array(8)].map((_, id) => (
-                                    <div key={id}>
-                                        <div className="hidden sm:block">
-                                            {/* Render Card11 on larger screens */}
-                                            <Card11Skeleton />
-                                        </div>
-                                        <div className="sm:hidden grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                            {/* Render Card5 on smaller screens */}
-                                            <Card11Skeleton />
-                                        </div>
-                                    </div>
+                    {searchValue !== '' ? (
+                        <div className="flex flex-col sm:items-center sm:justify-between sm:flex-row ">
+                            <Nav
+                                containerClassName="w-full overflow-x-auto hiddenScrollbar"
+                                className=" sm:space-x-2"
+                            >
+                                {TABS.map((item, index) => (
+                                    <NavItem
+                                        key={index}
+                                        isActive={tabActive === item}
+                                        onClick={() => handleClickTab(item)}
+                                    >
+                                        {item}
+                                    </NavItem>
                                 ))}
+                            </Nav>
+                            <div className="block my-4 border-b w-full border-neutral-300 dark:border-neutral-500 sm:hidden"></div>
+                            <div className="flex justify-end">
+                                <TopicFilterListBox
+                                    lists={FILTERS}
+                                    onFilterClick={handleFilterClick}
+                                />
                             </div>
-                        )
-                    }
-                    {/* RENDER ARTICLES */}
-                    {tabActive === 'Articles' && data.length > 0 && (
-                        <PostsSection
-                            id={`search-${searchValue}`}
-                            posts={data}
+                        </div>
+                    ) : (
+                        <Empty
+                            mainText="Search Something!!"
+                            subText="Type something in the search bar to get started."
                         />
                     )}
+                    {
+                        /* LOADING STATE */
+                        // loading && (
+                        //     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
+                        //         {[...Array(8)].map((_, id) => (
+                        //             <div key={id}>
+                        //                 <div className="hidden sm:block">
+                        //                     {/* Render Card11 on larger screens */}
+                        //                     <Card11Skeleton />
+                        //                 </div>
+                        //                 <div className="sm:hidden grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        //                     {/* Render Card5 on smaller screens */}
+                        //                     <Card11Skeleton />
+                        //                 </div>
+                        //             </div>
+                        //         ))}
+                        //     </div>
+                        // )
+                    }
+                    {/* RENDER ARTICLES */}
+                    {tabActive === 'Articles' &&
+                        data.length > 0 &&
+                        searchValue !== '' && (
+                            <PostsSection
+                                id={`search-${searchValue}`}
+                                posts={data}
+                            />
+                        )}
                     {tabActive === 'Topics' && topics.length > 0 && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
                             {topics.map((cat, id) => (

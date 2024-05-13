@@ -17,7 +17,7 @@ const MenuItem: FC<Props> = ({
     isActive,
     className = 'flex-shrink-0 mr-2',
 }) => {
-    if (title === 'image') {
+    if (title === 'Image') {
         return (
             <MenuItemImage action={action}>
                 <button

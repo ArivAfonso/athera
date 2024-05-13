@@ -95,7 +95,10 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
                 },
             }).configure({ lowlight }),
             HyperMultimediaKit.configure({
-                Image: false,
+                Image: {
+                    modal: imageModal,
+                    inline: true,
+                },
                 Video: {
                     modal: videoModal,
                     inline: true,
@@ -162,7 +165,11 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
         <div className="nc-TiptapEditor ">
             <div className="editor">
                 {editor && <MyBubbleMenu editor={editor} />}
-                {editor && <MenuBar editor={editor} />}
+                {editor && (
+                    <div className="sticky top-20 z-50">
+                        <MenuBar editor={editor} />
+                    </div>
+                )}
                 <EditorContent
                     className="editor__content cursor-text focus:border-primary-300 focus:ring focus:ring-primary-200/50"
                     editor={editor}

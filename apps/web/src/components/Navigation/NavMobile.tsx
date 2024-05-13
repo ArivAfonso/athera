@@ -147,26 +147,6 @@ const NavMobile: React.FC<NavMobileProps> = ({
         )
     }
 
-    const renderSearchForm = () => {
-        return (
-            <form
-                action=""
-                method="POST"
-                className="flex-1 text-slate-900 dark:text-slate-200"
-            >
-                <div className="bg-slate-50 dark:bg-slate-800 flex items-center space-x-1 py-2 px-4 rounded-xl h-full">
-                    {renderMagnifyingGlassIcon()}
-                    <input
-                        type="search"
-                        placeholder="Type and press enter"
-                        className="border-none bg-transparent focus:outline-none focus:ring-0 w-full text-sm "
-                    />
-                </div>
-                <input type="submit" hidden value="" />
-            </form>
-        )
-    }
-
     const [session, setSession] = useState<AuthSession>()
 
     useEffect(() => {
@@ -202,15 +182,13 @@ const NavMobile: React.FC<NavMobileProps> = ({
                 <span className="absolute right-2 top-2 p-1">
                     <ButtonClose onClick={onClickClose} />
                 </span>
-
-                <div className="mt-5">{renderSearchForm()}</div>
             </div>
             <ul className="flex flex-col py-6 px-2 space-y-1">
                 {data.map(_renderItem)}
             </ul>
             {!session && (
                 <div className="flex items-center justify-center py-6 px-5 space-x-2">
-                    <Button href="/signup" className="!px-10 bg-blue-500">
+                    <Button href="/signup" className="!px-10 bg-blue-600">
                         Sign Up
                     </Button>
                 </div>

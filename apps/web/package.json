@@ -48,7 +48,7 @@
         "axios": "^1.6.8",
         "clsx": "^2.1.0",
         "cobe": "^0.6.3",
-        "cookies-next": "^4.0.0",
+        "cookies-next": "^4.1.1",
         "dayjs": "^1.11.10",
         "eslint": "8.55.0",
         "eslint-config-next": "14.2.3",

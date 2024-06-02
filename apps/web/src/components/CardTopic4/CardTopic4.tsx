@@ -37,7 +37,7 @@ const CardTopic4: FC<CardTopic4Props> = ({ className = '', topic, index }) => {
     return (
         <Link
             href={`/topic/${topic.name}/${topic.id}`}
-            className={`nc-CardTopic4 flex flex-col ${className}`}
+            className={`CardTopic4 flex flex-col ${className}`}
         >
             <div className="flex-shrink-0 relative w-full aspect-w-7 aspect-h-5 h-0 rounded-3xl overflow-hidden group">
                 <Image

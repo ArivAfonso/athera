@@ -8,7 +8,7 @@ export interface LabelProps {
 const Label: FC<LabelProps> = ({ className = '', children }) => {
     return (
         <span
-            className={`nc-Label ${className} text-neutral-800 font-medium text-base dark:text-neutral-300`}
+            className={`Label ${className} text-neutral-800 font-medium text-base dark:text-neutral-300`}
             data-nc-id="Label"
         >
             {children}

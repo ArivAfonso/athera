@@ -2,7 +2,6 @@ import React, { FC, useState } from 'react'
 import PostBookmark from '@/components/PostBookmark/PostBookmark'
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
 import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
-import PostTypeFeaturedIcon from '../PostTypeFeaturedIcon/PostTypeFeaturedIcon'
 import Link from 'next/link'
 import Image from 'next/image'
 import PostType from '@/types/PostType'
@@ -132,7 +131,7 @@ const Card9: FC<Card9Props> = ({
 
     return (
         <div
-            className={`nc-Card9 relative flex flex-col group rounded-3xl overflow-hidden z-0  ${hoverClass} ${className}`}
+            className={`Card9 relative flex flex-col group rounded-3xl overflow-hidden z-0  ${hoverClass} ${className}`}
         >
             <div
                 className={`absolute inset-x-0 top-0 p-3 flex items-center justify-start transition-all opacity-0 z-[-1] group-hover:opacity-100 group-hover:z-10 duration-300 ${hover ? 'opacity-0 group-hover:opacity-100 transition-opacity' : ''}`}
@@ -163,11 +162,6 @@ const Card9: FC<Card9Props> = ({
                     className="object-cover w-full h-full rounded-3xl"
                     src={imageUrl}
                     sizes="(max-width: 600px) 480px, 500px"
-                />
-                <PostTypeFeaturedIcon
-                    className="absolute top-3 left-3 group-hover:hidden"
-                    wrapSize="w-7 h-7"
-                    iconSize="w-4 h-4"
                 />
                 <span className="absolute inset-0 bg-black bg-opacity-10 opacity-0 group-hover:opacity-100 transition-opacity"></span>
             </Link>

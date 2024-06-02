@@ -47,7 +47,7 @@ const SectionSliderPosts: FC<SectionSliderPostsProps> = ({
     }
 
     return (
-        <div className={`nc-SectionSliderPosts ${className}`}>
+        <div className={`SectionSliderPosts ${className}`}>
             <Heading desc={subHeading} isCenter>
                 {heading}
             </Heading>

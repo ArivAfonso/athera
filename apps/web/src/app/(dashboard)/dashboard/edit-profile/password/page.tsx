@@ -31,7 +31,7 @@ function PasswordPage() {
                         await updatePassword(data)
                     }
                 })}
-                className={`nc-PasswordPage`}
+                className={`PasswordPage`}
             >
                 <div className="space-y-10 sm:space-y-12">
                     <div className="space-y-5 sm:space-y-6 md:sm:space-y-7">

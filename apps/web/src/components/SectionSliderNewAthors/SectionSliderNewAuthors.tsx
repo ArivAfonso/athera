@@ -22,7 +22,7 @@ const SectionSliderNewAuthors: FC<SectionSliderNewAuthorsProps> = ({
     itemPerRow = 5,
 }) => {
     return (
-        <div className={`nc-SectionSliderNewAuthors ${className}`}>
+        <div className={`SectionSliderNewAuthors ${className}`}>
             <Heading desc={subHeading} isCenter>
                 {heading}
             </Heading>

@@ -9,7 +9,7 @@ const BgGlassmorphism: FC<BgGlassmorphismProps> = ({
 }) => {
     return (
         <div
-            className={`nc-BgGlassmorphism ${className}`}
+            className={`BgGlassmorphism ${className}`}
             data-nc-id="BgGlassmorphism"
         >
             <span className="bg-[#0077b6] w-1/2 h-1/2 mx-auto rounded-full mix-blend-multiply filter blur-3xl opacity-20 lg:w-1/2 lg:h-1/2" />

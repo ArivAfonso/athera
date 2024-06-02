@@ -134,7 +134,7 @@ const PageTopic = async (context: any) => {
     }, [catData])
 
     return (
-        <div className="nc-PageTopic">
+        <div className="PageTopic">
             <div className="w-full px-2 pt-2 xl:max-w-screen-2xl mx-auto">
                 {!catData ? (
                     <CircleLoading />

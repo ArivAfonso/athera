@@ -22,7 +22,7 @@ const PostFeaturedMedia: FC<PostFeaturedMediaProps> = ({
 
     const imageUrl = post.image
     return (
-        <div className={`nc-PostFeaturedMedia relative ${className}`}>
+        <div className={`PostFeaturedMedia relative ${className}`}>
             <Image
                 alt="featured"
                 fill

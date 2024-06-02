@@ -126,7 +126,7 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
 
     return (
         <button
-            className={`nc-PostCardLikeAction relative min-w-[68px] flex items-center rounded-full leading-none group transition-colors ${className} ${
+            className={`PostCardLikeAction relative min-w-[68px] flex items-center rounded-full leading-none group transition-colors ${className} ${
                 isLiked
                     ? 'text-rose-600 bg-rose-50 dark:bg-red-950'
                     : 'text-neutral-700 bg-neutral-50 dark:text-neutral-200 dark:bg-neutral-800 hover:bg-rose-50 dark:hover:bg-rose-950 hover:text-rose-600 dark:hover:text-rose-500'

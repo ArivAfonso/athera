@@ -64,7 +64,7 @@ const SocialsShareDropdown: FC<Props> = ({
     })
 
     return (
-        <div className={`nc-SocialsShare flex-shrink-0 ${className}`}>
+        <div className={`SocialsShare flex-shrink-0 ${className}`}>
             <NcDropDown
                 className={`flex-shrink-0 flex items-center justify-center focus:outline-none text-neutral-700 dark:text-neutral-200 rounded-full ${sizeClass} ${bgClass}`}
                 renderTrigger={() => (

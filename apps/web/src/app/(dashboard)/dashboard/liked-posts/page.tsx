@@ -108,7 +108,7 @@ const DashboardLikedPosts = () => {
     }, [])
 
     return (
-        <div className={`nc-PageTopic`}>
+        <div className={`PageTopic`}>
             <div className="container max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32 space-y-10 sm:space-y-12">
                 {/* HEADING */}
                 <h2 className="text-2xl sm:text-3xl font-semibold">

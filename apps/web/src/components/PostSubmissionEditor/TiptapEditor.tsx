@@ -162,7 +162,7 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
     }, [defaultContent, editor])
 
     return (
-        <div className="nc-TiptapEditor ">
+        <div className="TiptapEditor ">
             <div className="editor">
                 {editor && <MyBubbleMenu editor={editor} />}
                 {editor && (

@@ -23,7 +23,7 @@ const PostMeta2: FC<PostMeta2Props> = ({
 }) => {
     return (
         <div
-            className={`nc-PostMeta2 flex items-center flex-wrap text-neutral-700 text-left dark:text-neutral-200 ${
+            className={`PostMeta2 flex items-center flex-wrap text-neutral-700 text-left dark:text-neutral-200 ${
                 size === 'normal' ? 'text-xs' : 'text-sm'
             } ${className}`}
         >

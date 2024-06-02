@@ -46,7 +46,7 @@ const SectionImport: FC<SectionHowItWorkProps> = ({
     data = DEMO_DATA,
 }) => {
     return (
-        <div className={`nc-SectionHowItWork ${className}`}>
+        <div className={`SectionHowItWork ${className}`}>
             <Heading
                 desc="Import content from other services like Medium, Hashnode, Dev.to, WordPress etc."
                 isCenter

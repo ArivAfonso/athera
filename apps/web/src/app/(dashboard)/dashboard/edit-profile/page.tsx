@@ -226,7 +226,7 @@ function AccountPage() {
                             await updateProfile(data)
                         }
                     })}
-                    className={`nc-AccountPage`}
+                    className={`AccountPage`}
                 >
                     <div className="space-y-10 sm:space-y-12">
                         {/* HEADING */}

@@ -23,7 +23,7 @@ const TopicFilterListBox: FC<TopicFilterListBoxProps> = ({
         onFilterClick(item.name) // Call the onFilterClick function with the selected filter option
     }
     return (
-        <div className={`nc-TopicFilterListBox flex-shrink-0 ${className}`}>
+        <div className={`TopicFilterListBox flex-shrink-0 ${className}`}>
             <Listbox value={selected} onChange={setSelected}>
                 <div className="relative">
                     <Listbox.Button as={'div'}>

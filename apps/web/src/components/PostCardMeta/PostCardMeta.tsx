@@ -24,7 +24,7 @@ const PostCardMeta: FC<PostCardMetaProps> = ({
     } else {
         return (
             <div
-                className={`nc-PostCardMeta inline-flex items-center flex-wrap text-neutral-800 dark:text-neutral-200 ${className}`}
+                className={`PostCardMeta inline-flex items-center flex-wrap text-neutral-800 dark:text-neutral-200 ${className}`}
             >
                 <div className="flex items-center">
                     <Avatar

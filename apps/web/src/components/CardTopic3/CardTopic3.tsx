@@ -11,10 +11,7 @@ export interface CardTopic3Props {
 const CardTopic3: FC<CardTopic3Props> = ({ className = '', taxonomy }) => {
     const { count, name, href = '/', thumbnail } = taxonomy
     return (
-        <Link
-            href={href}
-            className={`nc-CardTopic3 flex flex-col ${className}`}
-        >
+        <Link href={href} className={`CardTopic3 flex flex-col ${className}`}>
             <div className="flex-shrink-0 relative w-full aspect-w-5 aspect-h-5 h-0 rounded-2xl overflow-hidden group">
                 <Image
                     src={thumbnail || ''}

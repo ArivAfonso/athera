@@ -45,7 +45,7 @@ const SingleCommentForm: FC<SingleCommentFormProps> = ({
     return (
         <form
             action="#"
-            className={`nc-SingleCommentForm ${className}`}
+            className={`SingleCommentForm ${className}`}
             onSubmit={handleSubmit(onSubmit)}
         >
             <Controller

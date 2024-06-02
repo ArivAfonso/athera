@@ -27,7 +27,7 @@ const SingleMetaAction2: FC<SingleMetaAction2Props> = ({
     //Get the current url
     const url = typeof window !== 'undefined' ? window.location.href : ''
     return (
-        <div className={`nc-SingleMetaAction2 ${className}`}>
+        <div className={`SingleMetaAction2 ${className}`}>
             <div className="flex flex-row space-x-2.5 items-center">
                 <PostCardLikeAndComment
                     itemClass="px-4 h-9 text-sm"

@@ -2,7 +2,6 @@
 
 import React, { FC, useState } from 'react'
 import Card2 from '@/components/Card2/Card2'
-import { PostDataType } from '@/data/types'
 import Card6 from '@/components/Card6/Card6'
 import HeaderFilter from './HeaderFilter'
 import PostType from '@/types/PostType'
@@ -28,7 +27,7 @@ const SectionMagazine1: FC<SectionMagazine1Props> = ({
     }
 
     return (
-        <div className={`nc-SectionMagazine1 ${className}`}>
+        <div className={`SectionMagazine1 ${className}`}>
             <HeaderFilter heading={heading} />
             {!posts.length && <span>Nothing we found!</span>}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">

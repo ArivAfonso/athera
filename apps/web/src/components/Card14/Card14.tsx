@@ -1,8 +1,6 @@
 import React, { FC } from 'react'
 import NcImage from '@/components/NcImage/NcImage'
-import { PostDataType } from '@/data/types'
 import Avatar from '@/components/Avatar/Avatar'
-import PostTypeFeaturedIcon from '@/components/PostTypeFeaturedIcon/PostTypeFeaturedIcon'
 import Link from 'next/link'
 import PostType from '@/types/PostType'
 import stringToSlug from '@/utils/stringToSlug'
@@ -31,7 +29,7 @@ const Card14: FC<Card14Props> = ({
 
     return (
         <div
-            className={`nc-Card14 relative flex flex-col group rounded-3xl overflow-hidden ${hoverClass} ${className}`}
+            className={`Card14 relative flex flex-col group rounded-3xl overflow-hidden ${hoverClass} ${className}`}
         >
             <Link
                 href={`/post/${stringToSlug(post.title)}/${post.id}`}

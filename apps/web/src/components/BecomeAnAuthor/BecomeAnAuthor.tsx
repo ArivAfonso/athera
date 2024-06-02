@@ -14,7 +14,7 @@ const BecomeAnAuthor: FC<BecomeAnAuthorProps> = ({
 }) => {
     return (
         <div
-            className={`nc-BecomeAnAuthor relative flex flex-col lg:flex-row items-center  ${className}`}
+            className={`BecomeAnAuthor relative flex flex-col lg:flex-row items-center  ${className}`}
         >
             <div className="flex-shrink-0 mb-14 lg:mb-0 lg:mr-10 lg:w-2/5">
                 <span className="text-xs uppercase tracking-wider font-medium text-neutral-400">

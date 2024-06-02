@@ -140,7 +140,7 @@ const PageSingle = async (context: any) => {
     }
     return (
         <>
-            <div className={`nc-PageSingle pt-8 lg:pt-16`}>
+            <div className={`PageSingle pt-8 lg:pt-16`}>
                 <header className="container rounded-xl">
                     <div className="max-w-screen-md mx-auto">
                         <SingleHeader

@@ -13,7 +13,7 @@ const CardAuthorBox: FC<CardAuthorBoxProps> = ({ className = '', author }) => {
     return (
         <Link
             href={`/author/${author.username}`}
-            className={`nc-CardAuthorBox2 flex flex-col items-center overflow-hidden bg-white dark:bg-neutral-800 rounded-3xl ${className}`}
+            className={`CardAuthorBox2 flex flex-col items-center overflow-hidden bg-white dark:bg-neutral-800 rounded-3xl ${className}`}
         >
             <div className="mt-6">
                 <Avatar

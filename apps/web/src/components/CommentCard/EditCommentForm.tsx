@@ -40,7 +40,7 @@ const EditCommentForm: FC<SingleCommentFormProps> = ({
     return (
         <form
             action="#"
-            className={`nc-EditCommentForm ${className}`}
+            className={`EditCommentForm ${className}`}
             onSubmit={handleSubmit(async (data) => await onSubmit(data))}
         >
             <Controller

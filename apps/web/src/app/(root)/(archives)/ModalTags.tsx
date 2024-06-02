@@ -23,7 +23,7 @@ const ModalTags: FC<ModalTagsProps> = ({ tags }) => {
     }
 
     return (
-        <div className="nc-ModalTags">
+        <div className="ModalTags">
             <NcModal
                 contentExtraClass="max-w-screen-md"
                 renderTrigger={(openModal) => (

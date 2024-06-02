@@ -81,7 +81,7 @@ const PageHome = async ({}) => {
             <div className="container relative">
                 <div className="absolute inset-0 h-[100vh]">
                     <Particles
-                        className="pointer-events-none w-full md:h-[full] sm:h-[50%]"
+                        className="pointer-events-none w-full md:h-full"
                         quantity={200}
                     />
                 </div>

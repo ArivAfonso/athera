@@ -8,7 +8,7 @@ interface Props {
 
 const Navigation: FC<Props> = ({ className = 'flex' }) => {
     return (
-        <ul className={`nc-Navigation items-start ${className}`}>
+        <ul className={`Navigation items-start ${className}`}>
             {NAVIGATION_DEMO_2.map((item) => (
                 <NavigationItem key={item.id} menuItem={item} />
             ))}

@@ -13,7 +13,7 @@ export interface NewsletterProps {
 const Newsletter: FC<NewsletterProps> = ({ className = '' }) => {
     return (
         <div
-            className={`nc-Newsletter relative flex flex-col lg:flex-row items-center ${className}`}
+            className={`Newsletter relative flex flex-col lg:flex-row items-center ${className}`}
         >
             <div className="flex-shrink-0 mb-14 lg:mb-0 lg:mr-10 lg:w-2/5">
                 <h2 className="font-semibold text-4xl">

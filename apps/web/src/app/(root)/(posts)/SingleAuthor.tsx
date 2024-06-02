@@ -10,7 +10,7 @@ export interface SingleAuthorProps {
 
 const SingleAuthor: FC<SingleAuthorProps> = ({ author }) => {
     return (
-        <div className="nc-SingleAuthor flex">
+        <div className="SingleAuthor flex">
             <Link
                 href={`/author/${author.username}`}
                 as={('/author/' + author.username) as unknown as UrlObject}

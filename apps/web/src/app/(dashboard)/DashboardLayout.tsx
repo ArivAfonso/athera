@@ -112,29 +112,12 @@ const navigation: NavigationItem[] = [
                 href: '/dashboard/edit-profile/socials',
                 icon: LinkIcon,
             },
-            {
-                name: 'customization',
-                href: '/dashboard/edit-profile/customization',
-                icon: PaletteIcon,
-            },
         ],
     },
     {
         name: 'settings',
         href: '/dashboard/settings',
         icon: SettingsIcon,
-        children: [
-            {
-                name: 'general',
-                href: '/dashboard/settings',
-                icon: SettingsIcon,
-            },
-            {
-                name: 'notifications',
-                href: '/dashboard/edit-profile/notifications',
-                icon: BellRingIcon,
-            },
-        ],
     },
 ]
 
@@ -173,8 +156,10 @@ export default function DashboardLayout({ children }: Props) {
                 <Link
                     href={item.href}
                     className={classNames(
-                        'text-neutral-500 dark:text-neutral-300 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-300',
-                        'group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-medium capitalize'
+                        isCurrent && pathname === item.href
+                            ? 'bg-neutral-50 text-neutral-900 dark:bg-neutral-700 dark:text-neutral-200'
+                            : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-300',
+                        'group flex gap-x-3 rounded-md p-2.5 ps-4 text-sm leading-6 font-medium capitalize'
                     )}
                 >
                     <item.icon

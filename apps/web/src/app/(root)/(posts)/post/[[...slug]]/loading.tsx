@@ -5,10 +5,10 @@ import React from 'react'
 const BlogPostSkeleton = () => {
     return (
         <>
-            <div className={`nc-PageSingle pt-8 lg:pt-16`}>
+            <div className={`PageSingle pt-8 lg:pt-16`}>
                 <header className="container rounded-xl">
                     <div className="max-w-screen-md mx-auto">
-                        <div className="nc-SingleHeader">
+                        <div className="SingleHeader">
                             <div className="space-y-5">
                                 <div className="flex flex-wrap gap-1.5">
                                     <div className="w-20 h-6 bg-gray-300 dark:bg-gray-600 rounded-xl animate-pulse"></div>
@@ -32,7 +32,7 @@ const BlogPostSkeleton = () => {
                                 <div className="flex flex-col sm:flex-row justify-between sm:items-end space-y-5 sm:space-y-0 sm:space-x-5">
                                     {/* PostMeta2 Skeleton */}
                                     <div
-                                        className={`nc-PostMeta2 flex items-center flex-wrap text-neutral-700 text-left dark:text-neutral-200`}
+                                        className={`PostMeta2 flex items-center flex-wrap text-neutral-700 text-left dark:text-neutral-200`}
                                     >
                                         <div className="flex items-center space-x-2">
                                             <div className="h-10 w-10 sm:h-11 sm:w-11 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
@@ -49,7 +49,7 @@ const BlogPostSkeleton = () => {
                                         </div>
                                     </div>
                                     {/* SingleMetaAction2 Skeleton */}
-                                    <div className={`nc-SingleMetaAction2`}>
+                                    <div className={`SingleMetaAction2`}>
                                         <div className="flex flex-row space-x-2.5 items-center">
                                             {/* Skeleton for PostCardLikeAndComment */}
                                             <div className="px-4 h-9 w-16 bg-gray-300 dark:bg-gray-600 rounded-3xl animate-pulse"></div>

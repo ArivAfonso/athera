@@ -19,7 +19,7 @@ const MainNav: FC<MainNavProps> = async ({}) => {
     const { data: session } = await supabase.auth.getSession()
     const user = session?.session?.user
     return (
-        <div className="nc-MainNav relative z-9999 bg-white dark:bg-slate-900  border-b border-neutral-200/70 dark:border-transparent">
+        <div className="MainNav relative z-9999 bg-white dark:bg-slate-900  border-b border-neutral-200/70 dark:border-transparent">
             <div className="container">
                 <div className="h-20 py-5 flex justify-between items-center">
                     <div className="flex items-center lg:hidden flex-1">

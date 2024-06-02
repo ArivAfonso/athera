@@ -28,7 +28,7 @@ const Card2: FC<Card2Props> = ({
     })
 
     return (
-        <div className={`nc-Card2 group relative flex flex-col ${className}`}>
+        <div className={`Card2 group relative flex flex-col ${className}`}>
             <div className="block flex-shrink-0 flex-grow relative w-full h-0 pt-[75%] sm:pt-[55%] z-0">
                 <Image
                     fill
@@ -56,7 +56,7 @@ const Card2: FC<Card2Props> = ({
                     />
 
                     <h2
-                        className={`nc-card-title block font-semibold text-neutral-900 dark:text-neutral-100 ${
+                        className={`card-title block font-semibold text-neutral-900 dark:text-neutral-100 ${
                             size === 'large'
                                 ? 'text-base sm:text-lg md:text-xl'
                                 : 'text-base'

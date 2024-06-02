@@ -16,7 +16,7 @@ const CardTopic1: FC<CardTopic1Props> = ({
     return (
         <Link
             href={`/topic/${encodeURIComponent(topic.name)}`}
-            className={`nc-CardTopic1 flex items-center ${className}`}
+            className={`CardTopic1 flex items-center ${className}`}
         >
             <div>
                 <h2

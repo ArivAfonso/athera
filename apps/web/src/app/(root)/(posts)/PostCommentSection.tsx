@@ -144,7 +144,7 @@ const SingleCommentForm: FC<SingleCommentFormProps> = ({
                 <div className="pb-10">
                     <form
                         action="#"
-                        className={`nc-SingleCommentForm ${className}`}
+                        className={`SingleCommentForm ${className}`}
                         onSubmit={handleSubmit(onSubmit)}
                     >
                         <Controller
@@ -185,7 +185,7 @@ const SingleCommentForm: FC<SingleCommentFormProps> = ({
                     />
                 </ul>
             )}
-            <ul className="nc-SingleCommentLists space-y-5">
+            <ul className="SingleCommentLists space-y-5">
                 {
                     //@ts-ignore
                     comments.map((comment, key) => (

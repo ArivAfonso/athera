@@ -251,7 +251,7 @@ const NewTopicPage = (context: { params: { slug: any } }) => {
     }
 
     return (
-        <div className={`nc-PageSearchV2`}>
+        <div className={`PageSearchV2`}>
             <div
                 className={`h-24 2xl:h-28 top-0 left-0 right-0 w-full bg-primary-100/50 dark:bg-neutral-900`}
             />

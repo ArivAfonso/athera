@@ -80,7 +80,7 @@ const SocialsShare: FC<SocialsShareProps> = ({
     }
 
     return (
-        <div className={`nc-SocialsShare ${className}`}>
+        <div className={`SocialsShare ${className}`}>
             {actions.map(renderItem)}
         </div>
     )

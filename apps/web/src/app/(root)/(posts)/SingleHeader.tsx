@@ -86,7 +86,7 @@ const SingleHeader: FC<SingleHeaderProps> = ({
 
     return (
         <>
-            <div ref={ref} className={`nc-SingleHeader ${className}`}>
+            <div ref={ref} className={`SingleHeader ${className}`}>
                 <div className="space-y-5">
                     <TopicBadgeList
                         itemClass="!px-3"

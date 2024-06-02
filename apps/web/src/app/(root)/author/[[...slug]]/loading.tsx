@@ -2,7 +2,7 @@
 import React from 'react'
 
 const Loading = () => (
-    <div className={`nc-PageAuthor `}>
+    <div className={`PageAuthor `}>
         {/* HEADER */}
         <div className="w-full">
             <div className="container mt-10 lg:mt-16">

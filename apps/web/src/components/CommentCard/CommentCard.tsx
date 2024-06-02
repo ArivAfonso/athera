@@ -150,7 +150,7 @@ const CommentCard: FC<CommentCardProps> = ({
 
     return (
         <>
-            <div className={`nc-CommentCard flex ${className}`}>
+            <div className={`CommentCard flex ${className}`}>
                 <Avatar
                     sizeClass={`h-6 w-6 text-base ${
                         size === 'large' ? 'sm:text-lg sm:h-8 sm:w-8' : ''

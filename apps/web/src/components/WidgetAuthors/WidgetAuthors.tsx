@@ -17,7 +17,7 @@ const WidgetAuthors: FC<WidgetAuthorsProps> = ({
 }) => {
     return (
         <div
-            className={`nc-WidgetAuthors rounded-3xl overflow-hidden ${className}`}
+            className={`WidgetAuthors rounded-3xl overflow-hidden ${className}`}
         >
             <WidgetHeading1
                 title="🎭 Discover Authors"

@@ -24,7 +24,7 @@ const ModalTopics: FC<ModalTopicsProps> = ({ topics }) => {
     }
 
     return (
-        <div className="nc-ModalTopics">
+        <div className="ModalTopics">
             <NcModal
                 renderTrigger={(openModal) => (
                     <Button

@@ -23,7 +23,7 @@ const PostCardLikeAndComment: FC<PostCardLikeAndCommentProps> = ({
 }) => {
     return (
         <div
-            className={`nc-PostCardLikeAndComment flex items-center space-x-2 ${className}`}
+            className={`PostCardLikeAndComment flex items-center space-x-2 ${className}`}
         >
             <PostCardLikeAction
                 likeCount={likes}

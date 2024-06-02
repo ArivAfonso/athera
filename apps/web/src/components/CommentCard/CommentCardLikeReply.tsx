@@ -203,7 +203,7 @@ const CommentCardLikeReply: FC<CommentCardLikeReplyProps> = ({
 
     return (
         <div
-            className={`nc-CommentCardLikeReply flex items-center space-x-2 ${className}`}
+            className={`CommentCardLikeReply flex items-center space-x-2 ${className}`}
             data-nc-id="CommentCardLikeReply"
         >
             {renderActionBtns()}

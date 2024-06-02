@@ -1,7 +1,4 @@
 import React, { FC } from 'react'
-import { PostDataType } from '@/data/types'
-import SocialsShare from '@/components/SocialsShare/SocialsShare'
-import PostTypeFeaturedIcon from '@/components/PostTypeFeaturedIcon/PostTypeFeaturedIcon'
 import Link from 'next/link'
 import Image from 'next/image'
 import PostType from '@/types/PostType'
@@ -18,7 +15,7 @@ const Card8: FC<Card8Props> = ({ className = 'h-full', post }) => {
 
     return (
         <div
-            className={`nc-Card8 group relative rounded-3xl overflow-hidden z-0 ${className}`}
+            className={`Card8 group relative rounded-3xl overflow-hidden z-0 ${className}`}
         >
             <Link
                 href={`/post/${stringToSlug(post.title)}/${post.id}`}

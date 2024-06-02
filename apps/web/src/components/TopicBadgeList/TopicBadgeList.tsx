@@ -39,7 +39,7 @@ const TopicBadgeList: FC<TopicBadgeListProps> = ({
 
     return (
         <div
-            className={`nc-TopicBadgeList ${className}`}
+            className={`TopicBadgeList ${className}`}
             data-nc-id="TopicBadgeList"
         >
             {renderableTopics.map((item, index) => (
@@ -61,7 +61,7 @@ export default TopicBadgeList
 
 {
     /* <div
-    className={`nc-TopicBadgeList ${className}`}
+    className={`TopicBadgeList ${className}`}
     data-nc-id="TopicBadgeList"
 >
     {loading ? (

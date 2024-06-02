@@ -18,7 +18,7 @@ const NavItem: FC<NavItemProps> = ({
     renderX,
 }) => {
     return (
-        <li className="nc-NavItem relative flex-shrink-0">
+        <li className="NavItem relative flex-shrink-0">
             {renderX && renderX}
             <button
                 className={`flex items-center justify-center font-medium ${className} ${radius} ${

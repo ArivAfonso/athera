@@ -43,7 +43,7 @@ const SectionSliderNewTopics: FC<SectionSliderNewTopicsProps> = ({
     }
 
     return (
-        <div className={`nc-SectionSliderNewTopics ${className}`}>
+        <div className={`SectionSliderNewTopics ${className}`}>
             <Heading desc={subHeading}>{heading}</Heading>
             <MySlider
                 data={topics}

@@ -13,7 +13,7 @@ const Card11Skeleton: FC<Card11SkeletonProps> = ({
 }) => {
     return (
         <div
-            className={`nc-Card11 relative flex flex-col group rounded-3xl overflow-hidden bg-white dark:bg-neutral-900 ${className}`}
+            className={`Card11 relative flex flex-col group rounded-3xl overflow-hidden bg-white dark:bg-neutral-900 ${className}`}
             //
         >
             <div
@@ -30,7 +30,7 @@ const Card11Skeleton: FC<Card11SkeletonProps> = ({
 
             <div className="p-4 flex flex-col space-y-3">
                 <Skeleton width="60%" />
-                <h3 className="nc-card-title block text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                <h3 className="card-title block text-base font-semibold text-neutral-900 dark:text-neutral-100">
                     <Skeleton />
                 </h3>
                 <PostCardLikeCommentSaveSkeleton />

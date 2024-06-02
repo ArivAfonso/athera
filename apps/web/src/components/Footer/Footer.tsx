@@ -77,7 +77,7 @@ const Footer: React.FC = () => {
     }
 
     return (
-        <div className="nc-Footer relative py-16 lg:py-6 border-t border-neutral-200 dark:border-neutral-700">
+        <div className="Footer relative py-16 lg:py-6 border-t border-neutral-200 dark:border-neutral-700">
             <p className="text-lg text-center text-neutral-500 dark:text-neutral-400 mt-2 mb-8">
                 Created By Ariv Afonso
             </p>

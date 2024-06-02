@@ -56,7 +56,7 @@ const Button: FC<ButtonProps> = ({
             break
     }
 
-    let CLASSES = `nc-Button flex-shrink-0 relative h-auto inline-flex items-center justify-center rounded-full transition-colors border-transparent ${colors} ${fontSize} ${sizeClass} ${className} `
+    let CLASSES = `Button flex-shrink-0 relative h-auto inline-flex items-center justify-center rounded-full transition-colors border-transparent ${colors} ${fontSize} ${sizeClass} ${className} `
 
     if (!!href) {
         return (

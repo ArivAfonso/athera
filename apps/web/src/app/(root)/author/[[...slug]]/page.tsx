@@ -173,7 +173,7 @@ const PageAuthor = (context: any) => {
                 <Loading />
             ) : (
                 <>
-                    <div className={`nc-PageAuthor`}>
+                    <div className={`PageAuthor`}>
                         {/* HEADER */}
                         <div className="w-full">
                             {data.background && (

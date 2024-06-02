@@ -13,7 +13,7 @@ const SectionGridAuthorBox: FC<SectionGridAuthorBoxProps> = ({
     authors,
 }) => {
     return (
-        <div className={`nc-SectionGridAuthorBox relative ${className}`}>
+        <div className={`SectionGridAuthorBox relative ${className}`}>
             <Heading desc="Rating based on customer reviews" isCenter>
                 Top 10 author of the month
             </Heading>

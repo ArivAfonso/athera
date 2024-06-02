@@ -20,6 +20,7 @@ import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import TextAlign from '@tiptap/extension-text-align'
 import Image from '@tiptap/extension-image'
+import { Image as ImageHypermedia } from '@/components/PostSubmissionEditor/extensions/hypermedia/nodes/image/image'
 import Table from '@tiptap/extension-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
@@ -85,6 +86,7 @@ const SingleContent: FC<SingleContentProps> = ({
             Youtube,
             SoundCloud,
             Image,
+            ImageHypermedia,
             Table,
             TableCell,
             TableHeader,
@@ -135,7 +137,7 @@ const SingleContent: FC<SingleContentProps> = ({
     return (
         <>
             <div className="relative">
-                <div className="nc-SingleContent space-y-10">
+                <div className="SingleContent space-y-10">
                     {/* ENTRY CONTENT */}
                     {json ? (
                         <>

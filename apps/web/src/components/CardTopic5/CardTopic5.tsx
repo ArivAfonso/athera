@@ -15,7 +15,7 @@ const CardTopic5: FC<CardTopic5Props> = ({ className = '', topic }) => {
     return (
         <Link
             href={`/topic/${encodeURIComponent(topic.name)}`}
-            className={`nc-CardTopic5 relative block group ${className}`}
+            className={`CardTopic5 relative block group ${className}`}
         >
             <div
                 className={`flex-shrink-0 relative w-full aspect-w-8 aspect-h-5 h-0 rounded-3xl overflow-hidden z-0 group`}

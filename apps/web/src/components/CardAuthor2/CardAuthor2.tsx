@@ -1,5 +1,4 @@
 import React, { FC } from 'react'
-import { PostDataType } from '@/data/types'
 import Avatar from '@/components/Avatar/Avatar'
 import Link from 'next/link'
 import AuthorType from '@/types/AuthorType'
@@ -17,7 +16,7 @@ const CardAuthor2: FC<CardAuthor2Props> = ({ className = '', author }) => {
     return (
         <Link
             href={`/author/${author.username}`}
-            className={`nc-CardAuthor2 relative inline-flex items-center ${className}`}
+            className={`CardAuthor2 relative inline-flex items-center ${className}`}
         >
             <Avatar
                 sizeClass="h-10 w-10 text-base"

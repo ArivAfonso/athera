@@ -154,7 +154,7 @@ const Card11: FC<Card11Props> = ({
     return (
         <Tilt tiltEnable={tilt === 'true'}>
             <div
-                className={`nc-Card11 relative flex flex-col group rounded-3xl overflow-hidden border dark:border-transparent border-neutral-100 dark:bg-neutral-900 ${className}`}
+                className={`Card11 relative flex flex-col group rounded-3xl overflow-hidden border dark:border-transparent border-neutral-100 dark:bg-neutral-900 ${className}`}
                 onMouseEnter={() => setIsHover(true)}
                 onMouseLeave={() => setIsHover(false)}
                 ref={innerRef}

@@ -112,7 +112,7 @@ const NcBookmark: FC<NcBookmarkProps> = ({
 
     return (
         <button
-            className={`nc-NcBookmark relative rounded-full flex items-center justify-center ${containerClassName}`}
+            className={`NcBookmark relative rounded-full flex items-center justify-center ${containerClassName}`}
             title="Save to reading list"
             onClick={toggleBookmark}
         >

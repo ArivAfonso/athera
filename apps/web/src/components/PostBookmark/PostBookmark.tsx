@@ -18,7 +18,7 @@ const PostBookmark: FC<PostBookmarkProps> = ({
 }) => {
     return (
         <div
-            className={`nc-PostBookmark flex items-center space-x-2 text-xs text-neutral-700 dark:text-neutral-300 ${className}`}
+            className={`PostBookmark flex items-center space-x-2 text-xs text-neutral-700 dark:text-neutral-300 ${className}`}
         >
             {!hidenReadingTime && !!readingTime && (
                 <span>{readingTime} min read</span>

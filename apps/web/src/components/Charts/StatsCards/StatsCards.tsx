@@ -74,7 +74,7 @@ export function MetricCard({
                         </div>
                     ) : null}
 
-                    <div className={cn(icon && 'ps-3', contentClassName)}>
+                    {/* <div className={cn(icon && 'ps-3', contentClassName)}>
                         <p
                             className={cn(
                                 'mb-0.5 text-gray-500',
@@ -93,7 +93,7 @@ export function MetricCard({
                         </p>
 
                         {info ? info : null}
-                    </div>
+                    </div> */}
                 </div>
 
                 {chart ? (

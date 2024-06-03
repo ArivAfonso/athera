@@ -47,12 +47,7 @@ function WidgetCard(
             )}
             ref={ref}
         >
-            <div
-                className={cn(
-                    action && 'flex items-start justify-between',
-                    headerClassName
-                )}
-            >
+            <div className={cn(headerClassName)}>
                 <div>
                     <h3
                         className={cn(

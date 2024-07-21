@@ -11,10 +11,15 @@ import ImageUploadToServer from './ImageUploadToServer'
 
 interface MenuItemImageProps {
     action: ({ url, alt, title }: EditorItemImageAttrs) => void
+    worker: Worker
     children?: React.ReactNode
 }
 
-const MenuItemImage: FC<MenuItemImageProps> = ({ action, children }) => {
+const MenuItemImage: FC<MenuItemImageProps> = ({
+    action,
+    children,
+    worker,
+}) => {
     let [isOpen, setIsOpen] = useState(false)
     let [catImages] = useState(['Insert from URL', 'Upload'])
 
@@ -104,6 +109,7 @@ const MenuItemImage: FC<MenuItemImageProps> = ({ action, children }) => {
         return (
             <div>
                 <ImageUploadToServer
+                    worker={worker}
                     onChangeImage={(image: any) => {
                         setUrlState(image.sourceUrl)
                     }}

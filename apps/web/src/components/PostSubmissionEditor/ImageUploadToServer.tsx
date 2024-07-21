@@ -1,4 +1,6 @@
+import { useStore } from '@/stores/newPost'
 import { createClient } from '@/utils/supabase/client'
+import { set } from 'lodash'
 import Image from 'next/image'
 import { FC, useDeferredValue, useEffect, useId, useState } from 'react'
 
@@ -7,6 +9,7 @@ interface ImageUploadToServerProps {
     contentClassName?: string
     onChangeImage?: (image: ImageState) => void
     defaultImage?: ImageState
+    worker: Worker
 }
 
 export interface ImageState {
@@ -19,11 +22,12 @@ export interface ImageState {
 const ImageUploadToServer: FC<ImageUploadToServerProps> = ({
     className = 'flex-1',
     contentClassName = 'px-6 pt-5 pb-6 ',
+    worker,
     onChangeImage = () => {},
     defaultImage = { sourceUrl: '', id: '' },
 }) => {
     const [imageState, setImageState] = useState<ImageState>(defaultImage)
-    //
+    const { newPostImgs, setNewPost } = useStore()
     const [isUploading, setIsUploading] = useState(false)
     const [uploadErrMess, setUploadErrMess] = useState('')
 
@@ -96,6 +100,35 @@ const ImageUploadToServer: FC<ImageUploadToServerProps> = ({
                 altText: '',
             })
             setIsUploading(false)
+
+            console.time('WorkerProcessingTime') // Start timer
+
+            if (!worker) {
+                console.error('Worker not initialized')
+                return
+            }
+
+            worker.postMessage(localBlobUrl)
+
+            worker.onmessage = (e: MessageEvent) => {
+                setNewPost({
+                    images: [
+                        ...(newPostImgs ? newPostImgs.images : []),
+                        {
+                            url: localBlobUrl,
+                            rating: e.data.results,
+                        },
+                    ],
+                })
+                console.log(e.data)
+                console.timeEnd('WorkerProcessingTime') // End timer when message is received
+            }
+
+            worker.onerror = (error) => {
+                console.error('Worker error:', error)
+                console.log({ error: 'Failed to process image.' })
+                console.timeEnd('WorkerProcessingTime') // End timer also on error to measure until error occurred
+            }
         }
     }
 
@@ -221,12 +254,6 @@ const ImageUploadToServer: FC<ImageUploadToServerProps> = ({
                     </div>
                 </div>
             </label>
-
-            {/* {ERROR && (
-        <Alert containerClassName="text-sm mt-4" type="error">
-          {ERROR}
-        </Alert>
-      )} */}
         </div>
     )
 }

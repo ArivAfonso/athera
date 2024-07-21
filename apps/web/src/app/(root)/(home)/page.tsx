@@ -75,7 +75,6 @@ interface HomeProps {
 const PageHome = async ({}) => {
     //@ts-ignore
     const data: HomeProps = await getData()
-    // Query data from the API
     return (
         <div className="PageHome relative overflow-x-hidden">
             <div className="container relative">

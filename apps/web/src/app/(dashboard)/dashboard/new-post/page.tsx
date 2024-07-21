@@ -20,6 +20,7 @@ import PostOptionsBtn, {
 import Head from 'next/head'
 import TagsInput from '@/components/PostSubmissionEditor/TagsInput'
 import { TrashIcon } from 'lucide-react'
+import { useStore } from '@/stores/newPost'
 
 function strWords(str: string) {
     return str.split(/\s+/).length
@@ -86,6 +87,7 @@ const DashboardSubmitPost = () => {
     const [uploading, setUploading] = useState(false)
     let [json, setJson] = useState('' as any)
     const [progress, setProgress] = useState(0)
+    const { newPostImgs, setNewPost } = useStore()
     const defaultPostOptionsData = {
         excerptText: '',
         isAllowComments: true,
@@ -99,9 +101,16 @@ const DashboardSubmitPost = () => {
     let [tags, setTags] = useState<string[]>([])
     const [title, setTitle] = useState('')
 
-    useEffect(() => {
-        console.log(json)
-    }, [json])
+    // useEffect(() => {
+    //     const worker = new Worker(
+    //         new URL('./initialiseModel.ts', import.meta.url)
+    //     )
+
+    //     worker.onmessage = (e: MessageEvent) => {
+    //         console.log(e.data)
+    //         worker.terminate()
+    //     }
+    // }, [])
 
     async function sendPost(formData: any) {
         setUploading(true)
@@ -121,6 +130,17 @@ const DashboardSubmitPost = () => {
             setErrorMsg('Post title is required')
             return
         }
+
+        const imageUrls: string[] = findImageUrls(json.content)
+        imageUrls.map((url) => {
+            //Check if the image is in the newPostImgs array and get its mod score
+            const img = newPostImgs?.images.find((img) => img.url === url)
+            if (img?.rating && img.rating) {
+                setUploading(false)
+                setErrorMsg('NSFW images are not allowed')
+                return
+            }
+        })
 
         setProgress(20)
         try {
@@ -167,7 +187,6 @@ const DashboardSubmitPost = () => {
                 setProgress(30)
                 console.log(json.content)
 
-                const imageUrls: string[] = findImageUrls(json.content)
                 console.log(imageUrls)
 
                 // Upload the images to Supabase storage and rename the link in the json to the new link
@@ -291,6 +310,8 @@ const DashboardSubmitPost = () => {
             }
         })
 
+        console.log(tags)
+
         if (!title) {
             toast.custom((t) => (
                 <Alert type="danger" message="Post title is required" />
@@ -317,6 +338,8 @@ const DashboardSubmitPost = () => {
                 },
             ])
             .select()
+
+        console.log(draftInsertError)
 
         // Retrieve the generated draft ID
         const draftId: string = data ? data[0]?.id : null
@@ -425,6 +448,10 @@ const DashboardSubmitPost = () => {
         control,
         formState: { errors },
     } = useForm() // Initialize the hook
+
+    useEffect(() => {
+        console.log(newPostImgs)
+    }, [newPostImgs])
 
     return (
         <>

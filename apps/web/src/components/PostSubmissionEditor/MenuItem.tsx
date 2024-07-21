@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react'
+import React, { FC, ReactNode, useEffect, useState } from 'react'
 import MenuItemImage from './MenuItemImage'
 import { LucideIcon } from 'lucide-react'
 
@@ -17,16 +17,28 @@ const MenuItem: FC<Props> = ({
     isActive,
     className = 'flex-shrink-0 mr-2',
 }) => {
-    if (title === 'Image') {
+    const [worker, setWorker] = useState<Worker | null>(null)
+
+    useEffect(() => {
+        if (title === 'Image') {
+            const newWorker = new Worker(
+                new URL('./worker.ts', import.meta.url)
+            )
+            setWorker(newWorker)
+
+            // Cleanup function to terminate the worker when the component unmounts or title changes
+            return () => {
+                newWorker.terminate()
+            }
+        }
+    }, [title]) // Dependency array includes title to re-run effect if title changes
+
+    if (title === 'Image' && worker) {
         return (
-            <MenuItemImage action={action}>
+            <MenuItemImage worker={worker} action={action}>
                 <button
-                    className={`menu-item ${className} ${
-                        isActive && isActive() ? ' is-active' : ''
-                    }`}
-                    onClick={() => {
-                        action
-                    }}
+                    className={`menu-item ${className} ${isActive && isActive() ? 'is-active' : ''}`}
+                    onClick={() => action}
                     type="button"
                     title={title}
                 >

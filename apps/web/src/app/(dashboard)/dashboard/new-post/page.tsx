@@ -21,6 +21,7 @@ import Head from 'next/head'
 import TagsInput from '@/components/PostSubmissionEditor/TagsInput'
 import { TrashIcon } from 'lucide-react'
 import { useStore } from '@/stores/newPost'
+import { addIdsToHeadings } from '@/utils/addIdsToHeadings'
 
 function strWords(str: string) {
     return str.split(/\s+/).length
@@ -268,7 +269,7 @@ const DashboardSubmitPost = () => {
                         image:
                             'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
                             imagePath?.path,
-                        json: json,
+                        json: addIdsToHeadings(json),
                     })
                     .eq('id', postId)
 
@@ -333,7 +334,7 @@ const DashboardSubmitPost = () => {
                     description: postOptionsData.excerptText,
                     license: postOptionsData.license,
                     text: text,
-                    json: json,
+                    json: addIdsToHeadings(json),
                     estimatedReadingTime: Math.round(strWords(text) / 200),
                 },
             ])

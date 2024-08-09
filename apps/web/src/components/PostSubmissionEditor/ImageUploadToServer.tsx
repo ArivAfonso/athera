@@ -1,6 +1,5 @@
 import { useStore } from '@/stores/newPost'
 import { createClient } from '@/utils/supabase/client'
-import { set } from 'lodash'
 import Image from 'next/image'
 import { FC, useDeferredValue, useEffect, useId, useState } from 'react'
 

@@ -80,42 +80,6 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
     lowlight.register('scala', scala)
     lowlight.register('r', r)
 
-    Image.extend({
-        addAttributes() {
-            return {
-                src: {
-                    default: null,
-                },
-                alt: {
-                    default: null,
-                },
-                loading: {
-                    default: 'lazy',
-                },
-                decoding: {
-                    default: 'async',
-                },
-                width: {
-                    default: null,
-                },
-                height: {
-                    default: null,
-                },
-                mod: {
-                    default: 0,
-                    // Customize the HTML parsing (for example, to load the initial content)
-                    parseHTML: (element) => element.getAttribute('mod'),
-                    // … and customize the HTML rendering.
-                    renderHTML: (attributes) => {
-                        return {
-                            mod: attributes.mod,
-                        }
-                    },
-                },
-            }
-        },
-    })
-
     const editor = useEditor({
         extensions: [
             StarterKit,

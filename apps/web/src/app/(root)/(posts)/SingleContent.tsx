@@ -31,6 +31,9 @@ import { SoundCloud } from '@/components/PostSubmissionEditor/extensions/hyperme
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { Twitter } from '@/components/PostSubmissionEditor/extensions/hypermedia/nodes/twitter/twitter'
 import { ScaleIcon } from 'lucide-react'
+import TableContentAnchor from './TableContentAnchor'
+import NcBookmark from '@/components/NcBookmark/NcBookmark'
+import CustomHeading from '@/components/PostSubmissionEditor/extensions/headings/CustomHeading'
 
 export interface SingleContentProps {
     body: string
@@ -71,8 +74,11 @@ const SingleContent: FC<SingleContentProps> = ({
 
     const output = useMemo(() => {
         return generateHTML(json, [
-            StarterKit,
+            StarterKit.configure({
+                heading: false, // Disable the default heading from StarterKit
+            }),
             Document,
+            CustomHeading,
             Paragraph,
             Text,
             CodeBlockLowlight,
@@ -198,45 +204,56 @@ const SingleContent: FC<SingleContentProps> = ({
                     <div></div>
                 </div>
                 <div
-                    className={`sticky mt-8 bottom-14 md:bottom-8 z-40 justify-center ${
+                    className={`sticky mt-8 bottom-14 gap-2 md:bottom-8 z-40 justify-center ${
                         showLikeAndCommentSticky ? 'flex' : 'hidden'
                     }`}
                 >
-                    <div className="bg-[#f8f8f8] dark:bg-neutral-900/95 rounded-full p-1.5 flex items-center justify-center space-x-2 text-xs">
+                    <div className="flex items-center justify-center gap-1 rounded-full bg-white p-1.5 text-xs shadow-lg ring-1 ring-neutral-900/5 ring-offset-1 sm:gap-2 dark:bg-neutral-800">
                         <PostCardLikeAction
                             className="px-3 h-9 text-xs bg-white"
                             likeCount={likeCount}
                             postId={id}
                         />
-                        <div className="border-l h-4 border-neutral-200 dark:border-neutral-800"></div>
+                        <div className="h-4 border-s border-neutral-200 dark:border-neutral-700"></div>
                         <PostCardCommentBtn
                             isATagOnSingle
                             className={` flex px-3 h-9 text-xs bg-white`}
                             commentCount={commentCount}
                         />
-                        <div className="border-l h-4 border-neutral-200 dark:border-neutral-800"></div>
+                        <div className="h-4 border-s border-neutral-200 dark:border-neutral-700"></div>
+                        <NcBookmark postId={id} />
+                        <div className="h-4 border-s border-neutral-200 dark:border-neutral-700"></div>
 
                         <button
-                            className={`w-9 h-9 items-center justify-center bg-white dark:bg-neutral-800 hover:bg-neutral-100 rounded-full ${
+                            className={`h-9 w-9 items-center justify-center rounded-full bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-800 ${
                                 isShowScrollToTop ? 'flex' : 'hidden'
                             }`}
                             onClick={() => {
                                 window.scrollTo({ top: 0, behavior: 'smooth' })
                             }}
+                            title="Go to top"
                         >
-                            <ArrowUpIcon className="w-4 h-4" />
+                            <ArrowUpIcon className="h-4 w-4" />
                         </button>
 
                         <button
-                            ref={progressRef}
-                            className={`w-9 h-9 items-center justify-center ${
+                            ref={progressRef as any}
+                            className={`h-9 w-9 items-center justify-center ${
                                 isShowScrollToTop ? 'hidden' : 'flex'
                             }`}
                             title="Go to top"
+                            onClick={() => {
+                                window.scrollTo({ top: 0, behavior: 'smooth' })
+                            }}
                         >
                             %
                         </button>
                     </div>
+                    <TableContentAnchor
+                        className="flex items-center justify-center gap-2 rounded-full bg-white p-1.5 text-xs shadow-lg ring-1 ring-neutral-900/5 ring-offset-1 dark:bg-neutral-800"
+                        content={json}
+                        id={id}
+                    />
                 </div>
             </div>
         </>

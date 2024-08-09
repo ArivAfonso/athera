@@ -38,7 +38,7 @@
         "@tiptap/extension-underline": "^2.2.4",
         "@tiptap/pm": "^2.1.13",
         "@tiptap/react": "^2.4.0",
-        "@tiptap/starter-kit": "^2.1.13",
+        "@tiptap/starter-kit": "^2.5.9",
         "@types/lodash": "^4.14.202",
         "@types/node": "20.2.5",
         "@types/react": "18.3.2",

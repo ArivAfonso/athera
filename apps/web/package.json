@@ -66,7 +66,7 @@
         "nextjs-toploader": "^1.6.11",
         "npm": "^10.5.1",
         "nsfwjs": "^4.1.0",
-        "plausible-tracker": "^0.3.8",
+        "plausible-tracker": "^0.3.9",
         "postcss": "^8.4.21",
         "react": "18.2.0",
         "react-countup": "^6.5.3",

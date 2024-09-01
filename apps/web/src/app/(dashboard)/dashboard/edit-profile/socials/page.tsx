@@ -7,6 +7,7 @@ import Input from '@/components/Input/Input'
 import { createClient } from '@/utils/supabase/client'
 import { useForm, Controller } from 'react-hook-form'
 import Alert from '@/components/Alert/Alert'
+import toast from 'react-hot-toast'
 
 function isValidHttpUrl(string: string) {
     let url
@@ -21,12 +22,28 @@ function isValidHttpUrl(string: string) {
 }
 
 function Socials() {
-    const { handleSubmit, register } = useForm()
-    const [success, setSuccess] = useState('')
-    const [error, setError] = useState('')
+    const { handleSubmit, register, reset } = useForm({
+        defaultValues: {
+            fullName: '',
+            email: '',
+            website: '',
+            about: '',
+            avatar: '',
+            background: '',
+            phone: '',
+            tiktok: '',
+            twitter: '',
+            facebook: '',
+            youtube: '',
+            github: '',
+            instagram: '',
+            linkedin: '',
+            pinterest: '',
+            twitch: '',
+        },
+    })
     const [imageFile, setImageFile] = useState(null)
     const [loading, setLoading] = useState(false)
-    const [showModal, setShowModal] = useState(false)
     const supabase = createClient()
     const [session, setSession] = useState<any>(null)
     const [selectedImage, setSelectedImage] = useState(null)
@@ -53,68 +70,35 @@ function Socials() {
 
     async function updateProfile(formData: any) {
         setLoading(true)
-        setError('')
+
+        const validateAndAssignUrl = (urlKey: keyof typeof formData) => {
+            if (formData[urlKey] && !isValidHttpUrl(formData[urlKey])) {
+                setLoading(false)
+                return false
+            }
+            return true
+        }
+
+        const urlsToValidate = [
+            'website',
+            'tiktok',
+            'twitter',
+            'facebook',
+            'youtube',
+            'github',
+            'instagram',
+            'linkedin',
+            'pinterest',
+            'twitch',
+        ] as const
+
+        for (const urlKey of urlsToValidate) {
+            if (!validateAndAssignUrl(urlKey)) {
+                return
+            }
+        }
+
         try {
-            if (formData.website && !isValidHttpUrl(formData.website)) {
-                setError('Invalid website url')
-                setLoading(false)
-                return
-            } else if (formData.website == '')
-                formData.website = profile.website
-            if (formData.tiktok && !isValidHttpUrl(formData.tiktok)) {
-                setError('Invalid tiktok url')
-                setLoading(false)
-                return
-            } else if (formData.tiktok == '') formData.tiktok = profile.tiktok
-            if (formData.twitter && !isValidHttpUrl(formData.twitter)) {
-                setError('Invalid twitter url')
-                setLoading(false)
-                return
-            } else if (formData.twitter == '')
-                formData.twitter = profile.twitter
-            if (formData.facebook && !isValidHttpUrl(formData.facebook)) {
-                setError('Invalid facebook url')
-                setLoading(false)
-                return
-            } else if (formData.facebook == '')
-                formData.facebook = profile.facebook
-            if (formData.youtube && !isValidHttpUrl(formData.youtube)) {
-                setError('Invalid youtube url')
-                setLoading(false)
-                return
-            } else if (formData.youtube == '')
-                formData.youtube = profile.youtube
-            if (formData.github && !isValidHttpUrl(formData.github)) {
-                setError('Invalid github url')
-                setLoading(false)
-                return
-            } else if (formData.github == '') formData.github = profile.github
-            if (formData.instagram && !isValidHttpUrl(formData.instagram)) {
-                setError('Invalid instagram url')
-                setLoading(false)
-                return
-            } else if (formData.instagram == '')
-                formData.instagram = profile.instagram
-            if (formData.linkedin && !isValidHttpUrl(formData.linkedin)) {
-                setError('Invalid linkedin url')
-                setLoading(false)
-                return
-            } else if (formData.linkedin == '')
-                formData.linkedin = profile.linkedin
-            if (formData.pinterest && !isValidHttpUrl(formData.pinterest)) {
-                setError('Invalid pinterest url')
-                setLoading(false)
-                return
-            } else if (formData.pinterest == '')
-                formData.pinterest = profile.pinterest
-            if (formData.twitch && !isValidHttpUrl(formData.twitch)) {
-                setError('Invalid twitch url')
-                setLoading(false)
-                return
-            } else if (formData.twitch == '') formData.twitch = profile.twitch
-            if (formData.phone == '') formData.phone = profile.phone
-            if (formData.about == '') formData.about = profile.bio
-            if (formData.avatar == '') formData.avatar = profile.avatar
             let imgUrl
             if (imageFile) {
                 // Upload the image file to Supabase Storage
@@ -158,7 +142,9 @@ function Socials() {
                         selectedImage
                     )
                 if (imgError) {
-                    setError('Error uploading image')
+                    toast.custom((t) => (
+                        <Alert type="danger" message="Error uploading image" />
+                    ))
                     setLoading(false)
                     return
                 }
@@ -196,7 +182,10 @@ function Socials() {
                     },
                 ])
                 .eq('id', session.session?.user?.id)
-            setSuccess('Profile updated successfully')
+            toast.custom((t) => (
+                <Alert type="success" message="Profile Updated Successfully" />
+            ))
+
             setLoading(false)
         } catch (error) {
             console.log(error)
@@ -216,6 +205,26 @@ function Socials() {
                 .eq('id', userId)
                 .single()
             setProfile(data)
+
+            //Reset the form with the fetched data
+            reset({
+                fullName: data?.name,
+                email: data?.email,
+                website: data?.website,
+                about: data?.bio,
+                avatar: data?.avatar,
+                background: data?.background,
+                phone: data?.phone,
+                tiktok: data?.tiktok,
+                twitter: data?.twitter,
+                facebook: data?.facebook,
+                youtube: data?.youtube,
+                github: data?.github,
+                instagram: data?.instagram,
+                linkedin: data?.linkedin,
+                pinterest: data?.pinterest,
+                twitch: data?.twitch,
+            })
         }
         checkLikedStatus()
     }, [])
@@ -223,6 +232,7 @@ function Socials() {
     return (
         <>
             <title>Edit Profile - Athera</title>
+
             <div className="max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32">
                 <form
                     onSubmit={handleSubmit(async (data) => {
@@ -259,9 +269,6 @@ function Socials() {
                                                 className="!rounded-s-none"
                                                 sizeClass="h-11 px-4 ps-2 pe-3"
                                                 placeholder="https://www.youtube.com/channel/yourname"
-                                                defaultValue={
-                                                    profile.youtube || ''
-                                                }
                                             />
                                         </div>
                                     </div>
@@ -285,9 +292,6 @@ function Socials() {
                                                 className="!rounded-s-none"
                                                 sizeClass="h-11 px-4 ps-2 pe-3"
                                                 placeholder="https://www.facebook.com/yourname"
-                                                defaultValue={
-                                                    profile.facebook || ''
-                                                }
                                             />
                                         </div>
                                     </div>
@@ -310,9 +314,6 @@ function Socials() {
                                                 className="!rounded-s-none"
                                                 sizeClass="h-11 px-4 ps-2 pe-3"
                                                 placeholder="https://github.com/yourname"
-                                                defaultValue={
-                                                    profile.github || ''
-                                                }
                                             />
                                         </div>
                                     </div>
@@ -336,9 +337,6 @@ function Socials() {
                                                 className="!rounded-s-none"
                                                 sizeClass="h-11 px-4 ps-2 pe-3"
                                                 placeholder="https://twitter.com/yourname"
-                                                defaultValue={
-                                                    profile.twitter || ''
-                                                }
                                             />
                                         </div>
                                     </div>
@@ -362,9 +360,6 @@ function Socials() {
                                                 className="!rounded-s-none"
                                                 sizeClass="h-11 px-4 ps-2 pe-3"
                                                 placeholder="https://instagram.com/yourname"
-                                                defaultValue={
-                                                    profile.instagram || ''
-                                                }
                                             />
                                         </div>
                                     </div>
@@ -388,9 +383,6 @@ function Socials() {
                                                 className="!rounded-s-none"
                                                 sizeClass="h-11 px-4 ps-2 pe-3"
                                                 placeholder="https://linkedin.com/in/yourname"
-                                                defaultValue={
-                                                    profile.linkedin || ''
-                                                }
                                             />
                                         </div>
                                     </div>
@@ -414,9 +406,6 @@ function Socials() {
                                                 className="!rounded-s-none"
                                                 sizeClass="h-11 px-4 ps-2 pe-3"
                                                 placeholder="https://pinterest.com/yourname"
-                                                defaultValue={
-                                                    profile.pinterest || ''
-                                                }
                                             />
                                         </div>
                                     </div>
@@ -440,9 +429,6 @@ function Socials() {
                                                 className="!rounded-s-none"
                                                 sizeClass="h-11 px-4 ps-2 pe-3"
                                                 placeholder="https://twitch.com/yourname"
-                                                defaultValue={
-                                                    profile.twitch || ''
-                                                }
                                             />
                                         </div>
                                     </div>
@@ -465,9 +451,6 @@ function Socials() {
                                                 className="!rounded-s-none"
                                                 sizeClass="h-11 px-4 ps-2 pe-3"
                                                 placeholder="https://www.tiktok.com/@name"
-                                                defaultValue={
-                                                    profile.tiktok || ''
-                                                }
                                             />
                                         </div>
                                     </div>
@@ -493,8 +476,6 @@ function Socials() {
                         </div>
                     </div>
                 </form>
-                {success && <Alert type="success" message={success} />}
-                {error && <Alert type="danger" message={error} />}
             </div>
         </>
     )

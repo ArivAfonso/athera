@@ -1,6 +1,7 @@
 import React from 'react'
 import Logo from '@/components/Logo/Logo'
 import { CustomLink } from '@/data/types'
+import Link from 'next/link'
 
 export interface WidgetFooterMenu {
     id: string
@@ -8,86 +9,97 @@ export interface WidgetFooterMenu {
     menus: CustomLink[]
 }
 
-const widgetMenus: WidgetFooterMenu[] = [
+const links = [
     {
-        id: '5',
-        title: 'Getting started',
-        menus: [
-            { href: '/', label: 'Installation' },
-            { href: '/', label: 'Release Notes' },
-            { href: '/', label: 'Upgrade Guide' },
-            { href: '/', label: 'Browser Support' },
-            { href: '/', label: 'Editor Support' },
-        ],
+        name: 'Home',
+        href: '/',
     },
     {
-        id: '1',
-        title: 'Explore',
-        menus: [
-            { href: '/', label: 'Design features' },
-            { href: '/', label: 'Prototyping' },
-            { href: '/', label: 'Design systems' },
-            { href: '/', label: 'Pricing' },
-            { href: '/', label: 'Customers' },
-        ],
+        name: 'Blog',
+        href: '/blog',
     },
     {
-        id: '2',
-        title: 'Resources',
-        menus: [
-            { href: '/', label: 'Best practices' },
-            { href: '/', label: 'Support' },
-            { href: '/', label: 'Developers' },
-            { href: '/', label: 'Learn design' },
-            { href: '/', label: "What's new" },
-        ],
+        name: 'Contact',
+        href: '/contact',
+    },
+]
+const legal = [
+    {
+        name: 'Privacy Policy',
+        href: '#',
     },
     {
-        id: '4',
-        title: 'Community',
-        menus: [
-            { href: '/', label: 'Discussion Forums' },
-            { href: '/', label: 'Code of Conduct' },
-            { href: '/', label: 'Community Resources' },
-            { href: '/', label: 'Contributing' },
-            { href: '/', label: 'Concurrent Mode' },
-        ],
+        name: 'Terms of Service',
+        href: '#',
+    },
+    {
+        name: 'Refund Policy',
+        href: '#',
+    },
+]
+const socials = [
+    {
+        name: 'Twitter',
+        href: 'https://twitter.com/ArivAfonso',
+    },
+    {
+        name: 'LinkedIn',
+        href: 'https://linkedin.com/',
+    },
+    {
+        name: 'GitHub',
+        href: 'https://github.com/ArivAfonso',
     },
 ]
 
 const Footer: React.FC = () => {
-    const renderWidgetMenuItem = (menu: WidgetFooterMenu, index: number) => {
-        return (
-            <div key={index} className="text-sm">
-                <ul className="mt-5 space-y-4">
-                    {menu.menus.map((item, index) => (
-                        <li key={index}>
-                            <a
-                                key={index}
-                                className="text-neutral-6000 dark:text-neutral-300 hover:text-black dark:hover:text-white"
-                                href={item.href}
-                            >
-                                {item.label}
-                            </a>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        )
-    }
-
     return (
-        <div className="Footer relative py-16 lg:py-6 border-t border-neutral-200 dark:border-neutral-700">
-            <p className="text-lg text-center text-neutral-500 dark:text-neutral-400 mt-2 mb-8">
-                Created By Ariv Afonso
-            </p>
-            <div className="container grid grid-cols-2 gap-y-10 gap-x-5 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-5 lg:gap-x-10">
-                <div className="grid grid-cols-4 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col">
-                    <div className="col-span-2 md:col-span-1">
-                        <Logo />
+        <div className="relative">
+            <div className="border-t border-neutral-100  dark:border-neutral-800 px-8 pt-20 pb-16 relative">
+                <div className="max-w-7xl mx-auto text-sm text-neutral-500 dark:text-neutral-300 flex sm:flex-row flex-col justify-between items-start ">
+                    <div>
+                        <div className="mr-4  md:flex mb-4">
+                            <Logo />
+                        </div>
+                        <div>Copyright &copy; 2024 Athera</div>
+                        <div className="mt-2">All rights reserved</div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-10 items-start mt-10 md:mt-0">
+                        <div className="flex justify-center space-y-4 flex-col mt-4">
+                            {links.map((link) => (
+                                <Link
+                                    key={link.name}
+                                    className="transition-colors hover:text-black text-muted dark:text-muted-dark dark:hover:text-neutral-400 text-xs sm:text-sm"
+                                    href={link.href}
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
+                        </div>
+                        <div className="flex justify-center space-y-4 flex-col mt-4">
+                            {legal.map((link) => (
+                                <Link
+                                    key={link.name}
+                                    className="transition-colors hover:text-black text-muted dark:text-muted-dark dark:hover:text-neutral-400 text-xs sm:text-sm"
+                                    href={link.href}
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
+                        </div>
+                        <div className="flex justify-center space-y-4 flex-col mt-4">
+                            {socials.map((link) => (
+                                <Link
+                                    key={link.name}
+                                    className="transition-colors hover:text-black text-muted dark:text-muted-dark dark:hover:text-neutral-400 text-xs sm:text-sm"
+                                    href={link.href}
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
+                        </div>
                     </div>
                 </div>
-                {widgetMenus.map(renderWidgetMenuItem)}
             </div>
         </div>
     )

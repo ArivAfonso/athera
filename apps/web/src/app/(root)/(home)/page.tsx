@@ -13,6 +13,7 @@ import AuthorType from '@/types/AuthorType'
 import Particles from '@/components/Particles/Particles'
 import SectionImport from '@/components/SectionImport/SectionImport'
 import SectionNewPosts from '@/components/SectionNewPosts/SectionNewPosts'
+import { Metadata } from 'next'
 
 async function getData() {
     const supabase = createClient(cookies())
@@ -66,6 +67,39 @@ async function getData() {
     }
 }
 
+export const metadata: Metadata = {
+    title: 'Athera',
+    description:
+        'Athera is a platform for creators to share their knowledge and grow their audience.',
+    keywords: ['athera', 'blog', 'platform', 'knowledge'],
+    openGraph: {
+        title: 'Athera',
+        description:
+            'Athera is a platform for creators to share their knowledge and grow their audience.',
+        url: `https://www.athera.blog`,
+        type: 'website',
+        images: [
+            {
+                url: 'https://www.athera.blog/og-image.jpg',
+                width: 800,
+                height: 480,
+                alt: 'Main Image',
+            },
+        ],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        site: '@athera_blog',
+        title: 'Athera',
+        description:
+            'Athera is a platform for creators to share their knowledge and grow their audience.',
+        images: {
+            url: 'https://www.athera.blog/twitter-og.jpg',
+            alt: 'Main Image',
+        },
+    },
+}
+
 interface HomeProps {
     popular_posts: PostType[]
     topics: TopicType[]
@@ -107,7 +141,7 @@ const PageHome = async ({}) => {
                     posts={data.popular_posts.filter((_, i) => i > 3)}
                 />
 
-                <SectionNewPosts posts={data.popular_posts} />
+                {/* <SectionNewPosts posts={data.popular_posts} /> */}
 
                 <div className="relative py-16">
                     <BackgroundSection />

@@ -28,7 +28,7 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
 
     async function logOut() {
         deleteCookie('username')
-        await supabase.auth.signOut()
+        const { error } = await supabase.auth.signOut()
     }
 
     const chars =

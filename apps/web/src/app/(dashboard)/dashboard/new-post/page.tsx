@@ -22,6 +22,7 @@ import TagsInput from '@/components/PostSubmissionEditor/TagsInput'
 import { TrashIcon } from 'lucide-react'
 import { useStore } from '@/stores/newPost'
 import { addIdsToHeadings } from '@/utils/addIdsToHeadings'
+import { debounce } from 'lodash'
 
 function strWords(str: string) {
     return str.split(/\s+/).length
@@ -89,6 +90,7 @@ const DashboardSubmitPost = () => {
     let [json, setJson] = useState('' as any)
     const [progress, setProgress] = useState(0)
     const { newPostImgs, setNewPost } = useStore()
+    const [toxicity, setToxicity] = useState([{ label: 'toxic', score: 0 }])
     const defaultPostOptionsData = {
         excerptText: '',
         isAllowComments: true,
@@ -101,17 +103,6 @@ const DashboardSubmitPost = () => {
 
     let [tags, setTags] = useState<string[]>([])
     const [title, setTitle] = useState('')
-
-    // useEffect(() => {
-    //     const worker = new Worker(
-    //         new URL('./initialiseModel.ts', import.meta.url)
-    //     )
-
-    //     worker.onmessage = (e: MessageEvent) => {
-    //         console.log(e.data)
-    //         worker.terminate()
-    //     }
-    // }, [])
 
     async function sendPost(formData: any) {
         setUploading(true)
@@ -397,6 +388,32 @@ const DashboardSubmitPost = () => {
         setPostOptionsData(data)
     }
 
+    useEffect(() => {
+        // Worker initialization
+        const worker = new Worker(new URL('./langWorker.ts', import.meta.url), {
+            type: 'module',
+        })
+
+        worker.onmessage = (event: MessageEvent) => {
+            const results = event.data
+            console.log(results)
+            setToxicity(results)
+        }
+
+        // Debounced function to post message to worker
+        const debouncedPostMessage = debounce((text: string) => {
+            worker.postMessage(text)
+        }, 5000)
+
+        // Call the debounced function
+        debouncedPostMessage(text)
+
+        // Cleanup function to terminate the worker
+        return () => {
+            worker.terminate()
+        }
+    }, [json])
+
     const [isDragging, setIsDragging] = useState(false)
 
     const handleDrop = (event: any) => {
@@ -449,10 +466,6 @@ const DashboardSubmitPost = () => {
         control,
         formState: { errors },
     } = useForm() // Initialize the hook
-
-    useEffect(() => {
-        console.log(newPostImgs)
-    }, [newPostImgs])
 
     return (
         <>

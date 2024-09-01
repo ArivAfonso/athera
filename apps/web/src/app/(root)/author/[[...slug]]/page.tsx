@@ -41,6 +41,7 @@ async function getData(context: { params: { slug: any } }) {
             verified,
             username,
             avatar,
+            bio,
             twitter,
             facebook,
             instagram,
@@ -95,6 +96,8 @@ async function getData(context: { params: { slug: any } }) {
         .from('followers')
         .select('*', { count: 'exact', head: true })
         .eq('follower', userData?.id)
+
+    console.log(error)
 
     // @ts-ignore
     userData.followerCount = followerData
@@ -166,6 +169,16 @@ const PageAuthor = (context: any) => {
         }
     }, [data])
 
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
+    const handleDescriptionClick = () => {
+        setIsModalOpen(true)
+    }
+
+    const closeModal = () => {
+        setIsModalOpen(false)
+    }
+
     return (
         <>
             {loading ? (
@@ -221,10 +234,29 @@ const PageAuthor = (context: any) => {
                                                     <></>
                                                 )}
                                             </h2>
-                                            {data.bio && (
-                                                <span className="block text-sm text-neutral-500 dark:text-neutral-400">
-                                                    {data.bio}
-                                                </span>
+                                            <span className="block text-sm text-neutral-500 dark:text-neutral-400 line-clamp-2">
+                                                {data.bio}
+                                            </span>
+
+                                            {isModalOpen && (
+                                                <div className="fixed inset-0 flex items-center justify-center z-50">
+                                                    <div className="bg-white dark:bg-neutral-800 p-4 rounded shadow-lg">
+                                                        <h2 className="text-lg font-bold mb-4">
+                                                            Description
+                                                        </h2>
+                                                        <p>{data.bio}</p>
+                                                        <button
+                                                            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                                            onClick={closeModal}
+                                                        >
+                                                            Close
+                                                        </button>
+                                                    </div>
+                                                    <div
+                                                        className="fixed inset-0 bg-black opacity-50"
+                                                        onClick={closeModal}
+                                                    ></div>
+                                                </div>
                                             )}
 
                                             {data.website && (

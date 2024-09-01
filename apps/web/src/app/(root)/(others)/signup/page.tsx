@@ -63,9 +63,9 @@ const PageSignUp = ({}) => {
                     full_name: formData.full_name,
                     name: formData.full_name,
                     avatar_url:
-                        'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+                        'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/avatars/default-pic.png',
                 },
-                emailRedirectTo: `${window.location.origin}/auth/callback`,
+                emailRedirectTo: `${window.location.origin}`,
             },
         })
         if (error) {
@@ -80,7 +80,7 @@ const PageSignUp = ({}) => {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: `${window.location.origin}/auth/callback/`,
             },
         })
         if (error) {
@@ -92,7 +92,7 @@ const PageSignUp = ({}) => {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'twitter',
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: `${window.location.origin}/auth/callback/`,
             },
         })
         if (error) {

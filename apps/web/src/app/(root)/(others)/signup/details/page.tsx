@@ -10,7 +10,7 @@ import Label from '@/components/Label/Label'
 import { AuthSession } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { getCookie } from 'cookies-next'
+import { deleteCookie, getCookie } from 'cookies-next'
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
 import Alert from '@/components/Alert/Alert'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
@@ -65,6 +65,8 @@ const DetailsPage = ({}) => {
                         .from('users')
                         .update([{ username: username }])
                         .eq('id', session.session?.user?.id)
+
+                    deleteCookie('signup-username')
 
                     const { data: topics, error } = await supabase
                         .from('topics')

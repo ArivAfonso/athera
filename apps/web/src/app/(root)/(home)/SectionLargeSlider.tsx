@@ -7,6 +7,8 @@ import PostType from '@/types/PostType'
 import { useThemeMode } from '@/hooks/useThemeMode'
 import dynamic from 'next/dynamic'
 import Globe from '@/animations/Globe'
+import { useRouter } from 'next/navigation'
+import { getCookie } from 'cookies-next'
 
 export interface SectionLargeSliderProps {
     className?: string

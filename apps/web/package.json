@@ -27,7 +27,7 @@
         "@tensorflow/tfjs": "^4.20.0",
         "@tiptap/extension-code-block-lowlight": "^2.3.0",
         "@tiptap/extension-highlight": "^2.3.0",
-        "@tiptap/extension-image": "^2.2.4",
+        "@tiptap/extension-image": "^2.6.6",
         "@tiptap/extension-link": "^2.1.13",
         "@tiptap/extension-placeholder": "^2.3.0",
         "@tiptap/extension-table": "^2.1.13",

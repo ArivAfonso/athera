@@ -14,7 +14,8 @@
         "build": "turbo run build",
         "dev": "turbo run dev",
         "lint": "turbo run lint",
-        "start": "turbo run start"
+        "start": "turbo run start",
+        "test": "cd db/supabase && npx supabase start && cd ../../tests && npx playwright test"
     },
     "devDependencies": {
         "@types/react": "^18.3.2",

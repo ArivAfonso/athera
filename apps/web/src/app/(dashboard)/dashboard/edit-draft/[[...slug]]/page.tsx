@@ -37,6 +37,7 @@ import TitleEditor from '@/components/PostSubmissionEditor/TitleEditor'
 import PostOptionsBtn, {
     PostOptionsData,
 } from '@/components/PostSubmissionEditor/PostOptionsBtn'
+import Loading from '../../edit-post/[[...slug]]/loading'
 
 function strWords(str: string) {
     return str.split(/\s+/).length
@@ -59,6 +60,7 @@ const EditDraft = (context: { params: { slug: any } }) => {
 
     const [errorMsg, setErrorMsg] = useState('')
     const [text, setText] = useState('')
+    const [loading, setLoading] = useState(true)
     let [htmlText, setHtmlText] = useState('')
     const [selectedImage, setSelectedImage] = useState(null)
     let [title, setTitle] = useState('' as any)
@@ -93,14 +95,15 @@ const EditDraft = (context: { params: { slug: any } }) => {
                 .select(
                     'title, id, created_at, json, description, image, author(name, id), draft_topics(topic:topics(id,name,color))'
                 )
-                .eq('id', context.params.slug[0])
+                .eq('id', context.params.slug[1])
                 .single()
 
             const draftData: DraftType | null = data as unknown as DraftType
+            console.log(draftData)
 
-            if (session.session.user.id !== draftData?.author?.id) {
-                router.push('/')
-            }
+            // if (session.session.user.id !== draftData?.author?.id) {
+            //     router.push('/')
+            // }
 
             if (draftData) {
                 // rteObj.value = draftData.rawText
@@ -119,8 +122,10 @@ const EditDraft = (context: { params: { slug: any } }) => {
                     })
                     //@ts-ignore
                     setSelectedImage(file)
+                    setLoading(false)
                 }
             }
+            setLoading(false)
         }
         getData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -504,205 +509,232 @@ const EditDraft = (context: { params: { slug: any } }) => {
 
     return (
         <>
-            <title>Edit Post - Athera</title>
-            <div className="max-w-4xl mx-auto lg:pt-5 pt-10 sm:pt-26 pb-24 lg:pb-32">
-                <div className="rounded-xl md:p-6">
-                    <form
-                        className="grid md:grid-cols-2 gap-6"
-                        onSubmit={handleSubmit(async (data, event) => {
-                            event?.preventDefault() // Prevent default form submission
-                            await sendDraft(data)
-                        })}
-                        method="post"
-                    >
-                        <Label className="block sm:col-span-1 md:col-span-2 whitespace-nowrap overflow-hidden overflow-ellipsis">
-                            <TitleEditor
-                                onUpdate={(editor) => {
-                                    setTitle(editor.getText())
-                                }}
-                                defaultTitle={editDraft?.title}
-                            />
-                            {errors.postTitle && (
-                                <Alert type="danger" message="Required" />
-                            )}
-                        </Label>
-
-                        <Label className="flex justify-top sm:col-span-1 md:col-span-2">
-                            <TagsInput
-                                onChange={handleChangeTags}
-                                defaultValue={tags}
-                            />
-                        </Label>
-
-                        <div className="group block md:col-span-2">
-                            <div
-                                onDrop={handleDrop}
-                                onDragOver={handleDragOver}
-                                onDragEnter={handleDragEnter}
-                                onDragLeave={handleDragLeave}
-                                className="relative mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-2xl"
+            {loading ? (
+                <div className="flex justify-center items-center h-screen">
+                    <Loading />
+                </div>
+            ) : (
+                <>
+                    <title>Edit Post - Athera</title>
+                    <div className="max-w-4xl mx-auto lg:pt-5 pt-10 sm:pt-26 pb-24 lg:pb-32">
+                        <div className="rounded-xl md:p-6">
+                            <form
+                                className="grid md:grid-cols-2 gap-6"
+                                onSubmit={handleSubmit(async (data, event) => {
+                                    event?.preventDefault() // Prevent default form submission
+                                    await sendDraft(data)
+                                })}
+                                method="post"
                             >
-                                <div className="space-y-1 text-center">
-                                    {selectedImage ? (
-                                        <>
-                                            <NextImage
-                                                src={
-                                                    imgChanged
-                                                        ? showImg
-                                                            ? showImg
-                                                            : ''
-                                                        : editDraft?.image
-                                                          ? editDraft?.image
-                                                          : '/images/placeholder.png'
-                                                }
-                                                alt="Selected Image"
-                                                width={800} // Adjust the desired width
-                                                height={480} // Adjust the desired height
-                                                className="rounded-md"
-                                            />
+                                <Label className="block sm:col-span-1 md:col-span-2 whitespace-nowrap overflow-hidden overflow-ellipsis">
+                                    <TitleEditor
+                                        onUpdate={(editor) => {
+                                            setTitle(editor.getText())
+                                        }}
+                                        defaultTitle={editDraft?.title}
+                                    />
+                                    {errors.postTitle && (
+                                        <Alert
+                                            type="danger"
+                                            message="Required"
+                                        />
+                                    )}
+                                </Label>
 
-                                            <div className="opacity-0 group-hover:opacity-100 absolute z-20 end-2.5 top-2.5 flex gap-1">
+                                <Label className="flex justify-top sm:col-span-1 md:col-span-2">
+                                    <TagsInput
+                                        onChange={handleChangeTags}
+                                        defaultValue={editDraft?.draft_topics?.flatMap(
+                                            (topic) => topic.topic.name
+                                        )}
+                                    />
+                                </Label>
+
+                                <div className="group block md:col-span-2">
+                                    <div
+                                        onDrop={handleDrop}
+                                        onDragOver={handleDragOver}
+                                        onDragEnter={handleDragEnter}
+                                        onDragLeave={handleDragLeave}
+                                        className="relative mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-700 border-dashed rounded-2xl"
+                                    >
+                                        <div className="space-y-1 text-center">
+                                            {selectedImage ? (
+                                                <>
+                                                    <NextImage
+                                                        src={
+                                                            imgChanged
+                                                                ? showImg
+                                                                    ? showImg
+                                                                    : ''
+                                                                : editDraft?.image
+                                                                  ? editDraft?.image
+                                                                  : '/images/placeholder.png'
+                                                        }
+                                                        alt="Selected Image"
+                                                        width={800} // Adjust the desired width
+                                                        height={480} // Adjust the desired height
+                                                        className="rounded-md"
+                                                    />
+
+                                                    <div className="opacity-0 group-hover:opacity-100 absolute z-20 end-2.5 top-2.5 flex gap-1">
+                                                        <div
+                                                            className=" p-1.5 bg-black dark:bg-neutral-700 text-white rounded-md cursor-pointer transition-opacity duration-300"
+                                                            title="Delete image"
+                                                            onClick={() => {
+                                                                setSelectedImage(
+                                                                    null
+                                                                )
+                                                            }}
+                                                        >
+                                                            <TrashIcon className="w-4 h-4" />
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg
+                                                        className="mx-auto h-12 w-12 text-neutral-400"
+                                                        stroke="currentColor"
+                                                        fill="none"
+                                                        viewBox="0 0 48 48"
+                                                        aria-hidden="true"
+                                                    >
+                                                        {/* Your SVG path here */}
+                                                    </svg>
+                                                    <div className="flex flex-col sm:flex-row text-sm text-neutral-6000">
+                                                        <label
+                                                            htmlFor="file-upload"
+                                                            className={`relative cursor-pointer rounded-md font-medium text-blue-700 hover:text-blue-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 ${
+                                                                isDragging
+                                                                    ? 'border-2 border-primary-500'
+                                                                    : ''
+                                                            }`}
+                                                        >
+                                                            {isDragging ? (
+                                                                <span>
+                                                                    Drop here
+                                                                </span>
+                                                            ) : (
+                                                                <span>
+                                                                    Upload a
+                                                                    file
+                                                                </span>
+                                                            )}
+                                                            <input
+                                                                id="file-upload"
+                                                                name="file-upload"
+                                                                type="file"
+                                                                className="sr-only"
+                                                                //@ts-ignore
+                                                                onChange={
+                                                                    handleImageSelect
+                                                                }
+                                                            />
+                                                        </label>
+                                                        <p className="pl-1">
+                                                            or drag and drop
+                                                        </p>
+                                                    </div>
+                                                    <p className="text-xs text-neutral-500 pb-8">
+                                                        PNG, JPG up to 10MB
+                                                    </p>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex-1 relative pb-[700px] md:hidden">
+                                    <div className="absolute inset-0 flex flex-col">
+                                        <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
+                                            <TiptapEditor
+                                                onUpdate={(editor) => {
+                                                    const text =
+                                                        editor.getText()
+                                                    setText(text)
+                                                    setJson(editor.getJSON())
+                                                }}
+                                                defaultContent={
+                                                    editDraft?.json
+                                                        ? editDraft?.json
+                                                        : json
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="hidden md:block md:col-span-2">
+                                    <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
+                                        <TiptapEditor
+                                            onUpdate={(editor) => {
+                                                const text = editor.getText()
+                                                setText(text)
+                                                setJson(editor.getJSON())
+                                            }}
+                                            defaultContent={
+                                                editDraft?.json
+                                                    ? editDraft?.json
+                                                    : json
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                                <div className="pt-2 md:col-span-2 flex space-x-12 justify-center">
+                                    {uploading ? (
+                                        <>
+                                            <ButtonPrimary
+                                                className="text-white md:col-span-2 rounded-lg"
+                                                loading
+                                            >
+                                                Updating...
+                                            </ButtonPrimary>
+                                            <div className="md:col-span-2 h-2 relative overflow-hidden rounded-lg w-full mt-4">
+                                                <div className="w-full h-full bg-gray-200 absolute"></div>
                                                 <div
-                                                    className=" p-1.5 bg-black dark:bg-neutral-700 text-white rounded-md cursor-pointer transition-opacity duration-300"
-                                                    title="Delete image"
-                                                    onClick={() => {
-                                                        setSelectedImage(null)
+                                                    style={{
+                                                        width: `${progress}%`,
                                                     }}
-                                                >
-                                                    <TrashIcon className="w-4 h-4" />
-                                                </div>
+                                                    className="h-full bg-blue-500 absolute rounded-lg transition-all duration-500 ease-in-out"
+                                                ></div>
                                             </div>
                                         </>
                                     ) : (
                                         <>
-                                            <svg
-                                                className="mx-auto h-12 w-12 text-neutral-400"
-                                                stroke="currentColor"
-                                                fill="none"
-                                                viewBox="0 0 48 48"
-                                                aria-hidden="true"
+                                            <ButtonPrimary
+                                                type="submit"
+                                                className="text-white px-2 py-1 rounded-lg"
                                             >
-                                                {/* Your SVG path here */}
-                                            </svg>
-                                            <div className="flex flex-col sm:flex-row text-sm text-neutral-6000">
-                                                <label
-                                                    htmlFor="file-upload"
-                                                    className={`relative cursor-pointer rounded-md font-medium text-blue-700 hover:text-blue-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 ${
-                                                        isDragging
-                                                            ? 'border-2 border-primary-500'
-                                                            : ''
-                                                    }`}
-                                                >
-                                                    {isDragging ? (
-                                                        <span>Drop here</span>
-                                                    ) : (
-                                                        <span>
-                                                            Upload a file
-                                                        </span>
-                                                    )}
-                                                    <input
-                                                        id="file-upload"
-                                                        name="file-upload"
-                                                        type="file"
-                                                        className="sr-only"
-                                                        //@ts-ignore
-                                                        onChange={
-                                                            handleImageSelect
-                                                        }
-                                                    />
-                                                </label>
-                                                <p className="pl-1">
-                                                    or drag and drop
-                                                </p>
-                                            </div>
-                                            <p className="text-xs text-neutral-500 pb-8">
-                                                PNG, JPG up to 10MB
-                                            </p>
+                                                Save Draft
+                                            </ButtonPrimary>
+                                            <ButtonPrimary
+                                                type="button"
+                                                onClick={handleSubmit(
+                                                    async (data, event) => {
+                                                        await postDraft(data)
+                                                    }
+                                                )}
+                                                className="text-white px-2 py-1 rounded-lg ml-2"
+                                            >
+                                                Post Draft
+                                            </ButtonPrimary>
+                                            <PostOptionsBtn
+                                                defaultData={postOptionsData}
+                                                onSubmit={
+                                                    handleApplyPostOptions
+                                                }
+                                            />
                                         </>
                                     )}
                                 </div>
-                            </div>
+                                {errorMsg && (
+                                    <Alert type="danger" message={errorMsg} />
+                                )}
+                            </form>
                         </div>
-
-                        <div className="flex-1 relative pb-[700px] md:hidden">
-                            <div className="absolute inset-0 flex flex-col">
-                                <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
-                                    <TiptapEditor
-                                        onUpdate={(editor) => {
-                                            const text = editor.getText()
-                                            setText(text)
-                                            setJson(editor.getJSON())
-                                        }}
-                                        defaultContent={
-                                            editDraft?.json
-                                                ? editDraft?.json
-                                                : json
-                                        }
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="hidden md:block md:col-span-2">
-                            <div className="rounded-2xl border-2 border-neutral-300 dark:border-neutral-700 border-dashed">
-                                <TiptapEditor
-                                    onUpdate={(editor) => {
-                                        const text = editor.getText()
-                                        setText(text)
-                                        setJson(editor.getJSON())
-                                    }}
-                                    defaultContent={
-                                        editDraft?.json ? editDraft?.json : json
-                                    }
-                                />
-                            </div>
-                        </div>
-                        <div className="pt-2 md:col-span-2 flex space-x-12 justify-center">
-                            {uploading ? (
-                                <>
-                                    <ButtonPrimary
-                                        className="text-white md:col-span-2 rounded-lg"
-                                        loading
-                                    >
-                                        Updating...
-                                    </ButtonPrimary>
-                                    <div className="md:col-span-2 h-2 relative overflow-hidden rounded-lg w-full mt-4">
-                                        <div className="w-full h-full bg-gray-200 absolute"></div>
-                                        <div
-                                            style={{ width: `${progress}%` }}
-                                            className="h-full bg-blue-500 absolute rounded-lg transition-all duration-500 ease-in-out"
-                                        ></div>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <ButtonPrimary
-                                        type="submit"
-                                        className="text-white px-2 py-1 rounded-lg"
-                                    >
-                                        Save Draft
-                                    </ButtonPrimary>
-                                    <ButtonPrimary
-                                        type="button"
-                                        onClick={handleSubmit(
-                                            async (data, event) => {
-                                                await postDraft(data)
-                                            }
-                                        )}
-                                        className="text-white px-2 py-1 rounded-lg ml-2"
-                                    >
-                                        Post Draft
-                                    </ButtonPrimary>
-                                    <PostOptionsBtn
-                                        defaultData={postOptionsData}
-                                        onSubmit={handleApplyPostOptions}
-                                    />
-                                </>
-                            )}
-                        </div>
-                        {errorMsg && <Alert type="danger" message={errorMsg} />}
-                    </form>
-                </div>
-            </div>
+                    </div>
+                </>
+            )}
         </>
     )
 }

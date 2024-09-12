@@ -23,21 +23,18 @@ async function getData(
     context: { params: { slug: any } },
     filter_option: string
 ) {
-    const slug = context.params.slug[0]
     const supabase = createClient()
 
     const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
 
     // Generate the embedding from text
-    const output = await pipe(slug, {
+    const output = await pipe(decodeURIComponent(context.params.slug[0]), {
         pooling: 'mean',
         normalize: true,
     })
 
     // Extract the embedding output
     const embedding = Array.from(output.data)
-
-    console.log(embedding)
 
     const { data, error } = await supabase
         .rpc('match_posts', {
@@ -103,19 +100,20 @@ const PageSearchV2 = (context: any) => {
 
     useEffect(() => {
         async function fetchData() {
+            setLoading(true)
+            setData([])
             try {
-                if (s === '') return
                 const res: PostType[] = await getData(context, 'most_relevant')
+                console.log(context.params.slug[0])
                 setData(res)
                 setLoading(false)
             } catch (err) {
                 setLoading(false)
             }
-            document.title = `Search for "${context.params.slug[0]}" - Athera`
+            document.title = `Search for "${decodeURIComponent(context.params.slug[0])}" - Athera`
         }
         fetchData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [context.params.slug])
 
     const [tabActive, setTabActive] = useState<string>(TABS[0])
 
@@ -172,6 +170,14 @@ const PageSearchV2 = (context: any) => {
     }
 
     const [searchValue, setSearchValue] = useState('')
+
+    useEffect(() => {
+        setSearchValue(s)
+    }, [s])
+
+    useEffect(() => {
+        console.log(data)
+    }, [data])
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -243,63 +249,70 @@ const PageSearchV2 = (context: any) => {
             <div className="container py-16 lg:py-28 space-y-16 lg:space-y-28">
                 <main>
                     {/* TABS FILTER */}
-                    {searchValue !== '' ? (
-                        <div className="flex flex-col sm:items-center sm:justify-between sm:flex-row ">
-                            <Nav
-                                containerClassName="w-full overflow-x-auto hiddenScrollbar"
-                                className=" sm:space-x-2"
-                            >
-                                {TABS.map((item, index) => (
-                                    <NavItem
-                                        key={index}
-                                        isActive={tabActive === item}
-                                        onClick={() => handleClickTab(item)}
-                                    >
-                                        {item}
-                                    </NavItem>
-                                ))}
-                            </Nav>
-                            <div className="block my-4 border-b w-full border-neutral-300 dark:border-neutral-500 sm:hidden"></div>
-                            <div className="flex justify-end">
-                                <TopicFilterListBox
-                                    lists={FILTERS}
-                                    onFilterClick={handleFilterClick}
-                                />
-                            </div>
+                    {/* {searchValue !== '' && ( */}
+                    <div className="flex flex-col sm:items-center sm:justify-between sm:flex-row ">
+                        <Nav
+                            containerClassName="w-full overflow-x-auto hiddenScrollbar"
+                            className=" sm:space-x-2"
+                        >
+                            {TABS.map((item, index) => (
+                                <NavItem
+                                    key={index}
+                                    isActive={tabActive === item}
+                                    onClick={() => handleClickTab(item)}
+                                >
+                                    {item}
+                                </NavItem>
+                            ))}
+                        </Nav>
+                        <div className="block my-4 border-b w-full border-neutral-300 dark:border-neutral-500 sm:hidden"></div>
+                        <div className="flex justify-end">
+                            <TopicFilterListBox
+                                lists={FILTERS}
+                                onFilterClick={handleFilterClick}
+                            />
                         </div>
-                    ) : (
-                        <Empty
-                            mainText="Search Something!!"
-                            subText="Type something in the search bar to get started."
-                        />
-                    )}
-                    {
-                        /* LOADING STATE */
-                        // loading && (
-                        //     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8 lg:mt-10">
-                        //         {[...Array(8)].map((_, id) => (
-                        //             <div key={id}>
-                        //                 <div className="hidden sm:block">
-                        //                     {/* Render Card11 on larger screens */}
-                        //                     <Card11Skeleton />
-                        //                 </div>
-                        //                 <div className="sm:hidden grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        //                     {/* Render Card5 on smaller screens */}
-                        //                     <Card11Skeleton />
-                        //                 </div>
-                        //             </div>
-                        //         ))}
-                        //     </div>
-                        // )
-                    }
+                    </div>
                     {/* RENDER ARTICLES */}
                     {tabActive === 'Articles' &&
                         data.length > 0 &&
                         searchValue !== '' && (
-                            <PostsSection
-                                id={`search-${searchValue}`}
-                                posts={data}
-                            />
+                            <>
+                                <div
+                                    className={`gap-6 md:gap-8 mt-8 lg:mt-10 ${
+                                        (data ? data.length : 0) < 4
+                                            ? 'flex justify-center flex-wrap'
+                                            : `grid lg:grid-cols-3 xl:grid-cols-${4}`
+                                    }`}
+                                >
+                                    {data.map((post: PostType, id: number) => (
+                                        <div
+                                            key={id}
+                                            className={`${
+                                                (data ? data.length : 0) < 4
+                                                    ? `w-full sm:w-1/2 lg:w-1/3 xl:w-1/${4}`
+                                                    : ''
+                                            }`}
+                                        >
+                                            <div className="hidden sm:block">
+                                                {/* Render Card11 on larger screens */}
+                                                <Card11
+                                                    onHidePost={() => {}}
+                                                    post={post}
+                                                />
+                                            </div>
+
+                                            <div className="sm:hidden grid grid-cols-1 gap-6">
+                                                {/* Render Card5 on smaller screens */}
+                                                <Card6
+                                                    onHidePost={() => {}}
+                                                    post={post}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
                         )}
                     {tabActive === 'Topics' && topics.length > 0 && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
@@ -318,6 +331,7 @@ const PageSearchV2 = (context: any) => {
                     {/* RENDER NO RESULTS COMPONENT */}
                     {tabActive === 'Articles' &&
                         data.length === 0 &&
+                        searchValue !== '' &&
                         !loading && (
                             <Empty
                                 mainText="No Posts Found"

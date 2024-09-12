@@ -35,7 +35,6 @@ import FileItem from '../FileItem/FileItem'
 import Alert from '../Alert/Alert'
 import toast from 'react-hot-toast'
 import JSZip from 'jszip'
-import { json } from 'stream/consumers'
 
 const accData = [
     {

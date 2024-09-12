@@ -119,7 +119,7 @@ const PostOptionsBtn: FC<PostOptionsBtnProps> = ({ onSubmit, defaultData }) => {
         return (
             <Button
                 sizeClass="px-4"
-                className="flex-shrink-0 !rounded-lg !bg-transparent dark:!bg-transparent"
+                className="PostOptionsBtn flex-shrink-0 !rounded-lg !bg-transparent dark:!bg-transparent"
                 // title="Post options"
                 pattern="third"
                 onClick={openModal}

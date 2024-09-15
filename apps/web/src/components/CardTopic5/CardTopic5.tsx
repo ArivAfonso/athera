@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { TwMainColor } from '@/data/types'
+import { BadgeColor } from '@/types/BadgeColorType'
 import Badge from '@/components/Badge/Badge'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -24,7 +24,7 @@ const CardTopic5: FC<CardTopic5Props> = ({ className = '', topic }) => {
             </div>
             <Badge
                 className="absolute top-3 right-3"
-                color={topic.color.toLowerCase() as TwMainColor}
+                color={topic.color.toLowerCase() as BadgeColor}
                 href={`/topic/${topic.name}`}
                 name={
                     <div className="flex items-center">

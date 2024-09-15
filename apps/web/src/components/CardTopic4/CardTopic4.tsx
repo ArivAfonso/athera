@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { TwMainColor } from '@/data/types'
+import { BadgeColor } from '@/types/BadgeColorType'
 import Badge from '@/components/Badge/Badge'
 import Link from 'next/link'
 import TopicType from '@/types/TopicType'
@@ -50,7 +50,7 @@ const CardTopic4: FC<CardTopic4Props> = ({ className = '', topic, index }) => {
                 <div>
                     {index && (
                         <Badge
-                            color={topic.color.toLowerCase() as TwMainColor}
+                            color={topic.color.toLowerCase() as BadgeColor}
                             name={index}
                             href={`/topic/${topic.name}/${topic.id}`}
                             className="absolute top-3 left-3"

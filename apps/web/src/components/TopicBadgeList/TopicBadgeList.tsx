@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import Badge from '@/components/Badge/Badge'
-import { TwMainColor } from '@/data/types'
+import { BadgeColor } from '@/types/BadgeColorType'
 import PostTopicType from '@/types/PostTopicType'
 
 export interface TopicBadgeListProps {
@@ -50,7 +50,7 @@ const TopicBadgeList: FC<TopicBadgeListProps> = ({
                     href={`/topic/${encodeURIComponent(
                         item.topic.name.trim()
                     )}/${item.topic.id}`}
-                    color={item.topic.color.toLowerCase() as TwMainColor}
+                    color={item.topic.color.toLowerCase() as BadgeColor}
                 />
             ))}
         </div>
@@ -58,16 +58,3 @@ const TopicBadgeList: FC<TopicBadgeListProps> = ({
 }
 
 export default TopicBadgeList
-
-{
-    /* <div
-    className={`TopicBadgeList ${className}`}
-    data-nc-id="TopicBadgeList"
->
-    {loading ? (
-        // Render skeleton if loading is true
-        Array.from({ length: 5 }).map((_, index) => (
-            <Skeleton key={index} width={100} height={30} className={itemClass} />
-        ))
-    ) : ( */
-}

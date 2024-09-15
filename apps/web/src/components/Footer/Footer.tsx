@@ -1,6 +1,6 @@
 import React from 'react'
 import Logo from '@/components/Logo/Logo'
-import { CustomLink } from '@/data/types'
+import { CustomLink } from '@/types/CustomLink'
 import Link from 'next/link'
 
 export interface WidgetFooterMenu {

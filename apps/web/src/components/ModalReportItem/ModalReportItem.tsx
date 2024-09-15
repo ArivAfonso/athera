@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC, useEffect, useRef, useState } from 'react'
-import NcModal from '@/components/NcModal/NcModal'
+import Modal from '@/components/Modal/Modal'
 import Textarea from '@/components/Textarea/Textarea'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import ButtonSecondary from '@/components/Button/ButtonSecondary'
@@ -205,7 +205,7 @@ const ModalReportItem: FC<ModalReportItemProps> = ({
     }
 
     return (
-        <NcModal
+        <Modal
             isOpenProp={show}
             onCloseModal={onCloseModalReportItem}
             contentExtraClass="max-w-screen-md"

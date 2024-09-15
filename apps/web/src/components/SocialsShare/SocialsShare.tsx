@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { NcDropDownItem } from '../NcDropDown/NcDropDown'
+import { DropDownItem } from '../DropDown/DropDown'
 
 export interface SocialsShareProps {
     className?: string
@@ -9,7 +9,7 @@ export interface SocialsShareProps {
 
 export type TSocialShareItem = 'Facebook' | 'Twitter' | 'Linkedin' | 'WhatsApp'
 
-interface SocialShareType extends NcDropDownItem<TSocialShareItem> {}
+interface SocialShareType extends DropDownItem<TSocialShareItem> {}
 
 export const SOCIALS_DATA: SocialShareType[] = [
     {

@@ -8,7 +8,7 @@ import discordSvg from '@/images/Discord.svg'
 import xSvg from '@/images/X.svg'
 import Input from '@/components/Input/Input'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import NcLink from '@/components/NcLink/NcLink'
+import MyLink from '@/components/MyLink/MyLink'
 import Heading2 from '@/components/Heading/Heading2'
 import Image from 'next/image'
 import { createClient } from '@/utils/supabase/client'
@@ -152,12 +152,12 @@ const PageLogin = ({}) => {
                     <label className="block">
                         <span className="flex justify-between items-center text-neutral-800 dark:text-neutral-200">
                             Password
-                            <NcLink
+                            <MyLink
                                 href="/forgot-pass"
                                 className="text-sm underline"
                             >
                                 Forgot password?
-                            </NcLink>
+                            </MyLink>
                         </span>
                         <Controller
                             name="password" // Field name
@@ -181,7 +181,7 @@ const PageLogin = ({}) => {
                 {errorMsg && <Alert message={errorMsg} type="danger" />}
                 {/* ==== */}
                 <span className="block text-center text-neutral-700 dark:text-neutral-300">
-                    New user? <NcLink href="/signup">Create an account</NcLink>
+                    New user? <MyLink href="/signup">Create an account</MyLink>
                 </span>
             </div>
         </>

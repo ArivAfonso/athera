@@ -3,12 +3,12 @@ import { createClient } from '@/utils/supabase/client'
 import toast from 'react-hot-toast'
 import Alert from '../Alert/Alert'
 
-export interface NcBookmarkProps {
+export interface BookmarkBtnProps {
     containerClassName?: string
     postId: string
 }
 
-const NcBookmark: FC<NcBookmarkProps> = ({
+const BookmarkBtn: FC<BookmarkBtnProps> = ({
     containerClassName = 'h-8 w-8 bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-700',
     postId = '',
 }) => {
@@ -112,7 +112,7 @@ const NcBookmark: FC<NcBookmarkProps> = ({
 
     return (
         <button
-            className={`NcBookmark relative rounded-full flex items-center justify-center ${containerClassName}`}
+            className={`BookmarkBtn relative rounded-full flex items-center justify-center ${containerClassName}`}
             title="Save to reading list"
             onClick={toggleBookmark}
         >
@@ -134,4 +134,4 @@ const NcBookmark: FC<NcBookmarkProps> = ({
     )
 }
 
-export default NcBookmark
+export default BookmarkBtn

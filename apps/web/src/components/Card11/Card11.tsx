@@ -11,7 +11,7 @@ import PostBookmark from '../PostBookmark/PostBookmark'
 import stringToSlug from '@/utils/stringToSlug'
 import Tilt from 'react-parallax-tilt'
 import { getCookie } from 'cookies-next'
-import NcDropDown, { NcDropDownItem } from '@/components/NcDropDown/NcDropDown'
+import DropDown, { DropDownItem } from '@/components/DropDown/DropDown'
 import ModalReportItem from '../ModalReportItem/ModalReportItem'
 import ModalHidePost from '../PostActionDropdown/ModalHidePost'
 
@@ -139,7 +139,7 @@ const Card11: FC<Card11Props> = ({
             >
                 {isHover && (
                     <div className="absolute -right-1 -top-1">
-                        <NcDropDown
+                        <DropDown
                             className={`p-2 text-white flex items-center justify-center rounded-lg hover:text-neutral-200`}
                             data={actions}
                             panelMenusClass="origin-right -right-1"

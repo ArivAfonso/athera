@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import PostType from '@/types/PostType'
 import stringToSlug from '@/utils/stringToSlug'
-import NcDropDown from '../NcDropDown/NcDropDown'
+import DropDown from '../DropDown/DropDown'
 import ModalReportItem from '../ModalReportItem/ModalReportItem'
 import ModalHidePost from '../PostActionDropdown/ModalHidePost'
 
@@ -146,7 +146,7 @@ const Card9: FC<Card9Props> = ({
                     className="relative pl-[44px] pr-2"
                     postId={post.id}
                 />
-                <NcDropDown
+                <DropDown
                     className={`text-neutral-500 dark:text-neutral-400 flex items-center justify-center rounded-full h-8 w-8 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700`}
                     triggerIconClass={'h-5 w-5'}
                     data={actions}

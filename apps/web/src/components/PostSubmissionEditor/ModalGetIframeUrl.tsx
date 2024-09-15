@@ -2,7 +2,7 @@ import ButtonPrimary from '../Button/ButtonPrimary'
 import ButtonSecondary from '../Button/ButtonSecondary'
 import Input from '../Input/Input'
 import Label from '../Label/Label'
-import NcModal from '../NcModal/NcModal'
+import Modal from '../Modal/Modal'
 import React, { FC, useRef } from 'react'
 
 interface Props {
@@ -44,7 +44,7 @@ const ModalGetIframeUrl: FC<Props> = ({ show, onCloseModal, onSubmit }) => {
     }
 
     return (
-        <NcModal
+        <Modal
             renderTrigger={() => null}
             isOpenProp={show}
             renderContent={renderContent}

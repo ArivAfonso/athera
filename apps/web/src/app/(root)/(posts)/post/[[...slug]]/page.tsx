@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react'
-import NcImage from '@/components/NcImage/NcImage'
+import Img from '@/components/Img/Img'
 import SingleHeader from '@/app/(root)/(posts)/SingleHeader'
 import SingleContent from '../../SingleContent'
 import SingleRelatedPosts from '../../SingleRelatedPosts'
@@ -156,7 +156,7 @@ const PageSingle = async (context: any) => {
                         />
                     </div>
                 </header>
-                <NcImage
+                <Img
                     alt="single"
                     containerClassName="container my-10 sm:my-12 flex justify-center items-center"
                     className="rounded-xl"

@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import NcBookmark from '../NcBookmark/NcBookmark'
+import BookmarkBtn from '../BookmarkBtn/BookmarkBtn'
 
 export interface PostBookmarkProps {
     className?: string
@@ -24,7 +24,7 @@ const PostBookmark: FC<PostBookmarkProps> = ({
                 <span>{readingTime} min read</span>
             )}
 
-            <NcBookmark
+            <BookmarkBtn
                 // bookmarked={isBookmarked}
                 postId={postId}
                 containerClassName={bookmarkClass}

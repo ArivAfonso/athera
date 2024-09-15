@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC, useEffect, useRef, useState } from 'react'
-import NcModal from '@/components/NcModal/NcModal'
+import Modal from '@/components/Modal/Modal'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import ButtonThird from '@/components/Button/ButtonThird'
 import { useForm } from 'react-hook-form'
@@ -172,7 +172,7 @@ const ModalDeletePost: FC<ModalDeletePostProps> = ({
     }
 
     return (
-        <NcModal
+        <Modal
             isOpenProp={show}
             onCloseModal={onCloseModalDeletePost}
             contentExtraClass="max-w-screen-sm"

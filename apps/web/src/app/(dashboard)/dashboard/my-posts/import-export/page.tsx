@@ -9,10 +9,10 @@ import wordpressImg from '@/images/Wordpress.png'
 import substackImg from '@/images/Substack.png'
 import joomlaImg from '@/images/Joomla.png'
 import bloggerImg from '@/images/Blogger.png'
-import NcImage from '@/components/NcImage/NcImage'
+import Img from '@/components/Img/Img'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import ButtonSecondary from '@/components/Button/ButtonSecondary'
-import NcModal from '@/components/NcModal/NcModal'
+import Modal from '@/components/Modal/Modal'
 import DevModal from '@/components/ImportModals/DevModal'
 import WordPressModal from '@/components/ImportModals/WordPressModal'
 import { Hash } from 'crypto'
@@ -51,7 +51,7 @@ const PageConnectWallet = ({}) => {
                 </span>
 
                 <div className="p-5 border bg-white dark:bg-neutral-300 border-neutral-200 dark:border-neutral-700 rounded-xl flex items-center justify-center mt-4">
-                    {/* <NcImage className="w-40" alt="" src={QrCodeImg} /> */}
+                    {/* <Img className="w-40" alt="" src={QrCodeImg} /> */}
                 </div>
 
                 <div className="mt-5 space-x-3">
@@ -94,7 +94,7 @@ const PageConnectWallet = ({}) => {
                 dark:text-neutral-100 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
                                 >
                                     <div className="flex items-center w-full">
-                                        <NcImage
+                                        <Img
                                             src={plan.img}
                                             alt=""
                                             containerClassName="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-2xl overflow-hidden"

@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import NcImage from '@/components/NcImage/NcImage'
+import Img from '@/components/Img/Img'
 import Avatar from '@/components/Avatar/Avatar'
 import Link from 'next/link'
 import PostType from '@/types/PostType'
@@ -35,7 +35,7 @@ const Card14: FC<Card14Props> = ({
                 href={`/post/${stringToSlug(post.title)}/${post.id}`}
                 className={`flex items-start relative w-full ${ratio}`}
             >
-                <NcImage
+                <Img
                     alt="post"
                     containerClassName="absolute inset-0 overflow-hidden"
                     fill

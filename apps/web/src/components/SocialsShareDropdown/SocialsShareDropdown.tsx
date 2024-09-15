@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react'
-import NcDropDown, { NcDropDownItem } from '../NcDropDown/NcDropDown'
+import DropDown, { DropDownItem } from '../DropDown/DropDown'
 import { SOCIALS_DATA, TSocialShareItem } from '../SocialsShare/SocialsShare'
 import { useRouter } from 'next/navigation'
 
@@ -13,7 +13,7 @@ export interface Props {
 
 type TDropDownShareItem = TSocialShareItem | 'copylink'
 
-const initActions: NcDropDownItem<TDropDownShareItem>[] = [
+const initActions: DropDownItem<TDropDownShareItem>[] = [
     {
         id: 'copylink',
         name: 'Copy link',
@@ -42,7 +42,7 @@ const SocialsShareDropdown: FC<Props> = ({
 
     const link = currentLink || ''
 
-    const handleClick = (item: NcDropDownItem<TDropDownShareItem>) => {
+    const handleClick = (item: DropDownItem<TDropDownShareItem>) => {
         if (item.id === 'copylink') {
             navigator.clipboard.writeText(link)
             return
@@ -65,7 +65,7 @@ const SocialsShareDropdown: FC<Props> = ({
 
     return (
         <div className={`SocialsShare flex-shrink-0 ${className}`}>
-            <NcDropDown
+            <DropDown
                 className={`flex-shrink-0 flex items-center justify-center focus:outline-none text-neutral-700 dark:text-neutral-200 rounded-full ${sizeClass} ${bgClass}`}
                 renderTrigger={() => (
                     <svg

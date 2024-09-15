@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
-import NcModal from '@/components/NcModal/NcModal'
+import Modal from '@/components/Modal/Modal'
 import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
 import AuthorType from '@/types/AuthorType'
 import { createClient } from '@/utils/supabase/client'
@@ -120,7 +120,7 @@ const PostOptionsBtn: FC<FollowButtonProps> = ({
 
     return (
         <>
-            <NcModal
+            <Modal
                 isOpenProp={show}
                 containerClassName="flex"
                 contentPaddingClass=""

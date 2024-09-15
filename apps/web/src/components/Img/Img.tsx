@@ -1,11 +1,11 @@
 import React, { FC } from 'react'
 import Image, { ImageProps } from 'next/image'
 
-export interface NcImageProps extends ImageProps {
+export interface ImgProps extends ImageProps {
     containerClassName?: string
 }
 
-const NcImage: FC<NcImageProps> = ({
+const Img: FC<ImgProps> = ({
     containerClassName = '',
     alt = 'nc-imgs',
     className = 'object-cover w-full h-full',
@@ -19,4 +19,4 @@ const NcImage: FC<NcImageProps> = ({
     )
 }
 
-export default NcImage
+export default Img

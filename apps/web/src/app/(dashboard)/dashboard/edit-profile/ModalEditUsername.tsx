@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
-import NcModal from '@/components/NcModal/NcModal'
+import Modal from '@/components/Modal/Modal'
 import { useForm } from 'react-hook-form'
 import { createClient } from '@/utils/supabase/client'
 import Input from '@/components/Input/Input'
@@ -154,7 +154,7 @@ const ModalDeletePost: FC<ModalChangeUsernameProps> = ({
     }
 
     return (
-        <NcModal
+        <Modal
             isOpenProp={show}
             onCloseModal={onCloseModal}
             contentExtraClass="max-w-screen-sm"

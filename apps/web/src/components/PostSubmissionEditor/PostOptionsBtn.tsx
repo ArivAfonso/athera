@@ -7,7 +7,7 @@ import { debounce } from 'lodash'
 import React, { FC, Fragment, useState } from 'react'
 import ButtonThird from '@/components/Button/ButtonThird'
 import Button from '@/components/Button/Button'
-import NcModal from '@/components/NcModal/NcModal'
+import Modal from '@/components/Modal/Modal'
 import { Cog8ToothIcon } from '@heroicons/react/24/outline'
 import DateTimepicker from '@/components/DateTimePicker/DateTimepicker'
 import dayjs from 'dayjs'
@@ -368,7 +368,7 @@ const PostOptionsBtn: FC<PostOptionsBtnProps> = ({ onSubmit, defaultData }) => {
 
     return (
         <>
-            <NcModal
+            <Modal
                 containerClassName="flex"
                 contentPaddingClass=""
                 contentExtraClass="max-w-screen-md"

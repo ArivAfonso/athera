@@ -4,8 +4,8 @@ import stringToSlug from '@/utils/stringToSlug'
 import { PencilSquareIcon } from '@heroicons/react/24/solid'
 import { TrashIcon } from 'lucide-react'
 import router from 'next/router'
-import NcImage from '../NcImage/NcImage'
-import PlaceIcon from '../NcImage/PlaceIcon'
+import Img from '../Img/Img'
+import PlaceIcon from '../Img/PlaceIcon'
 import TopicBadgeList from '../TopicBadgeList/TopicBadgeList'
 import Link from 'next/link'
 import Badge from '../Badge/Badge'
@@ -111,7 +111,7 @@ function DraftsTable({
                                     <div className="h-12 w-12 sm:h-16 sm:w-16 relative flex-shrink-0">
                                         {draft.image ? (
                                             <>
-                                                <NcImage
+                                                <Img
                                                     src={draft.image}
                                                     alt={draft.title}
                                                     className="rounded-md object-cover w-full h-full"

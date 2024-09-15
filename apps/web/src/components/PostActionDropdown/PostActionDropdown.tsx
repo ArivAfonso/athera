@@ -2,7 +2,7 @@
 
 import React, { FC, useEffect, useState } from 'react'
 import twFocusClass from '@/utils/twFocusClass'
-import NcDropDown, { NcDropDownItem } from '@/components/NcDropDown/NcDropDown'
+import DropDown, { DropDownItem } from '@/components/DropDown/DropDown'
 import ModalReportItem from '@/components/ModalReportItem/ModalReportItem'
 import { useRouter } from 'next/navigation'
 import ModalHidePost from './ModalHidePost'
@@ -28,7 +28,7 @@ const PostActionDropdown: FC<PostActionDropdownProps> = ({
     author,
     id,
 }) => {
-    let [actions, setActions] = useState<NcDropDownItem[]>([])
+    let [actions, setActions] = useState<DropDownItem[]>([])
 
     useEffect(() => {
         async function setOptions() {
@@ -126,7 +126,7 @@ const PostActionDropdown: FC<PostActionDropdownProps> = ({
             })
         }
         return (
-            <NcDropDown
+            <DropDown
                 className={`text-neutral-500 dark:text-neutral-400 flex items-center justify-center rounded-full  ${containerClassName} ${twFocusClass()}`}
                 triggerIconClass={iconClass}
                 data={actions}

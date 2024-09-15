@@ -3,7 +3,7 @@ import ButtonSecondary from '../Button/ButtonSecondary'
 import ButtonThird from '../Button/ButtonThird'
 import Input from '../Input/Input'
 import Label from '../Label/Label'
-import NcModal from '../NcModal/NcModal'
+import Modal from '../Modal/Modal'
 import React, { FC, useEffect, useRef, useState } from 'react'
 
 interface ModalGetLinkProps {
@@ -101,7 +101,7 @@ const ModalGetLink: FC<ModalGetLinkProps> = ({
     }
 
     return (
-        <NcModal
+        <Modal
             contentPaddingClass=""
             isOpenProp={isOpen}
             onCloseModal={closeModal}

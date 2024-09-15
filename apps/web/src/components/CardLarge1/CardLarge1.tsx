@@ -1,5 +1,5 @@
 import PostBookmark from '@/components/PostBookmark/PostBookmark'
-import NcImage from '@/components/NcImage/NcImage'
+import Img from '@/components/Img/Img'
 import NextPrev from '@/components/NextPrev/NextPrev'
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
 import React, { FC } from 'react'
@@ -85,7 +85,7 @@ const CardLarge1: FC<CardLarge1Props> = ({
                     href={`/post/${post.title}/${post.id}`}
                     className="CardLarge1__right block relative"
                 >
-                    <NcImage
+                    <Img
                         containerClassName="aspect-w-16 aspect-h-12 sm:aspect-h-9 md:aspect-h-14 lg:aspect-h-10 2xl:aspect-h-9 relative"
                         className="absolute inset-0 object-cover rounded-3xl"
                         src={imageUrl}

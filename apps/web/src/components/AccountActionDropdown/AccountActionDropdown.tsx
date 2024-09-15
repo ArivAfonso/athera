@@ -2,7 +2,7 @@
 
 import React, { FC, useState } from 'react'
 import twFocusClass from '@/utils/twFocusClass'
-import NcDropDown, { NcDropDownItem } from '@/components/NcDropDown/NcDropDown'
+import DropDown, { DropDownItem } from '@/components/DropDown/DropDown'
 import ModalReportItem from '@/components/ModalReportItem/ModalReportItem'
 import ModalHideAuthor from './ModalHideAuthor'
 import AuthorType from '@/types/AuthorType'
@@ -20,7 +20,7 @@ const AccountActionDropdown: FC<AccountActionDropdownProps> = ({
     dropdownPositon = 'down',
     author,
 }) => {
-    let actions: NcDropDownItem[] = [
+    let actions: DropDownItem[] = [
         {
             id: 'copylink',
             name: 'Copy link',
@@ -89,7 +89,7 @@ const AccountActionDropdown: FC<AccountActionDropdownProps> = ({
             })
         }
         return (
-            <NcDropDown
+            <DropDown
                 className={`text-neutral-500 dark:text-neutral-400 flex items-center justify-center rounded-full ${containerClassName} ${twFocusClass()}`}
                 triggerIconClass={iconClass}
                 data={actions}

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC } from 'react'
-import NcModal from '@/components/NcModal/NcModal'
+import Modal from '@/components/Modal/Modal'
 import Tag from '@/components/Tag/Tag'
 import { TaxonomyType } from '@/data/types'
 import Button from '@/components/Button/Button'
@@ -24,7 +24,7 @@ const ModalTags: FC<ModalTagsProps> = ({ tags }) => {
 
     return (
         <div className="ModalTags">
-            <NcModal
+            <Modal
                 contentExtraClass="max-w-screen-md"
                 renderTrigger={(openModal) => (
                     <Button

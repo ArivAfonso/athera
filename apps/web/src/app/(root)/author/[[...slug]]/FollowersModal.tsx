@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
-import NcModal from '@/components/NcModal/NcModal'
+import Modal from '@/components/Modal/Modal'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
 import AuthorType from '@/types/AuthorType'
@@ -128,7 +128,7 @@ const PostOptionsBtn: FC<FollowButtonProps> = ({
 
     return (
         <>
-            <NcModal
+            <Modal
                 isOpenProp={show}
                 containerClassName="flex"
                 contentPaddingClass=""

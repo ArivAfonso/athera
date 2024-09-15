@@ -1,6 +1,6 @@
 import React, { FC, useRef, useState } from 'react'
 import Avatar from '@/components/Avatar/Avatar'
-import NcDropDown, { NcDropDownItem } from '@/components/NcDropDown/NcDropDown'
+import DropDown, { DropDownItem } from '@/components/DropDown/DropDown'
 import twFocusClass from '@/utils/twFocusClass'
 import ModalEditComment from './ModalEditComment'
 import ModalDeleteComment from './ModalDeleteComment'
@@ -39,7 +39,7 @@ const CommentCard: FC<CommentCardProps> = ({
 
     const isCommenterCurrentUser = commenter.id === currentUserID
 
-    const actions: NcDropDownItem[] = [
+    const actions: DropDownItem[] = [
         {
             id: 'reply',
             name: 'Reply',
@@ -115,7 +115,7 @@ const CommentCard: FC<CommentCardProps> = ({
         closeModalDeleteComment()
     }
 
-    const hanldeClickDropDown = async (item: NcDropDownItem) => {
+    const hanldeClickDropDown = async (item: DropDownItem) => {
         if (item.id === 'reply') {
             return openReplyForm()
         }
@@ -163,7 +163,7 @@ const CommentCard: FC<CommentCardProps> = ({
                     {/* AUTHOR INFOR */}
                     <div className="relative flex items-center pr-6">
                         <div className="absolute -right-3 -top-3">
-                            <NcDropDown
+                            <DropDown
                                 className={`p-2 text-neutral-500 flex items-center justify-center rounded-lg hover:text-neutral-800 dark:hover:text-neutral-200 sm:hover:bg-neutral-100 dark:hover:bg-neutral-800 ${twFocusClass()}`}
                                 data={actions}
                                 onClick={hanldeClickDropDown}

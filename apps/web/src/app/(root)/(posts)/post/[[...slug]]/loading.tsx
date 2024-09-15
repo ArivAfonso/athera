@@ -58,7 +58,7 @@ const BlogPostSkeleton = () => {
                                             <div className="px-1">
                                                 <div className="border-l border-neutral-200 dark:border-neutral-700 h-6"></div>
                                             </div>
-                                            {/* Skeleton for NcBookmark */}
+                                            {/* Skeleton for BookmarkBtn */}
                                             <div className="h-9 w-9 bg-gray-300 dark:bg-gray-600 rounded-3xl animate-pulse"></div>
                                             {/* Skeleton for SocialsShareDropdown */}
                                             <div className="h-9 w-9 bg-gray-300 dark:bg-gray-600 rounded-3xl animate-pulse"></div>

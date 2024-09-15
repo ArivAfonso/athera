@@ -2,7 +2,7 @@
 
 import Heading2 from '@/components/Heading/Heading2'
 import Input from '@/components/Input/Input'
-import NcLink from '@/components/NcLink/NcLink'
+import MyLink from '@/components/MyLink/MyLink'
 import Textarea from '@/components/Textarea/Textarea'
 import { Controller, useForm } from 'react-hook-form'
 import Image from 'next/image'

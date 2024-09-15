@@ -32,7 +32,7 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { Twitter } from '@/components/PostSubmissionEditor/extensions/hypermedia/nodes/twitter/twitter'
 import { ScaleIcon } from 'lucide-react'
 import TableContentAnchor from './TableContentAnchor'
-import NcBookmark from '@/components/NcBookmark/NcBookmark'
+import BookmarkBtn from '@/components/BookmarkBtn/BookmarkBtn'
 import CustomHeading from '@/components/PostSubmissionEditor/extensions/headings/CustomHeading'
 
 export interface SingleContentProps {
@@ -221,7 +221,7 @@ const SingleContent: FC<SingleContentProps> = ({
                             commentCount={commentCount}
                         />
                         <div className="h-4 border-s border-neutral-200 dark:border-neutral-700"></div>
-                        <NcBookmark postId={id} />
+                        <BookmarkBtn postId={id} />
                         <div className="h-4 border-s border-neutral-200 dark:border-neutral-700"></div>
 
                         <button

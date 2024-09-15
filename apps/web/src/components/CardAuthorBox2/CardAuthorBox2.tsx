@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import Avatar from '@/components/Avatar/Avatar'
-import NcImage from '@/components/NcImage/NcImage'
+import Img from '@/components/Img/Img'
 import Link from 'next/link'
 import AuthorType from '@/types/AuthorType'
 
@@ -21,7 +21,7 @@ const CardAuthorBox2: FC<CardAuthorBox2Props> = ({
         >
             <div className="relative">
                 <div>
-                    <NcImage
+                    <Img
                         alt="author"
                         containerClassName="flex aspect-w-7 aspect-h-5 w-full h-0"
                         src={author.avatar || ''}

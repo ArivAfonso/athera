@@ -26,11 +26,11 @@ test.describe('Post Page', () => {
             'Unlike'
         )
 
-        //Click the NcBookmarkButton button
-        await page.locator('.NcBookmark').click()
+        //Click the BookmarkBtnButton button
+        await page.locator('.BookmarkBtn').click()
 
         // Check if the post is bookmarked (svg icon should be filled)
-        expect(page.locator('.NcBookmark svg').getAttribute('fill')).toBe(
+        expect(page.locator('.BookmarkBtn svg').getAttribute('fill')).toBe(
             'currentColor'
         )
 

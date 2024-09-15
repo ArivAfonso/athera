@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/24/outline'
 import VerifyIcon from '@/components/VerifyIcon'
 import FollowButton from '@/components/FollowButton'
-import NcDropDown from '@/components/NcDropDown/NcDropDown'
+import DropDown from '@/components/DropDown/DropDown'
 import { SOCIALS_DATA } from '@/components/SocialsShare/SocialsShare'
 import AccountActionDropdown from '@/components/AccountActionDropdown/AccountActionDropdown'
 import Image from 'next/image'
@@ -19,7 +19,7 @@ import AuthorType from '@/types/AuthorType'
 import { createClient } from '@/utils/supabase/client'
 import Card6 from '@/components/Card6/Card6'
 import Empty from '@/components/Empty'
-import NcImage from '@/components/NcImage/NcImage'
+import Img from '@/components/Img/Img'
 import Loading from './loading'
 import FollowModal from './FollowersModal'
 import PostsSection from '@/components/PostsSection/PostsSection'
@@ -191,7 +191,7 @@ const PageAuthor = (context: any) => {
                         <div className="w-full">
                             {data.background && (
                                 <div className="relative w-full pt-16 h-40 md:h-60 2xl:h-72">
-                                    <NcImage
+                                    <Img
                                         alt=""
                                         containerClassName="absolute inset-0"
                                         sizes="(max-width: 1280px) 100vw, 1536px"
@@ -341,7 +341,7 @@ const PageAuthor = (context: any) => {
                                         />
 
                                         <div className="mx-2">
-                                            <NcDropDown
+                                            <DropDown
                                                 className="flex-shrink-0 flex items-center justify-center focus:outline-none h-10 w-10 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-full"
                                                 renderTrigger={() => (
                                                     <ShareIcon className="h-5 w-5" />

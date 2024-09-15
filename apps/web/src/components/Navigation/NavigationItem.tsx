@@ -5,7 +5,7 @@ import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import React, { FC, Fragment, useState } from 'react'
 import { Route } from '@/routers/types'
 import Link from 'next/link'
-import NcImage from '../NcImage/NcImage'
+import Img from '../Img/Img'
 import { HomeIcon } from '@heroicons/react/24/outline'
 
 export interface NavItemType {

@@ -6,7 +6,7 @@ import { Fragment } from 'react'
 import { MEGAMENU_TEMPLATES } from '@/data/navigation'
 import { NavItemType } from '@/components/Navigation/NavigationItem'
 import Link from 'next/link'
-import NcImage from '../NcImage/NcImage'
+import Img from '../Img/Img'
 import { Route } from '@/routers/types'
 
 export default function TemplatesDropdown() {

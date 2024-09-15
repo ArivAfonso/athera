@@ -3,7 +3,7 @@ import ButtonPrimary from '../Button/ButtonPrimary'
 import ButtonThird from '../Button/ButtonThird'
 import Input from '../Input/Input'
 import Label from '../Label/Label'
-import NcModal from '../NcModal/NcModal'
+import Modal from '../Modal/Modal'
 import React, { FC, useState } from 'react'
 
 import { EditorItemImageAttrs } from './MenuBar'
@@ -178,7 +178,7 @@ const MenuItemImage: FC<MenuItemImageProps> = ({
             <div className="inline-flex" onClick={openModal}>
                 {children}
             </div>
-            <NcModal
+            <Modal
                 contentPaddingClass=""
                 isOpenProp={isOpen}
                 onCloseModal={closeModal}

@@ -3,7 +3,7 @@
 import stringToSlug from '@/utils/stringToSlug'
 import { SquarePenIcon, Trash2Icon } from 'lucide-react'
 import { ReactNode, useEffect, useRef, useState } from 'react'
-import NcImage from '../NcImage/NcImage'
+import Img from '../Img/Img'
 import TopicBadgeList from '../TopicBadgeList/TopicBadgeList'
 import Link from 'next/link'
 import Badge from '../Badge/Badge'
@@ -108,7 +108,7 @@ function PostsTable({ posts, onDeletePost, postFn }: PostsTableProps) {
                                     className="flex items-center"
                                 >
                                     <div className="h-12 w-12 sm:h-16 sm:w-16 relative flex-shrink-0">
-                                        <NcImage
+                                        <Img
                                             src={post.image || ''}
                                             alt={post.title}
                                             className="rounded-md object-cover w-full h-full"

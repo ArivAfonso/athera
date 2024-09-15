@@ -1,7 +1,7 @@
 'use client'
 
 import React, { ReactNode, useEffect, useState } from 'react'
-import NcImage from '@/components/NcImage/NcImage'
+import Img from '@/components/Img/Img'
 import { createClient } from '@/utils/supabase/client'
 import ModalDeletePost from '../ModalDeletePost'
 import PostType from '@/types/PostType'

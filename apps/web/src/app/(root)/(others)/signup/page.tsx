@@ -5,7 +5,7 @@ import { useState } from 'react'
 import twitterSvg from '@/images/Twitter.svg'
 import googleSvg from '@/images/Google.svg'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import NcLink from '@/components/NcLink/NcLink'
+import MyLink from '@/components/MyLink/MyLink'
 import Heading2 from '@/components/Heading/Heading2'
 import Image from 'next/image'
 import { createClient } from '@/utils/supabase/client'
@@ -152,7 +152,7 @@ const PageSignUp = ({}) => {
 
                         <span className="block text-center text-neutral-700 dark:text-neutral-500">
                             Already have an account? {` `}
-                            <NcLink href="/login">Sign in</NcLink>
+                            <MyLink href="/login">Sign in</MyLink>
                         </span>
                         {usernameExists && (
                             <Alert
@@ -304,7 +304,7 @@ const PageSignUp = ({}) => {
                         {/* ==== */}
                         <span className="block text-center text-neutral-700 dark:text-neutral-500">
                             Already have an account? {` `}
-                            <NcLink href="/login">Sign in</NcLink>
+                            <MyLink href="/login">Sign in</MyLink>
                         </span>
                     </div>
                 </>

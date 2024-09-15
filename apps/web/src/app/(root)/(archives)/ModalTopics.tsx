@@ -3,7 +3,7 @@
 import React, { FC } from 'react'
 import { TaxonomyType } from '@/data/types'
 import CardTopic1 from '@/components/CardTopic1/CardTopic1'
-import NcModal from '@/components/NcModal/NcModal'
+import Modal from '@/components/Modal/Modal'
 import Button from '@/components/Button/Button'
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import TopicType from '@/types/TopicType'
@@ -25,7 +25,7 @@ const ModalTopics: FC<ModalTopicsProps> = ({ topics }) => {
 
     return (
         <div className="ModalTopics">
-            <NcModal
+            <Modal
                 renderTrigger={(openModal) => (
                     <Button
                         pattern="third"

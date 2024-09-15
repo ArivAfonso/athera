@@ -5,7 +5,7 @@ import Step3Img from '@/images/Step_3.png'
 import Step4Img from '@/images/Step_4.png'
 import DotsImg from '@/images/Dots.svg'
 import Image from 'next/image'
-import NcImage from '../NcImage/NcImage'
+import Img from '../Img/Img'
 import Badge from '../Badge/Badge'
 import Heading from '../Heading/Heading'
 
@@ -64,7 +64,7 @@ const SectionImport: FC<SectionHowItWorkProps> = ({
                         key={item.id}
                         className="relative flex flex-col items-center max-w-xs mx-auto"
                     >
-                        <NcImage
+                        <Img
                             containerClassName="mb-4 sm:mb-10 max-w-[140px] mx-auto"
                             className="rounded-3xl"
                             src={item.img}

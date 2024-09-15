@@ -5,7 +5,7 @@ import Button from '../Button/Button'
 import ButtonClose from '../ButtonClose/ButtonClose'
 import ButtonPrimary from '../Button/ButtonPrimary'
 
-export interface NcModalProps {
+export interface ModalProps {
     renderContent: (closeModal: () => void) => ReactNode
     renderFooter?: (closeModal: () => void) => ReactNode
     renderTrigger?: (openModal: () => void) => ReactNode
@@ -21,7 +21,7 @@ export interface NcModalProps {
     initialFocusRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement>
 }
 
-const NcModal: FC<NcModalProps> = ({
+const Modal: FC<ModalProps> = ({
     renderTrigger,
     renderContent,
     renderFooter,
@@ -149,4 +149,4 @@ const NcModal: FC<NcModalProps> = ({
     )
 }
 
-export default NcModal
+export default Modal

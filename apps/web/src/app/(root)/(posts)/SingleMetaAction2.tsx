@@ -3,7 +3,7 @@
 import React, { FC } from 'react'
 import PostActionDropdown from '@/components/PostActionDropdown/PostActionDropdown'
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
-import NcBookmark from '@/components/NcBookmark/NcBookmark'
+import BookmarkBtn from '@/components/BookmarkBtn/BookmarkBtn'
 import SocialsShareDropdown from '@/components/SocialsShareDropdown/SocialsShareDropdown'
 import AuthorType from '@/types/AuthorType'
 
@@ -42,7 +42,7 @@ const SingleMetaAction2: FC<SingleMetaAction2Props> = ({
                     <div className="border-l border-neutral-200 dark:border-neutral-700 h-6" />
                 </div>
 
-                <NcBookmark
+                <BookmarkBtn
                     postId={id}
                     containerClassName="h-9 w-9 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-200"
                 />

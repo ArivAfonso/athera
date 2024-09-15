@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Input from '@/components/Input/Input'
 import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import NcLink from '@/components/NcLink/NcLink'
+import MyLink from '@/components/MyLink/MyLink'
 import Heading2 from '@/components/Heading/Heading2'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -122,9 +122,9 @@ const PageForgotPass = ({}) => {
                 )}
 
                 <span className="block text-center text-neutral-700 dark:text-neutral-300">
-                    Go back for <NcLink href="/login">Sign in</NcLink>
+                    Go back for <MyLink href="/login">Sign in</MyLink>
                     {' / '}
-                    <NcLink href="/signup">Sign up</NcLink>
+                    <MyLink href="/signup">Sign up</MyLink>
                 </span>
             </div>
         </>

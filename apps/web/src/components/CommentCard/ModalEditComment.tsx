@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC, useEffect, useRef } from 'react'
-import NcModal from '@/components/NcModal/NcModal'
+import Modal from '@/components/Modal/Modal'
 import EditCommentForm from './EditCommentForm'
 
 export interface ModalEditCommentProps {
@@ -56,7 +56,7 @@ const ModalEditComment: FC<ModalEditCommentProps> = ({
     }
 
     return (
-        <NcModal
+        <Modal
             isOpenProp={show}
             onCloseModal={onCloseModalEditComment}
             contentExtraClass="max-w-screen-md"

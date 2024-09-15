@@ -5,7 +5,7 @@ import { Menu, Transition } from '@headlessui/react'
 import Link from 'next/link'
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline'
 
-export interface NcDropDownItem<T = string> {
+export interface DropDownItem<T = string> {
     id: T
     name: string
     icon: string
@@ -13,19 +13,19 @@ export interface NcDropDownItem<T = string> {
     isTargetBlank?: boolean
 }
 
-export interface NcDropDownProps<T> {
+export interface DropDownProps<T> {
     className?: string
     panelMenusClass?: string
     triggerIconClass?: string
-    data: NcDropDownItem<T>[]
+    data: DropDownItem<T>[]
     renderTrigger?: () => ReactNode
-    renderItem?: (item: NcDropDownItem<T>) => JSX.Element
+    renderItem?: (item: DropDownItem<T>) => JSX.Element
     title?: string
-    onClick: (item: NcDropDownItem<T>) => void
+    onClick: (item: DropDownItem<T>) => void
     dropdownItemsClass?: string
 }
 
-function NcDropDown<T>({
+function DropDown<T>({
     className = `h-8 w-8 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center`,
     triggerIconClass = 'h-6 w-6',
     panelMenusClass = 'origin-top-right -top-1',
@@ -35,7 +35,7 @@ function NcDropDown<T>({
     renderItem,
     data,
     onClick,
-}: NcDropDownProps<T>) {
+}: DropDownProps<T>) {
     return (
         <Menu as="div" className="relative inline-block text-left">
             <Menu.Button className={className} title={title}>
@@ -105,4 +105,4 @@ function NcDropDown<T>({
     )
 }
 
-export default NcDropDown
+export default DropDown

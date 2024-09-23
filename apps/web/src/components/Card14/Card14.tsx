@@ -1,6 +1,5 @@
 import React, { FC } from 'react'
-import Img from '@/components/Img/Img'
-import Avatar from '@/components/Avatar/Avatar'
+import { Avatar, Img } from 'ui'
 import Link from 'next/link'
 import PostType from '@/types/PostType'
 import stringToSlug from '@/utils/stringToSlug'

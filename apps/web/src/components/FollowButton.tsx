@@ -1,7 +1,6 @@
 import { PlusCircleIcon } from '@heroicons/react/24/solid'
 import React, { FC, useEffect } from 'react'
-import Button, { ButtonProps } from './Button/Button'
-import ButtonPrimary from './Button/ButtonPrimary'
+import { ButtonPrimary, Button, ButtonProps } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 
 export interface FollowButtonProps extends ButtonProps {

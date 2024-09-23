@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Label from '@/components/Label/Label'
+import { Label } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { update } from 'lodash'
 

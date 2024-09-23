@@ -1,13 +1,25 @@
-import { TwMainColor } from '@/data/types'
-import { Route } from '@/routers/types'
+import '../../styles/globals.css'
+
 import Link from 'next/link'
 import React, { FC, ReactNode } from 'react'
 import { UrlObject } from 'url'
 
+export type BadgeColor =
+    | 'pink'
+    | 'green'
+    | 'yellow'
+    | 'red'
+    | 'indigo'
+    | 'blue'
+    | 'purple'
+    | 'brown'
+    | 'orange'
+    | 'gray'
+
 export interface BadgeProps {
     className?: string
     name: ReactNode
-    color?: TwMainColor
+    color?: BadgeColor
     href?: string
 }
 

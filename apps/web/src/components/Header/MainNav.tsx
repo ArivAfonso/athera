@@ -8,8 +8,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import AvatarDropdown from './AvatarDropdown'
 import NotifyDropdown from './NotifyDropdown'
-import ButtonPrimary from '../Button/ButtonPrimary'
-import Button from '../Button/Button'
+import { Button } from 'ui'
 
 export interface MainNavProps {}
 

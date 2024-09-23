@@ -7,16 +7,16 @@ Use this extension to render `<video>` HTML tags. Block Or Inline level node.
 ## Installation
 
 ```bash
-npm install @docs.plus/extension-hypermultimedia
+pnpm install @docs.plus/extension-hypermultimedia
 ```
 
 Then, import the extension into your editor:
 
 ```js
-import { HyperMultimediaKit } from "@docs.plus/extension-hypermultimedia";
+import { HyperMultimediaKit } from '@docs.plus/extension-hypermultimedia'
 
 HyperMultimediaKit.configure({
-  Video,
+    Video,
 })
 ```
 
@@ -26,14 +26,14 @@ HyperMultimediaKit.configure({
 
 Controls if the node should be handled inline or as a block.
 
-- Target: `Node`
-- Default: `false`
+-   Target: `Node`
+-   Default: `false`
 
 ```js
 HyperMultimediaKit.configure({
-  Video: {
-    inline: true,
-  }
+    Video: {
+        inline: true,
+    },
 })
 ```
 
@@ -41,63 +41,59 @@ HyperMultimediaKit.configure({
 
 Show the native controls of the video player.
 
-- Target: `Node`
-- Default: `true`
+-   Target: `Node`
+-   Default: `true`
 
 ```js
 HyperMultimediaKit.configure({
-  Video: {
-    controls: false,
-  }
+    Video: {
+        controls: false,
+    },
 })
-
 ```
 
 ### autoplay
 
 Automatically start playing the video as soon as it can do so without stopping.
 
-- Target: `Node`
-- Default: `false`
+-   Target: `Node`
+-   Default: `false`
 
 ```js
 HyperMultimediaKit.configure({
-  Video: {
-    autoplay: true,
-  }
+    Video: {
+        autoplay: true,
+    },
 })
-
 ```
 
 ### loop
 
 Automatically seek back to the start upon reaching the end of the video.
 
-- Target: `Node`
-- Default: `false`
+-   Target: `Node`
+-   Default: `false`
 
 ```js
 HyperMultimediaKit.configure({
-  Video: {
-    loop: true,
-  }
-
+    Video: {
+        loop: true,
+    },
 })
-
 ```
 
 ### muted
 
 Mute the video.
 
-- Target: `Node`
-- Default: `false`
+-   Target: `Node`
+-   Default: `false`
 
 ```js
 HyperMultimediaKit.configure({
-  Video: {
-    muted: true,
-  }
+    Video: {
+        muted: true,
+    },
 })
 ```
 
@@ -105,14 +101,14 @@ HyperMultimediaKit.configure({
 
 A URL indicating a poster frame to show until the user plays or seeks.
 
-- Target: `Node`
-- Default: `null`
+-   Target: `Node`
+-   Default: `null`
 
 ```js
 HyperMultimediaKit.configure({
-  Video: {
-    poster: "https://example.com/poster.png",
-  }
+    Video: {
+        poster: 'https://example.com/poster.png',
+    },
 })
 ```
 
@@ -120,14 +116,14 @@ HyperMultimediaKit.configure({
 
 Hints how much buffering the media resource will likely need.
 
-- Target: `Node`
-- Default: `auto`
+-   Target: `Node`
+-   Default: `auto`
 
 ```js
 HyperMultimediaKit.configure({
-  Video: {
-    preload: "none",
-  }
+    Video: {
+        preload: 'none',
+    },
 })
 ```
 
@@ -135,16 +131,16 @@ HyperMultimediaKit.configure({
 
 Custom HTML attributes that should be added to the rendered HTML tag.
 
-- Target: `Node`
-- Default: `{}`
+-   Target: `Node`
+-   Default: `{}`
 
 ```js
 HyperMultimediaKit.configure({
-  Video: {
-    HTMLAttributes: {
-      class: 'my-custom-class',
+    Video: {
+        HTMLAttributes: {
+            class: 'my-custom-class',
+        },
     },
-  }
 })
 ```
 
@@ -152,16 +148,19 @@ HyperMultimediaKit.configure({
 
 A modal box that appears when you **mouseover on the video**. A default modal box is provided which you can utilize or replace with your custom modal.
 
-- Target: `Node`
-- Default: `false`
+-   Target: `Node`
+-   Default: `false`
 
 ```js
-import { hypermultimedia, videoModal } from "@docs.plus/extension-hypermultimedia";
+import {
+    hypermultimedia,
+    videoModal,
+} from '@docs.plus/extension-hypermultimedia'
 
 HyperMultimediaKit.configure({
-  Video: {
-    modal: videoModal, // default modal
-  }
+    Video: {
+        modal: videoModal, // default modal
+    },
 })
 ```
 
@@ -169,17 +168,20 @@ HyperMultimediaKit.configure({
 
 a resize gripper that apear when you mouseover on video.
 
-- target: `Node`
-- default: `true`
+-   target: `Node`
+-   default: `true`
 
 ```js
-import { hypermultimedia, videoModal } from "@docs.plus/extension-hypermultimedia";
+import {
+    hypermultimedia,
+    videoModal,
+} from '@docs.plus/extension-hypermultimedia'
 
 HyperMultimediaKit.configure({
-  Video: {
-    modal: videoModal,
-    resizeGripper: false,
-  }
+    Video: {
+        modal: videoModal,
+        resizeGripper: false,
+    },
 })
 ```
 
@@ -193,14 +195,14 @@ Makes the current node a video.
 
 ```js
 editor.commands.setVideo({
-  src: 'https://example.com/foobar.mp4'
-});
+    src: 'https://example.com/foobar.mp4',
+})
 
 editor.commands.setVideo({
-  src: 'https://example.com/foobar.mp4',
-  width: 640,
-  height: 480,
-});
+    src: 'https://example.com/foobar.mp4',
+    width: 640,
+    height: 480,
+})
 ```
 
 ## Markdown syntax
@@ -213,16 +215,16 @@ editor.commands.setVideo({
 
 ### Options
 
-|Option          |Description                                                               |Default    |Optional |
-|---             |---                                                                       |---        |---      |
-|src             |The URL of the video                        |`null`     |         |
-|width           |The embed width (overrides the default option, optional)                  |`640`      |✅       |
-|height          |The embed height (overrides the default option, optional)                 |`480`      |✅       |
-|float           |The CSS style `float` (overrides the default option, optional)            |`unset`    |✅       |
-|clear           |The CSS style `clear` (overrides the default option, optional)            |`none`     |✅       |
-|display         |The CSS style `display` (overrides the default option, optional)          |`block`    |✅       |
-|margin          |The CSS style `margin` (overrides the default option, optional)           |`0.0in`    |✅       |
-|justifyContent  |The CSS style `justify-content` (overrides the default option, optional)  |`start`    |✅       |
+| Option         | Description                                                              | Default | Optional |
+| -------------- | ------------------------------------------------------------------------ | ------- | -------- |
+| src            | The URL of the video                                                     | `null`  |          |
+| width          | The embed width (overrides the default option, optional)                 | `640`   | ✅       |
+| height         | The embed height (overrides the default option, optional)                | `480`   | ✅       |
+| float          | The CSS style `float` (overrides the default option, optional)           | `unset` | ✅       |
+| clear          | The CSS style `clear` (overrides the default option, optional)           | `none`  | ✅       |
+| display        | The CSS style `display` (overrides the default option, optional)         | `block` | ✅       |
+| margin         | The CSS style `margin` (overrides the default option, optional)          | `0.0in` | ✅       |
+| justifyContent | The CSS style `justify-content` (overrides the default option, optional) | `start` | ✅       |
 
 ## Source code
 

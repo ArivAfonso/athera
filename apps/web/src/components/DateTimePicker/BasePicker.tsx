@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import Input from '../Input/Input'
+import { Input } from 'ui'
 import useMergedRef from './hooks/useMergeRef'
 import type {
     ReactNode,

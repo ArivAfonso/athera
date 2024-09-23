@@ -4,11 +4,9 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import NextImage from 'next/image'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import Label from '@/components/Label/Label'
 import { createClient } from '@/utils/supabase/client'
 import { Controller, useForm } from 'react-hook-form'
-import Alert from '@/components/Alert/Alert'
+import { Input, Alert, Label, ButtonPrimary } from 'ui'
 import { useRouter } from 'next/navigation'
 import stringToSlug from '@/utils/stringToSlug'
 import { useStore } from '@/stores/editPost'
@@ -70,7 +68,7 @@ const EditPost = (context: { params: { slug: any } }) => {
             if (post) {
                 // rteObj.value = post.rawText
                 setEditPost(post)
-                setTags(post.post_topics.map((topic) => topic.topic.name))
+                setTags(post.post_topics.map((topic: any) => topic.topic.name))
             } else {
                 const { data, error } = await supabase
                     .from('posts')
@@ -159,7 +157,7 @@ const EditPost = (context: { params: { slug: any } }) => {
                 description: editPost ? editPost?.description : '',
                 comments_allowed: postOptionsData.isAllowComments,
                 license: postOptionsData.license
-                    ? postOptionsData.license ?? '--------------'
+                    ? (postOptionsData.license ?? '--------------')
                     : null,
                 //@ts-ignore
                 json: editPost ? editPost?.json : '',

@@ -1,5 +1,6 @@
+import '../styles/index.scss'
 import './globals.css'
-import '@/styles/index.scss'
+
 import { Poppins } from 'next/font/google'
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'

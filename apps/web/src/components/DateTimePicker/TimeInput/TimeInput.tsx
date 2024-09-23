@@ -4,8 +4,7 @@ import useMergedRef from '../hooks/useMergeRef'
 import useDidUpdate from '../hooks/useDidUpdate'
 import TimeInputField from './TimeInputField'
 import AmPmInput from './AmPmInput'
-// import CloseButton from '../CloseButton'
-import Input from './Input'
+import { Input } from 'ui'
 import {
     getTimeValues,
     getDate,
@@ -136,8 +135,8 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>((props, ref) => {
         nextRef: showSeconds
             ? (secondsRef as RefObject<HTMLInputElement>)
             : format === '12'
-            ? (amPmRef as RefObject<HTMLInputElement>)
-            : (nextRef as RefObject<HTMLInputElement>),
+              ? (amPmRef as RefObject<HTMLInputElement>)
+              : (nextRef as RefObject<HTMLInputElement>),
         nextMax: showSeconds ? 59 : undefined,
     })
 

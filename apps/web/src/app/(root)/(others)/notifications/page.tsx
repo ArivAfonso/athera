@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Empty from '@/components/Empty'
 import NotificationType from '@/types/NotificationType'
 import stringToSlug from '@/utils/stringToSlug'
-import Heading2 from '@/components/Heading/Heading2'
+import { Heading2 } from 'ui'
 import { TrashIcon } from '@heroicons/react/24/outline'
 import { createClient } from '@/utils/supabase/client'
 

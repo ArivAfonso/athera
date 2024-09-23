@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC } from 'react'
-import Heading from '@/components/Heading/Heading'
+import { Heading } from 'ui'
 import CardTopic4 from '@/components/CardTopic4/CardTopic4'
 import CardTopic1 from '@/components/CardTopic1/CardTopic1'
 import CardTopic2 from '@/components/CardTopic2/CardTopic2'

@@ -1,25 +1,22 @@
 'use client'
 
-import AccordionInfo from '@/components/AccordionInfo/AccordionInfo'
-import Label from '@/components/Label/Label'
-import MySwitch from '@/components/MySwitch/MySwitch'
+import { Label, MySwitch, AccordionInfo, Checkbox } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { deleteCookie, getCookie, setCookie } from 'cookies-next'
 import { useEffect, useState } from 'react'
 import HorizontalFormBlockWrapper from '../edit-profile/notifications/FormWrapper'
 import { useRouter } from 'next/navigation'
-import Checkbox from '@/components/Checkbox/Checkbox'
 
 interface NotificationSettings {
-    comments: ('None' | 'In App' | 'Email')[]
-    likes: ('None' | 'In App' | 'Email')[]
-    new_follower: ('None' | 'In App' | 'Email')[]
-    following_post: ('None' | 'In App' | 'Email')[]
-    scheduled_post: ('None' | 'In App' | 'Email')[]
-    likes_milestones: ('None' | 'In App' | 'Email')[]
-    comments_milestones: ('None' | 'In App' | 'Email')[]
-    followers_milestones: ('None' | 'In App' | 'Email')[]
-    published_posts_milestones: ('None' | 'In App' | 'Email')[]
+    comments: ('None' | 'In App')[]
+    likes: ('None' | 'In App')[]
+    new_follower: ('None' | 'In App')[]
+    following_post: ('None' | 'In App')[]
+    scheduled_post: ('None' | 'In App')[]
+    likes_milestones: ('None' | 'In App')[]
+    comments_milestones: ('None' | 'In App')[]
+    followers_milestones: ('None' | 'In App')[]
+    published_posts_milestones: ('None' | 'In App')[]
 }
 
 const generalOptions = [
@@ -296,60 +293,6 @@ function Settings() {
                         </button>
                         {/* </div>
             <div className="flex justify-center space-x-10"> */}
-                        <button
-                            className={`p-4 rounded-lg focus:border-2 ${customization.profile_layout === 'modern_magazine' ? 'border-2 border-blue-500 dark:border-blue-800' : 'border-[1px] border-gray-300 dark:border-gray-700'} dark:focus:border-blue-500 focus:border-blue-500  dark:border-gray-700`}
-                            onClick={() => {
-                                setCustomization({
-                                    ...customization,
-                                    profile_layout: 'modern_magazine',
-                                })
-                                updateSettings(
-                                    'profile_layout',
-                                    'modern_magazine'
-                                )
-                            }}
-                        >
-                            <div className="flex flex-col items-center">
-                                <div className="w-48 h-20 rounded-lg bg-slate-200 dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-800"></div>
-                                <div className="flex space-x-4">
-                                    <div>
-                                        <div className="w-[88px] h-16 rounded-lg bg-slate-200 dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-800 mt-2"></div>
-                                    </div>
-                                    <div>
-                                        <div className="w-[88px] h-16 rounded-lg bg-slate-200 dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-800 mt-2"></div>
-                                    </div>
-                                </div>
-                                <div className="flex space-x-4">
-                                    <div>
-                                        <div className="w-[88px] h-16 rounded-lg bg-slate-200 dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-800 mt-2"></div>
-                                    </div>
-                                    <div>
-                                        <div className="w-[88px] h-16 rounded-lg bg-slate-200 dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-800 mt-2"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </button>
-                        <button
-                            className={`p-4 rounded-lg focus:border-2 ${customization.profile_layout === 'modern_grid' ? 'border-2 border-blue-500 dark:border-blue-800' : 'border-[1px] border-gray-300 dark:border-gray-700'} dark:focus:border-blue-500 focus:border-blue-500`}
-                            onClick={() => {
-                                setCustomization({
-                                    ...customization,
-                                    profile_layout: 'modern_grid',
-                                })
-                                updateSettings('profile_layout', 'modern_grid')
-                            }}
-                        >
-                            <div className="flex items-center justify-center h-full">
-                                <div className="grid grid-cols-2 gap-3 items-center">
-                                    <div className="w-24 h-16 rounded-lg bg-slate-200 dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-800"></div>
-                                    <div className="w-24 h-16 rounded-lg bg-slate-200 dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-800"></div>
-                                    <div className="w-24 h-16 rounded-lg bg-slate-200 dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-800"></div>
-                                    <div className="w-24 h-16 rounded-lg bg-slate-200 dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-800"></div>
-                                    <div className="w-24 h-16 rounded-lg bg-slate-200 dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-800"></div>
-                                    <div className="w-24 h-16 rounded-lg bg-slate-200 dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-800"></div>
-                                </div>
-                            </div>
-                        </button>
                     </div>
                 </>
             ),

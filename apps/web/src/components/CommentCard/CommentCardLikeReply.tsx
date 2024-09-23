@@ -5,7 +5,7 @@ import convertNumbThousand from '@/utils/convertNumbThousand'
 import twFocusClass from '@/utils/twFocusClass'
 import { createClient } from '@/utils/supabase/client'
 import toast from 'react-hot-toast'
-import Alert from '../Alert/Alert'
+import { Input, Alert } from 'ui'
 
 export interface CommentCardLikeReplyProps {
     className?: string

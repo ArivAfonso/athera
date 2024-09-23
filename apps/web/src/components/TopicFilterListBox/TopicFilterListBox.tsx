@@ -4,7 +4,7 @@ import React, { FC } from 'react'
 import { Fragment, useState } from 'react'
 import { Listbox, Transition } from '@/app/headlessui'
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
-import Button from '../Button/Button'
+import { Button } from 'ui'
 
 export interface TopicFilterListBoxProps {
     className?: string

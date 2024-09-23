@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC, useEffect, useRef } from 'react'
-import Modal from '@/components/Modal/Modal'
+import { Modal } from 'ui'
 import EditCommentForm from './EditCommentForm'
 
 export interface ModalEditCommentProps {

@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react'
-import Img from '@/components/Img/Img'
+import { Img } from 'ui'
 import SingleHeader from '@/app/(root)/(posts)/SingleHeader'
 import SingleContent from '../../SingleContent'
 import SingleRelatedPosts from '../../SingleRelatedPosts'

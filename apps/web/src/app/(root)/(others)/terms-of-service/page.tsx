@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import Heading2 from '@/components/Heading/Heading2'
+import { Heading2 } from 'ui'
 import React from 'react'
 
 const TermsOfService = () => {

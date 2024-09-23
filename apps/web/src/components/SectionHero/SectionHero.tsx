@@ -1,4 +1,4 @@
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
+import { ButtonPrimary } from 'ui'
 import Image, { StaticImageData } from 'next/image'
 import React, { FC, ReactNode } from 'react'
 

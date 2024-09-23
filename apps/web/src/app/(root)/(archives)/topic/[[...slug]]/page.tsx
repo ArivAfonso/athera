@@ -10,7 +10,7 @@ import PostsSection from '@/components/PostsSection/PostsSection'
 import PostType from '@/types/PostType'
 import { createClient } from '@/utils/supabase/client'
 import CircleLoading from '@/components/CircleLoading/CircleLoading'
-import Heading2 from '@/components/Heading/Heading2'
+import { Heading2 } from 'ui'
 import Empty from '@/components/Empty'
 
 async function addPosts(pageParam: number) {

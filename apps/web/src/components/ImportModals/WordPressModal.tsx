@@ -1,16 +1,8 @@
 'use client'
 
 import React, { FC, useEffect, useRef, useState } from 'react'
-import Modal from '@/components/Modal/Modal'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import ButtonThird from '@/components/Button/ButtonThird'
 import { Controller, useForm } from 'react-hook-form'
-import { createClient } from '@/utils/supabase/client'
-import Input from '../Input/Input'
-import Label from '../Label/Label'
-import Button from '../Button/Button'
-import Checkbox from '../Checkbox/Checkbox'
-import TopicType from '@/types/TopicType'
+import { Input, Modal, Label, Checkbox, ButtonPrimary, AccordionInfo } from 'ui'
 import { generateJSON } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Highlight from '@tiptap/extension-highlight'
@@ -24,8 +16,6 @@ import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import { generateText } from '@tiptap/react'
-import AccordionInfo from '../AccordionInfo/AccordionInfo'
-import Radio from '../Radio/Radio'
 
 function extractContent(html: string) {
     return new DOMParser().parseFromString(html, 'text/html').documentElement

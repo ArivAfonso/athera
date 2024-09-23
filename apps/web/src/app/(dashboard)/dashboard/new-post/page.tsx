@@ -1,14 +1,10 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import Input from '@/components/Input/Input'
 import NextImage from 'next/image'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import Textarea from '@/components/Textarea/Textarea'
-import Label from '@/components/Label/Label'
+import { Input, Image, Alert, Button, Textarea, Label, ButtonPrimary } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { Controller, useForm } from 'react-hook-form'
-import Alert from '@/components/Alert/Alert'
 import { useRouter } from 'next/navigation'
 import stringToSlug from '@/utils/stringToSlug'
 import TiptapEditor from '@/components/PostSubmissionEditor/TiptapEditor'
@@ -126,7 +122,7 @@ const DashboardSubmitPost = () => {
         const imageUrls: string[] = findImageUrls(json.content)
         imageUrls.map((url) => {
             //Check if the image is in the newPostImgs array and get its mod score
-            const img = newPostImgs?.images.find((img) => img.url === url)
+            const img = newPostImgs?.images.find((img: any) => img.url === url)
             if (img?.rating && img.rating) {
                 setUploading(false)
                 setErrorMsg('NSFW images are not allowed')

@@ -2,7 +2,7 @@
 
 import { Popover, Transition } from '@/app/headlessui'
 import { FC, Fragment, useEffect, useState } from 'react'
-import Avatar from '@/components/Avatar/Avatar'
+import { Avatar } from 'ui'
 import SwitchDarkMode2 from '@/components/SwitchDarkMode/SwitchDarkMode2'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'

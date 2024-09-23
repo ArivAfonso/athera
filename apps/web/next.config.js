@@ -5,6 +5,7 @@ const nextConfig = {
     experimental: {
         typedRoutes: true,
     },
+    transpilePackages: ['ui'],
     webpack: (config) => {
         // See https://webpack.js.org/configuration/resolve/#resolvealias
         config.resolve.alias = {

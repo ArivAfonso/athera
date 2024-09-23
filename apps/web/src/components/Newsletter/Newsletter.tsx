@@ -1,8 +1,6 @@
 import React, { FC } from 'react'
-import ButtonCircle from '@/components/Button/ButtonCircle'
 import rightImg from '@/images/SVG-subcribe2.png'
-import Badge from '@/components/Badge/Badge'
-import Input from '@/components/Input/Input'
+import { Input, ButtonCircle } from 'ui'
 import Image from 'next/image'
 import { ArrowRightIcon } from '@heroicons/react/24/solid'
 

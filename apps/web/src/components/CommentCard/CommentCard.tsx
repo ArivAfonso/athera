@@ -1,6 +1,5 @@
 import React, { FC, useRef, useState } from 'react'
-import Avatar from '@/components/Avatar/Avatar'
-import DropDown, { DropDownItem } from '@/components/DropDown/DropDown'
+import { Avatar, DropDown, DropDownItem } from 'ui'
 import twFocusClass from '@/utils/twFocusClass'
 import ModalEditComment from './ModalEditComment'
 import ModalDeleteComment from './ModalDeleteComment'

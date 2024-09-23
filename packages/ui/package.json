@@ -1,0 +1,26 @@
+{
+    "name": "ui",
+    "version": "0.1.0",
+    "private": true,
+    "types": "dist/src/index.d.ts",
+    "main": "dist/src/index.js",
+    "module": "dist/src/index.esm.js",
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch"
+    },
+    "peerDependencies": {
+        "@headlessui/react": "^1.x.x",
+        "@heroicons/react": "^2.x.x",
+        "classnames": "^2.x.x",
+        "next": "^14.x.x",
+        "react": "^18.x.x"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.4.20",
+        "esbuild-sass-plugin": "^3.3.1",
+        "postcss": "^8.4.45",
+        "tailwindcss": "^3.4.10",
+        "tsup": "^8.3.0"
+    }
+}

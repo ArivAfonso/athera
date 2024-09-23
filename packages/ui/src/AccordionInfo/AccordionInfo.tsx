@@ -1,4 +1,4 @@
-import { Disclosure } from '@/app/headlessui'
+import { Disclosure } from '@headlessui/react'
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { FC, ReactNode } from 'react'
 
@@ -16,7 +16,7 @@ interface Props {
 const AccordionInfo: FC<Props> = ({
     panelClassName = 'p-4 pt-3 last:pb-0 text-slate-600 text-lg dark:text-slate-300 leading-6',
     data = [],
-    defaultOpen = false
+    defaultOpen = false,
 }) => {
     return (
         <div className="w-full rounded-2xl space-y-2.5">

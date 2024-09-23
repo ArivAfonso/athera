@@ -10,8 +10,8 @@ import {
 } from '@heroicons/react/24/outline'
 import VerifyIcon from '@/components/VerifyIcon'
 import FollowButton from '@/components/FollowButton'
-import DropDown from '@/components/DropDown/DropDown'
 import { SOCIALS_DATA } from '@/components/SocialsShare/SocialsShare'
+import { DropDownItem } from 'ui'
 import AccountActionDropdown from '@/components/AccountActionDropdown/AccountActionDropdown'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
@@ -19,7 +19,7 @@ import AuthorType from '@/types/AuthorType'
 import { createClient } from '@/utils/supabase/client'
 import Card6 from '@/components/Card6/Card6'
 import Empty from '@/components/Empty'
-import Img from '@/components/Img/Img'
+import { Img, DropDown } from 'ui'
 import Loading from './loading'
 import FollowModal from './FollowersModal'
 import PostsSection from '@/components/PostsSection/PostsSection'
@@ -346,7 +346,7 @@ const PageAuthor = (context: any) => {
                                                 renderTrigger={() => (
                                                     <ShareIcon className="h-5 w-5" />
                                                 )}
-                                                onClick={() => {}}
+                                                //@ts-ignore
                                                 data={SOCIALS_DATA}
                                             />
                                         </div>

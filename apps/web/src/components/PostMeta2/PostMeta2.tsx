@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import Avatar from '@/components/Avatar/Avatar'
+import { Avatar } from 'ui'
 import Link from 'next/link'
 import AuthorType from '@/types/AuthorType'
 

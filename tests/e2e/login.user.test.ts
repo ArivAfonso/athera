@@ -2,52 +2,51 @@ import { expect, request, test } from '@playwright/test'
 import { uniqueId } from 'lodash'
 const INBUCKET_URL = `http://localhost:54324`
 
-async function getResetPasswordEmail(username: string): Promise<{
-    url: string
-}> {
-    const requestContext = await request.newContext()
-    const messages = await requestContext
-        .get(`${INBUCKET_URL}/api/v1/mailbox/${username}`)
-        .then((res) => res.json())
-        // InBucket doesn't have any params for sorting, so here
-        // we're sorting the messages by date
-        .then((items) =>
-            [...items].sort((a, b) => {
-                if (a.date < b.date) {
-                    return 1
-                }
+// async function getResetPasswordEmail(username: string): Promise<{
+//     url: string
+// }> {
+//     const requestContext = await request.newContext()
+//     const messages = await requestContext
+//         .get(`${INBUCKET_URL}/api/v1/mailbox/${username}`)
+//         .then((res) => res.json())
+//         // InBucket doesn't have any params for sorting, so here
+//         // we're sorting the messages by date
+//         .then((items) =>
+//             [...items].sort((a, b) => {
+//                 if (a.date < b.date) {
+//                     return 1
+//                 }
 
-                if (a.date > b.date) {
-                    return -1
-                }
+//                 if (a.date > b.date) {
+//                     return -1
+//                 }
 
-                return 0
-            })
-        )
+//                 return 0
+//             })
+//         )
 
-    const latestMessageId = messages[0]?.id
+//     const latestMessageId = messages[0]?.id
 
-    if (latestMessageId) {
-        const message = await requestContext
-            .get(
-                `${INBUCKET_URL}/api/v1/mailbox/${username}/${latestMessageId}`
-            )
-            .then((res) => res.json())
+//     if (latestMessageId) {
+//         const message = await requestContext
+//             .get(
+//                 `${INBUCKET_URL}/api/v1/mailbox/${username}/${latestMessageId}`
+//             )
+//             .then((res) => res.json())
 
-        // We've got the latest email. We're going to use regular
-        // expressions to match the bits we need.
+//         // We've got the latest email. We're going to use regular
+//         // expressions to match the bits we need.
 
-        // match this text and extract url
-        // --------------\nReset password\n--------------\n\nFollow this link to reset the password for your user:\n\nReset password ( http://127.0.0.1:54321/auth/v1/verify?token=pkce_e2df68ace87a16abf48dd04aca116f9ee35612772ab190212a27ac88&type=recovery&redirect_to=http://localhost:3000/update-password )\n\nAlternatively, enter the code: 719963
-        const url = message.body.text.match(/Reset password \( (.+) \)/)[1]
+//         // match this text and extract url
+//         // --------------\nReset password\n--------------\n\nFollow this link to reset the password for your user:\n\nReset password ( http://127.0.0.1:54321/auth/v1/verify?token=pkce_e2df68ace87a16abf48dd04aca116f9ee35612772ab190212a27ac88&type=recovery&redirect_to=http://localhost:3000/update-password )\n\nAlternatively, enter the code: 719963
+//         const url = message.body.text.match(/Reset password \( (.+) \)/)[1]
 
-        return { url }
-    }
+//         return { url }
+//     }
 
-    throw new Error('No email received')
-}
+//     throw new Error('No email received')
+// }
 
-// eg endpoint: https://api.testmail.app/api/json?apikey=${APIKEY}&namespace=${NAMESPACE}&pretty=true
 async function getConfirmEmail(username: string): Promise<{
     token: string
     url: string

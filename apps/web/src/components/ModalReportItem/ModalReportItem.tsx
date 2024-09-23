@@ -1,13 +1,9 @@
 'use client'
 
 import React, { FC, useEffect, useRef, useState } from 'react'
-import Modal from '@/components/Modal/Modal'
-import Textarea from '@/components/Textarea/Textarea'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import ButtonSecondary from '@/components/Button/ButtonSecondary'
+import { Textarea, ButtonPrimary, ButtonThird, Modal } from 'ui'
 import { RadioGroup } from '@/app/headlessui'
 import twFocusClass from '@/utils/twFocusClass'
-import ButtonThird from '../Button/ButtonThird'
 import { useForm, Controller } from 'react-hook-form'
 import { createClient } from '@/utils/supabase/client'
 

@@ -1,9 +1,8 @@
 'use client'
 import React, { FC, Fragment, ReactNode, useEffect, useState } from 'react'
-import { Dialog, Transition } from '@/app/headlessui'
+import { Dialog, Transition } from '@headlessui/react'
 import Button from '../Button/Button'
 import ButtonClose from '../ButtonClose/ButtonClose'
-import ButtonPrimary from '../Button/ButtonPrimary'
 
 export interface ModalProps {
     renderContent: (closeModal: () => void) => ReactNode

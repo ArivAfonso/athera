@@ -2,10 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import Input from '@/components/Input/Input'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import MyLink from '@/components/MyLink/MyLink'
-import Heading2 from '@/components/Heading/Heading2'
+import { Input, ButtonPrimary, Heading2, MyLink } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 

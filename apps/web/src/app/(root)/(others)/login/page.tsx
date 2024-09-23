@@ -6,15 +6,9 @@ import twitterSvg from '@/images/Twitter.svg'
 import googleSvg from '@/images/Google.svg'
 import discordSvg from '@/images/Discord.svg'
 import xSvg from '@/images/X.svg'
-import Input from '@/components/Input/Input'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import MyLink from '@/components/MyLink/MyLink'
-import Heading2 from '@/components/Heading/Heading2'
-import Image from 'next/image'
 import { createClient } from '@/utils/supabase/client'
 import { Controller, useForm } from 'react-hook-form'
-import Alert from '@/components/Alert/Alert'
-import Button from '@/components/Button/Button'
+import { Input, Image, Alert, Button, Heading2, MyLink } from 'ui'
 
 const PageLogin = ({}) => {
     const supabase = createClient()

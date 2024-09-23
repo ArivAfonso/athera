@@ -1,5 +1,5 @@
 import PostBookmark from '@/components/PostBookmark/PostBookmark'
-import Img from '@/components/Img/Img'
+import { Img } from 'ui'
 import NextPrev from '@/components/NextPrev/NextPrev'
 import PostCardLikeAndComment from '@/components/PostCardLikeAndComment/PostCardLikeAndComment'
 import React, { FC } from 'react'

@@ -1,12 +1,10 @@
 'use client'
 
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
-import Modal from '@/components/Modal/Modal'
 import { useForm } from 'react-hook-form'
 import { createClient } from '@/utils/supabase/client'
-import Input from '@/components/Input/Input'
 import { debounce } from 'lodash'
-import Button from '@/components/Button/Button'
+import { Button, Modal } from 'ui'
 
 async function changeUsername(username: string, id: string) {
     const supabase = createClient()

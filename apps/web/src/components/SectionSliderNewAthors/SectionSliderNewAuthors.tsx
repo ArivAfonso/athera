@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC } from 'react'
-import Heading from '@/components/Heading/Heading'
+import { Heading } from 'ui'
 import MySlider from '@/components/MySlider'
 import AuthorType from '@/types/AuthorType'
 import CardAuthorBox from '../CardAuthorBox/CardAuthorBox'

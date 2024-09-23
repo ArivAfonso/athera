@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC, useEffect, useState } from 'react'
-import Heading from '@/components/Heading/Heading'
+import { Heading } from 'ui'
 import Card11 from '@/components/Card11/Card11'
 import PostType from '@/types/PostType'
 import Card9 from '@/components/Card9/Card9'

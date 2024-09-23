@@ -1,7 +1,7 @@
 'use client'
+import '../../styles/globals.css'
 
 import React, { ButtonHTMLAttributes, FC } from 'react'
-import { Route } from '@/routers/types'
 import Link from 'next/link'
 import Loading from './Loading'
 
@@ -14,7 +14,7 @@ export interface ButtonProps {
     loading?: boolean
     disabled?: boolean
     type?: ButtonHTMLAttributes<HTMLButtonElement>['type']
-    href?: Route
+    href?: string
     targetBlank?: boolean
     onClick?: () => void
     children?: React.ReactNode

@@ -1,14 +1,19 @@
 'use client'
 
 import React, { FC, useEffect, useRef } from 'react'
-import Modal from '@/components/Modal/Modal'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import ButtonThird from '../Button/ButtonThird'
 import PostType from '@/types/PostType'
 import { createClient } from '@/utils/supabase/client'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import Alert from '../Alert/Alert'
+import {
+    Input,
+    Alert,
+    Label,
+    ButtonPrimary,
+    ButtonThird,
+    ButtonSecondary,
+    Modal,
+} from 'ui'
 
 export interface ModalHidePostProps {
     id: string

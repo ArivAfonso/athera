@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import Avatar from '@/components/Avatar/Avatar'
+import { Avatar } from 'ui'
 import { CardAuthor2Props } from './CardAuthor2'
 import Link from 'next/link'
 

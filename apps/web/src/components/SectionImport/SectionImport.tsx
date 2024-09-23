@@ -5,9 +5,7 @@ import Step3Img from '@/images/Step_3.png'
 import Step4Img from '@/images/Step_4.png'
 import DotsImg from '@/images/Dots.svg'
 import Image from 'next/image'
-import Img from '../Img/Img'
-import Badge from '../Badge/Badge'
-import Heading from '../Heading/Heading'
+import { Badge, Heading, Img } from 'ui'
 
 export interface SectionHowItWorkProps {
     className?: string

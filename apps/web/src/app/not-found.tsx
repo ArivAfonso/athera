@@ -1,6 +1,6 @@
 'use client'
 
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
+import { ButtonPrimary } from 'ui'
 import React from 'react'
 import Link from 'next/link'
 import { useThemeMode } from '@/hooks/useThemeMode'

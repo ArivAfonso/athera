@@ -7,16 +7,16 @@ Use this extension to render `<img>` HTML tags. Block Or Inline level node.
 ## Installation
 
 ```bash
-npm install @docs.plus/extension-hypermultimedia
+pnpm install @docs.plus/extension-hypermultimedia
 ```
 
 Then, import the extension into your editor:
 
 ```js
-import { HyperMultimediaKit } from "@docs.plus/extension-hypermultimedia";
+import { HyperMultimediaKit } from '@docs.plus/extension-hypermultimedia'
 
 HyperMultimediaKit.configure({
-  Image,
+    Image,
 })
 ```
 
@@ -26,14 +26,14 @@ HyperMultimediaKit.configure({
 
 Controls if the node should be handled inline or as a block.
 
-- Target: `Node`
-- Default: `false`
+-   Target: `Node`
+-   Default: `false`
 
 ```js
 HyperMultimediaKit.configure({
-  SoundCloud: {
-    inline: true,
-  }
+    SoundCloud: {
+        inline: true,
+    },
 })
 ```
 
@@ -41,16 +41,16 @@ HyperMultimediaKit.configure({
 
 Allow images to be parsed as base64 strings `<img src="data:image/jpg;base64...">`.
 
-- target: `Node`
-- Default: `false`
+-   target: `Node`
+-   Default: `false`
 
 ```js
-import { HyperMultimediaKit } from "@docs.plus/extension-hypermultimedia";
+import { HyperMultimediaKit } from '@docs.plus/extension-hypermultimedia'
 
 HyperMultimediaKit.configure({
-  Image: {
-    allowBase64: true,
-  }
+    Image: {
+        allowBase64: true,
+    },
 })
 ```
 
@@ -58,16 +58,19 @@ HyperMultimediaKit.configure({
 
 A modal box that apear when you <u>**click on image**</u>. A default modal box is provided which you can utilize or replace with your custom modal.
 
-- target: `Node`
-- Default: `true`
+-   target: `Node`
+-   Default: `true`
 
 ```js
-import { hypermultimedia, imageModal } from "@docs.plus/extension-hypermultimedia";
+import {
+    hypermultimedia,
+    imageModal,
+} from '@docs.plus/extension-hypermultimedia'
 
 HyperMultimediaKit.configure({
-  Image: {
-    modal: imageModal, // default modal
-  }
+    Image: {
+        modal: imageModal, // default modal
+    },
 })
 ```
 
@@ -77,17 +80,20 @@ HyperMultimediaKit.configure({
 
 a resize gripper that apear when you click on image.
 
-- target: `Node`
-default: `true`
+-   target: `Node`
+    default: `true`
 
 ```js
-import { hypermultimedia, imageModal } from "@docs.plus/extension-hypermultimedia";
+import {
+    hypermultimedia,
+    imageModal,
+} from '@docs.plus/extension-hypermultimedia'
 
 HyperMultimediaKit.configure({
-  Image: {
-    modal: imageModal,
-    resizeGripper: true,
-  }
+    Image: {
+        modal: imageModal,
+        resizeGripper: true,
+    },
 })
 ```
 
@@ -95,20 +101,22 @@ HyperMultimediaKit.configure({
 
 Custom HTML attributes that should be added to the rendered HTML tag.
 
-- target: `Node`
-- Default: `{}`
+-   target: `Node`
+-   Default: `{}`
 
 ```js
-import { hypermultimedia, imageModal } from "@docs.plus/extension-hypermultimedia";
+import {
+    hypermultimedia,
+    imageModal,
+} from '@docs.plus/extension-hypermultimedia'
 
 HyperMultimediaKit.configure({
-  Image: {
-    HTMLAttributes: {
-      class: 'my-custom-class',
+    Image: {
+        HTMLAttributes: {
+            class: 'my-custom-class',
+        },
     },
-  }
 })
-
 ```
 
 ## Markdown syntax
@@ -127,38 +135,38 @@ Makes the current node an image.
 
 ```js
 editor.commands.setImage({
-  src: 'https://example.com/foobar.png'
-});
-
-editor.commands.setImage({
-  src: 'https://example.com/foobar.png',
-  alt: 'A boring example image',
-  title: 'An example'
+    src: 'https://example.com/foobar.png',
 })
 
 editor.commands.setImage({
-  src: 'https://example.com/foobar.png',
-  width: 200,
-  height: 160,
-  float: "unset",
-  clear: "none",
-  display: "block",
-  margin: "0.2in"
+    src: 'https://example.com/foobar.png',
+    alt: 'A boring example image',
+    title: 'An example',
+})
+
+editor.commands.setImage({
+    src: 'https://example.com/foobar.png',
+    width: 200,
+    height: 160,
+    float: 'unset',
+    clear: 'none',
+    display: 'block',
+    margin: '0.2in',
 })
 ```
 
 ### Options
 
-|Option          |Description                                                               |Default    |Optional |
-|---             |---                                                                       |---        |---      |
-|src             |The URL of the image                                                      |`null`     |         |
-|width           |The embed width (overrides the default option, optional)                  |`250`     |✅       |
-|height          |The embed height (overrides the default option, optional)                 |`160`     |✅       |
-|float           |The CSS style `float` (overrides the default option, optional)            |`unset`    |✅       |
-|clear           |The CSS style `clear` (overrides the default option, optional)            |`none`     |✅       |
-|display         |The CSS style `display` (overrides the default option, optional)          |`block`    |✅       |
-|margin          |The CSS style `margin` (overrides the default option, optional)           |`0.0in`    |✅       |
-|justifyContent  |The CSS style `justify-content` (overrides the default option, optional)  |`start`    |✅       |
+| Option         | Description                                                              | Default | Optional |
+| -------------- | ------------------------------------------------------------------------ | ------- | -------- |
+| src            | The URL of the image                                                     | `null`  |          |
+| width          | The embed width (overrides the default option, optional)                 | `250`   | ✅       |
+| height         | The embed height (overrides the default option, optional)                | `160`   | ✅       |
+| float          | The CSS style `float` (overrides the default option, optional)           | `unset` | ✅       |
+| clear          | The CSS style `clear` (overrides the default option, optional)           | `none`  | ✅       |
+| display        | The CSS style `display` (overrides the default option, optional)         | `block` | ✅       |
+| margin         | The CSS style `margin` (overrides the default option, optional)          | `0.0in` | ✅       |
+| justifyContent | The CSS style `justify-content` (overrides the default option, optional) | `start` | ✅       |
 
 ## Source code
 

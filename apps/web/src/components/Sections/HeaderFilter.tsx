@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC, useState } from 'react'
-import Heading from '@/components/Heading/Heading'
+import { Heading } from 'ui'
 
 export interface HeaderFilterProps {
     tabs?: string[]

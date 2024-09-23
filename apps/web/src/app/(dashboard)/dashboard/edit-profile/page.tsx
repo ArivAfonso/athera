@@ -1,17 +1,10 @@
 'use client'
 
-import Label from '@/components/Label/Label'
 import React, { FC, useEffect, useState } from 'react'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import Input from '@/components/Input/Input'
-import Select from '@/components/Select/Select'
-import Textarea from '@/components/Textarea/Textarea'
-import Image from 'next/image'
+import { Input, Image, Alert, Button, Textarea, Label, ButtonPrimary } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { useForm, Controller } from 'react-hook-form'
-import Alert from '@/components/Alert/Alert'
 import ModalEditUsername from './ModalEditUsername'
-import Button from '@/components/Button/Button'
 import { MailIcon, PhoneIcon } from 'lucide-react'
 
 function isValidHttpUrl(string: string) {

@@ -1,6 +1,6 @@
 import { NodeViewContent, NodeViewWrapper } from '@tiptap/react'
 import React, { ChangeEvent } from 'react'
-import Select from '../Select/Select'
+import { Select } from 'ui'
 
 function getLang(str: string) {
     switch (str) {

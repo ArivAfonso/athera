@@ -1,8 +1,4 @@
-import ButtonPrimary from '../Button/ButtonPrimary'
-import ButtonSecondary from '../Button/ButtonSecondary'
-import Input from '../Input/Input'
-import Label from '../Label/Label'
-import Modal from '../Modal/Modal'
+import { Input, Label, ButtonPrimary, Modal, ButtonSecondary } from 'ui'
 import React, { FC, useRef } from 'react'
 
 interface Props {

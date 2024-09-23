@@ -1,9 +1,7 @@
 'use client'
 
 import React, { FC, useEffect, useRef, useState } from 'react'
-import Modal from '@/components/Modal/Modal'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import ButtonThird from '@/components/Button/ButtonThird'
+import { Modal, ButtonThird, ButtonSecondary, ButtonPrimary } from 'ui'
 import { useForm } from 'react-hook-form'
 import { createClient } from '@/utils/supabase/client'
 import DraftType from '@/types/DraftType'

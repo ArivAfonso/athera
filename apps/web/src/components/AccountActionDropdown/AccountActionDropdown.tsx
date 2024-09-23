@@ -2,7 +2,7 @@
 
 import React, { FC, useState } from 'react'
 import twFocusClass from '@/utils/twFocusClass'
-import DropDown, { DropDownItem } from '@/components/DropDown/DropDown'
+import { DropDown, DropDownItem } from 'ui'
 import ModalReportItem from '@/components/ModalReportItem/ModalReportItem'
 import ModalHideAuthor from './ModalHideAuthor'
 import AuthorType from '@/types/AuthorType'

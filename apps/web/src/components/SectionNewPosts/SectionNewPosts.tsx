@@ -1,6 +1,5 @@
 import PostType from '@/types/PostType'
 import Card14 from '../Card14/Card14'
-import Heading from '../Heading/Heading'
 
 interface SectionNewPostsProps {
     posts: PostType[]

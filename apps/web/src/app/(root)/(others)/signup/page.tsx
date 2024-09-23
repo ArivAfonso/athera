@@ -4,16 +4,10 @@ import React, { useEffect } from 'react'
 import { useState } from 'react'
 import twitterSvg from '@/images/Twitter.svg'
 import googleSvg from '@/images/Google.svg'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import MyLink from '@/components/MyLink/MyLink'
-import Heading2 from '@/components/Heading/Heading2'
-import Image from 'next/image'
 import { createClient } from '@/utils/supabase/client'
 import { useForm, Controller } from 'react-hook-form' // Import the necessary functions
-import Input from '@/components/Input/Input'
-import Alert from '@/components/Alert/Alert'
 import { setCookie } from 'cookies-next'
-import Button from '@/components/Button/Button'
+import { Input, Image, Alert, Button, Heading2, MyLink } from 'ui'
 
 const PageSignUp = ({}) => {
     const supabase = createClient()

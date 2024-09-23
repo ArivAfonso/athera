@@ -1,9 +1,6 @@
 'use client'
 
-import Alert from '@/components/Alert/Alert'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import Input from '@/components/Input/Input'
-import Label from '@/components/Label/Label'
+import { Alert, Label, ButtonPrimary, Input } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 test('test', async ({ page }) => {
-    await page.goto('/author/ArivAfonso')
+    await page.goto('/author/Ariv')
     await page.waitForSelector('text=Ariv Afonso')
 
     //Click the follow button

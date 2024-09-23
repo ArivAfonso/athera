@@ -2,7 +2,6 @@ import { expect, request, test as setup } from '@playwright/test'
 
 const INBUCKET_URL = `http://localhost:54324`
 
-// eg endpoint: https://api.testmail.app/api/json?apikey=${APIKEY}&namespace=${NAMESPACE}&pretty=true
 async function getConfirmEmail(username: string): Promise<{
     token: string
     url: string

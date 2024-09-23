@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react'
-import Modal from '@/components/Modal/Modal'
+import { Modal } from 'ui'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
 import AuthorType from '@/types/AuthorType'

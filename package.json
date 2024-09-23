@@ -16,8 +16,11 @@
         "lint": "turbo run lint",
         "start": "turbo run start",
         "dev:web": "cd apps/web && turbo run dev",
+        "dev:web:local": "cd apps/web && turbo run dev:local",
         "build:web": "cd apps/web && turbo run build",
         "start:web": "cd apps/web && turbo run start",
+        "db:start": "cd db/supabase && npx supabase start",
+        "db:stop": "cd db/supabase && npx supabase stop",
         "test": "cd db/supabase && npx supabase start && cd ../../tests && npx playwright test"
     },
     "devDependencies": {

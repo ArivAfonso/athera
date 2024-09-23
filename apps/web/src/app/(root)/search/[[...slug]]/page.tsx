@@ -1,10 +1,8 @@
 'use client'
 
 import React, { FC, useState, useEffect, Suspense } from 'react'
-import Nav from '@/components/Nav/Nav'
-import NavItem from '@/components/NavItem/NavItem'
 import TopicFilterListBox from '@/components/TopicFilterListBox/TopicFilterListBox'
-import Input from '@/components/Input/Input'
+import { Input, Nav, NavItem } from 'ui'
 import Card11 from '@/components/Card11/Card11'
 import CardTopic2 from '@/components/CardTopic2/CardTopic2'
 import { useRouter } from 'next/navigation'
@@ -210,7 +208,7 @@ const PageSearchV2 = (context: any) => {
                                 type="search"
                                 placeholder="Type and press enter"
                                 className="shadow-lg rounded-xl border-opacity-0"
-                                sizeClass="pl-14 py-5 pr-5 md:pl-16"
+                                sizeClass="pl-16 py-5 pr-5 md:pl-16"
                                 defaultValue={s}
                                 onChange={(e) => setSearchValue(e.target.value)}
                             />

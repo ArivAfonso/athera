@@ -1,5 +1,5 @@
 import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
-import Heading from '@/components/Heading/Heading'
+import { Heading } from 'ui'
 import AuthorType from '@/types/AuthorType'
 import React, { FC } from 'react'
 

@@ -1,9 +1,9 @@
 import React, { FC } from 'react'
 import { BadgeColor } from '@/types/BadgeColorType'
-import Badge from '@/components/Badge/Badge'
 import Link from 'next/link'
 import TopicType from '@/types/TopicType'
 import Image from 'next/image'
+import { Badge } from 'ui'
 
 export interface CardTopic4Props {
     className?: string

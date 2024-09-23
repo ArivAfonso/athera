@@ -1,16 +1,12 @@
 'use client'
 
-import Alert from '@/components/Alert/Alert'
-import Input from '@/components/Input/Input'
 import TopicType from '@/types/TopicType'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import NextImage from 'next/image'
-import Label from '@/components/Label/Label'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import Select from '@/components/Select/Select'
+import { Input, Alert, Label, Select, ButtonPrimary } from 'ui'
 import toast from 'react-hot-toast'
 
 async function getData(context: { params: { slug: any } }) {

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import PostType from '@/types/PostType'
 import stringToSlug from '@/utils/stringToSlug'
-import DropDown from '../DropDown/DropDown'
+import { DropDown } from 'ui'
 import ModalReportItem from '../ModalReportItem/ModalReportItem'
 import ModalHidePost from '../PostActionDropdown/ModalHidePost'
 

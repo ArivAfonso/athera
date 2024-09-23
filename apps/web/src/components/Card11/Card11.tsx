@@ -11,7 +11,7 @@ import PostBookmark from '../PostBookmark/PostBookmark'
 import stringToSlug from '@/utils/stringToSlug'
 import Tilt from 'react-parallax-tilt'
 import { getCookie } from 'cookies-next'
-import DropDown, { DropDownItem } from '@/components/DropDown/DropDown'
+import { DropDown, DropDownItem } from 'ui'
 import ModalReportItem from '../ModalReportItem/ModalReportItem'
 import ModalHidePost from '../PostActionDropdown/ModalHidePost'
 

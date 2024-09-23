@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import Heading from '@/components/Heading/Heading'
+import { Heading } from 'ui'
 import Card5 from '@/components/Card5/Card5'
 import PostType from '@/types/PostType'
 

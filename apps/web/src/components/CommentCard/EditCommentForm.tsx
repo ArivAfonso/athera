@@ -1,8 +1,5 @@
 import React, { FC } from 'react'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import ButtonSecondary from '@/components/Button/ButtonSecondary'
-import Textarea from '@/components/Textarea/Textarea'
-import Button from '@/components/Button/Button'
+import { Button, Textarea, Label, ButtonPrimary } from 'ui'
 import { useForm, Controller } from 'react-hook-form'
 import { createClient } from '@/utils/supabase/client'
 

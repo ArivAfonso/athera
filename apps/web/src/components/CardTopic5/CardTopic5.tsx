@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { BadgeColor } from '@/types/BadgeColorType'
-import Badge from '@/components/Badge/Badge'
+import { Badge } from 'ui'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRightIcon } from '@heroicons/react/24/solid'

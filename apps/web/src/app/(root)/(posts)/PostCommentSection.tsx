@@ -1,10 +1,7 @@
 import React, { FC, useEffect, useState } from 'react' // Import useState
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import CommentCard from '@/components/CommentCard/CommentCard'
 import CommentType from '@/types/CommentType'
-import ButtonSecondary from '@/components/Button/ButtonSecondary'
-import Textarea from '@/components/Textarea/Textarea'
-import Button from '@/components/Button/Button'
+import { Button, Textarea, Label, ButtonPrimary } from 'ui'
 import { useForm, Controller } from 'react-hook-form'
 import { AuthSession } from '@supabase/supabase-js'
 import { createClient } from '@/utils/supabase/client'

@@ -1,17 +1,18 @@
 import { Listbox, Switch, Transition } from '@headlessui/react'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import Input from '@/components/Input/Input'
-import Label from '@/components/Label/Label'
-import Textarea from '@/components/Textarea/Textarea'
 import { debounce } from 'lodash'
 import React, { FC, Fragment, useState } from 'react'
-import ButtonThird from '@/components/Button/ButtonThird'
-import Button from '@/components/Button/Button'
-import Modal from '@/components/Modal/Modal'
+import {
+    Modal,
+    Alert,
+    Button,
+    Textarea,
+    Label,
+    ButtonPrimary,
+    ButtonThird,
+} from 'ui'
 import { Cog8ToothIcon } from '@heroicons/react/24/outline'
 import DateTimepicker from '@/components/DateTimePicker/DateTimepicker'
 import dayjs from 'dayjs'
-import Alert from '@/components/Alert/Alert'
 import toast from 'react-hot-toast'
 import { useThemeMode } from '@/hooks/useThemeMode'
 import { ChevronUpDownIcon } from '@heroicons/react/24/solid'

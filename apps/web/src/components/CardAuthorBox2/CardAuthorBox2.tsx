@@ -1,7 +1,6 @@
 import React, { FC } from 'react'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
-import Avatar from '@/components/Avatar/Avatar'
-import Img from '@/components/Img/Img'
+import { Avatar, Img } from 'ui'
 import Link from 'next/link'
 import AuthorType from '@/types/AuthorType'
 

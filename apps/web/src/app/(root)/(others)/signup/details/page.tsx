@@ -1,19 +1,21 @@
 'use client'
 
-import Heading2 from '@/components/Heading/Heading2'
-import Input from '@/components/Input/Input'
-import MyLink from '@/components/MyLink/MyLink'
-import Textarea from '@/components/Textarea/Textarea'
+import {
+    Input,
+    Alert,
+    Button,
+    Textarea,
+    Label,
+    ButtonPrimary,
+    Heading2,
+} from 'ui'
 import { Controller, useForm } from 'react-hook-form'
 import Image from 'next/image'
-import Label from '@/components/Label/Label'
 import { AuthSession } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { deleteCookie, getCookie } from 'cookies-next'
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
-import Alert from '@/components/Alert/Alert'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
 import { createClient } from '@/utils/supabase/client'
 import { debounce } from 'lodash'
 import Empty from '@/components/Empty'

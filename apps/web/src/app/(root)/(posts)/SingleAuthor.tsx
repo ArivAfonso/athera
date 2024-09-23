@@ -1,4 +1,4 @@
-import Avatar from '@/components/Avatar/Avatar'
+import { Avatar } from 'ui'
 import AuthorType from '@/types/AuthorType'
 import Link from 'next/link'
 import React, { FC } from 'react'

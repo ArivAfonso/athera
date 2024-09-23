@@ -2,12 +2,12 @@
 
 import React, { FC, useEffect, useState } from 'react'
 import twFocusClass from '@/utils/twFocusClass'
-import DropDown, { DropDownItem } from '@/components/DropDown/DropDown'
+import { DropDownItem } from 'ui'
 import ModalReportItem from '@/components/ModalReportItem/ModalReportItem'
 import { useRouter } from 'next/navigation'
 import ModalHidePost from './ModalHidePost'
 import toast from 'react-hot-toast'
-import Alert from '../Alert/Alert'
+import { Input, Alert, DropDown } from 'ui'
 import AuthorType from '@/types/AuthorType'
 import { createClient } from '@/utils/supabase/client'
 

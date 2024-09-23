@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import HorizontalFormBlockWrapper from './FormWrapper'
-import { RadioGroup, Switch } from '@headlessui/react'
-import MySwitch from '@/components/MySwitch/MySwitch'
-import Radio from '@/components/Radio/Radio'
-import Checkbox from '@/components/Checkbox/Checkbox'
+import { Checkbox, MySwitch } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 

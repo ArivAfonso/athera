@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import toast from 'react-hot-toast'
-import Alert from '../Alert/Alert'
+import { Input, Alert } from 'ui'
 
 export interface BookmarkBtnProps {
     containerClassName?: string

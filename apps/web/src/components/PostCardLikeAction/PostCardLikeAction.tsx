@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react'
 import convertNumbThousand from '@/utils/convertNumbThousand'
 import { createClient } from '@/utils/supabase/client'
 import toast, { Toaster } from 'react-hot-toast'
-import Alert from '../Alert/Alert'
+import { Alert } from 'ui'
 
 export interface PostCardLikeActionProps {
     className?: string

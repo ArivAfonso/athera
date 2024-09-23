@@ -1,9 +1,13 @@
 import { Tab } from '@headlessui/react'
-import ButtonPrimary from '../Button/ButtonPrimary'
-import ButtonThird from '../Button/ButtonThird'
-import Input from '../Input/Input'
-import Label from '../Label/Label'
-import Modal from '../Modal/Modal'
+import {
+    Input,
+    Alert,
+    Label,
+    ButtonPrimary,
+    ButtonThird,
+    ButtonSecondary,
+    Modal,
+} from 'ui'
 import React, { FC, useState } from 'react'
 
 import { EditorItemImageAttrs } from './MenuBar'

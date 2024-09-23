@@ -1,9 +1,12 @@
-import ButtonPrimary from '../Button/ButtonPrimary'
-import ButtonSecondary from '../Button/ButtonSecondary'
-import ButtonThird from '../Button/ButtonThird'
-import Input from '../Input/Input'
-import Label from '../Label/Label'
-import Modal from '../Modal/Modal'
+import {
+    Input,
+    Alert,
+    Label,
+    ButtonPrimary,
+    ButtonThird,
+    ButtonSecondary,
+    Modal,
+} from 'ui'
 import React, { FC, useEffect, useRef, useState } from 'react'
 
 interface ModalGetLinkProps {

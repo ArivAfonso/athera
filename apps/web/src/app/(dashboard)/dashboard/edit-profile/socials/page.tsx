@@ -1,12 +1,9 @@
 'use client'
 
-import Label from '@/components/Label/Label'
 import React, { FC, useEffect, useState } from 'react'
-import ButtonPrimary from '@/components/Button/ButtonPrimary'
-import Input from '@/components/Input/Input'
+import { Input, Alert, Label, ButtonPrimary } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { useForm, Controller } from 'react-hook-form'
-import Alert from '@/components/Alert/Alert'
 import toast from 'react-hot-toast'
 
 function isValidHttpUrl(string: string) {

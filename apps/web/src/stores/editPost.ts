@@ -1,4 +1,4 @@
-import create from 'zustand'
+import { create } from 'zustand'
 import PostType from '@/types/PostType'
 
 type Store = {
@@ -8,5 +8,5 @@ type Store = {
 
 export const useStore = create<Store>((set) => ({
     post: null,
-    setPost: (post) => set({ post }),
+    setPost: (post: PostType | null) => set({ post }),
 }))

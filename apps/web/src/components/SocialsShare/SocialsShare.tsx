@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { DropDownItem } from '../DropDown/DropDown'
+import { DropDownItem } from 'ui'
 
 export interface SocialsShareProps {
     className?: string

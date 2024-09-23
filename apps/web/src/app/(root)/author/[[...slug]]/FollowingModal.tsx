@@ -1,11 +1,11 @@
 import React, { FC, useEffect, useState } from 'react'
-import Modal from '@/components/Modal/Modal'
 import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
 import AuthorType from '@/types/AuthorType'
 import { createClient } from '@/utils/supabase/client'
 import { SearchIcon } from 'lucide-react'
 import CircleLoading from '@/components/CircleLoading/CircleLoading'
 import { debounce } from 'lodash'
+import { Modal } from 'ui'
 import Empty from '@/components/Empty'
 
 export interface FollowButtonProps {

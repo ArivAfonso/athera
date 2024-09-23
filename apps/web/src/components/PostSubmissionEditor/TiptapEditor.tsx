@@ -92,6 +92,7 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
             Iframe,
             CodeBlockLowlight.extend({
                 addNodeView() {
+                    // @ts-ignore
                     return ReactNodeViewRenderer(CodeBlockComponent)
                 },
             }).configure({ lowlight }),

@@ -10,7 +10,10 @@ import {
 } from '@heroicons/react/24/outline'
 import VerifyIcon from '@/components/VerifyIcon'
 import FollowButton from '@/components/FollowButton'
-import { SOCIALS_DATA } from '@/components/SocialsShare/SocialsShare'
+import {
+    SOCIALS_DATA,
+    TSocialShareItem,
+} from '@/components/SocialsShare/SocialsShare'
 import { DropDownItem } from 'ui'
 import AccountActionDropdown from '@/components/AccountActionDropdown/AccountActionDropdown'
 import Image from 'next/image'
@@ -348,6 +351,7 @@ const PageAuthor = (context: any) => {
                                                 )}
                                                 //@ts-ignore
                                                 data={SOCIALS_DATA}
+                                                onClick={() => {}}
                                             />
                                         </div>
 

@@ -88,7 +88,7 @@
         "zustand": "5.0.0-rc.2"
     },
     "devDependencies": {
-        "@cloudflare/next-on-pages": "^1.7.2",
+        "@cloudflare/next-on-pages": "^1.13.3",
         "@types/react-modal": "^3.16.0",
         "@types/react-simple-maps": "^3.0.4",
         "autoprefixer": "^10.4.20",

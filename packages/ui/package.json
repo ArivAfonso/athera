@@ -2,9 +2,9 @@
     "name": "ui",
     "version": "0.1.0",
     "private": true,
-    "types": "dist/src/index.d.ts",
-    "main": "dist/src/index.js",
-    "module": "dist/src/index.esm.js",
+    "types": "dist/index.d.ts",
+    "main": "dist/index.js",
+    "module": "dist/index.esm.js",
     "scripts": {
         "build": "tsup",
         "dev": "tsup --watch"

@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { Badge } from 'ui'
+import Badge from '../Badge/Badge'
 import { BadgeColor } from '@/types/BadgeColorType'
 import PostTopicType from '@/types/PostTopicType'
 

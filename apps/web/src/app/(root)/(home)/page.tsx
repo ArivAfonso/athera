@@ -47,9 +47,6 @@ async function getData() {
         .is('scheduled_at', null)
         .limit(20)
 
-    console.log(error)
-    console.log(posts)
-
     const { data: topics, error: topicsError } = await supabase
         .from('topics')
         .select('id, name, image, color, postCount:post_topics(count)')

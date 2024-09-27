@@ -1,4 +1,4 @@
-import { FolderIcon } from '@heroicons/react/24/outline'
+import { FolderIcon } from 'lucide-react'
 
 export default function Empty({
     mainText,
@@ -11,7 +11,10 @@ export default function Empty({
 }) {
     return (
         <div className={className}>
-            <FolderIcon className="inline-block h-12 w-12 text-neutral-400 " />
+            <FolderIcon
+                strokeWidth={1.5}
+                className="inline-block h-12 w-12 text-neutral-400 "
+            />
             <h3 className="mt-4 text-sm font-semibold text-neutral-900 dark:text-neutral-300">
                 {mainText}
             </h3>

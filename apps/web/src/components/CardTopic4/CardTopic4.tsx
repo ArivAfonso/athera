@@ -3,7 +3,7 @@ import { BadgeColor } from '@/types/BadgeColorType'
 import Link from 'next/link'
 import TopicType from '@/types/TopicType'
 import Image from 'next/image'
-import { Badge } from 'ui'
+import Badge from '../Badge/Badge'
 
 export interface CardTopic4Props {
     className?: string

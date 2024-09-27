@@ -8,7 +8,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import AvatarDropdown from './AvatarDropdown'
 import NotifyDropdown from './NotifyDropdown'
-import { Button } from 'ui'
+import { Button, ButtonThird } from 'ui'
 
 export interface MainNavProps {}
 
@@ -50,14 +50,14 @@ const MainNav: FC<MainNavProps> = async ({}) => {
                             ) : (
                                 <>
                                     <div className="px-1"></div>
-                                    <Button
+                                    <ButtonThird
                                         sizeClass="py-3 px-4 sm:px-6"
                                         //className="hover:bg-neutral-200 bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-gray-200"
                                         href="/signup"
                                         pattern="third"
                                     >
                                         Sign Up
-                                    </Button>
+                                    </ButtonThird>
                                 </>
                             )}
                         </div>

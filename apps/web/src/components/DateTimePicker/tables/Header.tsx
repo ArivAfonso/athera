@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 
 export interface HeaderProps {
     className?: string
@@ -81,7 +81,7 @@ const Header = (props: HeaderProps) => {
                         preventFocus && event.preventDefault()
                     }
                 >
-                    <ChevronLeftIcon width={20} height={20} />{' '}
+                    <ChevronLeftIcon strokeWidth={1.5} width={20} height={20} />{' '}
                     {/* Add this line */}
                 </button>
                 {renderCenter && renderChildren}
@@ -99,7 +99,11 @@ const Header = (props: HeaderProps) => {
                         preventFocus && event.preventDefault()
                     }
                 >
-                    <ChevronRightIcon width={20} height={20} />{' '}
+                    <ChevronRightIcon
+                        strokeWidth={1.5}
+                        width={20}
+                        height={20}
+                    />{' '}
                     {/* Add this line */}
                 </button>
             </div>

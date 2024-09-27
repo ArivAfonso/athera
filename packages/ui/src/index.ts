@@ -1,9 +1,8 @@
-import '../styles/globals.css'
-import '../styles/index.scss'
+// import '../styles/globals.css'
+// import '../styles/index.scss'
 
 export { default as AccordionInfo } from './AccordionInfo/AccordionInfo'
 export { default as Alert } from './Alert/Alert'
-export { default as Badge } from './Badge/Badge'
 export { default as Button } from './Button/Button'
 export { default as Checkbox } from './Checkbox/Checkbox'
 export { default as DropDown } from './DropDown/NcDropDown'

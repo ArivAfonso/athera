@@ -7,7 +7,7 @@
     "private": true,
     "scripts": {
         "dev": "env-cmd -f .env.production next dev",
-        "dev:local": "env-cmd -f .env.test next dev",
+        "dev:local": "env-cmd -f .env.test next dev -p 1234",
         "build": "env-cmd -f .env.production next build",
         "start": "next start",
         "lint": "next lint"

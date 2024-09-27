@@ -1,3 +1,4 @@
+'use client'
 import { Disclosure } from '@headlessui/react'
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { FC, ReactNode } from 'react'

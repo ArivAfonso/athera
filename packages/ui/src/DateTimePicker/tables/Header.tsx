@@ -1,5 +1,4 @@
 import classNames from 'classnames'
-import Button from '@/components/Button/Button'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
 
 export interface HeaderProps {

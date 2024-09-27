@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/utils/cn'
-import { TrendingUpIcon, Badge } from 'lucide-react'
+import { TrendingUpIcon } from 'lucide-react'
 import {
     BarChart,
     Bar,

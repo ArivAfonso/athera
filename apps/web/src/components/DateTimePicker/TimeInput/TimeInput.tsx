@@ -12,7 +12,6 @@ import {
     createTimeHandler,
 } from './utils'
 import type { ReactNode, RefObject, Ref } from 'react'
-import { ClockIcon } from '@heroicons/react/24/outline'
 
 type Value = Date | null
 
@@ -160,13 +159,6 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>((props, ref) => {
         },
         nextRef,
     })
-
-    const handleClear = () => {
-        setTime({ hours: '', minutes: '', seconds: '', amPm: '' })
-        setValue(null)
-        onChange?.(null)
-        hoursRef?.current?.focus()
-    }
 
     const suffixSlot = clearable && _value ? <></> : suffix
 

@@ -21,15 +21,6 @@ interface AlertProps {
 }
 declare const Alert: React.FC<AlertProps>;
 
-type BadgeColor = 'pink' | 'green' | 'yellow' | 'red' | 'indigo' | 'blue' | 'purple' | 'brown' | 'orange' | 'gray';
-interface BadgeProps {
-    className?: string;
-    name: ReactNode;
-    color?: BadgeColor;
-    href?: string;
-}
-declare const Badge: FC<BadgeProps>;
-
 interface ButtonProps {
     className?: string;
     sizeClass?: string;
@@ -219,4 +210,4 @@ interface NavItemProps {
 }
 declare const NavItem: FC<NavItemProps>;
 
-export { AccordionInfo, Alert, Avatar, Badge, Button, ButtonCircle, ButtonClose, ButtonPrimary, type ButtonProps, ButtonSecondary, ButtonThird, Checkbox, DropDown, type DropDownItem, Heading, Heading2, Img as Image, Img, Input, Label, Loading, Modal, MyLink, MySwitch, Nav, NavItem, PlaceIcon, Radio, Select, Textarea };
+export { AccordionInfo, Alert, Avatar, Button, ButtonCircle, ButtonClose, ButtonPrimary, type ButtonProps, ButtonSecondary, ButtonThird, Checkbox, DropDown, type DropDownItem, Heading, Heading2, Img as Image, Img, Input, Label, Loading, Modal, MyLink, MySwitch, Nav, NavItem, PlaceIcon, Radio, Select, Textarea };

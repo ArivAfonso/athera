@@ -12,7 +12,7 @@ export interface AvatarProps {
 }
 
 const Avatar: FC<AvatarProps> = ({
-    containerClassName = 'ring-1 ring-white dark:ring-neutral-900',
+    containerClassName = '',
     sizeClass = 'h-6 w-6 text-sm',
     radius = 'rounded-full',
     imgUrl,

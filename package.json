@@ -24,7 +24,7 @@
         "test": "cd db/supabase && npx supabase start && cd ../../tests && npx playwright test"
     },
     "devDependencies": {
-        "@types/react": "^18.3.2",
+        "@types/react": "^18.3.10",
         "prettier": "^3.2.5",
         "turbo": "latest"
     }

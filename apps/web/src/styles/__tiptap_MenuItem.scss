@@ -1,0 +1,258 @@
+.TiptapEditor {
+    .menu-item {
+        @apply flex items-center justify-center rounded-lg  
+      h-8 w-8 sm:h-10 sm:w-10 border-none text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 hover:text-primary-900;
+
+        &.is-active {
+            @apply bg-primary-100 dark:bg-neutral-700 text-primary-900 dark:text-white;
+        }
+    }
+
+    .menu-item-svg svg {
+        fill: currentColor;
+        // height: 100%;
+        // width: 100%;
+    }
+}
+
+.nc-iframe-wrapper {
+    position: relative;
+    display: inline-block;
+    resize: both;
+    overflow: hidden;
+    min-width: 300px; /* Set minimum width to prevent scrollbars */
+    min-height: 200px; /* Set minimum height to prevent scrollbars */
+    max-width: 100%; /* Ensure it doesn't overflow the container */
+    max-height: 100%;
+}
+
+.nc-iframe-wrapper.selected {
+    border: 2px solid #007bff;
+}
+
+.nc-iframe-wrapper .resizable-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.nc-iframe-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.nc-iframe-wrapper.selected::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    background: #007bff;
+    cursor: se-resize;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+    .nc-iframe-wrapper {
+        min-width: 100%;
+        min-height: 100%;
+    }
+
+    .nc-iframe-wrapper.selected::after {
+        width: 8px;
+        height: 8px;
+    }
+}
+
+.hypermultimedia {
+    iframe,
+    audio,
+    video {
+        background-color: #cfcfcf;
+    }
+
+    &__resize-gripper {
+        position: absolute;
+        margin: 0;
+        display: none;
+        z-index: 1;
+
+        .media-resize-clamp {
+            width: 10px;
+            height: 10px;
+            background-color: #1a73e8;
+            border: 1px solid #fff;
+            display: none;
+            z-index: 4;
+
+            &--rotate {
+                border-radius: 50%;
+                position: absolute;
+                top: -28px;
+                left: 50%;
+                transform: translateX(-50%);
+                cursor: crosshair;
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 1.5px;
+                    height: 30px;
+                    background-color: #1a73e8;
+                }
+            }
+
+            &--left {
+                position: absolute;
+                top: 50%;
+                left: -5px;
+                transform: translateY(-50%);
+                cursor: ew-resize;
+                z-index: 2;
+            }
+
+            &--right {
+                position: absolute;
+                top: 50%;
+                right: -5px;
+                transform: translateY(-50%);
+                cursor: ew-resize;
+                z-index: 2;
+            }
+
+            &--top {
+                position: absolute;
+                top: -5px;
+                left: 50%;
+                transform: translateX(-50%);
+                cursor: ns-resize;
+                z-index: 2;
+            }
+
+            &--bottom {
+                position: absolute;
+                bottom: -5px;
+                left: 50%;
+                transform: translateX(-50%);
+                cursor: ns-resize;
+                z-index: 2;
+            }
+
+            &--top-left {
+                position: absolute;
+                top: -5px;
+                left: -5px;
+                cursor: nwse-resize;
+            }
+
+            &--top-right {
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                cursor: nesw-resize;
+            }
+
+            &--bottom-left {
+                position: absolute;
+                bottom: -5px;
+                left: -5px;
+                cursor: nesw-resize;
+            }
+
+            &--bottom-right {
+                position: absolute;
+                bottom: -5px;
+                right: -5px;
+                cursor: nwse-resize;
+            }
+        }
+
+        &--active {
+            border: 1.5px solid #1a73e8;
+            display: block;
+            .media-resize-clamp {
+                display: block;
+            }
+        }
+    }
+
+    &__modal {
+        padding: 8px 8px;
+        background-color: #fff;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        box-shadow:
+            0 4px 6px -1px rgba(0, 0, 0, 0.1),
+            0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+
+        &__divider {
+            border-left: 2px solid #e5e7eb;
+            height: 5px;
+            margin: 6px 10px;
+        }
+
+        select {
+            @apply border-gray-300 py-2 px-2 rounded-md;
+            &:hover {
+                background-color: #eee;
+            }
+        }
+
+        button {
+            border-color: #d1d5db;
+            padding: 8px;
+            border-radius: 0.375rem;
+            &:hover {
+                background-color: #eee;
+            }
+        }
+
+        &__btn--resize {
+            svg {
+            }
+        }
+
+        &--active {
+            background-color: #1a73e8;
+            fill: #fff;
+            &:hover {
+                svg {
+                    fill: black;
+                }
+            }
+            svg {
+                fill: #fff;
+            }
+        }
+    }
+}
+
+.iframe-wrapper {
+    position: relative;
+    padding-bottom: (100 / 16) * 9%;
+    height: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+
+    &.ProseMirror-selectednode {
+        outline: 3px solid #68cef8;
+    }
+
+    iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+}

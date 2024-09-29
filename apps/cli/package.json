@@ -1,0 +1,17 @@
+{
+    "name": "my-typescript-project",
+    "version": "1.0.0",
+    "description": "My TypeScript project",
+    "type": "module",
+    "scripts": {
+        "start": "node dist/index.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@inquirer/prompts": "^5.3.8",
+        "@types/yargs": "^17.0.33",
+        "tsx": "^4.17.0",
+        "typescript": "^4.4.3"
+    }
+}

@@ -1,0 +1,87 @@
+'use client'
+
+import React, { ButtonHTMLAttributes, FC } from 'react'
+import Link from 'next/link'
+import Loading from './Loading'
+
+export interface ButtonProps {
+    className?: string
+    sizeClass?: string
+    fontSize?: string
+    pattern?: 'primary' | 'secondary' | 'third' | 'white' | 'default'
+    //
+    loading?: boolean
+    disabled?: boolean
+    type?: ButtonHTMLAttributes<HTMLButtonElement>['type']
+    href?: string
+    targetBlank?: boolean
+    onClick?: () => void
+    children?: React.ReactNode
+}
+
+const Button: FC<ButtonProps> = ({
+    pattern = 'default',
+    className = '',
+    sizeClass = 'py-3 px-4 sm:py-3.5 sm:px-6',
+    fontSize = 'text-sm sm:text-base font-medium',
+    disabled = false,
+    href,
+    children,
+    type,
+    loading,
+    onClick = () => {},
+}) => {
+    let colors =
+        'bg-[#1338be] hover:bg-blue-500 text-white dark:bg-neutral-100 dark:hover:bg-neutral-50 dark:text-black'
+    switch (pattern) {
+        case 'primary':
+            colors =
+                'bg-blue-700 hover:bg-blue-600 dark:hover:bg-blue-800 hover:bg-primary-6000 text-primary-50'
+            break
+        case 'secondary':
+            colors =
+                'bg-secondary-500 hover:bg-secondary-6000 text-secondary-50'
+            break
+        case 'white':
+            colors =
+                'bg-white hover:bg-[#1338be] hover:text-white dark:hover:bg-[#1338be] dark:bg-neutral-900 text-athera-blue dark:text-neutral-200'
+            break
+        case 'third':
+            colors =
+                'bg-white dark:bg-transparent ring-1 ring-neutral-300 hover:ring-neutral-400 dark:ring-neutral-700 dark:hover:ring-neutral-500'
+            break
+
+        default:
+            break
+    }
+
+    let CLASSES = `Button flex-shrink-0 relative h-auto inline-flex items-center justify-center rounded-full transition-colors border-transparent ${colors} ${fontSize} ${sizeClass} ${className} `
+
+    if (!!href) {
+        return (
+            <Link
+                href={href}
+                className={`${CLASSES} `}
+                onClick={onClick}
+                type={type}
+            >
+                {loading && <Loading />}
+                {children || `This is Link`}
+            </Link>
+        )
+    }
+
+    return (
+        <button
+            disabled={disabled || loading}
+            className={`${CLASSES}`}
+            onClick={onClick}
+            type={type}
+        >
+            {loading && <Loading />}
+            {children || `Button default`}
+        </button>
+    )
+}
+
+export default Button

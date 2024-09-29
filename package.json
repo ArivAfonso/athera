@@ -1,0 +1,32 @@
+{
+    "name": "athera",
+    "version": "0.2",
+    "author": {
+        "name": "Ariv Afonso"
+    },
+    "private": true,
+    "packageManager": "pnpm@9.11.0",
+    "workspaces": [
+        "packages/*",
+        "apps/*",
+        "tests"
+    ],
+    "scripts": {
+        "build": "turbo run build",
+        "dev": "turbo run dev",
+        "lint": "turbo run lint",
+        "start": "turbo run start",
+        "dev:web": "cd apps/web && turbo run dev",
+        "dev:web:local": "cd apps/web && turbo run dev:local",
+        "build:web": "cd apps/web && turbo run build",
+        "start:web": "cd apps/web && turbo run start",
+        "db:start": "cd db/supabase && npx supabase start",
+        "db:stop": "cd db/supabase && npx supabase stop",
+        "test": "cd db/supabase && npx supabase start && cd ../../tests && npx playwright test"
+    },
+    "devDependencies": {
+        "@types/react": "^18.3.2",
+        "prettier": "^3.2.5",
+        "turbo": "latest"
+    }
+}

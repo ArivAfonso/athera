@@ -1,0 +1,435 @@
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hiddenScrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hiddenScrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+/* custom-scrollbar.css */
+/* This styles the width of the scrollbar */
+::-webkit-scrollbar {
+    width: 20px;
+}
+
+/* This styles the appearance of the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+    width: 20px;
+    border-radius: 20px;
+    background-color: #d1d5db; /* default background color */
+    border: 6px solid transparent;
+    background-clip: content-box;
+}
+
+/* This styles the appearance of the scrollbar thumb when hovered */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a8bbbf;
+}
+
+/* This styles the background of the scrollbar track */
+::-webkit-scrollbar-track {
+    background-color: #ffffff; /* Set scrollbar track based on theme mode */
+}
+
+/* This styles the container to overlay the scrollbar track */
+.custom-scrollbar-container {
+    position: relative;
+    background-color: transparent;
+    z-index: 1;
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+    /* This styles the appearance of the scrollbar thumb in dark mode */
+    .dark ::-webkit-scrollbar-thumb {
+        background-color: #374151;
+    }
+
+    /* This styles the appearance of the scrollbar thumb when hovered in dark mode */
+    .dark ::-webkit-scrollbar-thumb:hover {
+        background-color: #475569;
+    }
+
+    /* This styles the appearance of the scrollbar track in dark mode */
+    .dark ::-webkit-scrollbar-track {
+        background-color: #1f2937; /* Set scrollbar track based on theme mode */
+    }
+}
+
+//   /* ................................................... */
+//   /* Change autocomplete styles in WebKit */
+//   /* ................................................... */
+//   input:-webkit-autofill,
+//   input:-webkit-autofill:hover,
+//   input:-webkit-autofill:focus,
+//   textarea:-webkit-autofill,
+//   textarea:-webkit-autofill:hover,
+//   textarea:-webkit-autofill:focus,
+//   select:-webkit-autofill,
+//   select:-webkit-autofill:hover,
+//   select:-webkit-autofill:focus {
+//     border: 1px solid transparent;
+//     -webkit-text-fill-color: currentColor;
+//     -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+//     transition: background-color 5000s ease-in-out 0s;
+//   }
+
+//
+.nc-card-title {
+    @apply transition-colors hover:text-primary-900 dark:hover:text-primary-300 duration-75;
+}
+
+.nc-Body::-webkit-scrollbar {
+    width: 20px;
+    opacity: 0;
+}
+
+//
+.z-max {
+    z-index: 99999999;
+}
+//
+.nc-PostCardCommentBtn,
+.nc-PostCardLikeAction,
+.nc-CommentCardLikeReply > button {
+    &:hover {
+        span {
+            color: inherit;
+        }
+    }
+}
+
+//
+.nc-origin-100 {
+    transform-origin: 100% 50% 0px;
+}
+.nc-origin-50 {
+    transform-origin: 50% 50% 0px;
+}
+
+//
+.nc-PostFeaturedMedia {
+    .glide__bullet--active {
+        @apply bg-white bg-opacity-100;
+    }
+}
+
+.modalPhotos-single-gallery {
+    .controls_nav {
+        .glide__bullet--active {
+            display: block;
+        }
+    }
+}
+
+// LOADING
+.lds-ellipsis {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+.lds-ellipsis div {
+    position: absolute;
+    top: 33px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+    left: 8px;
+    animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+    left: 8px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+    left: 32px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+    left: 56px;
+    animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+@keyframes lds-ellipsis3 {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0);
+    }
+}
+@keyframes lds-ellipsis2 {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(24px, 0);
+    }
+}
+
+//
+
+.nc-animation-spin {
+    animation: myspin 20s linear infinite;
+    animation-play-state: paused;
+
+    &.playing {
+        animation-play-state: running;
+    }
+
+    @keyframes myspin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+}
+
+[type='button'] {
+    -webkit-appearance: none !important;
+}
+
+//
+.nc-section-rounded-none {
+    *[class*='rounded'],
+    *[class*='nc-box'] {
+        border-radius: 0 !important;
+    }
+}
+
+.nc-section-rounded-md {
+    *[class*='rounded'],
+    *[class*='nc-box'] {
+        border-radius: 0.375rem !important;
+    }
+}
+
+.nc-google-shadow {
+    box-shadow:
+        0px 6px 10px 0px rgb(0 0 0 / 14%),
+        0px 1px 18px 0px rgb(0 0 0 / 12%),
+        0px 3px 5px -1px rgb(0 0 0 / 20%);
+}
+
+//
+
+//
+.menuIsNew_lv1 {
+    > a::before {
+        content: 'New!';
+        position: absolute;
+        top: -2px;
+        right: 0;
+        display: inline-block;
+        padding: 0 5px;
+        line-height: 15px;
+        border-radius: 4px;
+        background-color: #f35656;
+        color: #fff;
+        font-size: 10px;
+        font-weight: normal;
+    }
+}
+.menuIsNew {
+    > a::after {
+        content: 'New!';
+        display: inline-block;
+        padding: 0 5px;
+        line-height: 15px;
+        border-radius: 4px;
+        background-color: #f35656;
+        color: #fff;
+        font-size: 10px;
+        margin-left: 6px;
+    }
+}
+
+//
+.nc-PostCardCommentBtn,
+.nc-PostCardLikeAction,
+.nc-CommentCardLikeReply > button {
+    &:hover {
+        span {
+            color: inherit;
+        }
+    }
+}
+
+//
+.nc-CardLarge1--hasAnimation {
+    .nc-CardLarge1__left {
+        animation-name: CardLarge1ExampleLeft;
+        animation-duration: 300ms;
+        animation-timing-function: ease-in-out;
+    }
+    .nc-CardLarge1__right {
+        animation-name: CardLarge1ExampleRight;
+        animation-duration: 500ms;
+        animation-timing-function: ease-in-out;
+    }
+}
+
+@keyframes CardLarge1ExampleRight {
+    from {
+        transform: scale(1.05) translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) translateY(0px);
+        opacity: 1;
+    }
+}
+@keyframes CardLarge1ExampleLeft {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.nc-custom-shadow-1 {
+    box-shadow:
+        rgba(17, 17, 26, 0.1) 0px 4px 16px,
+        rgba(17, 17, 26, 0.05) 0px 8px 32px;
+}
+
+.gist {
+    .gist-file {
+        border: none !important;
+        margin-bottom: 0 !important;
+        .gist-data {
+            border-bottom: 2px solid #7f8c8d !important;
+            .line-numbers {
+                border-right: 2px solid #7f8c8d !important;
+                padding: 1em !important;
+            }
+            td.line-data {
+                padding: 1em !important;
+            }
+            .gist-data span,
+            pre,
+            .line-numbers {
+                font-size: 14px !important;
+                line-height: 24px !important;
+                font-weight: normal !important;
+                color: #7f8c8d !important;
+            }
+        }
+        .gist-meta {
+            text-shadow: none !important;
+            a {
+                color: #7f8c8d !important;
+            }
+        }
+        .gist-syntax {
+            background: #fff;
+            color: #ecf0f1 !important;
+            .hll {
+                background-color: #bdc3c7 !important;
+            }
+            .c,
+            .cm,
+            .cp,
+            .c1,
+            .cs {
+                color: #7f8c8d !important;
+            }
+            .err {
+                color: #c0392b;
+                background-color: #7f8c8d !important;
+            }
+            .k,
+            .kc,
+            .kd,
+            .kp,
+            .kr,
+            .kt,
+            .no {
+                color: #3498db !important;
+            }
+            .l,
+            .m,
+            .mf,
+            .mh,
+            .mi,
+            .mo,
+            .se,
+            .il {
+                color: #9b59b6 !important;
+            }
+            .n,
+            .p,
+            .nb,
+            .ni,
+            .nl,
+            .nn,
+            .py,
+            .nv,
+            .w,
+            .bp,
+            .vc,
+            .vg,
+            .vi {
+                color: #bdc3c7 !important;
+            }
+            .o,
+            .kn,
+            .nt,
+            .ow {
+                color: #e74c3c !important;
+            }
+            .ge {
+                font-style: italic !important;
+            }
+            .gs {
+                font-weight: bold !important;
+            }
+            .ld,
+            .s,
+            .sb,
+            .sc,
+            .sd,
+            .s2,
+            .sh,
+            .si,
+            .sx,
+            .sr,
+            .s1,
+            .ss {
+                color: #f1c40f !important;
+            }
+            .na,
+            .nc,
+            .nd,
+            .ne,
+            .nf,
+            .nx {
+                color: #2ecc71 !important;
+            }
+        }
+        .gist-data,
+        .line-numbers,
+        .gist-meta {
+            background: #2c3e50 !important;
+        }
+    }
+}

@@ -9,6 +9,7 @@ export default interface AuthorType {
         following: string
     }[]
     isFollowing?: boolean
+    created_at?: string
     username: string
     background?: string
     bio?: string
@@ -26,6 +27,9 @@ export default interface AuthorType {
     pinterest?: string
     customization?: {
         profile_layout: string
+        font_title: string
+        font_body: string
+        color: string
     }
     postCount?: {
         count: number

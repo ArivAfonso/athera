@@ -18,6 +18,7 @@ export interface SingleHeaderProps {
     estimatedReadingTime: number
     title: string
     author: AuthorType
+    font: string
     created_at: string
     likes: number
     comments: number
@@ -31,6 +32,7 @@ const SingleHeader: FC<SingleHeaderProps> = ({
     description = '',
     topic,
     title = '',
+    font,
     created_at,
     comments,
     likes,
@@ -89,7 +91,7 @@ const SingleHeader: FC<SingleHeaderProps> = ({
                         topics={topic}
                         shorten={false}
                     />
-                    <SingleTitle mainClass={titleMainClass} title={title} />
+                    <SingleTitle title={title} font={font} />
                     {!hiddenDesc && (
                         <span className="block text-base text-neutral-500 md:text-lg dark:text-neutral-400 pb-1">
                             {description}

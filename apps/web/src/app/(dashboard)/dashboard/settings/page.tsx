@@ -1,6 +1,6 @@
 'use client'
 
-import { Label, MySwitch, AccordionInfo, Checkbox, Alert } from 'ui'
+import { Label, MySwitch, AccordionInfo, Alert } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { deleteCookie, getCookie, setCookie } from 'cookies-next'
 import { useEffect, useState } from 'react'
@@ -8,6 +8,8 @@ import HorizontalFormBlockWrapper from '../edit-profile/notifications/FormWrappe
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import ThemeSwitcher from '@/components/ThemeSwitcher/ThemeSwitcher'
+import FontSwitcher from '@/components/FontSwitcher/FontSwitcher'
+import { Tab } from '@headlessui/react'
 
 interface NotificationSettings {
     comments: string[]
@@ -79,7 +81,7 @@ function Settings() {
         if (storedParallaxTiltEnabled !== null) {
             setIsParallaxTiltEnabled(storedParallaxTiltEnabled === 'true')
         }
-    }, []) // Empty dependency array to run the effect only once on mount
+    }, [])
 
     const handleParallaxTiltChange = (enabled: boolean) => {
         setIsParallaxTiltEnabled(enabled)
@@ -91,7 +93,50 @@ function Settings() {
     const [loading, setLoading] = useState(true)
     const [customization, setCustomization] = useState({
         profile_layout: 'grid',
+        font_title: 'classic',
+        font_body: 'classic',
+        color: 'classic',
     })
+
+    async function updateTheme(theme: string) {
+        const supabase = createClient()
+        const { data: session } = await supabase.auth.getUser()
+
+        if (!session.user) {
+            toast.custom((t) => (
+                <Alert
+                    type="danger"
+                    message="You need to be logged in to access this page."
+                />
+            ))
+            return
+        }
+
+        await supabase
+            .from('customization')
+            .update({ color: theme.toLowerCase() })
+            .eq('author', session.user.id)
+    }
+
+    async function updateFont(font: string, type: string) {
+        const supabase = createClient()
+        const { data: session } = await supabase.auth.getUser()
+
+        if (!session.user) {
+            toast.custom((t) => (
+                <Alert
+                    type="danger"
+                    message="You need to be logged in to access this page."
+                />
+            ))
+            return
+        }
+
+        await supabase
+            .from('customization')
+            .update({ [type]: font })
+            .eq('author', session.user.id)
+    }
 
     useEffect(() => {
         async function fetchData() {
@@ -117,6 +162,9 @@ function Settings() {
             if (data) {
                 setCustomization({
                     profile_layout: data.profile_layout || 'grid',
+                    font_title: data.font_title || 'classic',
+                    font_body: data.font_body || 'classic',
+                    color: data.color || 'classic',
                 })
             }
             setLoading(false)
@@ -141,6 +189,26 @@ function Settings() {
         await supabase
             .from('customization')
             .update({ [type]: value })
+            .eq('author', session.user.id)
+    }
+
+    async function handleSidebar(enabled: boolean) {
+        const supabase = createClient()
+        const { data: session } = await supabase.auth.getUser()
+
+        if (!session.user) {
+            toast.custom((t) => (
+                <Alert
+                    type="danger"
+                    message="You need to be logged in to access this page."
+                />
+            ))
+            return
+        }
+
+        await supabase
+            .from('customization')
+            .update({ sidebar: enabled })
             .eq('author', session.user.id)
     }
 
@@ -384,9 +452,39 @@ function Settings() {
                             </div>
                         </button>
                     </div>
-                    <Label>Profile Page Layout</Label>
-                    <div className="mt-4">
-                        <ThemeSwitcher />
+                    <Label>Fonts</Label>
+                    <div className="my-4 flex space-x-4">
+                        <div className="w-1/2">
+                            <FontSwitcher
+                                label="Title"
+                                type="font_title"
+                                onFontSelect={updateFont}
+                                defaultFont={customization.font_title}
+                            />
+                        </div>
+                        <div className="w-1/2">
+                            <FontSwitcher
+                                label="Body"
+                                type="font_body"
+                                onFontSelect={updateFont}
+                                defaultFont={customization.font_body}
+                            />
+                        </div>
+                    </div>
+                    {/* <Label>Theme Colors</Label>
+                    <div className="my-4">
+                        <ThemeSwitcher
+                            defaultTheme={customization.color}
+                            onFontUpdate={updateTheme}
+                        />
+                    </div> */}
+                    <div className="md:w-[25%] w-full space-y-2">
+                        <MySwitch
+                            label="Sidebar"
+                            onChange={(enabled) => {
+                                handleSidebar(enabled)
+                            }}
+                        />
                     </div>
                 </>
             ),
@@ -439,48 +537,6 @@ function Settings() {
                                     ))}
                                 </div>
                             </HorizontalFormBlockWrapper>
-                            {/* <HorizontalFormBlockWrapper
-                                title="Comments"
-                                description="These are notifications for comments on your posts and replies to your comments."
-                                descriptionClassName="max-w-[344px]"
-                            >
-                                <div className="md:w-[50%] w-full space-y-2">
-                                    <MySwitch label="Do not notify me" />
-                                    <MySwitch label="Mentions only" />
-                                    <MySwitch label="All comments" />
-                                </div>
-                            </HorizontalFormBlockWrapper>
-                            <HorizontalFormBlockWrapper
-                                title="Milestones"
-                                description="These are notifications for when you reach a milestone."
-                                descriptionClassName="max-w-[344px]"
-                            >
-                                <div className="col-span-2">
-                                    <Checkbox
-                                        name="app_notification"
-                                        label="Likes"
-                                        className="mb-5"
-                                        onChange={(e) => {
-                                            console.log(e)
-                                        }}
-                                    />
-                                    <Checkbox
-                                        name="app_notification"
-                                        label="Comments"
-                                        className="mb-5"
-                                    />
-                                    <Checkbox
-                                        name="app_notification"
-                                        label="Followers"
-                                        className="mb-5"
-                                    />
-                                    <Checkbox
-                                        name="app_notification"
-                                        label="Published Posts"
-                                        className="mb-5"
-                                    />
-                                </div>
-                            </HorizontalFormBlockWrapper> */}
                         </>
                     )}
                 </div>
@@ -492,7 +548,7 @@ function Settings() {
         <>
             <title>Settings - Athera</title>
             <div className="max-w-4xl mx-auto sm:pt-26 pb-24 lg:pb-32">
-                <div className="container">
+                <div className="container px-4 sm:px-6 lg:px-8">
                     <div className="my-8 sm:lg:my-16 lg:my-24 max-w-4xl mx-auto space-y-8 sm:space-y-10">
                         {/* HEADING */}
                         <div className="max-w-2xl mx-auto text-center">
@@ -506,8 +562,76 @@ function Settings() {
                         </div>
                     </div>
                     <div className="mt-10 md:mt-0 space-y-5 sm:space-y-6 md:sm:space-y-8">
-                        {/* ---- */}
-                        <AccordionInfo defaultOpen={true} data={myData} />
+                        {/* Render all content directly on mobile */}
+                        <div className="block lg:hidden">
+                            {myData.map((tab) => (
+                                <div key={tab.name} className="mb-8">
+                                    <h3 className="text-2xl font-semibold mb-4">
+                                        {tab.name}
+                                    </h3>
+                                    <hr className="border-t border-gray-300 dark:border-gray-700 mb-4" />
+                                    {tab.component}
+                                </div>
+                            ))}
+                        </div>
+                        {/* Render tabs on larger screens */}
+                        <div className="hidden lg:block">
+                            <Tab.Group>
+                                <Tab.List className="flex space-x-1 overflow-x-auto p-1">
+                                    <Tab
+                                        className={({ selected }) =>
+                                            `w-12 py-2 text-sm leading-5 font-medium rounded-lg transition
+                                            ${
+                                                selected
+                                                    ? 'bg-neutral-100 dark:bg-gray-700 text-blue-700 dark:text-blue-300'
+                                                    : 'text-gray-500 dark:text-gray-400 hover:bg-neutral-100 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300'
+                                            }`
+                                        }
+                                    >
+                                        All
+                                    </Tab>
+                                    {myData.map((tab) => (
+                                        <Tab
+                                            key={tab.name}
+                                            className={({ selected }) =>
+                                                `w-36 py-2 text-sm leading-5 font-medium rounded-lg transition
+                                                ${
+                                                    selected
+                                                        ? 'bg-neutral-100 dark:bg-gray-700 text-blue-700 dark:text-blue-300'
+                                                        : 'text-gray-500 dark:text-gray-400 hover:bg-neutral-100 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300'
+                                                }`
+                                            }
+                                        >
+                                            {tab.name}
+                                        </Tab>
+                                    ))}
+                                </Tab.List>
+                                <Tab.Panels className="mt-2">
+                                    <Tab.Panel className="rounded-xl bg-white dark:bg-gray-800 pt-6">
+                                        {myData.map((tab) => (
+                                            <div
+                                                key={tab.name}
+                                                className="mb-8"
+                                            >
+                                                <h3 className="text-2xl font-semibold mb-4">
+                                                    {tab.name}
+                                                </h3>
+                                                <hr className="border-t border-gray-300 dark:border-gray-700 mb-4" />
+                                                {tab.component}
+                                            </div>
+                                        ))}
+                                    </Tab.Panel>
+                                    {myData.map((tab) => (
+                                        <Tab.Panel
+                                            key={tab.name}
+                                            className="rounded-xl bg-white dark:bg-gray-800 pt-6"
+                                        >
+                                            {tab.component}
+                                        </Tab.Panel>
+                                    ))}
+                                </Tab.Panels>
+                            </Tab.Group>
+                        </div>
                     </div>
                 </div>
             </div>

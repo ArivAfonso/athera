@@ -15,8 +15,7 @@ import DateTimepicker from '@/components/DateTimePicker/DateTimepicker'
 import dayjs from 'dayjs'
 import toast from 'react-hot-toast'
 import { useThemeMode } from '@/hooks/useThemeMode'
-import { ChevronUpDownIcon } from '@heroicons/react/24/solid'
-import { CheckIcon } from 'lucide-react'
+import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react'
 
 export interface PostOptionsData {
     excerptText: string
@@ -147,9 +146,9 @@ const PostOptionsBtn: FC<PostOptionsBtnProps> = ({ onSubmit, defaultData }) => {
                                     : 'Select a license'}
                             </span>
                             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                <ChevronUpDownIcon
-                                    className="h-5 w-5 text-gray-400"
-                                    aria-hidden="true"
+                                <ChevronsUpDownIcon
+                                    strokeWidth={1.75}
+                                    className="h-5 w-5 text-gray-400 dark:text-gray-500"
                                 />
                             </span>
                         </Listbox.Button>

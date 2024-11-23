@@ -3,7 +3,7 @@ import PostsSection from '@/components/PostsSection/PostsSection'
 import PostType from '@/types/PostType'
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
-import React, { Suspense } from 'react'
+import React from 'react'
 
 const DashboardBookmarks = async () => {
     const supabase = createClient(cookies())
@@ -39,7 +39,7 @@ const DashboardBookmarks = async () => {
             )
             `
         )
-        .eq('user', session.user?.id)
+        .eq('user', session.user?.id || '')
 
     const myPosts = (data as unknown as { posts: PostType }[]).map(
         (item) => item.posts

@@ -77,7 +77,7 @@ const CommentCardLikeReply: FC<CommentCardLikeReplyProps> = ({
 
             const userId = session.user?.id
 
-            if (isLiked) {
+            if (isLiked && userId) {
                 setLikeCount((prevLikeCount) =>
                     prevLikeCount > 0 ? prevLikeCount - 1 : 0
                 )

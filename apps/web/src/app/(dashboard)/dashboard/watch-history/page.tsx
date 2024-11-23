@@ -4,52 +4,60 @@ import Empty from '@/components/Empty'
 import PostsSection from '@/components/PostsSection/PostsSection'
 import PostType from '@/types/PostType'
 import { createClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/router'
 import React, { Suspense, useEffect } from 'react'
-
-async function getPosts() {
-    const supabase = createClient()
-    const { data: session } = await supabase.auth.getUser()
-    const { data, error } = await supabase
-        .from('watch_history')
-        .select(
-            `
-            posts (
-                title,
-                id,
-                created_at,
-                estimatedReadingTime,
-                description,
-                image,
-                author (
-                    id,
-                    verified,
-                    name,
-                    username,
-                    avatar
-                ),
-                post_topics(topic:topics(id,name,color)),
-                bookmarks(user(id)),
-                likeCount:likes(count),
-                commentCount:comments(count),
-                likes(
-                    liker(
-                        id
-                    )
-                )
-            )
-            `
-        )
-        .eq('user_id', session.user?.id)
-        .order('created_at', { ascending: false })
-        .limit(24)
-
-    return (data as unknown as { posts: PostType }[]).map((item) => item.posts)
-}
 
 const DashboardWatchHistory = () => {
     const supabase = createClient()
 
     const [myPosts, setMyPosts] = React.useState<PostType[]>([])
+    const router = useRouter()
+
+    async function getPosts() {
+        const supabase = createClient()
+        const { data: session } = await supabase.auth.getUser()
+
+        if (!session.user) {
+            router.push('/login')
+        }
+        const { data, error } = await supabase
+            .from('watch_history')
+            .select(
+                `
+                posts (
+                    title,
+                    id,
+                    created_at,
+                    estimatedReadingTime,
+                    description,
+                    image,
+                    author (
+                        id,
+                        verified,
+                        name,
+                        username,
+                        avatar
+                    ),
+                    post_topics(topic:topics(id,name,color)),
+                    bookmarks(user(id)),
+                    likeCount:likes(count),
+                    commentCount:comments(count),
+                    likes(
+                        liker(
+                            id
+                        )
+                    )
+                )
+                `
+            )
+            .eq('user_id', session.user ? session.user.id : '')
+            .order('created_at', { ascending: false })
+            .limit(24)
+
+        return (data as unknown as { posts: PostType }[]).map(
+            (item) => item.posts
+        )
+    }
 
     useEffect(() => {
         async function fetchData() {
@@ -61,6 +69,10 @@ const DashboardWatchHistory = () => {
 
     async function addPosts(pageParam: number) {
         const { data: session } = await supabase.auth.getUser()
+
+        if (!session.user) {
+            router.push('/login')
+        }
         const { data: newData, error } = await supabase
             .from('watch_history')
             .select(
@@ -91,7 +103,7 @@ const DashboardWatchHistory = () => {
                 )
                 `
             )
-            .eq('user_id', session.user?.id)
+            .eq('user_id', session.user ? session.user.id : '')
             .order('created_at', { ascending: false })
             .range(pageParam * 24, (pageParam + 1) * 24 - 1)
 

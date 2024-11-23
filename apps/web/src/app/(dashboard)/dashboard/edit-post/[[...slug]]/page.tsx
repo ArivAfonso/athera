@@ -1,7 +1,5 @@
 'use client'
 
-// {"type":"doc","content":[{"type":"paragraph","content":[{"text":"On Thursday, Porsche ","type":"text"},{"text":"introduced","type":"text","marks":[{"type":"link","attrs":{"rel":"noopener noreferrer nofollow","href":"https://newsroom.porsche.com/en_US/2023/products/porsche-mission-x-hypercar-concept-32711.html","class":"e-rte-anchor","target":"_blank"}},{"type":"bold"},{"type":"underline"}]},{"text":" its latest electric concept car, the Mission X, which represents a \"conceptual reinterpretation\" of a hypercar. While the design takes inspiration from the Porsche 918 Spyder, the Mission X boasts a more pronounced and chunky aesthetic, particularly in its corner details and roof design.","type":"text"}]},{"type":"paragraph","content":[{"text":"Porsche envisions the Mission X with a 900-volt battery system architecture, offering faster charging times compared to the Taycan Turbo S. It is said to have an impressive power-to-weight ratio, providing approximately one horsepower per 2.2 pounds. The automaker claims that the Mission X would be the fastest road-legal vehicle to conquer the Nürburgring Nordschleife, a title currently held by the Mercedes-AMG One.","type":"text"}]},{"type":"paragraph","content":[{"text":"One of the standout design features of the Mission X is its sweeping and upward-opening doors, which create a unique seating experience, allowing occupants to feel connected to the open sky. When viewed from the front, the car exhibits a resemblance to a scarab beetle, further emphasizing its distinctive character. The Mission X rolls on staggered tires, with 20-inch wheels in the front and 21-inch wheels in the rear.","type":"text"}]},{"type":"paragraph","content":[{"text":"Inside the Mission X, Porsche blends a retro-futuristic aesthetic reminiscent of jet planes from the 1980s. The car features a steering yoke in place of a traditional wheel, while the interior design showcases straight lines, sharp angles, and flat surfaces, capturing the essence of 80s sports cars. The passenger-side dashboard includes a modular attachment area with a stopwatch module, featuring both analog and digital displays to track lap times and other vital driver information.","type":"text"}]},{"type":"paragraph","content":[{"text":"At the rear, the \"PORSCHE\" badge and red LED strips are designed to protrude from the car, creating a three-dimensional effect that adds a touch of artistic flair.","type":"text"}]},{"type":"paragraph","content":[{"text":"The heart of the Mission X lies in its battery placement, which is positioned in the middle of the car, just behind the seats, following an \"e-core layout\" reminiscent of traditional mid-engine car designs. This configuration ensures optimal weight distribution and enhances the car's handling and performance.","type":"text"}]},{"type":"paragraph","content":[{"text":"It's worth noting that the Mission X follows in the footsteps of Porsche's previous electric concept, the Mission E, which was initially introduced in 2015. Over time, the Mission E evolved and eventually became the production model known as the Porsche Taycan, showcasing the brand's commitment to electric mobility and innovation.","type":"text"}]}]}
-
 import React, { useEffect, useMemo, useState } from 'react'
 import NextImage from 'next/image'
 import { createClient } from '@/utils/supabase/client'
@@ -44,7 +42,7 @@ const EditPost = (context: { params: { slug: any } }) => {
     const [uploading, setUploading] = useState(false)
     const [imgChanged, setImgChanged] = useState(false)
     let [title, setTitle] = useState('' as any)
-    const [json, setJson] = useState('' as any)
+    const [json, setJson] = useState({} as any)
     const defaultPostOptionsData = {
         excerptText: '',
         isAllowComments: true,
@@ -161,7 +159,6 @@ const EditPost = (context: { params: { slug: any } }) => {
             return
         }
 
-        //@ts-ignore
         let newPost: PostType[] = [
             {
                 title: editPost ? editPost.title : 'No Title',
@@ -171,7 +168,7 @@ const EditPost = (context: { params: { slug: any } }) => {
                     ? (postOptionsData.license ?? '--------------')
                     : null,
                 //@ts-ignore
-                json: editPost ? editPost?.json : '',
+                json: editPost ? editPost?.json : { type: 'doc', content: [] },
             },
         ]
 
@@ -182,14 +179,15 @@ const EditPost = (context: { params: { slug: any } }) => {
             newPost[0]['description'] = postOptionsData.excerptText
         }
         setProgress(20)
-        if (imgChanged) {
+        if (imgChanged && selectedImage) {
             // Update the selected image to Supabase storage with the post's ID as the name
             const { data: imagePath, error: uploadError } =
-                await supabase.storage.from('images').update(
-                    `${user?.id}/${context.params.slug[0]}/main-image`,
-                    //@ts-ignore
-                    selectedImage
-                )
+                await supabase.storage
+                    .from('images')
+                    .update(
+                        `${user?.id}/${context.params.slug[0]}/main-image`,
+                        selectedImage
+                    )
 
             if (uploadError) {
                 console.error('Error uploading image:', uploadError)
@@ -226,6 +224,7 @@ const EditPost = (context: { params: { slug: any } }) => {
 
         await supabase
             .from('posts')
+            // @ts-ignore
             .update(newPost[0])
             .eq('id', context.params.slug[0])
 
@@ -272,7 +271,6 @@ const EditPost = (context: { params: { slug: any } }) => {
             setSelectedImage(file)
             const reader = new FileReader()
             reader.onloadend = function () {
-                //@ts-ignore
                 setShowImg(reader.result as string)
             }
             reader.readAsDataURL(file)
@@ -281,7 +279,7 @@ const EditPost = (context: { params: { slug: any } }) => {
     }
 
     const [isDragging, setIsDragging] = useState(false)
-    const [showImg, setShowImg] = useState(null)
+    const [showImg, setShowImg] = useState<string | null>(null)
 
     const handleDrop = (event: any) => {
         event.preventDefault()
@@ -295,7 +293,6 @@ const EditPost = (context: { params: { slug: any } }) => {
                 setSelectedImage(file)
                 const reader = new FileReader()
                 reader.onloadend = function () {
-                    //@ts-ignore
                     setShowImg(reader.result as string)
                 }
                 reader.readAsDataURL(file)

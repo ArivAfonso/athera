@@ -71,6 +71,10 @@ const PostCardLikeAction: FC<PostCardLikeActionProps> = ({
 
             const userId = session.user?.id
 
+            if (!userId) {
+                return
+            }
+
             if (isLiked) {
                 setLikeCount((prevLikeCount) =>
                     prevLikeCount > 0 ? prevLikeCount - 1 : 0

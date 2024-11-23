@@ -11,11 +11,6 @@ interface NotificationSettings {
     likes: ('None' | 'In App' | 'Email')[]
     new_follower: ('None' | 'In App' | 'Email')[]
     following_post: ('None' | 'In App' | 'Email')[]
-    scheduled_post: ('None' | 'In App' | 'Email')[]
-    likes_milestones: ('None' | 'In App' | 'Email')[]
-    comments_milestones: ('None' | 'In App' | 'Email')[]
-    followers_milestones: ('None' | 'In App' | 'Email')[]
-    published_posts_milestones: ('None' | 'In App' | 'Email')[]
 }
 
 const generalOptions = [
@@ -52,7 +47,25 @@ async function getSettings(): Promise<NotificationSettings> {
         .eq('user_id', session.user.id)
         .single()
 
-    return data
+    if (data) {
+        return {
+            comments: data.comments as ('None' | 'In App' | 'Email')[],
+            likes: data.likes as ('None' | 'In App' | 'Email')[],
+            new_follower: data.new_follower as ('None' | 'In App' | 'Email')[],
+            following_post: data.following_post as (
+                | 'None'
+                | 'In App'
+                | 'Email'
+            )[],
+        }
+    } else {
+        return {
+            comments: ['None'],
+            likes: ['None'],
+            new_follower: ['None'],
+            following_post: ['None'],
+        }
+    }
 }
 
 export default function NotificationSettingsView() {
@@ -138,7 +151,7 @@ export default function NotificationSettingsView() {
                             <MySwitch label="All comments" />
                         </div>
                     </HorizontalFormBlockWrapper>
-                    <HorizontalFormBlockWrapper
+                    {/* <HorizontalFormBlockWrapper
                         title="Milestones"
                         description="These are notifications for when you reach a milestone."
                         descriptionClassName="max-w-[344px]"
@@ -169,6 +182,7 @@ export default function NotificationSettingsView() {
                             />
                         </div>
                     </HorizontalFormBlockWrapper>
+                    */}
                 </>
             )}
         </div>

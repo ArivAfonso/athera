@@ -109,7 +109,7 @@ const ModalChangeUsername: FC<ModalChangeUsernameProps> = ({
                     undo this action.
                 </span>
                 <div className="mt-4">
-                    <label htmlFor="username" className="block text-sm">
+                    <label htmlFor="username" className="block text-sm pb-1">
                         New Username
                     </label>
                     <input
@@ -126,20 +126,29 @@ const ModalChangeUsername: FC<ModalChangeUsernameProps> = ({
                         {...register('username')}
                     />
                     {!isUsernameValid && (
-                        <span className="text-red-500">
-                            Username can only contain letters, numbers, $ and #
-                        </span>
+                        <div className="mt-2">
+                            <span className="text-sm text-red-500">
+                                Username can only contain letters, numbers, $
+                                and #
+                            </span>
+                        </div>
                     )}
                     {isUsernameTaken !== null && isUsernameTaken === true && (
-                        <span className="text-red-500">
-                            Your Username is Taken
-                        </span>
+                        <div className="mt-2">
+                            <span className="text-sm text-red-500">
+                                Your Username is Taken
+                            </span>
+                        </div>
                     )}
-                    {isUsernameTaken !== null && isUsernameTaken === false && (
-                        <span className="text-green-500">
-                            Your Username is Available
-                        </span>
-                    )}
+                    {isUsernameTaken !== null &&
+                        possibleName !== '' &&
+                        isUsernameTaken === false && (
+                            <div className="mt-2">
+                                <span className="text-sm text-green-500">
+                                    Your Username is Available
+                                </span>
+                            </div>
+                        )}
                 </div>
                 <div className="mt-4 space-x-3">
                     <Button

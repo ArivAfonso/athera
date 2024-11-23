@@ -38,6 +38,38 @@ import { Mathematics } from '@/components/PostSubmissionEditor/extensions/mathem
 import { cn } from '@/utils/cn'
 import Superscript from '@tiptap/extension-superscript'
 import Subscript from '@tiptap/extension-subscript'
+import {
+    Nunito,
+    EB_Garamond,
+    Expletus_Sans,
+    Dancing_Script,
+    Caveat,
+    Special_Elite,
+    Bungee_Shade,
+    Rye,
+    Poppins,
+} from 'next/font/google'
+
+const nunito = Nunito({ subsets: ['latin'], weight: ['400', '700'] })
+const ebGaramond = EB_Garamond({ subsets: ['latin'], weight: ['400', '700'] })
+const expletusSans = Expletus_Sans({
+    subsets: ['latin'],
+    weight: ['400', '700'],
+})
+const dancingScript = Dancing_Script({
+    subsets: ['latin'],
+    weight: ['400', '700'],
+})
+const caveat = Caveat({ subsets: ['latin'], weight: ['400', '700'] })
+const specialElite = Special_Elite({ subsets: ['latin'], weight: ['400'] })
+const bungeeShade = Bungee_Shade({ subsets: ['latin'], weight: ['400'] })
+const rye = Rye({ subsets: ['latin'], weight: ['400'] })
+
+const poppins = Poppins({
+    subsets: ['latin'],
+    weight: ['400', '700'],
+    style: 'normal',
+})
 
 export interface SingleContentProps {
     body: string
@@ -49,6 +81,7 @@ export interface SingleContentProps {
     json: JSON
     license: string | null
     currentUserID: string
+    font: string
 }
 
 const SingleContent: FC<SingleContentProps> = ({
@@ -61,6 +94,7 @@ const SingleContent: FC<SingleContentProps> = ({
     license,
     currentUserID,
     id,
+    font,
 }) => {
     const endedAnchorRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
@@ -75,6 +109,37 @@ const SingleContent: FC<SingleContentProps> = ({
         rootMargin: '0%',
         freezeOnceVisible: false,
     })
+
+    let myFont
+
+    switch (font) {
+        case 'rounded':
+            myFont = nunito
+            break
+        case 'traditional':
+            myFont = ebGaramond
+            break
+        case 'modern':
+            myFont = expletusSans
+            break
+        case 'cursive':
+            myFont = dancingScript
+            break
+        case 'handwritten':
+            myFont = caveat
+            break
+        case 'typewriter':
+            myFont = specialElite
+            break
+        case 'retro':
+            myFont = bungeeShade
+            break
+        case 'wild west':
+            myFont = rye
+            break
+        default:
+            myFont = poppins
+    }
 
     const output = useMemo(() => {
         return generateHTML(json, [
@@ -165,7 +230,7 @@ const SingleContent: FC<SingleContentProps> = ({
                         <>
                             <div
                                 id="single-entry-content"
-                                className="prose lg:prose-lg !max-w-screen-md mx-auto dark:prose-invert"
+                                className={`prose lg:prose-lg !max-w-screen-md mx-auto dark:prose-invert ${myFont.className}`}
                                 ref={contentRef}
                                 dangerouslySetInnerHTML={{ __html: output }}
                             ></div>
@@ -173,7 +238,7 @@ const SingleContent: FC<SingleContentProps> = ({
                     ) : (
                         <div
                             id="single-entry-content"
-                            className="prose lg:prose-lg !max-w-screen-md mx-auto dark:prose-invert"
+                            className={`prose lg:prose-lg !max-w-screen-md mx-auto dark:prose-invert ${myFont.className}`}
                             ref={contentRef}
                         >
                             {parse(body)}
@@ -224,7 +289,7 @@ const SingleContent: FC<SingleContentProps> = ({
                         showLikeAndCommentSticky ? 'flex' : 'hidden'
                     }`}
                 >
-                    <div className="flex items-center justify-center gap-1 rounded-full bg-white p-1.5 text-xs shadow-lg ring-1 ring-neutral-900/5 ring-offset-1 sm:gap-2 dark:bg-neutral-800">
+                    <div className="flex items-center justify-center gap-1 rounded-full bg-white p-1.5 text-xs shadow-lg dark:ring-1 dark:ring-neutral-600 sm:gap-2 dark:bg-neutral-800">
                         <PostCardLikeAction
                             className="px-3 h-9 text-xs bg-white"
                             likeCount={likeCount}
@@ -266,7 +331,7 @@ const SingleContent: FC<SingleContentProps> = ({
                         </button>
                     </div>
                     <TableContentAnchor
-                        className="flex items-center justify-center gap-2 rounded-full bg-white p-1.5 text-xs shadow-lg ring-1 ring-neutral-900/5 ring-offset-1 dark:bg-neutral-800"
+                        className="flex items-center justify-center gap-2 rounded-full bg-white p-1.5 text-xs shadow-lg dark:ring-1 dark:ring-neutral-600 dark:bg-neutral-800"
                         content={json}
                         id={id}
                     />

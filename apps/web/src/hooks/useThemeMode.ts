@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { createGlobalState } from 'react-hooks-global-state'
 
+const initialState = { isDarkmode: false }
+const { useGlobalState } = createGlobalState(initialState)
+
 export const useThemeMode = () => {
-    const [isDarkMode, setIsDarkMode] = useState(false)
+    const [isDarkMode, setIsDarkMode] = useGlobalState('isDarkmode')
 
     useEffect(() => {
         if (localStorage.theme === 'dark') {

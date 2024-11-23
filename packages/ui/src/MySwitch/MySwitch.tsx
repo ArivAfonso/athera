@@ -39,30 +39,28 @@ const MySwitch: FC<MySwitchProps> = ({
         >
             <div>
                 <Label className="text-base">{label}</Label>
-                <p className="text-neutral-500 dark:text-neutral-400 text-base">
+                <p className="text-neutral-500 dark:text-neutral-400 text-sm pt-1">
                     {desc}
                 </p>
             </div>
             <Switch
-                checked={enabledState}
-                onChange={(e: boolean) => {
-                    setEnabledState(e)
-                    onChange && onChange(e)
+                checked={enabled}
+                onChange={(value) => {
+                    setEnabledState(value)
+                    onChange && onChange(value)
                 }}
-                className={`${
-                    enabledState
-                        ? 'bg-blue-700'
-                        : 'bg-neutral-400 dark:bg-neutral-6000'
-                }
-          relative inline-flex flex-shrink-0 ${switchSize} border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 ${
+                    enabled
+                        ? 'bg-indigo-600'
+                        : 'bg-gray-200 dark:bg-neutral-700'
+                }`}
             >
-                <span className="sr-only">{label}</span>
+                <span className="sr-only">Use setting</span>
                 <span
                     aria-hidden="true"
-                    className={`${
-                        enabledState ? 'translate-x-9' : 'translate-x-0'
-                    }
-            pointer-events-none inline-block h-7 w-7 rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200`}
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        enabled ? 'translate-x-5' : 'translate-x-0'
+                    }`}
                 />
             </Switch>
         </div>

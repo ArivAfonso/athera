@@ -3,7 +3,6 @@
 import { Fragment, useEffect, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import Logo from '@/components/Logo/Logo'
-import LangDropdown from '@/components/Header/LangDropdown'
 import SwitchDarkMode from '@/components/SwitchDarkMode/SwitchDarkMode'
 import AvatarDropdown from '@/components/Header/AvatarDropdown'
 import classNames from '@/utils/classNames'
@@ -158,7 +157,7 @@ export default function DashboardLayout({ children }: Props) {
                     className={classNames(
                         isCurrent && pathname === item.href
                             ? 'bg-neutral-50 text-neutral-900 dark:bg-neutral-700 dark:text-neutral-200'
-                            : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-300',
+                            : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:hover:text-neutral-300',
                         'group flex gap-x-3 rounded-md p-2.5 ps-4 text-sm leading-6 font-medium capitalize'
                     )}
                 >
@@ -189,7 +188,7 @@ export default function DashboardLayout({ children }: Props) {
                                         className={classNames(
                                             isCurrent && pathname === child.href
                                                 ? 'bg-neutral-50 text-neutral-900 dark:bg-neutral-700 dark:text-neutral-200'
-                                                : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-300',
+                                                : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 dark:hover:text-neutral-300',
                                             'group flex gap-x-3 rounded-md p-2.5 ps-4 text-sm leading-6 font-medium capitalize'
                                         )}
                                     >

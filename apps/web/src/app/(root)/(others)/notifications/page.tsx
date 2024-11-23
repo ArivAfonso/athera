@@ -8,6 +8,7 @@ import stringToSlug from '@/utils/stringToSlug'
 import { Heading2 } from 'ui'
 import { TrashIcon } from '@heroicons/react/24/outline'
 import { createClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/navigation'
 
 const NotificationsPage = ({}) => {
     const supabase = createClient()
@@ -15,6 +16,8 @@ const NotificationsPage = ({}) => {
     let [notifications, setNotifications] = useState<NotificationType[] | null>(
         null
     )
+
+    const router = useRouter()
 
     useEffect(() => {
         const fetchNotifications = async () => {
@@ -26,6 +29,12 @@ const NotificationsPage = ({}) => {
                 setNotifications(localNotifications)
             } else {
                 const { data: session } = await supabase.auth.getUser()
+
+                if (!session.user) {
+                    router.push('/login')
+                    return
+                }
+
                 const { data } = await supabase
                     .from('notifications')
                     .select(
@@ -38,7 +47,7 @@ const NotificationsPage = ({}) => {
                     read_at
                 `
                     )
-                    .eq('user_id', session.user?.id)
+                    .eq('user_id', session.user ? session.user.id : '')
                     .order('read_at', { ascending: true })
                     .order('created_at', { ascending: false })
 

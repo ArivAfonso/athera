@@ -42,7 +42,7 @@ const NotifyDropdown: FC<Props> = ({ className = 'hidden sm:block' }) => {
                         read_at
                         `
                         )
-                        .eq('user_id', session.user?.id)
+                        .eq('user_id', session.user ? session.user.id : '')
                         .order('read_at', { ascending: true })
                         .order('created_at', { ascending: false })
                         .limit(4)
@@ -93,10 +93,11 @@ const NotifyDropdown: FC<Props> = ({ className = 'hidden sm:block' }) => {
         // All ids in the newNots array are marked as read
         const supabase = createClient()
         const { data: session } = await supabase.auth.getUser()
+        if (!session.user) return
         const { data, error } = await supabase
             .from('notifications')
-            .update({ read_at: new Date() })
-            .eq('user_id', session.user?.id)
+            .update({ read_at: new Date().toISOString() })
+            .eq('user_id', session.user.id)
             .in('id', newNots)
         if (error) {
             console.error(error)

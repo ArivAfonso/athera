@@ -5,6 +5,7 @@ npm-debug.log*
 .env
 apps/web/.env
 apps/web/.env.test
+apps/server
 # Runtime data
 pids
 *.pid

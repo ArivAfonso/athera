@@ -26,6 +26,11 @@ const DashboardDrafts = () => {
                 const supabase = createClient()
                 const { data: session } = await supabase.auth.getUser()
 
+                if (!session.user) {
+                    router.push('/login')
+                    return
+                }
+
                 // Fetch the drafts
                 const { data: draftData, error: draftError } = await supabase
                     .from('drafts')
@@ -57,19 +62,24 @@ const DashboardDrafts = () => {
                 setDrafts(draftData)
                 //@ts-ignore
                 setMyDrafts(draftData)
+
                 setLoading(false)
             } catch (err) {
                 console.log(err)
             }
         }
         fetchData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const addPosts = async (pageParam: number) => {
         try {
             const supabase = createClient()
             const { data: session } = await supabase.auth.getUser()
+
+            if (!session.user) {
+                router.push('/login')
+                return
+            }
 
             // Fetch the drafts
             const { data: draftData, error: draftError } = await supabase
@@ -109,6 +119,11 @@ const DashboardDrafts = () => {
         const supabase = createClient()
         const { data: session } = await supabase.auth.getUser()
 
+        if (!session.user) {
+            router.push('/login')
+            return
+        }
+
         const { data, error } = await supabase
             .from('drafts')
             .select(
@@ -132,7 +147,7 @@ const DashboardDrafts = () => {
         }
 
         //@ts-ignore
-        setPosts(data)
+        setDrafts(data)
     }, 300) // 500ms delay
 
     const handleDeleteDraft = async (draftId: string) => {
@@ -167,7 +182,6 @@ const DashboardDrafts = () => {
             <title>My Drafts</title>
             {loading && <LoadingDrafts />}
             <div className="md:max-w-4xl max-w-full mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32">
-                {/* TABS FILTER */}
                 <div className="flex flex-col sm:items-center sm:justify-between sm:flex-row pb-8">
                     <h2 className="text-2xl sm:text-3xl font-semibold">
                         My Drafts

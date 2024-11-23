@@ -164,7 +164,7 @@ const MenuItemHeading: FC<Props> = ({
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0"
                             >
-                                <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
+                                {/* <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50" /> */}
                             </Transition.Child>
 
                             {/* Drawer content */}

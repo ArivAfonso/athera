@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react'
 import { Img } from 'ui'
-import SingleHeader from '@/app/(root)/(posts)/SingleHeader'
+import SingleHeader from '../../SingleHeader'
 import SingleContent from '../../SingleContent'
 import SingleRelatedPosts from '../../SingleRelatedPosts'
 import { Metadata } from 'next'
@@ -8,6 +8,7 @@ import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
 import PostType from '@/types/PostType'
 import stringToSlug from '@/utils/stringToSlug'
+import { Sidebar } from '../../Sidebar'
 
 async function getPostData(context: { params: { slug: any } }) {
     const supabase = createClient(cookies())
@@ -29,33 +30,61 @@ async function getPostData(context: { params: { slug: any } }) {
                 name,
                 id,
                 username,
-                avatar
+                avatar,
+                created_at,
+                postCount:posts(count),
+                customization(
+                    font_title,
+                    font_body,
+                    color,
+                    sidebar
+                )
             ),
-            post_topics(topic:topics(id,name,color)),
+            post_topics (
+                topic:topics (
+                    id,
+                    name,
+                    color,
+                    image,
+                    postCount:post_topics(count)
+                )
+            ),
             likeCount:likes(count),
             commentCount:comments(count),
-            likes(
-                liker(
+            likes (
+                liker (
                     id
                 )
             )
         `
         )
         .eq('id', id)
+        .single()
     const postData: PostType | null = data as unknown as PostType
-    console.log(postData, error)
+
+    console.log(data)
+    const { count: followerData, error: followerErr } = await supabase
+        .from('followers')
+        .select('*', { count: 'exact', head: true })
+        .eq('following', postData.author.id)
+
+    const { count: followingData, error: followingErr } = await supabase
+        .from('followers')
+        .select('*', { count: 'exact', head: true })
+        .eq('follower', postData.author.id)
+
+    //@ts-ignore
+    postData.author.followerCount = followerData
+    //@ts-ignore
+    postData.author.followingCount = followingData
     const { data: session } = await supabase.auth.getUser()
-    //@ts-ignore
-    postData[0].isLiked = false
-    //@ts-ignore
-    data[0].likes.forEach((like: any) => {
+    postData.isLiked = false
+    data?.likes.forEach((like: any) => {
         if (like.liker.id === session.user?.id) {
-            //@ts-ignore
-            postData[0].isLiked = true
+            postData.isLiked = true
         }
     })
-    //@ts-ignore
-    return postData[0]
+    return postData
 }
 
 export async function generateMetadata(
@@ -132,6 +161,19 @@ const PageSingle = async (context: any) => {
     const commentData = await getCommentData(context)
     const { data: session } = await supabase.auth.getUser()
     const currentUserID = session.user?.id
+    const showSidebar = true
+    let theme = ''
+
+    switch (postData.author.customization.color) {
+        case 'topaz':
+            theme = 'topaz'
+            break
+        case 'saffron':
+            theme = 'saffron'
+            break
+        default:
+            theme = ''
+    }
 
     const data: PostType = postData
     if (!data) {
@@ -140,48 +182,70 @@ const PageSingle = async (context: any) => {
     }
     return (
         <>
-            <div className={`PageSingle pt-8 lg:pt-16`}>
-                <header className="container rounded-xl">
-                    <div className="max-w-screen-md mx-auto">
-                        <SingleHeader
-                            description={data.description}
-                            likes={data.likeCount[0].count as number}
-                            estimatedReadingTime={data.estimatedReadingTime}
-                            title={data.title}
-                            topic={data.post_topics}
+            <div
+                className={`PageSingle pt-8 lg:pt-16 ${theme} ${showSidebar ? 'lg:flex lg:space-x-8' : ''}`}
+            >
+                <div className={`container ${showSidebar ? 'lg:w-3/4' : ''}`}>
+                    <header className="rounded-xl">
+                        <div className="max-w-screen-md mx-auto">
+                            <SingleHeader
+                                description={data.description}
+                                likes={data.likeCount[0].count as number}
+                                estimatedReadingTime={data.estimatedReadingTime}
+                                title={data.title}
+                                topic={data.post_topics}
+                                author={data.author}
+                                created_at={
+                                    data.created_at ? data.created_at : ''
+                                }
+                                font={data.author.customization.font_title}
+                                comments={data.commentCount[0].count as number}
+                                id={data.id}
+                            />
+                        </div>
+                    </header>
+                    <Img
+                        alt="single"
+                        containerClassName="my-10 sm:my-12 flex justify-center items-center"
+                        className="rounded-xl"
+                        src={data.image}
+                        width={800} // Adjust the desired width
+                        height={480} // Adjust the desired height
+                    />
+                    <div className="mt-10">
+                        <SingleContent
+                            body={data.rawText}
                             author={data.author}
-                            created_at={data.created_at ? data.created_at : ''}
-                            comments={data.commentCount[0].count as number}
+                            json={data.json}
                             id={data.id}
+                            currentUserID={currentUserID ? currentUserID : ''}
+                            likeCount={data.likeCount[0].count as number}
+                            isLiked={data.isLiked}
+                            license={data.license}
+                            commentCount={
+                                commentData?.length ? commentData.length : 0
+                            }
+                            font={data.author.customization.font_body}
                         />
                     </div>
-                </header>
-                <Img
-                    alt="single"
-                    containerClassName="container my-10 sm:my-12 flex justify-center items-center"
-                    className="rounded-xl"
-                    src={data.image}
-                    width={800} // Adjust the desired width
-                    height={480} // Adjust the desired height
-                />
-                <div className="container mt-10">
-                    <SingleContent
-                        body={data.rawText}
-                        author={data.author}
-                        json={data.json}
-                        id={data.id}
-                        //@ts-ignore
-                        currentUserID={currentUserID ? currentUserID : ''}
-                        likeCount={data.likeCount[0].count as number}
-                        isLiked={data.isLiked}
-                        license={data.license}
-                        commentCount={
-                            commentData?.length ? commentData.length : 0
-                        }
-                    />
                 </div>
-
-                {/* RELATED POSTS */}
+                {data.author.customization.sidebar && (
+                    <div className="lg:w-1/4">
+                        <Sidebar
+                            topics={data.post_topics.map((topic) => ({
+                                ...topic.topic,
+                                postCount: topic.topic.postCount || [
+                                    { count: 0 },
+                                ],
+                            }))}
+                            author={data.author}
+                            showSidebar={showSidebar}
+                        />
+                    </div>
+                )}
+            </div>
+            {/* RELATED POSTS */}
+            <div className="mt-10 w-full">
                 <SingleRelatedPosts id={data.id} authorId={data.author.id} />
             </div>
         </>

@@ -99,8 +99,6 @@ async function getData(context: { params: { slug: any } }) {
         .select('*', { count: 'exact', head: true })
         .eq('follower', userData?.id)
 
-    console.log(error)
-
     // @ts-ignore
     userData.followerCount = followerData
     // @ts-ignore

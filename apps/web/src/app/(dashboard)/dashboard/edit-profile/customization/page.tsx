@@ -4,17 +4,24 @@ import { useEffect, useState } from 'react'
 import { Label } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { update } from 'lodash'
+import { useRouter } from 'next/navigation'
 
 export function CustomizationPage() {
     const [loading, setLoading] = useState(true)
     const [customization, setCustomization] = useState({
         profile_layout: 'grid',
     })
+    const router = useRouter()
 
     useEffect(() => {
         async function fetchData() {
             const supabase = createClient()
             const { data: session } = await supabase.auth.getUser()
+
+            if (!session.user) {
+                router.push('/login')
+                return
+            }
 
             const { data, error } = await supabase
                 .from('customization')
@@ -22,7 +29,11 @@ export function CustomizationPage() {
                 .eq('author', session.user?.id)
                 .single()
 
-            setCustomization(data)
+            if (data) {
+                setCustomization({
+                    profile_layout: data.profile_layout || 'grid',
+                })
+            }
             setLoading(false)
         }
         fetchData()
@@ -31,6 +42,11 @@ export function CustomizationPage() {
     async function updateSettings(type: string, value: string) {
         const supabase = createClient()
         const { data: session } = await supabase.auth.getUser()
+
+        if (!session.user) {
+            router.push('/login')
+            return
+        }
 
         await supabase
             .from('customization')

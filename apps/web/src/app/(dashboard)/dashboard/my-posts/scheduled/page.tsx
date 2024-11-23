@@ -15,6 +15,8 @@ const DashboardScheduled = () => {
     const [myPosts, setMyPosts] = React.useState<PostType[]>([])
     const [loading, setLoading] = React.useState(true)
 
+    const router = useRouter()
+
     const [showDeleteModal, setShowDeleteModal] = React.useState(false)
     const [postIdToDelete, setPostIdToDelete] = React.useState('')
 
@@ -23,6 +25,11 @@ const DashboardScheduled = () => {
             try {
                 const supabase = createClient()
                 const { data: session } = await supabase.auth.getUser()
+
+                if (!session.user) {
+                    router.push('/login')
+                    return
+                }
 
                 // First, fetch the posts
                 const { data, error } = await supabase
@@ -52,17 +59,30 @@ const DashboardScheduled = () => {
             }
         }
         fetchData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const addPosts = async (pageParam: number) => {
         const supabase = createClient()
         const { data: session } = await supabase.auth.getUser()
 
-        const { data, error } = await supabase
+        if (!session.user) {
+            router.push('/login')
+            return
+        }
+
+        const { data } = await supabase
             .from('posts')
             .select(
-                `id, title, created_at, image, post_topics(topic:topics(id,name,color)), bookmarkCount:bookmarks(count), commentCount:comments(count), likeCount:likes(count)`
+                `
+                id, 
+                title, 
+                created_at, 
+                image, 
+                post_topics(topic:topics(id,name,color)), 
+                bookmarkCount:bookmarks(count), 
+                commentCount:comments(count), 
+                likeCount:likes(count)
+            `
             )
             .neq('scheduled_at', null)
             .eq('author', session.user?.id)
@@ -84,6 +104,11 @@ const DashboardScheduled = () => {
     const fetchPosts = debounce(async (inputValue: String) => {
         const supabase = createClient()
         const { data: session } = await supabase.auth.getUser()
+
+        if (!session.user) {
+            router.push('/login')
+            return
+        }
 
         const { data, error } = await supabase
             .from('posts')
@@ -195,8 +220,8 @@ const DashboardScheduled = () => {
                                 <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                                     <PostsSection
                                         posts={posts}
-                                        //@ts-ignore
                                         onDeletePost={onDeletePost}
+                                        //@ts-ignore
                                         postFn={addPosts}
                                     />
                                 </div>

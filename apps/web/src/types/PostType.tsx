@@ -1,3 +1,5 @@
+import CommentType from './CommentType'
+
 export default interface PostType {
     scheduled_at: string
     id: string
@@ -16,12 +18,22 @@ export default interface PostType {
         username: string
         avatar: string
         description: string
+        customization: {
+            profile_layout: string
+            font_body: string
+            font_title: string
+            color: string
+            sidebar: boolean
+        }
     }
     post_topics: {
         topic: {
             name: string
             id: string
             color: string
+            postCount: {
+                count: number
+            }[]
         }
     }[]
     likeCount: {
@@ -38,14 +50,5 @@ export default interface PostType {
     bookmarkCount: {
         count: number
     }[]
-    comments?: {
-        commenter: {
-            name: string
-            username: string
-            image: string
-            description: string
-        }
-        comment: string
-        created_at: string
-    }[]
+    comments?: CommentType[]
 }

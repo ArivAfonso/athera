@@ -130,6 +130,7 @@ const PageSearchV2 = () => {
 
     const getAuthorsData = async () => {
         try {
+            //@ts-ignore
             const authorsData: AuthorType[] =
                 await fetchAuthorsData(searchValue)
             setAuthors(authorsData)

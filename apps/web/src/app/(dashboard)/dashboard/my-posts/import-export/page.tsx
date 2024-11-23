@@ -3,13 +3,11 @@
 import React, { useState } from 'react'
 import mediumImg from '@/images/Medium.png'
 import hashnodeImg from '@/images/Hashnode.png'
-import rssImg from '@/images/RSS.png'
 import devImg from '@/images/Dev.png'
 import wordpressImg from '@/images/Wordpress.png'
 import { ButtonPrimary, ButtonSecondary, Img } from 'ui'
 import DevModal from '@/components/ImportModals/DevModal'
 import WordPressModal from '@/components/ImportModals/WordPressModal'
-import { Hash } from 'crypto'
 import HashnodeModal from '@/components/ImportModals/HashnodeModal'
 import MediumModal from '@/components/ImportModals/MediumModal'
 

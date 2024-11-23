@@ -64,9 +64,13 @@ const NewTopicPage = (context: { params: { slug: any } }) => {
                 if (data.color) {
                     setExists(true)
                 }
-                setData(res)
+                if (res) {
+                    //@ts-ignore
+                    setData(res)
+                }
                 setTags([s])
                 if (data.image) {
+                    //@ts-ignore
                     setSelectedImage(data.image)
                 }
                 setLoading(false)

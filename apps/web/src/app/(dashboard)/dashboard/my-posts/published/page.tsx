@@ -26,6 +26,11 @@ const DashboardPosts = () => {
         const supabase = createClient()
         const { data: session } = await supabase.auth.getUser()
 
+        if (!session.user) {
+            router.push('/login')
+            return
+        }
+
         const { data, error } = await supabase
             .from('posts')
             .select(
@@ -55,6 +60,12 @@ const DashboardPosts = () => {
     async function addPosts(pageParam: number) {
         const supabase = createClient()
         const { data: session } = await supabase.auth.getUser()
+
+        if (!session.user) {
+            router.push('/login')
+            return
+        }
+
         const { data, error } = await supabase
             .from('posts')
             .select(
@@ -74,7 +85,7 @@ const DashboardPosts = () => {
             })
         })
 
-        return data as unknown as PostType[]
+        return data as PostType[]
     }
 
     useEffect(() => {
@@ -82,6 +93,11 @@ const DashboardPosts = () => {
             try {
                 const supabase = createClient()
                 const { data: session } = await supabase.auth.getUser()
+
+                if (!session.user) {
+                    router.push('/login')
+                    return
+                }
 
                 // First, fetch the posts
                 const { data, error } = await supabase
@@ -182,6 +198,7 @@ const DashboardPosts = () => {
                                     <PostsTable
                                         posts={posts}
                                         onDeletePost={onDeletePost}
+                                        //@ts-ignore
                                         postFn={addPosts}
                                     />
                                 </div>

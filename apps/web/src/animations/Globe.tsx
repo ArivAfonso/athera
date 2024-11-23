@@ -35,7 +35,7 @@ function Cobe(props: CobeProps) {
         window.addEventListener('resize', onResize)
         onResize()
 
-        //@ts-ignore
+        if (!canvasRef.current) return
         const globe = createGlobe(canvasRef.current, {
             devicePixelRatio: 2,
             baseColor: isDarkMode ? [0.024, 0.125, 0.337] : [0.973, 0.973, 1],
@@ -72,7 +72,7 @@ function Cobe(props: CobeProps) {
             globe.destroy()
             window.removeEventListener('resize', onResize)
         }
-    }, [isDarkMode])
+    }, [isDarkMode, r])
 
     const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
         if (canvasRef.current) {

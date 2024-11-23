@@ -7,14 +7,14 @@
     "private": true,
     "scripts": {
         "dev": "env-cmd -f .env next dev",
-        "dev:local": "env-cmd -f .env.test next dev -p 1234",
+        "dev:local": "env-cmd -f .env.test next dev --turbopack -p 1234",
         "build": "next build",
         "start": "next start",
         "lint": "next lint"
     },
     "dependencies": {
         "@floating-ui/react": "^0.26.9",
-        "@headlessui/react": "^1.7.13",
+        "@headlessui/react": "^2.2.0",
         "@heroicons/react": "^2.1.1",
         "@supabase/auth-helpers-nextjs": "^0.8.3",
         "@supabase/ssr": "^0.1.0",

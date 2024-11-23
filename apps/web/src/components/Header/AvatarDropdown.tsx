@@ -64,8 +64,6 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
         }
 
         fetchData()
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []) // Empty dependency array to run only once on mount
 
     return (
@@ -109,7 +107,7 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
                         >
                             <Popover.Panel className="absolute z-10 w-screen max-w-[260px] px-4 mt-3.5 -right-2 sm:right-0 sm:px-0">
                                 <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5">
-                                    <div className="relative grid grid-cols-1 gap-6 bg-white dark:bg-neutral-800 py-7 px-6">
+                                    <div className="relative grid grid-cols-1 gap-6 bg-white dark:bg-neutral-900 py-7 px-6">
                                         <div className="flex items-center space-x-3">
                                             <Avatar
                                                 imgUrl={avatar_url}
@@ -141,7 +139,7 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
                                         {/* ------------------ 1 --------------------- */}
                                         <Link
                                             href={'/dashboard/edit-profile'}
-                                            className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                                            className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                                             onClick={() => close()}
                                         >
                                             <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
@@ -163,7 +161,7 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
                                             href={
                                                 '/dashboard/my-posts/published'
                                             }
-                                            className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                                            className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                                             onClick={() => close()}
                                         >
                                             <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
@@ -182,10 +180,10 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
 
                                         <div className="w-full border-b border-neutral-200 dark:border-neutral-700" />
 
-                                        {/* ------------------ 2 --------------------- */}
+                                        {/* ------------------ 3 --------------------- */}
                                         <Link
                                             href={'/dashboard/new-post'}
-                                            className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                                            className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                                             onClick={() => close()}
                                         >
                                             <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
@@ -202,8 +200,8 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
                                             </div>
                                         </Link>
 
-                                        {/* ------------------ 2 --------------------- */}
-                                        <div className="flex items-center justify-between p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50">
+                                        {/* ------------------ 4 --------------------- */}
+                                        <div className="flex items-center justify-between p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50">
                                             <div className="flex items-center">
                                                 <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
                                                     <svg
@@ -245,10 +243,10 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
                                             <SwitchDarkMode2 />
                                         </div>
 
-                                        {/* ------------------ 2 --------------------- */}
+                                        {/* ------------------ 5 --------------------- */}
                                         <Link
                                             href={'/dashboard/settings'}
-                                            className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                                            className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                                             onClick={() => close()}
                                         >
                                             <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
@@ -265,9 +263,9 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
                                             </div>
                                         </Link>
 
-                                        {/* ------------------ 2 --------------------- */}
+                                        {/* ------------------ 6 --------------------- */}
                                         <button
-                                            className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
+                                            className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                                             onClick={logOut}
                                         >
                                             <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">

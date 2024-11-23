@@ -55,30 +55,32 @@ const ModalReportComment: FC<ModalReportCommentprops> = ({
 
     const [uploadErrors, setUploadError] = useState('')
 
-    const sendReport = async (data: any) => {
-        const supabase = createClient()
-        const { data: session } = await supabase.auth.getUser()
-        const { error } = await supabase.from('comment_reports').insert([
-            {
-                reporter: session.user?.id,
-                comment: id,
-                type: problemSelected,
-                message: data.message,
-            },
-        ])
-        if (error) {
-            setUploadError(error.message)
-        }
-    }
+    //TODO: Implement sendReport
+
+    // const sendReport = async (data: any) => {
+    //     const supabase = createClient()
+    //     const { data: session } = await supabase.auth.getUser()
+    //     const { error } = await supabase.from('comment_reports').insert([
+    //         {
+    //             reporter: session.user?.id,
+    //             comment: id,
+    //             type: problemSelected,
+    //             message: data.message,
+    //         },
+    //     ])
+    //     if (error) {
+    //         setUploadError(error.message)
+    //     }
+    // }
 
     const renderContent = () => {
         return (
             <>
                 <form
                     action="#"
-                    onSubmit={handleSubmit(
-                        async (data) => await sendReport(data)
-                    )}
+                    // onSubmit={handleSubmit(
+                    //     async (data) => await sendReport(data)
+                    // )}
                 >
                     {/* RADIO PROBLEM PLANS */}
                     <RadioGroup

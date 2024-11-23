@@ -46,7 +46,6 @@ function AccountPage() {
         github: '',
         instagram: '',
         linkedin: '',
-        pinterest: '',
         twitch: '',
     })
 
@@ -113,23 +112,21 @@ function AccountPage() {
 
             await supabase
                 .from('users')
-                .update([
-                    {
-                        id: session.user?.id,
-                        name:
-                            formData.fullName == ''
-                                ? profile.name
-                                : formData.fullName,
-                        // email: formData.email,
-                        website: formData.website,
-                        background: formData.background
-                            ? formData.background
-                            : profile.background,
-                        bio: formData.about,
-                        avatar: imgUrl ? imgUrl : profile.avatar,
-                        phone: formData.phone,
-                    },
-                ])
+                .update({
+                    id: session.user?.id,
+                    name:
+                        formData.fullName == ''
+                            ? profile.name
+                            : formData.fullName,
+                    // email: formData.email,
+                    website: formData.website,
+                    background: formData.background
+                        ? formData.background
+                        : profile.background,
+                    bio: formData.about,
+                    avatar: imgUrl ? imgUrl : profile.avatar,
+                    phone: formData.phone,
+                })
                 .eq('id', session.user?.id)
             setSuccess('Profile updated successfully')
             setLoading(false)
@@ -137,20 +134,39 @@ function AccountPage() {
     }
 
     useEffect(() => {
-        async function checkLikedStatus() {
+        async function getProfile() {
             const supabase = createClient()
             const { data: session } = await supabase.auth.getUser()
             setSession(session)
             const userId = session.user?.id
             // Check if the post is liked by the user
+            if (!userId) return
             const { data, error } = await supabase
                 .from('users')
                 .select('*')
                 .eq('id', userId)
                 .single()
-            setProfile(data)
+            if (data) {
+                setProfile({
+                    name: data.name || '',
+                    email: data.email || '',
+                    website: data.website || '',
+                    bio: data.bio || '',
+                    avatar: data.avatar || '',
+                    background: data.background || '',
+                    phone: data.phone || '',
+                    tiktok: data.tiktok || '',
+                    twitter: data.twitter || '',
+                    facebook: data.facebook || '',
+                    youtube: data.youtube || '',
+                    github: data.github || '',
+                    instagram: data.instagram || '',
+                    linkedin: data.linkedin || '',
+                    twitch: data.twitch || '',
+                })
+            }
         }
-        checkLikedStatus()
+        getProfile()
     }, [])
 
     const [isDragging, setIsDragging] = useState(false)

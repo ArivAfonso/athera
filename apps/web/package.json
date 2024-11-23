@@ -28,7 +28,7 @@
         "@tiptap/core": "^2.7.2",
         "@tiptap/extension-bold": "^2.7.2",
         "@tiptap/extension-code-block-lowlight": "^2.3.0",
-        "@tiptap/extension-document": "^2.7.2",
+        "@tiptap/extension-document": "^2.10.2",
         "@tiptap/extension-highlight": "^2.3.0",
         "@tiptap/extension-image": "^2.6.6",
         "@tiptap/extension-link": "^2.1.13",

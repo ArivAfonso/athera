@@ -1,32 +1,19 @@
-'use client'
-
-import React, { FC, useState } from 'react'
+import React, { FC } from 'react'
 import Logo from '@/components/Logo/Logo'
 import Navigation from '@/components/Navigation/Navigation'
 import MenuBar from '@/components/MenuBar/MenuBar'
 import SearchModal from './SearchModal'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 import AvatarDropdown from './AvatarDropdown'
 import NotifyDropdown from './NotifyDropdown'
 import { ButtonThird } from 'ui'
 import Link from 'next/link'
-import { createClient } from '@/utils/supabase/client'
-import { useEffect } from 'react'
-import { Session } from '@supabase/supabase-js'
 
-export interface MainNavProps {}
-
-const MainNav: FC<MainNavProps> = ({}) => {
-    const [session, setSession] = useState<Session | null>()
-
-    useEffect(() => {
-        async function fetchUser() {
-            const supabase = createClient()
-            const { data } = await supabase.auth.getSession()
-            setSession(data?.session)
-        }
-
-        fetchUser()
-    })
+const MainNav = async ({}) => {
+    const supabase = createServerComponentClient({ cookies })
+    const { data: session } = await supabase.auth.getSession()
+    const user = session?.session?.user
     return (
         <div className="MainNav relative z-99 bg-white dark:bg-slate-900  border-b border-neutral-200/70 dark:border-transparent">
             <div className="container">
@@ -46,9 +33,6 @@ const MainNav: FC<MainNavProps> = ({}) => {
                                 href="https://github.com/ArivAfonso/athera"
                                 className={`self-center text-2xl md:text-3xl w-12 h-12 rounded-full text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none flex items-center justify-center`}
                             >
-                                <span className="sr-only">
-                                    Enable dark mode
-                                </span>
                                 <svg
                                     className="w-6 h-6"
                                     viewBox="0 0 24 24"
@@ -73,21 +57,16 @@ const MainNav: FC<MainNavProps> = ({}) => {
                             </Link>
                             <SearchModal />
                             {/* if user exists show avatar dropdown else button */}
-                            {session ? (
+                            {user ? (
                                 <>
                                     <NotifyDropdown className="hidden md:block z-40" />
                                     <AvatarDropdown
                                         avatar_url={
-                                            session?.user.user_metadata
-                                                .avatar_url
+                                            user.user_metadata.avatar_url
                                         }
-                                        name={session?.user.user_metadata.name}
-                                        email={
-                                            session?.user.email
-                                                ? session?.user.email
-                                                : ''
-                                        }
-                                        id={session?.user.id}
+                                        name={user.user_metadata.name}
+                                        email={user.email ? user.email : ''}
+                                        id={user.id}
                                     />
                                 </>
                             ) : (
@@ -107,19 +86,14 @@ const MainNav: FC<MainNavProps> = ({}) => {
                         <div className="flex items-center lg:hidden">
                             {
                                 // if user exists show avatar dropdown else button
-                                session ? (
+                                user ? (
                                     <AvatarDropdown
                                         avatar_url={
-                                            session?.user.user_metadata
-                                                .avatar_url
+                                            user.user_metadata.avatar_url
                                         }
-                                        name={session?.user.user_metadata.name}
-                                        email={
-                                            session?.user.email
-                                                ? session?.user.email
-                                                : ''
-                                        }
-                                        id={session?.user.id}
+                                        name={user.user_metadata.name}
+                                        email={user.email ? user.email : ''}
+                                        id={user.id}
                                     />
                                 ) : (
                                     <SearchModal />

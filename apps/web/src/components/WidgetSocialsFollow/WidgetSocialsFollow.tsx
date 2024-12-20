@@ -1,6 +1,5 @@
 import { FC } from 'react'
 import Heading2 from '../Heading2/Heading2'
-import { Image } from 'ui'
 
 interface WidgetSocialsFollowProps {
     className?: string
@@ -25,8 +24,8 @@ const socials = [
                 />
             </svg>
         ),
-        url: 'https://twitter.com/nextui_io',
-        description: 'Follow us on Twitter',
+        url: 'https://x.com',
+        description: 'Follow us on X',
     },
     {
         name: 'facebook',
@@ -45,7 +44,7 @@ const socials = [
                 />
             </svg>
         ),
-        url: 'https://www.facebook.com/nextui.io',
+        url: 'https://www.facebook.com',
         description: 'Follow us on Facebook',
     },
     {
@@ -66,7 +65,7 @@ const socials = [
                 <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
             </svg>
         ),
-        url: 'https://www.instagram.com/nextui.io',
+        url: 'https://www.instagram.com',
         description: 'Follow us on Instagram',
     },
     {
@@ -96,8 +95,8 @@ const socials = [
                 </g>
             </svg>
         ),
-        url: 'https://www.youtube.com/nextui',
-        description: 'Subscribe us on Youtube',
+        url: 'https://www.youtube.com',
+        description: 'Follow us on Youtube',
     },
 ]
 

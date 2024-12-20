@@ -47,16 +47,6 @@ import Subscript from '@tiptap/extension-subscript'
 import Superscript from '@tiptap/extension-superscript'
 import { Mathematics } from './extensions/mathematics/MathematicsExtension'
 import { cn } from '@/utils/cn'
-import {
-    audioModal,
-    HyperMultimediaKit,
-    imageModal,
-    soundCloudModal,
-    twitterModal,
-    videoModal,
-    vimeoModal,
-    youtubeModal,
-} from './extensions/hypermedia'
 
 interface Props {
     onUpdate: (editor: Editor) => void
@@ -104,36 +94,6 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
                     return ReactNodeViewRenderer(CodeBlockComponent)
                 },
             }).configure({ lowlight }),
-            HyperMultimediaKit.configure({
-                Image: {
-                    modal: imageModal,
-                    inline: true,
-                },
-                Video: {
-                    modal: videoModal,
-                    inline: true,
-                },
-                Audio: {
-                    modal: audioModal,
-                    inline: true,
-                },
-                Youtube: {
-                    modal: youtubeModal,
-                    inline: true,
-                },
-                Vimeo: {
-                    modal: vimeoModal,
-                    inline: true,
-                },
-                SoundCloud: {
-                    modal: soundCloudModal,
-                    inline: true,
-                },
-                Twitter: {
-                    modal: twitterModal,
-                    inline: true,
-                },
-            }),
             Link.configure({
                 openOnClick: false,
             }),

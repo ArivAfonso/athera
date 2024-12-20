@@ -3,15 +3,15 @@ import Logo from '@/components/Logo/Logo'
 import Navigation from '@/components/Navigation/Navigation'
 import MenuBar from '@/components/MenuBar/MenuBar'
 import SearchModal from './SearchModal'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import AvatarDropdown from './AvatarDropdown'
 import NotifyDropdown from './NotifyDropdown'
 import { ButtonThird } from 'ui'
 import Link from 'next/link'
+import { createClient } from '@/utils/supabase/server'
 
 const MainNav = async ({}) => {
-    const supabase = createServerComponentClient({ cookies })
+    const supabase = createClient(cookies())
     const { data: session } = await supabase.auth.getSession()
     const user = session?.session?.user
     return (

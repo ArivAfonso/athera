@@ -20,16 +20,13 @@ import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import TextAlign from '@tiptap/extension-text-align'
 import Image from '@tiptap/extension-image'
-import { Image as ImageHypermedia } from '@/components/PostSubmissionEditor/extensions/hypermedia/nodes/image/image'
 import Table from '@tiptap/extension-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import { generateHTML } from '@tiptap/core'
-import { Youtube } from '@/components/PostSubmissionEditor/extensions/hypermedia/nodes/youtube/youtube'
-import { SoundCloud } from '@/components/PostSubmissionEditor/extensions/hypermedia/nodes/soundcloud/soundcloud'
+
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import { Twitter } from '@/components/PostSubmissionEditor/extensions/hypermedia/nodes/twitter/twitter'
 import { ScaleIcon } from 'lucide-react'
 import TableContentAnchor from './TableContentAnchor'
 import BookmarkBtn from '@/components/BookmarkBtn/BookmarkBtn'
@@ -157,11 +154,7 @@ const SingleContent: FC<SingleContentProps> = ({
             Link,
             Placeholder,
             TextAlign,
-            Twitter,
-            Youtube,
-            SoundCloud,
             Image,
-            ImageHypermedia,
             Subscript,
             Superscript,
             Table,

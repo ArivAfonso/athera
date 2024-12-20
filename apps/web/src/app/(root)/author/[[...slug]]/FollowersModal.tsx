@@ -1,9 +1,7 @@
 import React, { FC, useEffect, useState } from 'react'
 import { Modal } from 'ui'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
 import AuthorType from '@/types/AuthorType'
-import { SearchIcon } from 'lucide-react'
 import { debounce, set } from 'lodash'
 import { createClient } from '@/utils/supabase/client'
 
@@ -18,7 +16,7 @@ const PostOptionsBtn: FC<FollowButtonProps> = ({
     author,
     onCloseModal,
 }) => {
-    const supabase = createClientComponentClient()
+    const supabase = createClient()
 
     const [data, setData] = useState<AuthorType[]>()
     const [allFollowers, setAllFollowers] = useState<AuthorType[]>()

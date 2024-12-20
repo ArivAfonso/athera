@@ -549,18 +549,9 @@ function Settings() {
             <title>Settings - Athera</title>
             <div className="max-w-4xl mx-auto sm:pt-26 pb-24 lg:pb-32">
                 <div className="container px-4 sm:px-6 lg:px-8">
-                    <div className="my-8 sm:lg:my-16 lg:my-24 max-w-4xl mx-auto space-y-8 sm:space-y-10">
-                        {/* HEADING */}
-                        <div className="max-w-2xl mx-auto text-center">
-                            <h2 className="text-3xl sm:text-4xl font-semibold">
-                                Settings
-                            </h2>
-                            <span className="block mt-3 text-neutral-500 dark:text-neutral-400">
-                                You can customize the way Athera looks and
-                                behaves here
-                            </span>
-                        </div>
-                    </div>
+                    <h2 className="text-2xl sm:text-3xl font-semibold">
+                        Settings
+                    </h2>
                     <div className="mt-10 md:mt-0 space-y-5 sm:space-y-6 md:sm:space-y-8">
                         {/* Render all content directly on mobile */}
                         <div className="block lg:hidden">

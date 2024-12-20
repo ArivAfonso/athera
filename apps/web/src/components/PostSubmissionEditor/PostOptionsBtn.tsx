@@ -9,9 +9,9 @@ import {
     Label,
     ButtonPrimary,
     ButtonThird,
+    DateTimePicker,
 } from 'ui'
 import { Cog8ToothIcon } from '@heroicons/react/24/outline'
-import DateTimepicker from '@/components/DateTimePicker/DateTimepicker'
 import dayjs from 'dayjs'
 import toast from 'react-hot-toast'
 import { useThemeMode } from '@/hooks/useThemeMode'
@@ -306,11 +306,12 @@ const PostOptionsBtn: FC<PostOptionsBtnProps> = ({ onSubmit, defaultData }) => {
         return (
             <div>
                 <Label>Schedule Publication</Label>
-                {/* @ts-ignore */}
-                <DateTimepicker
-                    placeholder="Pick date & time"
-                    minDate={minDate}
-                    value={timeSchedulePublication}
+                <DateTimePicker
+                    value={
+                        timeSchedulePublication
+                            ? timeSchedulePublication
+                            : new Date()
+                    }
                     onChange={(date) => {
                         if (date) {
                             settimeSchedulePublication(date)
@@ -371,7 +372,7 @@ const PostOptionsBtn: FC<PostOptionsBtnProps> = ({ onSubmit, defaultData }) => {
             <Modal
                 containerClassName="flex"
                 contentPaddingClass=""
-                contentExtraClass="max-w-screen-md"
+                contentExtraClass="max-w-screen-md md:overflow-visible"
                 renderContent={renderContent}
                 renderTrigger={renderBtnOpenPopover}
                 modalTitle="Post options"

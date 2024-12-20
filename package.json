@@ -5,6 +5,7 @@
         "name": "Ariv Afonso"
     },
     "private": true,
+    "packageManager": "npm@9.6.5",
     "workspaces": [
         "packages/*",
         "apps/*",

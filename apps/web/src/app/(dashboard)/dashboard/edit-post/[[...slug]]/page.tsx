@@ -196,7 +196,7 @@ const EditPost = (context: { params: { slug: any } }) => {
 
             // Create a URL for the uploaded image
             const uploadedImageUrl =
-                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/` +
                 imagePath?.path
 
             // Update the inserted post with the image URL

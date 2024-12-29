@@ -205,14 +205,14 @@ const DashboardSubmitPost = () => {
                             )
 
                         json.content[i].attrs.src =
-                            'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/` +
                             imagePath?.path
 
                         const text = JSON.stringify(json)
                         json = JSON.parse(
                             text.replace(
                                 imageUrls[i],
-                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                                `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/` +
                                     imagePath?.path
                             )
                         )
@@ -267,7 +267,7 @@ const DashboardSubmitPost = () => {
                     .from('posts')
                     .update({
                         image:
-                            'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/` +
                             imagePath?.path,
                         json: addIdsToHeadings(json),
                     })
@@ -359,7 +359,7 @@ const DashboardSubmitPost = () => {
                 .from('drafts')
                 .update({
                     image:
-                        'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/` +
                         imagePath?.path,
                 })
                 .eq('id', draftId)

@@ -139,7 +139,7 @@ function Socials() {
                     return
                 }
                 formData.background =
-                    'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/avatars/' +
+                    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/` +
                     imgPath.path
             }
 

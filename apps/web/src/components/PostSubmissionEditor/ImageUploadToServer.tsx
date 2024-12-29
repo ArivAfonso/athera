@@ -236,6 +236,7 @@ const ImageUploadToServer: FC<ImageUploadToServerProps> = ({
                                     id={inputID}
                                     name="fileUpload"
                                     type="file"
+                                    accept="image/*"
                                     className="sr-only"
                                     onChange={handleUploadImageChange}
                                 />

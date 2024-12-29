@@ -4,18 +4,6 @@ import React, { FC, useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { createClient } from '@/utils/supabase/client'
 import { Input, Modal, Label, ButtonPrimary, Checkbox, AccordionInfo } from 'ui'
-import { generateJSON } from '@tiptap/core'
-import StarterKit from '@tiptap/starter-kit'
-import Highlight from '@tiptap/extension-highlight'
-import Underline from '@tiptap/extension-underline'
-import Link from '@tiptap/extension-link'
-import Placeholder from '@tiptap/extension-placeholder'
-import TextAlign from '@tiptap/extension-text-align'
-import Image from '@tiptap/extension-image'
-import Table from '@tiptap/extension-table'
-import TableRow from '@tiptap/extension-table-row'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
 
 const accData = [
     {
@@ -59,19 +47,6 @@ interface HashnodePostType {
     }
 }
 
-function strWords(str: string) {
-    return str.split(/\s+/).length
-}
-
-function modifyString(str: string) {
-    //Capitalize every word of the string and replace spaces with -
-    console.log(str)
-    return str
-        .split(' ')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join('-')
-}
-
 export interface ModalDeletePostProps {
     show: boolean
     onCloseModal: () => void
@@ -94,180 +69,22 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
     async function getPosts(host: string) {
         setLoading(true)
 
-        const res = await fetch(
-            `${window.location.origin}/api/import/hashnode/posts?host=${host}`
+        const response = await fetch(
+            'http://127.0.0.1:8787/api/hashnode/posts?host=' +
+                encodeURIComponent(host),
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
         )
 
-        const json = await res.json()
+        const json = await response.json()
         console.log(json)
         setLoading(false)
 
         return json.postData
-    }
-
-    const uploadPosts = async (selectedPosts: HashnodePostType[]) => {
-        const { data: session } = await supabase.auth.getUser()
-        const user = session.user?.id ?? ''
-
-        posts?.forEach((post) => {
-            post.tag_list = post.tags.map((tag) => tag.name)
-        })
-
-        const tags = Array.from(
-            new Set(
-                selectedPosts
-                    .map((post) => post.tag_list)
-                    .flat()
-                    .map((tag) => modifyString(tag))
-            )
-        )
-
-        const { data: topics, error } = await supabase.rpc('manage_topics', {
-            topics: tags,
-        })
-
-        selectedPosts.forEach(async (post) => {
-            let img_blob = null
-
-            if (post.coverImage.url) {
-                const blob = await fetch(post.coverImage.url).then((r) =>
-                    r.blob()
-                )
-                if (blob.size > 10000000) {
-                    post.coverImage.url = null
-                } else {
-                    img_blob = blob
-                }
-            }
-
-            const output = generateJSON(post.content.html, [
-                StarterKit,
-                Highlight,
-                Underline,
-                Link,
-                Placeholder,
-                TextAlign,
-                Image,
-                Table,
-                TableCell,
-                TableHeader,
-                TableRow,
-            ])
-
-            setProgress((prev) => prev + 0.2)
-
-            if (post.coverImage.url === null || img_blob === null) {
-                const { data, error } = await supabase
-                    .from('drafts')
-                    .insert({
-                        title: post.title,
-                        description: post.subtitle,
-                    })
-                    .select('id')
-
-                const draftId: string = data ? data[0]?.id : ''
-
-                setProgress((prev) => prev + 0.2)
-
-                let tagsArray = []
-
-                //Create tagsArray if there are any
-                if (post.tag_list.length > 0) {
-                    tagsArray = post.tag_list.map((tag) => ({
-                        post: draftId,
-                        topic: (topics ?? []).find(
-                            (topic: any) =>
-                                topic.top_name.toLowerCase() ===
-                                modifyString(tag).toLowerCase()
-                        )?.top_id,
-                    }))
-
-                    await supabase.from('draft_topics').insert(
-                        tagsArray as {
-                            post: string
-                            topic: string | null | undefined
-                        }[]
-                    )
-                }
-
-                setProgress((prev) => prev + 0.2)
-
-                //Upload post.cover_image to storage
-                if (post.coverImage.url !== null && img_blob !== null) {
-                    const { data: imagePath, error: imageErr } =
-                        await supabase.storage
-                            .from('images')
-                            .upload(
-                                `${user}/drafts/${draftId}/main-image`,
-                                img_blob
-                            )
-
-                    //Update the post
-                    await supabase
-                        .from('drafts')
-                        .update({
-                            image:
-                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
-                                imagePath?.path,
-                        })
-                        .eq('id', draftId)
-                }
-
-                setProgress((prev) => prev + 0.4)
-            } else {
-                const { data, error } = await supabase
-                    .from('posts')
-                    .insert({
-                        title: post.title,
-                        description: post.subtitle,
-                        text: post.content.text,
-                        estimated_reading_time: Math.round(
-                            strWords(post.content.text) / 200
-                        ),
-                        json: output,
-                        author: user,
-                    })
-                    .select('id')
-
-                const postId: string = data ? data[0]?.id : ''
-                setProgress((prev) => prev + 0.2)
-
-                //Create tagsArray
-                if (post.tag_list.length > 0) {
-                    const tagsArray = post.tag_list.map((tag) => {
-                        const topic = (topics ?? []).find(
-                            (topic: any) =>
-                                topic.top_name.toLowerCase() ===
-                                modifyString(tag).toLowerCase()
-                        )?.top_id
-                        return {
-                            post: postId,
-                            topic: topic as string,
-                        }
-                    })
-                    await supabase.from('post_topics').insert(tagsArray)
-                }
-
-                setProgress((prev) => prev + 0.2)
-
-                const { data: imagePath, error: imageErr } =
-                    await supabase.storage
-                        .from('images')
-                        .upload(`${user}/${postId}/main-image`, img_blob)
-
-                //Update the post
-                await supabase
-                    .from('posts')
-                    .update({
-                        image:
-                            'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
-                            imagePath?.path,
-                    })
-                    .eq('id', postId)
-
-                setProgress((prev) => prev + 0.4)
-            }
-        })
     }
 
     const handleCloseModal = () => {
@@ -300,9 +117,15 @@ const HashnodeModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
         const selectedPosts = posts?.filter(
             (post) => watchedValues[post.id.toString()] === true
         )
-        console.log(selectedPosts)
+
+        await fetch('http://127.0.0.1:8787/api/hashnode/upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ selectedPosts }),
+        })
         setTotal(selectedPosts?.length ? selectedPosts.length : 0)
-        await uploadPosts(selectedPosts ? selectedPosts : [])
     }
 
     const handleCheckboxChange = (post: any, checked: boolean) => {

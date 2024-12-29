@@ -47,6 +47,7 @@ import Subscript from '@tiptap/extension-subscript'
 import Superscript from '@tiptap/extension-superscript'
 import { Mathematics } from './extensions/mathematics/MathematicsExtension'
 import { cn } from '@/utils/cn'
+import { Markdown } from 'tiptap-markdown'
 
 interface Props {
     onUpdate: (editor: Editor) => void
@@ -121,6 +122,7 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
                     class: 'rounded',
                 },
             }),
+            Markdown,
         ],
         editorProps: {
             attributes: {

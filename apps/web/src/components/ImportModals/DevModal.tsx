@@ -236,7 +236,7 @@ const DevModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                         .from('drafts')
                         .update({
                             image:
-                                'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                                `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/` +
                                 imagePath?.path,
                         })
                         .eq('id', draftId)
@@ -292,7 +292,7 @@ const DevModal: FC<ModalDeletePostProps> = ({ show, onCloseModal }) => {
                     .from('posts')
                     .update({
                         image:
-                            'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/images/' +
+                            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/` +
                             imagePath?.path,
                     })
                     .eq('id', postId)

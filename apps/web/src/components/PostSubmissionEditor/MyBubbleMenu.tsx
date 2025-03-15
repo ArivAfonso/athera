@@ -82,14 +82,31 @@ const MyBubbleMenu: FC<MyBubbleMenuProps> = ({ editor }) => {
             .run()
     }
 
+    const shouldShow = ({ editor }: { editor: Editor }) => {
+        const { state } = editor
+        const { selection } = state
+        const { empty, from } = selection
+
+        if (empty) {
+            return false
+        }
+
+        const selectedNode = state.doc.nodeAt(from)
+        if (selectedNode && selectedNode.type.name === 'image') {
+            return false
+        }
+
+        return true
+    }
+
     return (
-        //   @ts-ignore
         <BubbleMenu
             className="p-3 dark:bg-neutral-900 bg-neutral-100 dark:text-neutral-200 text-neutral-900 flex justify-center rounded-xl shadow-lg"
             editor={editor}
             tippyOptions={{ duration: 100 }}
+            shouldShow={shouldShow}
         >
-            {menuItems.map((item, index) => (
+            {menuItems.map((item) => (
                 <Fragment key={item.title}>
                     <button
                         className={`menu-item ${

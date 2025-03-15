@@ -156,28 +156,6 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
                                             </div>
                                         </Link>
 
-                                        {/* ------------------ 2 --------------------- */}
-                                        <Link
-                                            href={
-                                                '/dashboard/my-posts/published'
-                                            }
-                                            className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                                            onClick={() => close()}
-                                        >
-                                            <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
-                                                <FolderOpenIcon
-                                                    className="w-6 h-6"
-                                                    aria-hidden="true"
-                                                    strokeWidth={1.5}
-                                                />
-                                            </div>
-                                            <div className="ml-4">
-                                                <p className="text-sm font-medium ">
-                                                    {'My Posts'}
-                                                </p>
-                                            </div>
-                                        </Link>
-
                                         <div className="w-full border-b border-neutral-200 dark:border-neutral-700" />
 
                                         {/* ------------------ 3 --------------------- */}

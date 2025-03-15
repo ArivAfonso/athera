@@ -11,7 +11,6 @@ import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import TextAlign from '@tiptap/extension-text-align'
-import Image from '@tiptap/extension-image'
 import Table from '@tiptap/extension-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
@@ -49,6 +48,9 @@ import { Mathematics } from './extensions/mathematics/MathematicsExtension'
 import { cn } from '@/utils/cn'
 import { Markdown } from 'tiptap-markdown'
 
+import Image from '@tiptap/extension-image'
+import ResizableImage from './extensions/image-resize'
+
 interface Props {
     onUpdate: (editor: Editor) => void
     defaultContent?: JSON
@@ -76,6 +78,7 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
     lowlight.register('r', r)
 
     const editor = useEditor({
+        immediatelyRender: false,
         extensions: [
             StarterKit,
             Highlight.configure({
@@ -115,14 +118,11 @@ const TiptapEditor: FC<Props> = ({ onUpdate, defaultContent = '' }) => {
             TextAlign.configure({
                 types: ['heading', 'paragraph'],
             }),
-            Image.configure({
-                allowBase64: true,
-                inline: true,
-                HTMLAttributes: {
-                    class: 'rounded',
-                },
-            }),
             Markdown,
+            Image.configure({
+                inline: true,
+            }),
+            ResizableImage,
         ],
         editorProps: {
             attributes: {

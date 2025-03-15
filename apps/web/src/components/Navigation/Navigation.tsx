@@ -17,6 +17,11 @@ const NAVIGATION_DEMO_2: NavItemType[] = [
         name: 'Home',
     },
     {
+        name: 'MapView',
+        id: randomId(),
+        href: '/mapview', // removed: as Route
+    },
+    {
         id: randomId(),
         name: 'World',
         type: 'dropdown',

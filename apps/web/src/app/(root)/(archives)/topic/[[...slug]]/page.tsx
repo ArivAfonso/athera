@@ -12,46 +12,45 @@ import { createClient } from '@/utils/supabase/client'
 import CircleLoading from '@/components/CircleLoading/CircleLoading'
 import { Heading2 } from 'ui'
 import Empty from '@/components/Empty'
+import NewsCard from '@/components/NewsCard/NewsCard'
+import NewsType from '@/types/NewsType'
+import NewsSection from '@/components/NewsSection/NewsSection'
 
-async function addPosts(pageParam: number) {
+async function addNews(topicId: string, pageParam: number) {
     const supabase = createClient()
-
     const { data, error } = await supabase
-        .from('posts')
+        .from('news')
         .select(
             `
             id,
             title,
             created_at,
-            scheduled_at,
             description,
+            link,
+            summary,
+            author,
             image,
+            source(
+                id,
+                name,
+                url,
+                image
+            ),
             likeCount:likes(count),
             commentCount:comments(count),
-            post_topics(topic:topics(id,name,color)),
-            bookmarks(user(id)),
-            likes(
-                liker(
-                    id
-                )
-            ),
-            author(
-                id,
-                verified,
-                name,
-                username,
-                avatar
-            )
+            news_topics(topic:topics(id,name,color))
             `
         )
-        .eq('post_topics.topic_id', 1)
-        .is('scheduled_at', null)
+        .eq('source', topicId)
         .order('created_at', { ascending: false })
-        .range(pageParam * 24, (pageParam + 1) * 24 - 1)
+        .range(pageParam * 48, (pageParam + 1) * 48 - 1)
 
-    const newPosts = data as unknown as PostType[]
+    if (error) {
+        console.error('Error fetching news:', error)
+        return []
+    }
 
-    return newPosts
+    return data as unknown as NewsType[]
 }
 
 async function getTopics(context: { params: { slug: any } }) {
@@ -66,34 +65,28 @@ async function getTopics(context: { params: { slug: any } }) {
             name,
             color,
             image,
-            posts(
+            news(
                 id,
                 title,
                 created_at,
-                scheduled_at,
                 description,
+                author,
+                link,
+                summary,
                 image,
                 likeCount:likes(count),
                 commentCount:comments(count),
-                post_topics(topic:topics(id,name,color)),
-                bookmarks(user(id)),
-                likes(
-                    liker(
-                        id
-                    )
-                ),
-                author(
+                news_topics(topic:topics(id,name,color)),
+                source(
                     id,
-                    verified,
                     name,
-                    username,
-                    avatar
+                    url,
+                    image
                 )
             )
             `
         )
         .eq('id', id)
-        .is('posts.scheduled_at', null)
         .single()
 
     const catData: TopicType = data as unknown as TopicType
@@ -103,25 +96,15 @@ async function getTopics(context: { params: { slug: any } }) {
     return catData
 }
 
-// export async function generateMetadata(
-//     props: any,
-//     searchParams: any
-// ): Promise<Metadata> {
-//     const data: TopicType = await getTopics(props)
-
-//     return {
-//         title: data.name + ' - Latest articles on Athera',
-//         description: `Read the latest articles on ${data.name}.`,
-//     }
-// }
-
 const PageTopic = async (context: any) => {
     const [catData, setCatData] = useState<TopicType>()
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         async function getData() {
             const data = await getTopics(context)
             setCatData(data)
+            setLoading(false)
         }
 
         getData()
@@ -154,7 +137,7 @@ const PageTopic = async (context: any) => {
                                         {catData.name.replaceAll('-', ' ')}
                                     </h2>
                                     <span className="block mt-4 text-neutral-300">
-                                        {catData.posts?.length} Articles
+                                        {catData.news?.length} Articles
                                     </span>
                                 </div>
                             </div>
@@ -165,7 +148,7 @@ const PageTopic = async (context: any) => {
                                 </Heading2>
 
                                 <h2 className="text-center font-medium text-sm">
-                                    Found {catData?.posts?.length} posts
+                                    Found {catData?.news?.length} articles
                                 </h2>
                             </div>
                         )}
@@ -173,24 +156,25 @@ const PageTopic = async (context: any) => {
                 )}
             </div>
 
-            <div className="container pb-16 lg:pb-28 lg:pt-10 space-y-16 lg:space-y-28">
-                <div>
-                    {
-                        //@ts-ignore
-                        catData?.posts[0] ? (
-                            <PostsSection
-                                postFn={addPosts}
-                                posts={catData.posts}
-                                id={`topic-${catData.id}`}
-                            />
-                        ) : (
-                            <Empty
-                                mainText="No posts found"
-                                subText="This topic doesn't have any posts yet."
-                            />
-                        )
-                    }
-                </div>
+            {/* NEWS POSTS FROM THIS SOURCE */}
+            <div className="container pb-16 lg:pb-28 lg:pt-10">
+                {loading ? (
+                    <CircleLoading />
+                ) : catData && catData.news && catData.news.length > 0 ? (
+                    <NewsSection
+                        id={catData.id}
+                        news={catData.news}
+                        newsFn={(page: number) => addNews(catData.id, page)}
+                        onHideNews={(newsId: string) => {
+                            // setCatData((prev) => ({ ...prev, news: prev.news.filter((item) => item.id !== newsId) }));
+                        }}
+                    />
+                ) : (
+                    <Empty
+                        mainText="No posts found"
+                        subText="There are no posts from this source at the moment."
+                    />
+                )}
             </div>
         </div>
     )

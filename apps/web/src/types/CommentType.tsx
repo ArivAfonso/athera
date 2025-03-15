@@ -1,8 +1,10 @@
+import NewsType from './NewsType'
 import PostType from './PostType'
 
 export default interface CommentType {
     id: string
-    post?: PostType
+    news?: NewsType
+    post: PostType
     comment: string
     created_at: string
     likes: number

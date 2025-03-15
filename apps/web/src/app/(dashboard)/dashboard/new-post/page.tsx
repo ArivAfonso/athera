@@ -546,9 +546,7 @@ const DashboardSubmitPost = () => {
                                                 fill="none"
                                                 viewBox="0 0 48 48"
                                                 aria-hidden="true"
-                                            >
-                                                {/* Your SVG path here */}
-                                            </svg>
+                                            ></svg>
                                             <div className="flex flex-col sm:flex-row text-sm text-neutral-6000">
                                                 <label
                                                     htmlFor="file-upload"

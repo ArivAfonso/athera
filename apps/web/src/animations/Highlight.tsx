@@ -18,9 +18,7 @@ export const HeroHighlight = ({
 
     const { isDarkMode } = useThemeMode()
 
-    useEffect(() => {
-        // Trigger your animation here
-    }, [isDarkMode])
+    useEffect(() => {}, [isDarkMode])
 
     function handleMouseMove({
         currentTarget,

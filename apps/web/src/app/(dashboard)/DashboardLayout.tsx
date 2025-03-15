@@ -52,21 +52,6 @@ const navigation: NavigationItem[] = [
         href: '/dashboard/posts/published',
         icon: FolderIcon,
         children: [
-            {
-                name: 'published',
-                href: '/dashboard/my-posts/published',
-                icon: FolderOpenIcon,
-            },
-            {
-                name: 'scheduled',
-                href: '/dashboard/my-posts/scheduled',
-                icon: Clock4Icon,
-            },
-            {
-                name: 'drafts',
-                href: '/dashboard/my-posts/drafts',
-                icon: FilesIcon,
-            },
             { name: 'likes', href: '/dashboard/liked-posts', icon: HeartIcon },
             {
                 name: 'watch history',
@@ -77,11 +62,6 @@ const navigation: NavigationItem[] = [
                 name: 'bookmarks',
                 href: '/dashboard/bookmarks',
                 icon: BookmarkIcon,
-            },
-            {
-                name: 'import/export',
-                href: '/dashboard/my-posts/import-export',
-                icon: ArrowDownUpIcon,
             },
         ],
     },
@@ -105,11 +85,6 @@ const navigation: NavigationItem[] = [
                 name: 'password',
                 href: '/dashboard/edit-profile/password',
                 icon: LockIcon,
-            },
-            {
-                name: 'social links',
-                href: '/dashboard/edit-profile/socials',
-                icon: LinkIcon,
             },
         ],
     },
@@ -403,7 +378,6 @@ export default function DashboardLayout({ children }: Props) {
 
                         <main className="pb-10">
                             <div className="mx-auto max-w-7xl px-3">
-                                {/* Replace with your content */}
                                 {children}
                             </div>
                         </main>

@@ -27,8 +27,6 @@ export const Sidebar: FC<SidebarProps> = ({
 
             <WidgetAuthor author={author} />
 
-            <WidgetSocialsFollow />
-
             <WidgetTopics topics={topics || []} />
         </div>
     )

@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react'
 import HorizontalFormBlockWrapper from '../edit-profile/notifications/FormWrapper'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-import ThemeSwitcher from '@/components/ThemeSwitcher/ThemeSwitcher'
 import FontSwitcher from '@/components/FontSwitcher/FontSwitcher'
 import { Tab } from '@headlessui/react'
 

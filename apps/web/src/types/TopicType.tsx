@@ -1,3 +1,4 @@
+import NewsType from './NewsType'
 import PostType from './PostType'
 
 export default interface TopicType {
@@ -9,5 +10,6 @@ export default interface TopicType {
         count: number
     }[]
     posts?: PostType[]
+    news?: NewsType[]
     color: string
 }

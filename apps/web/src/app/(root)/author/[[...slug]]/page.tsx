@@ -109,7 +109,6 @@ async function getData(context: { params: { slug: any } }) {
 const PageAuthor = (context: any) => {
     const [data, setData] = useState<AuthorType>({} as unknown as AuthorType)
     const [loading, setLoading] = useState(true)
-    const [modal, setModal] = useState(false)
     const [followModal, setFollowModal] = useState(false)
     const [followType, setFollowType] = useState('')
 
@@ -270,27 +269,6 @@ const PageAuthor = (context: any) => {
                                                     </span>
                                                 </a>
                                             )}
-                                            <SocialsList
-                                                //@ts-ignore
-                                                github={data.github}
-                                                //@ts-ignore
-                                                twitter={data.twitter}
-                                                //@ts-ignore
-                                                facebook={data.facebook}
-                                                //@ts-ignore
-                                                instagram={data.instagram}
-                                                //@ts-ignore
-                                                youtube={data.youtube}
-                                                //@ts-ignore
-                                                tiktok={data.tiktok}
-                                                //@ts-ignore
-                                                twitch={data.twitch}
-                                                //@ts-ignore
-                                                pinterest={data.pinterest}
-                                                //@ts-ignore
-                                                linkedin={data.linkedin}
-                                                itemClass="block w-7 h-7"
-                                            />
                                         </div>
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-4 text-sm text-neutral-500 dark:text-neutral-400">

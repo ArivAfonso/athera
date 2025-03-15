@@ -105,7 +105,7 @@ const DashboardWatchHistory = () => {
             )
             .eq('user_id', session.user ? session.user.id : '')
             .order('created_at', { ascending: false })
-            .range(pageParam * 24, (pageParam + 1) * 24 - 1)
+            .range(pageParam * 48, (pageParam + 1) * 48 - 1)
 
         const newPosts = (newData as unknown as { posts: PostType }[]).map(
             (item) => item.posts

@@ -2,7 +2,6 @@ import Skeleton from 'react-loading-skeleton'
 
 export default function Loading() {
     return (
-        // Replace your form with this when data is loading
         <div className="max-w-4xl mx-auto lg:pt-5 pt-10 sm:pt-26 pb-24 lg:pb-32">
             <div className="rounded-xl md:p-6">
                 <Skeleton height={40} /> {/* Title */}

@@ -1,15 +1,16 @@
 import React from 'react'
 import SectionLargeSlider from './SectionLargeSlider'
 import BackgroundSection from '@/components/BackgroundSection/BackgroundSection'
-import SectionSliderNewAuthors from '@/components/SectionSliderNewAthors/SectionSliderNewAuthors'
 import SectionSliderNewTopics from '@/components/SectionSliderNewTopics/SectionSliderNewTopics'
 import SectionMagazine1 from '@/components/Sections/SectionMagazine1'
 import SectionSliderPosts from '@/components/Sections/SectionSliderPosts'
+import SectionSliderSources from '@/components/SectionSliderSources/SectionSliderSources'
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
 import PostType from '@/types/PostType'
 import TopicType from '@/types/TopicType'
-import AuthorType from '@/types/AuthorType'
+import NewsType from '@/types/NewsType'
+import SourceType from '@/types/SourceType'
 import Particles from '@/components/Particles/Particles'
 import SectionImport from '@/components/SectionImport/SectionImport'
 import SectionNewPosts from '@/components/SectionNewPosts/SectionNewPosts'
@@ -17,35 +18,34 @@ import { Metadata } from 'next'
 
 async function getData() {
     const supabase = createClient(cookies())
-    const { data: posts, error } = await supabase
-        .from('posts')
+    const { data: news, error: newsError } = await supabase
+        .from('news')
         .select(
-            `id,
-        title,
-        created_at,
-        description,
-        image,
-        likeCount:likes(count),
-        commentCount:comments(count),
-        post_topics(topic:topics(id,name,color)),
-        bookmarks(user(id)),
-        likes(
-            liker(
-                id
-            )
-        ),
-        author(
-            id,
-            verified,
-            name,
-            username,
-            avatar
-        )`
+            `
+            id, 
+            title, 
+            description, 
+            summary, 
+            image, 
+            author, 
+            link, 
+            created_at,
+            source(
+                id,
+                name,
+                image,
+                description,
+                url
+            ),
+            likeCount:likes(count),
+            commentCount:comments(count),
+            news_topics(topic:topics(id,name,color))
+        `
         )
         .order('created_at', { ascending: false })
-        .is('featured', true)
-        .is('scheduled_at', null)
         .limit(20)
+
+    console.log('news', news)
 
     const { data: topics, error: topicsError } = await supabase
         .from('topics')
@@ -53,14 +53,17 @@ async function getData() {
         .ilike('image', '%https://%')
         .limit(20)
 
-    const { data: authors, error: authorsError } = await supabase
-        .from('users')
-        .select('id, name, username, verified, postCount:posts(count), avatar')
+    const { data: sources, error: sourcesError } = await supabase
+        .from('sources')
+        .select('id, name, url, background, image, newsCount:news(count)')
         .limit(20)
+
+    console.log('error', newsError, topicsError, sourcesError)
+
     return {
-        popular_posts: posts,
-        topics: topics,
-        authors: authors,
+        popular_news: news,
+        topics,
+        sources,
     }
 }
 
@@ -98,9 +101,9 @@ export const metadata: Metadata = {
 }
 
 interface HomeProps {
-    popular_posts: PostType[]
+    popular_news: NewsType[]
     topics: TopicType[]
-    authors: AuthorType[]
+    sources: SourceType[]
 }
 
 const PageHome = async ({}) => {
@@ -118,7 +121,7 @@ const PageHome = async ({}) => {
                 <div className="absolute inset-x-0 mt-72 m-auto h-80 max-w-lg bg-gradient-to-tr dark:from-indigo-400 dark:via-blue-800 dark:to-blue-200 blur-[118px] from-blue-200 via-blue-300 to-blue-400"></div>
                 <SectionLargeSlider
                     className="md:py-16 lg:pb-28 pt-4"
-                    posts={data.popular_posts.filter((_, i) => i < 3)}
+                    news={data.popular_news.filter((_, i) => i < 3)}
                 />
 
                 <div className="relative py-16">
@@ -135,19 +138,26 @@ const PageHome = async ({}) => {
 
                 <SectionMagazine1
                     className="py-16 lg:py-28"
-                    posts={data.popular_posts.filter((_, i) => i > 3)}
+                    news={data.popular_news.filter((_, i) => i > 3)}
                 />
 
-                {/* <SectionNewPosts posts={data.popular_posts} /> */}
+                {/* <SectionNewPosts posts={data.popular_news} /> */}
+
+                <SectionSliderSources
+                    className="py-16 lg:py-28"
+                    heading="Featured Sources"
+                    subHeading="Discover top sources"
+                    sources={data.sources.filter((_, i) => i < 10)}
+                />
 
                 <div className="relative py-16">
                     <BackgroundSection />
-                    <SectionSliderPosts
+                    {/* <SectionSliderPosts
                         postCardName="card9"
                         heading="Interesting Content"
                         subHeading="Over 69420 articles till date"
-                        posts={data.popular_posts}
-                    />
+                        posts={data.popular_news}
+                    /> */}
                 </div>
             </div>
         </div>

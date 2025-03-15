@@ -92,9 +92,6 @@ setup('create account', async ({ page }) => {
         )
         .toBe('string')
 
-    // await page.goto(url)
-    await page.waitForURL('/signup/details')
-
     await page.getByRole('button', { name: 'Update Account' }).click()
     await page.goto('/login')
     await page.waitForURL('/')

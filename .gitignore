@@ -5,6 +5,8 @@ npm-debug.log*
 .env
 apps/web/.env
 apps/web/.env.test
+apps/crawler/.env
+apps/crawler/.env.test
 apps/server
 # Runtime data
 pids

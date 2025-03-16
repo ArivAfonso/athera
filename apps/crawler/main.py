@@ -265,9 +265,9 @@ def scrape_source(source: str, max_articles: Optional[int] = Query(None, descrip
     topic = source_info["topic"]
     
     # Delete the existing JSON file if it exists
-    json_file_path = f"extracted_metadata_{source}.json"
-    if os.path.exists(json_file_path):
-        os.remove(json_file_path)
+    # json_file_path = f"extracted_metadata_{source}.json"
+    # if os.path.exists(json_file_path):
+    #     os.remove(json_file_path)
     
     extracted_metadata = []
     feed_urls = []
@@ -457,8 +457,8 @@ def scrape_source(source: str, max_articles: Optional[int] = Query(None, descrip
     except Exception as e:
         print(f"Error processing source {source}: {str(e)}")
     
-    with open(json_file_path, "w", encoding="utf-8") as json_file:
-        json.dump(extracted_metadata, json_file, ensure_ascii=False, indent=4)
+    # with open(json_file_path, "w", encoding="utf-8") as json_file:
+    #     json.dump(extracted_metadata, json_file, ensure_ascii=False, indent=4)
     
     if extracted_metadata:
         try:
@@ -467,7 +467,7 @@ def scrape_source(source: str, max_articles: Optional[int] = Query(None, descrip
         except Exception as e:
             print(f"Error uploading posts: {str(e)}")
     
-    return {"message": f"Extracted {source} metadata saved to {json_file_path}. Total articles: {len(extracted_metadata)}"}
+    return {"message": f"Total articles: {len(extracted_metadata)}"}
 
 @app.get("/sources")
 def list_sources() -> dict:

@@ -12,7 +12,7 @@ export interface CardSourceBoxProps {
 const CardSourceBox: FC<CardSourceBoxProps> = ({ className = '', source }) => {
     return (
         <Link
-            href={`/source/${source.username}`}
+            href={`/source/${source.name}`}
             className={`CardSourceBox flex flex-col overflow-hidden bg-white dark:bg-neutral-800 rounded-3xl ${className}`}
         >
             <div className="relative">

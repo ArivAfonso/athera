@@ -10,7 +10,6 @@ from dateutil.parser import parse as parse_date
 from src.utils.upload_post import upload_post
 import requests
 import xml.etree.ElementTree as ET
-import newspaper  # newspaper package for fallback extraction
 
 app = FastAPI()
 messages_list: dict[int, MsgPayload] = {}

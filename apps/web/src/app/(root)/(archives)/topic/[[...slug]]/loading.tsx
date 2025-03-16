@@ -1,7 +1,6 @@
 import React from 'react'
 
 export default function Loading() {
-    // You can add any UI inside Loading, including a Skeleton.
     return (
         <div>
             <div className="max-w-2xl mx-auto mt-10 flex flex-col lg:mt-7">

@@ -1,4 +1,8 @@
 fastapi
 uvicorn
 httpx
-scrapy
+openai
+trafilatura
+requests
+supabase
+dotenv

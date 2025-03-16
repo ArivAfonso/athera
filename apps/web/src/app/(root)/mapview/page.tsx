@@ -15,7 +15,6 @@ import { createClient } from '@/utils/supabase/client'
 import { useThemeMode } from '@/hooks/useThemeMode'
 
 // Fetch news within the current map bounds by calling a custom RPC.
-// You should create an RPC (e.g. "news_in_bounds") that takes parameters
 // (min_lon, min_lat, max_lon, max_lat, limit) and returns matching news.
 const fetchNewsWithinBounds = async (
     bounds: L.LatLngBounds
@@ -24,14 +23,6 @@ const fetchNewsWithinBounds = async (
     const sw = bounds.getSouthWest()
 
     const supabase = createClient()
-
-    console.log('fetching news within bounds:', {
-        min_long: sw.lng,
-        min_lat: sw.lat,
-        max_long: ne.lng,
-        max_lat: ne.lat,
-        limit: 5,
-    })
 
     const { data, error } = await supabase.rpc('news_in_view', {
         min_long: sw.lng,

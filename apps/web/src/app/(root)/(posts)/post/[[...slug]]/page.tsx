@@ -229,20 +229,6 @@ const PageSingle = async (context: any) => {
                         />
                     </div>
                 </div>
-                {data.author.customization.sidebar && (
-                    <div className="lg:w-1/4">
-                        <Sidebar
-                            topics={data.post_topics.map((topic) => ({
-                                ...topic.topic,
-                                postCount: topic.topic.postCount || [
-                                    { count: 0 },
-                                ],
-                            }))}
-                            author={data.author}
-                            showSidebar={showSidebar}
-                        />
-                    </div>
-                )}
             </div>
             {/* RELATED POSTS */}
             <div className="mt-10 w-full">

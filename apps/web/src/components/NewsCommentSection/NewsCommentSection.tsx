@@ -81,7 +81,7 @@ const NewsCommentSection: React.FC<NewsCommentSectionProps> = ({
     return (
         <div>
             <NewsCommentForm newsId={newsId} onAddComment={handleAddComment} />
-            <ul className="space-y-5">
+            <ul className="space-y-5 gap-y-2 mt-5">
                 {comments.map((comment) => (
                     <CommentCard
                         key={comment.id}

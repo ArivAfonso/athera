@@ -271,7 +271,7 @@ const WidgetSocialsFollow: FC<WidgetSocialsFollowProps> = ({
 }) => {
     return (
         <div className={`WidgetSocialsFollow overflow-hidden ${className}`}>
-            <Heading2 title="🧬 Share" />
+            <Heading2 title="🔗 Share" />
             <div className="grid grid-cols-2">
                 {socials?.map((social, index) => {
                     const shareUrl = getShareUrl(social.name, news.link)

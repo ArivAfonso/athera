@@ -9,6 +9,9 @@ export default interface TopicType {
     postCount: {
         count: number
     }[]
+    newsCount: {
+        count: number
+    }[]
     posts?: PostType[]
     news?: NewsType[]
     color: string

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import NewsFeaturedMedia from '@/components/PostFeaturedMedia/NewsFeaturedMedia'
 import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
 import SingleTitle from '@/app/(root)/(posts)/SingleTitle'
@@ -9,6 +9,15 @@ import NewsType from '@/types/NewsType'
 import { SquareArrowOutUpRightIcon, XIcon } from 'lucide-react'
 import WidgetSocialsFollow from '../WidgetSocialsFollow/WidgetSocialsFollow'
 import NewsCommentSection from '@/components/NewsCommentSection/NewsCommentSection'
+import { createClient } from '@/utils/supabase/client'
+import CardTopic1 from '../CardTopic1/CardTopic1'
+import Heading2 from '../Heading2/Heading2'
+import { title } from 'process'
+import NewsCardMeta from '../NewsCardMeta/NewsCardMeta'
+import Link from 'next/link'
+import Image from 'next/image'
+import SingleRelatedPosts from '@/app/(root)/(posts)/SingleRelatedPosts'
+import RelatedNews from './RelatedNews'
 
 interface NewsDetailModalProps {
     show: boolean
@@ -24,6 +33,74 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
     if (!show) return null
 
     const [isExpanded, setIsExpanded] = useState(false)
+    const [id, setId] = useState('')
+    const [relatedNews, setRelatedNews] = useState<NewsType[]>([])
+    const [authorNews, setAuthorNews] = useState<NewsType[]>([])
+
+    useEffect(() => {
+        const supabase = createClient()
+        const fetchUserData = async () => {
+            const session = await supabase.auth.getUser()
+            setId(session.data.user ? session.data.user.id : '')
+        }
+        const fetchRelatedNews = async () => {
+            const { data, error } = await supabase.rpc('related_news', {
+                news_id: news.id,
+                match_threshold: 0.1,
+                match_count: 5,
+            })
+
+            console.log(data)
+
+            if (error) {
+                console.error('Error fetching news:', error)
+                return []
+            }
+
+            setRelatedNews(data as unknown as NewsType[])
+        }
+        const fetchAuthorNews = async () => {
+            const { data, error } = await supabase
+                .from('news')
+                .select(
+                    `
+                    id,
+                    title,
+                    created_at,
+                    description,
+                    link,
+                    summary,
+                    author,
+                    image,
+                    source(
+                        id,
+                        name,
+                        url,
+                        image
+                    ),
+                    likeCount:likes(count),
+                    commentCount:comments(count),
+                    news_topics(topic:topics(id,name,color))
+                    `
+                )
+                .eq('author', news.author)
+                .neq('id', news.id)
+                .eq('source', news.source.id)
+                .order('created_at', { ascending: false })
+                .range(0, 4)
+
+            if (error) {
+                console.error('Error fetching news:', error)
+                return []
+            }
+
+            setAuthorNews(data as unknown as NewsType[])
+        }
+        if (news.commentCount[0].count > 8) fetchRelatedNews()
+        else if (news.commentCount[0].count > 16) fetchAuthorNews()
+
+        fetchUserData()
+    }, [])
 
     return (
         <div
@@ -158,9 +235,7 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                             <div className="mt-8">
                                 <NewsCommentSection
                                     newsId={news.id}
-                                    currentUserID={
-                                        '' /* pass current user id if available */
-                                    }
+                                    currentUserID={id}
                                 />
                             </div>
                         </div>
@@ -200,7 +275,7 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                                         <span className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                                             Author
                                         </span>
-                                        <span className="block text-base text-neutral-900 dark:text-neutral-100">
+                                        <span className="block text-sm text-neutral-900 dark:text-neutral-100">
                                             {news.author}
                                         </span>
                                     </div>
@@ -232,8 +307,149 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                             <div className="w-72">
                                 <WidgetSocialsFollow news={news} />
                             </div>
+                            {news.commentCount[0].count > 4 && (
+                                <div
+                                    className={`nc-WidgetCategories rounded-3xl overflow-hidden border border-neutral-100 dark:border-neutral-700`}
+                                >
+                                    <Heading2 title="🧬 News Topics" />
+
+                                    <div className="flow-root">
+                                        <div className="flex flex-col divide-y divide-neutral-200 dark:divide-neutral-700">
+                                            {news.news_topics.map(
+                                                (category) => (
+                                                    <CardTopic1
+                                                        className="p-4 xl:p-5 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                        key={category.topic.id}
+                                                        //@ts-ignore
+                                                        topic={category.topic}
+                                                        size="normal"
+                                                    />
+                                                )
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {news.commentCount[0].count > 8 && (
+                                <div
+                                    className={`nc-WidgetPosts rounded-3xl overflow-hidden max-w-72 border border-neutral-100 dark:border-neutral-700`}
+                                >
+                                    <Heading2 title="🧬 Related News" />
+                                    <div className="flex flex-col divide-y divide-neutral-200 dark:divide-neutral-700">
+                                        {relatedNews.map((item) => (
+                                            <div
+                                                className={`relative p-3 flex flex-row justify-between items-center`}
+                                                key={item.id}
+                                            >
+                                                <Link
+                                                    href={item.link}
+                                                    className="absolute inset-0"
+                                                    title={item.title}
+                                                ></Link>
+                                                <div className="relative space-y-2">
+                                                    <NewsCardMeta
+                                                        meta={{
+                                                            ...item,
+                                                            author: '',
+                                                        }}
+                                                    />
+                                                    <h2 className="nc-card-title block text-sm sm:text-base font-medium sm:font-semibold text-neutral-900 dark:text-neutral-100">
+                                                        <Link
+                                                            href={item.link}
+                                                            className="line-clamp-2"
+                                                            title={item.title}
+                                                        >
+                                                            {item.title}
+                                                        </Link>
+                                                    </h2>
+                                                </div>
+
+                                                <Link
+                                                    href={item.link}
+                                                    title={item.title}
+                                                    className={`block w-20 flex-shrink-0 relative rounded-lg overflow-hidden z-0 ms-4 group`}
+                                                >
+                                                    <div
+                                                        className={`w-full h-0 aspect-w-1 aspect-h-1`}
+                                                    >
+                                                        <Image
+                                                            alt="featured"
+                                                            sizes="100px"
+                                                            className="object-cover w-full h-full group-hover:scale-110 transform transition-transform duration-300"
+                                                            src={item.image}
+                                                            fill
+                                                            title={item.title}
+                                                        />
+                                                    </div>
+                                                </Link>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {news.commentCount[0].count > 16 && (
+                                <div
+                                    className={`nc-WidgetPosts rounded-3xl overflow-hidden max-w-72 border border-neutral-100 dark:border-neutral-700`}
+                                >
+                                    <Heading2 title="🧬 More News from this Author" />
+                                    <div className="flex flex-col divide-y divide-neutral-200 dark:divide-neutral-700">
+                                        {authorNews.map((item) => (
+                                            <div
+                                                className={`relative p-3 flex flex-row justify-between items-center`}
+                                                key={item.id}
+                                            >
+                                                <Link
+                                                    href={item.link}
+                                                    className="absolute inset-0"
+                                                    title={item.title}
+                                                ></Link>
+                                                <div className="relative space-y-2">
+                                                    <NewsCardMeta
+                                                        meta={{
+                                                            ...item,
+                                                            author: '',
+                                                        }}
+                                                    />
+                                                    <h2 className="nc-card-title block text-sm sm:text-base font-medium sm:font-semibold text-neutral-900 dark:text-neutral-100">
+                                                        <Link
+                                                            href={item.link}
+                                                            className="line-clamp-2"
+                                                            title={item.title}
+                                                        >
+                                                            {item.title}
+                                                        </Link>
+                                                    </h2>
+                                                </div>
+
+                                                <Link
+                                                    href={item.link}
+                                                    title={item.title}
+                                                    className={`block w-20 flex-shrink-0 relative rounded-lg overflow-hidden z-0 ms-4 group`}
+                                                >
+                                                    <div
+                                                        className={`w-full h-0 aspect-w-1 aspect-h-1`}
+                                                    >
+                                                        <Image
+                                                            alt="featured"
+                                                            sizes="100px"
+                                                            className="object-cover w-full h-full group-hover:scale-110 transform transition-transform duration-300"
+                                                            src={item.image}
+                                                            fill
+                                                            title={item.title}
+                                                        />
+                                                    </div>
+                                                </Link>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
+                    {/* Added related posts slider */}
+                    <RelatedNews id={news.id} authorId={news.author} />
                 </div>
             </div>
         </div>

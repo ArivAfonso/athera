@@ -115,14 +115,14 @@ const PageSearchV2 = () => {
 
     const getTopicsData = async () => {
         try {
-            const topicsData: TopicType[] = (
-                await fetchTopicsData(searchValue)
-            ).map((topic) => ({
-                ...topic,
-                name: topic.name || '',
-                color: topic.color || '',
-            }))
-            setTopics(topicsData)
+            // const topicsData: TopicType[] = (
+            //     await fetchTopicsData(searchValue)
+            // ).map((topic) => ({
+            //     ...topic,
+            //     name: topic.name || '',
+            //     color: topic.color || '',
+            // }))
+            // setTopics(topicsData)
         } catch (error) {
             console.error('Failed to fetch topics:', error)
         }

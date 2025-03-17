@@ -50,12 +50,13 @@ async function fetchSourceNews(sourceId: string, pageParam: number) {
             source(
                 id,
                 name,
+                description,
                 url,
                 image
             ),
             likeCount:likes(count),
             commentCount:comments(count),
-            news_topics(topic:topics(id,name,color))
+            news_topics(topic:topics(id,name,color,newsCount:news(count)))
             `
         )
         .eq('source', sourceId)

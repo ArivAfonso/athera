@@ -22,7 +22,7 @@ const CardTopic1: FC<CardTopic1Props> = ({
                 <h2
                     className={`${
                         size === 'large' ? 'text-lg' : 'text-base'
-                    } nc-card-title text-neutral-900 dark:text-neutral-100 text-sm sm:text-base font-medium sm:font-semibold`}
+                    } text-neutral-900 dark:text-neutral-100 text-sm sm:text-base font-medium sm:font-semibold`}
                 >
                     {topic.name}
                 </h2>
@@ -31,7 +31,7 @@ const CardTopic1: FC<CardTopic1Props> = ({
                         size === 'large' ? 'text-sm' : 'text-xs'
                     } block mt-[2px] text-neutral-500 dark:text-neutral-400`}
                 >
-                    {topic.postCount[0].count} Articles
+                    {topic.newsCount[0].count} Articles
                 </span>
             </div>
         </Link>

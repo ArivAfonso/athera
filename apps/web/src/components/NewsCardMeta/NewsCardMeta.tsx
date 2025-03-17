@@ -22,6 +22,12 @@ const NewsCardMeta: FC<NewsCardMetaProps> = ({
 }) => {
     const { created_at, source, author } = meta
 
+    const formattedDate = new Date(created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    })
+
     if (!source) {
         return <div>No source information</div>
     } else {
@@ -46,7 +52,7 @@ const NewsCardMeta: FC<NewsCardMetaProps> = ({
                         </span>
                     </div>
                     <div className="flex items-center text-neutral-500 dark:text-neutral-400 font-normal">
-                        <span>{created_at}</span>
+                        <span>{formattedDate}</span>
                         {author && (
                             <>
                                 <span className="mx-1">•</span>

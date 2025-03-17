@@ -184,7 +184,7 @@ def upload_post(articles):
             "description": article.get("description", ""),
             "image": article.get("image", ""),
             "created_at": article.get("created_at", ""),
-            "author": article["authors"],
+            "author": article["authors"].split(";")[0],
             "summary": ai.summary,
             "location": geodata,
             "embeddings": embeddings,

@@ -112,7 +112,7 @@ const NewsCardLikeAction: FC<NewsCardLikeActionProps> = ({
                 // Insert a new like into the database
                 const { error } = await supabase
                     .from('likes')
-                    .insert([{ news_id: newsId, user_id: userId }])
+                    .insert([{ news: newsId, user_id: userId }])
                     .select()
 
                 if (error) {

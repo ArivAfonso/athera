@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Query
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, Query, Request
 from typing import Optional
 from models import MsgPayload
 from trafilatura import feeds, fetch_url, bare_extraction
@@ -7,9 +8,15 @@ import json
 import re
 from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_date
-from src.utils.upload_post import upload_post
+from src.utils.upload_post import upload_post, supabase
 import requests
 import xml.etree.ElementTree as ET
+
+# Load environment variables
+load_dotenv()
+
+# Get the secret token from the environment
+SECRET_TOKEN = os.getenv("SECRET_TOKEN")
 
 app = FastAPI()
 messages_list: dict[int, MsgPayload] = {}
@@ -247,7 +254,23 @@ topic_configs = {
 }
 
 @app.get("/scrape/{source}")
-def scrape_source(source: str, max_articles: Optional[int] = Query(None, description="Maximum number of articles to scrape")) -> dict[str, str]:
+def scrape_source(
+    source: str,
+    request: Request,
+    max_articles: Optional[int] = Query(None, description="Maximum number of articles to scrape")
+) -> dict[str, str]:
+    # Auth check
+    auth = request.headers.get("Authorization")
+    if auth != f"Bearer {SECRET_TOKEN}":
+        raise HTTPException(status_code=403, detail="Unauthorized request")
+
+    try:
+        result = perform_scrape(source, max_articles)
+        return {"status": "success", "details": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
     # Create a flattened dictionary of all sources
     all_sources = {}
     for topic, sources in topic_configs.items():
@@ -391,21 +414,24 @@ def scrape_source(source: str, max_articles: Optional[int] = Query(None, descrip
                 rejected_count += 1
                 continue
 
+            is_sitemap = "sitemap_xml" in config and bool(config["sitemap_xml"])
+
             if metadata.date:
                 try:
                     article_date = parse_date(metadata.date)
                     if article_date < datetime.now(article_date.tzinfo) - timedelta(days=2):
                         print(f"Rejected: Article is too old. Date: {metadata.date}")
                         rejected_count += 1
-                        # Only count consecutive outdated if not disabled in the config.
-                        if not config.get("disable_outdated_check", False):
+                        # Only check consecutive outdated if the feed is from sitemap and the outdated check is enabled
+                        if is_sitemap and not config.get("disable_outdated_check", False):
                             consecutive_outdated += 1
                             if consecutive_outdated >= 5:
-                                print("5 consecutive out-of-date articles encountered. Stopping further processing.")
+                                print("5 consecutive out-of-date articles encountered (sitemap). Stopping further processing.")
                                 break
                         continue
                     else:
-                        consecutive_outdated = 0
+                        if is_sitemap:
+                            consecutive_outdated = 0
                 except Exception as e:
                     print(f"Error parsing date '{metadata.date}' for feed {feed_url}: {str(e)}")
                     rejected_count += 1
@@ -475,3 +501,39 @@ def list_sources() -> dict:
     for topic, sources in topic_configs.items():
         all_sources[topic] = list(sources.keys())
     return {"topics": all_sources}
+
+@app.get("/scrapeit")
+def scrape(request: Request) -> dict:
+    auth = request.headers.get("Authorization")
+    if auth != f"Bearer {SECRET_TOKEN}":
+        raise HTTPException(status_code=403, detail="Unauthorized request")
+
+    now = datetime.now().time()
+
+    response = supabase.table("sources").select("*").execute()
+    sources = response.data
+
+    if not sources:
+        raise HTTPException(status_code=404, detail="No sources available")
+
+    # Function to calculate absolute time difference
+    def time_diff(source_time_str):
+        try:
+            source_time = datetime.strptime(source_time_str, "%H:%M:%S").time()
+            return abs(
+                datetime.combine(datetime.today(), source_time) -
+                datetime.combine(datetime.today(), now)
+            ).total_seconds()
+        except Exception:
+            return float('inf')  # ignore invalid time formats
+
+    # Sort by time diff and pick the closest valid one
+    valid_sources = [s for s in sources if s.get("time")]
+    if not valid_sources:
+        raise HTTPException(status_code=404, detail="No valid time entries in sources")
+
+    closest = sorted(valid_sources, key=lambda src: time_diff(src["time"]))[0]
+
+    print(f"Closest source: {closest}")
+    result = perform_scrape(closest["id"])  # Run scrape
+    return {"status": "success", "source": closest["id"], "result": result}

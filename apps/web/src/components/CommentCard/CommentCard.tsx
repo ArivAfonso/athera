@@ -23,11 +23,11 @@ const CommentCard: FC<CommentCardProps> = ({
     commentObj,
     size = 'large',
     currentUserID,
-    onDeleteComment, // Add this prop
-    onEditComment, // Add this prop
+    onDeleteComment,
+    onEditComment,
 }) => {
     const {
-        id, // Comment ID
+        id,
         created_at,
         commenter,
         comment,
@@ -36,6 +36,9 @@ const CommentCard: FC<CommentCardProps> = ({
     } = commentObj
 
     const isCommenterCurrentUser = commenter.id === currentUserID
+
+    console.log('isCommenterCurrentUser', isCommenterCurrentUser)
+    console.log('comment', comment)
 
     const actions: DropDownItem[] = [
         {

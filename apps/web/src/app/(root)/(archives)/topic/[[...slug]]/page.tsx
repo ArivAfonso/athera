@@ -76,10 +76,11 @@ async function getTopics(context: { params: { slug: any } }) {
                 image,
                 likeCount:likes(count),
                 commentCount:comments(count),
-                news_topics(topic:topics(id,name,color)),
+                news_topics(topic:topics(id,name,color,newsCount:news(count))),
                 source(
                     id,
                     name,
+                    description,
                     url,
                     image
                 )

@@ -516,7 +516,7 @@ def scrape(request: Request, background_tasks: BackgroundTasks) -> dict:
     if not sources:
         raise HTTPException(status_code=404, detail="No sources available")
 
-    # Function to calculate absolute time difference
+    # Function to calculate absolute time difference in seconds
     def time_diff(source_time_str):
         try:
             source_time = datetime.strptime(source_time_str, "%H:%M:%S").time()
@@ -527,10 +527,10 @@ def scrape(request: Request, background_tasks: BackgroundTasks) -> dict:
         except Exception:
             return float('inf')  # ignore invalid time formats
 
-    # Sort by time diff and pick the closest valid one
-    valid_sources = [s for s in sources if s.get("time")]
+    # Filter valid sources with a time difference of at most 2 minutes (120 seconds)
+    valid_sources = [s for s in sources if s.get("time") and time_diff(s["time"]) <= 120]
     if not valid_sources:
-        raise HTTPException(status_code=404, detail="No valid time entries in sources")
+        raise HTTPException(status_code=204, detail="No sources found")
 
     closest = sorted(valid_sources, key=lambda src: time_diff(src["time"]))[0]
 

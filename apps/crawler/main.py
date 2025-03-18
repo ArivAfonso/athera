@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Query, Request, BackgroundTasks
 from typing import Optional
 from models import MsgPayload
 from trafilatura import feeds, fetch_url, bare_extraction
@@ -502,8 +502,8 @@ def list_sources() -> dict:
         all_sources[topic] = list(sources.keys())
     return {"topics": all_sources}
 
-@app.get("/scrapeit")
-def scrape(request: Request) -> dict:
+@app.post("/scrapeit")
+def scrape(request: Request, background_tasks: BackgroundTasks) -> dict:
     auth = request.headers.get("Authorization")
     if auth != f"Bearer {SECRET_TOKEN}":
         raise HTTPException(status_code=403, detail="Unauthorized request")
@@ -535,5 +535,5 @@ def scrape(request: Request) -> dict:
     closest = sorted(valid_sources, key=lambda src: time_diff(src["time"]))[0]
 
     print(f"Closest source: {closest}")
-    result = perform_scrape(closest["id"])  # Run scrape
-    return {"status": "success", "source": closest["id"], "result": result}
+    background_tasks.add_task(perform_scrape, closest["id"])  # Run scrape in the background
+    return {"status": "success", "source": closest["id"]}

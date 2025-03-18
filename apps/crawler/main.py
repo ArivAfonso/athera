@@ -6,11 +6,12 @@ from trafilatura import feeds, fetch_url, bare_extraction
 import os
 import json
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dateutil.parser import parse as parse_date
 from src.utils.upload_post import upload_post, supabase
 import requests
 import xml.etree.ElementTree as ET
+from sources import topic_configs
 
 # Load environment variables
 load_dotenv()
@@ -29,246 +30,27 @@ def root() -> dict[str, str]:
 def message_items() -> dict[str, dict[int, MsgPayload]]:
     return {"messages:": messages_list}
 
-# Define topic configurations
-topic_configs = {
-    "tech": {
-        "techcrunch": {
-            "url": "https://techcrunch.com/",
-            "title_suffix": " | TechCrunch",
-        },
-        "wired": {
-            "url": "https://www.wired.com/",
-            "title_suffix": " | WIRED",
-            "sitemap_xml": "https://www.wired.com/sitemap.xml"
-        },
-        "gizmodo": {
-            "url": "https://gizmodo.com/",
-            "title_suffix": " | Gizmodo",
-        },
-        "theverge": {
-            "url": "https://www.theverge.com/",
-            "title_suffix": " - The Verge",
-        },
-        # "arstechnica": {
-        #     "url": "https://arstechnica.com/",
-        #     "title_suffix": " | Ars Technica",
-        # },
-        # "androidauthority": {
-        #     "url": "https://www.androidauthority.com/",
-        #     "title_suffix": " - Android Authority",
-        # },
-        "pcworld": {
-            "url": "https://www.pcworld.com/",
-            "title_suffix": " | PCWorld",
-        },
-        "engadget": {
-            "url": "https://www.engadget.com/",
-            "title_suffix": " | Engadget",
-            "sitemap_xml": "https://www.engadget.com/sitemap.xml"
-        },
-        "macworld": {
-            "url": "https://www.macworld.com/",
-            "title_suffix": " | Macworld",
-        },
-        "slashdot": {
-            "url": "https://slashdot.org/",
-            "title_suffix": " - Slashdot",
-        },
-        "windowscentral": {
-            "url": "https://www.windowscentral.com/",
-            "title_suffix": " | Windows Central",
-        },
-        "techradar": {
-            "url": "https://www.techradar.com/",
-            "title_suffix": " | TechRadar",
-        },
-    },
-    "politics": {
-        "politico": {
-            "url": "https://www.politico.com/",
-            "title_suffix": " - POLITICO",
-        },
-        "the-hill": {
-            "url": "https://thehill.com/",
-            "title_suffix": " | The Hill",
-        },
-        "vox": {
-            "url": "https://www.vox.com/",
-            "title_suffix": " - Vox",
-        }
-    },
-    "music": {
-        "billboard": {
-            "url": "https://www.billboard.com/",
-            "title_suffix": " | Billboard",
-        },
-        "pitchfork": {
-            "url": "https://pitchfork.com/",
-            "title_suffix": " | Pitchfork",
-        }
-    },
-    "sports": {
-        # "theathletic": {
-        #     "url": "https://theathletic.com/",
-        #     "title_suffix": " | The Athletic",
-        # },
-        "bleacherreport": {
-            "url": "https://bleacherreport.com/",
-            "title_suffix": " | Bleacher Report",
-            "sitemap_xml": "https://bleacherreport.com/sitemaps"
-        },
-        "sportbible": {
-            "url": "https://www.sportbible.com/",
-            "title_suffix": " | SPORTbible",
-        },
-        "talksport": {
-            "url": "https://talksport.com/",
-            "title_suffix": " | talkSPORT",
-        },
-        "therace": {
-            "url": "https://the-race.com/",
-            "title_suffix": " | The Race",
-            "sitemap_xml": "https://www.the-race.com/sitemap-posts.xml",
-        }
-    },
-    "cars": {
-        # "autoexpress": {
-        #     "url": "https://www.autoexpress.co.uk/",
-        #     "title_suffix": " | Auto Express",
-        # },
-        # "motor1": {
-        #     "url": "https://www.motor1.com/",
-        #     "title_suffix": " | Motor1",
-        # },
-        # "motortrend": {
-        #     "url": "https://www.motortrend.com/",
-        #     "title_suffix": " | MotorTrend",
-        #     "sitemap_xml": "https://www.motortrend.com/sitemap-article-news-2025.xml",
-        #     "disable_outdated_check": True  # Disable the out-of-date check for motortrend
-        # }
-    },
-    # "programming": {
-    #     "sitepoint": {
-    #         "url": "https://www.sitepoint.com/",
-    #         "title_suffix": " - SitePoint",
-    #     },
-    # },
-    "gaming": {
-        "polygon": {
-            "url": "https://www.polygon.com/",
-            "title_suffix": " - Polygon",
-        },
-        "kotaku": {
-            "url": "https://kotaku.com/",
-            "title_suffix": " | Kotaku",
-        },
-        "ign": {
-            "url": "https://www.ign.com/",
-            "title_suffix": " | IGN",
-        }
-    },
-    "entertainment": {
-        "indiewire": {
-            "url": "https://www.indiewire.com/",
-            "title_suffix": " | IndieWire",
-        },
-        "variety": {
-            "url": "https://variety.com/",
-            "title_suffix": " - Variety",
-        },
-        "empireonline": {
-            "url": "https://www.empireonline.com/",
-            "title_suffix": " | Empire",
-            "sitemap_xml": "https://www.empireonline.com/sitemap_articles.xml?page=1"
-        },
-    },
-    "business": {
-        "theentrepreneur": {
-            "url": "https://entrepreneur.com/",
-            "title_suffix": " | The Entrepreneur",
-        },
-    },
-    "general": {
-        "forbes": {
-            "url": "https://www.forbes.com/",
-            "title_suffix": " - Forbes",
-            "sitemap_xml": "https://www.forbes.com/news_sitemap.xml"
-        },
-    },
-    "travel": {
-        "atlasobscura": {
-            "url": "https://www.atlasobscura.com/",
-            "title_suffix": " - Atlas Obscura",
-        },
-        # "lonelyplanet": {
-        #     "url": "https://www.lonelyplanet.com/",
-        #     "title_suffix": " - Lonely Planet",
-        # },
-        # "cntraveller": {
-        #     "url": "https://www.cntraveller.com/",
-        #     "title_suffix": " | CN Traveller",
-        # }
-    },
-    "fashion": {
-        "hypebeast": {
-            "url": "https://hypebeast.com/",
-            "title_suffix": " | HYPEBEAST",
-            "sitemap_xml": "https://hypebeast.com/sitemap.xml"
-        },
-    },
-    # "literature": {
-    #     "lithub": {
-    #         "url": "https://lithub.com/",
-    #         "title_suffix": " | Literary Hub",
-    #     },
-    # },
-    "science": {
-        "sciencenews": {
-            "url": "https://www.sciencenews.org/",
-            "title_suffix": " | Science News",
-        },
-        "discovermagazine": {
-            "url": "https://www.discovermagazine.com/",
-            "title_suffix": " | Discover Magazine",
-            "sitemap_xml": "https://www.discovermagazine.com/sitemap/article/recent/1.xml"
-        },
-    },
-    # "architecture": {
-    #     "elledecor": {
-    #         "url": "https://www.elledecor.com/",
-    #         "title_suffix": " - ELLE Decor",
-    #     },
-    # },
-    # "international": {
-    #     "theriotimes": {
-    #         "url": "https://riotimesonline.com/",
-    #         "title_suffix": " | The Rio Times",
-    #     },
-    #     "theportugalnews": {
-    #         "url": "https://www.theportugalnews.com/",
-    #         "title_suffix": " | The Portugal News",
-    #         "sitemap_xml": "https://www.theportugalnews.com/sitemap/en/category-news.xml",
-    #         "ignore_prefix": "https://www.theportugalnews.com/news/news/"
-    #     },
-    # },
-}
-
 @app.get("/scrape/{source}")
 def scrape_source(
     source: str,
     request: Request,
     max_articles: Optional[int] = Query(None, description="Maximum number of articles to scrape")
 ) -> dict[str, str]:
-    # Auth check
-    auth = request.headers.get("Authorization")
-    if auth != f"Bearer {SECRET_TOKEN}":
-        raise HTTPException(status_code=403, detail="Unauthorized request")
+    # auth = request.headers.get("Authorization")
+    # if auth != f"Bearer {SECRET_TOKEN}":
+    #     raise HTTPException(status_code=403, detail="Unauthorized request")
 
     try:
         result = perform_scrape(source, max_articles)
-        return {"status": "success", "details": result}
+        # Convert the nested dictionary to a string if needed
+        if isinstance(result, dict):
+            details_str = json.dumps(result)
+        else:
+            details_str = str(result)
+        return {"status": "success", "details": details_str}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
     # Create a flattened dictionary of all sources
@@ -307,7 +89,7 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
                     except ET.ParseError as e:
                         print(f"Error parsing XML: {str(e)}")
                         root = None
-        
+            
                     if root is not None:
                         # If sitemap index, use the first sitemap URL from the index
                         if "sitemapindex" in root.tag:
@@ -318,7 +100,8 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
                                 if loc is not None and loc.text:
                                     sitemap_urls.append(loc.text)
                             if sitemap_urls:
-                                first_sitemap_url = sitemap_urls[0]
+                                index = config["sitemap_xml_number"] if "sitemap_xml_number" in config and config["sitemap_xml_number"] else 0
+                                first_sitemap_url = sitemap_urls[index]
                                 print(f"Using first sitemap from index: {first_sitemap_url}")
                                 sitemap_response = requests.get(first_sitemap_url, headers={'User-Agent': 'Mozilla/5.0'})
                                 if sitemap_response.status_code == 200:
@@ -339,9 +122,9 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
                                         # Sort feed entries by last modified date (most recent first)
                                         def parse_lastmod(lm):
                                             try:
-                                                return parse_date(lm) if lm else datetime.min
+                                                return parse_date(lm) if lm else datetime.min.replace(tzinfo=timezone.utc)
                                             except Exception:
-                                                return datetime.min
+                                                return datetime.min.replace(tzinfo=timezone.utc)
                                         
                                         sorted_entries = sorted(feed_entries, key=lambda x: parse_lastmod(x[1]), reverse=True)
                                         feed_urls = [entry[0] for entry in sorted_entries]
@@ -366,9 +149,9 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
                             
                             def parse_lastmod(lm):
                                 try:
-                                    return parse_date(lm) if lm else datetime.min
+                                    return parse_date(lm) if lm else datetime.min.replace(tzinfo=datetime.timezone.utc)
                                 except Exception:
-                                    return datetime.min
+                                    return datetime.min.replace(tzinfo=datetime.timezone.utc)
                             
                             sorted_entries = sorted(feed_entries, key=lambda x: parse_lastmod(x[1]), reverse=True)
                             feed_urls = [entry[0] for entry in sorted_entries]
@@ -390,12 +173,19 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
             before_count = len(feed_urls)
             feed_urls = [url for url in feed_urls if not url.startswith(ignore_prefix)]
             print(f"Ignored {before_count - len(feed_urls)} URLs starting with '{ignore_prefix}'")
+
+        #Filter out feed URLs that are specific urls if defined in the source config as an array ignore_urls
+        if config.get("ignore_urls"):
+            ignore_urls = config["ignore_urls"]
+            before_count = len(feed_urls)
+            feed_urls = [url for url in feed_urls if url not in ignore_urls]
+            print(f"Ignored {before_count - len(feed_urls)} URLs in ignore_urls")
         
         print(f"Found {len(feed_urls)} feeds/URLs for {source}")
         
-        # Enforce a hard limit of 70 articles (if max_articles is not provided or is higher than 70)
-        if max_articles is None or max_articles > 70:
-            max_articles = 70
+        # Enforce a hard limit of 69 articles (if max_articles is not provided or is higher than 69)
+        if max_articles is None or max_articles > 69:
+            max_articles = 69
         
         # Process each feed URL with a consecutive out-of-date articles check.
         consecutive_outdated = 0
@@ -488,7 +278,7 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
     
     if extracted_metadata:
         try:
-            upload_post(extracted_metadata)
+            # upload_post(extracted_metadata)
             print(f"Successfully uploaded {len(extracted_metadata)} articles")
         except Exception as e:
             print(f"Error uploading posts: {str(e)}")

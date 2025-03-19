@@ -278,7 +278,7 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
     
     if extracted_metadata:
         try:
-            # upload_post(extracted_metadata)
+            upload_post(extracted_metadata)
             print(f"Successfully uploaded {len(extracted_metadata)} articles")
         except Exception as e:
             print(f"Error uploading posts: {str(e)}")

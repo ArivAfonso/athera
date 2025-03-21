@@ -1,8 +1,6 @@
 'use client'
 
 import React, { FC, useState } from 'react'
-import Card2 from '@/components/Card2/Card2'
-import Card6 from '@/components/Card6/Card6'
 import HeaderFilter from './HeaderFilter'
 import NewsType from '@/types/NewsType'
 import NewsCardWide from '../NewsCardWide/NewsCardWide'
@@ -23,29 +21,75 @@ const SectionMagazine1: FC<SectionMagazine1Props> = ({
 
     const handleHideNews = (id: string) => {
         //Filter out the news with the id
-        const filteredNews = news.filter((news) => news.id !== id)
+        const filteredNews = myNews.filter((news) => news.id !== id)
         //Set the new news
         setNews(filteredNews)
     }
 
-    return (
-        <div className={`SectionMagazine1 ${className}`}>
-            <HeaderFilter heading={heading} />
-            {!news.length && <span>Nothing we found!</span>}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                {news[0] && <NewsCardBig size="large" news={news[0]} />}
+    // Render a row with big card on the left and three wide cards on the right
+    const renderBigLeftRow = (startIndex: number) => {
+        if (startIndex >= myNews.length) return null
+
+        return (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-10">
+                {myNews[startIndex] && (
+                    <NewsCardBig size="large" news={myNews[startIndex]} />
+                )}
                 <div className="grid gap-6 md:gap-8">
                     {myNews
-                        .filter((_, i) => i < 4 && i > 0)
+                        .slice(startIndex + 1, startIndex + 4)
                         .map((item, index) => (
                             <NewsCardWide
                                 onHideNews={handleHideNews}
-                                key={index}
+                                key={`${startIndex}-${index}`}
                                 news={item}
                             />
                         ))}
                 </div>
             </div>
+        )
+    }
+
+    // Render a row with three wide cards on the left and big card on the right
+    const renderWideLeftRow = (startIndex: number) => {
+        if (startIndex >= myNews.length) return null
+
+        return (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-10">
+                <div className="grid gap-6 md:gap-8">
+                    {myNews
+                        .slice(startIndex, startIndex + 3)
+                        .map((item, index) => (
+                            <NewsCardWide
+                                onHideNews={handleHideNews}
+                                key={`${startIndex}-${index}`}
+                                news={item}
+                            />
+                        ))}
+                </div>
+                {myNews[startIndex + 3] && (
+                    <NewsCardBig size="large" news={myNews[startIndex + 3]} />
+                )}
+            </div>
+        )
+    }
+
+    return (
+        <div className={`SectionMagazine1 ${className}`}>
+            <HeaderFilter heading={heading} />
+            {!myNews.length && <span>Nothing we found!</span>}
+
+            {/* Row 1: Big card left + 3 wide cards right */}
+            {renderBigLeftRow(0)}
+
+            {/* Row 2: 3 wide cards left + Big card right */}
+            {renderWideLeftRow(4)}
+
+            {/* Row 3: Big card left + 3 wide cards right */}
+            {renderBigLeftRow(8)}
+
+            {/* Row 4: 3 wide cards left + Big card right */}
+            {renderWideLeftRow(12)}
         </div>
     )
 }

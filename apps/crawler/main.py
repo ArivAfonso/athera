@@ -209,7 +209,7 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
             if metadata.date:
                 try:
                     article_date = parse_date(metadata.date)
-                    if article_date < datetime.now(article_date.tzinfo) - timedelta(days=2):
+                    if article_date < datetime.now(article_date.tzinfo) - timedelta(hours=25):
                         print(f"Rejected: Article is too old. Date: {metadata.date}")
                         rejected_count += 1
                         # Only check consecutive outdated if the feed is from sitemap and the outdated check is enabled

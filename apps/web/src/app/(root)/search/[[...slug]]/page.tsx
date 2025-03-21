@@ -1,74 +1,126 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import debounce from 'lodash/debounce'
 import TopicFilterListBox from '@/components/TopicFilterListBox/TopicFilterListBox'
 import { Input, Nav, NavItem } from 'ui'
-import Card11 from '@/components/Card11/Card11'
 import CardTopic2 from '@/components/CardTopic2/CardTopic2'
 import { useRouter, useSearchParams } from 'next/navigation'
-import PostType from '@/types/PostType'
+import NewsType from '@/types/NewsType'
 import TopicType from '@/types/TopicType'
-import AuthorType from '@/types/AuthorType'
+import SourceType from '@/types/SourceType'
 import { createClient } from '@/utils/supabase/client'
-import { pipeline } from '@xenova/transformers'
-import CardAuthorBox from '@/components/CardAuthorBox/CardAuthorBox'
-import Card6 from '@/components/Card6/Card6'
 import Empty from '@/components/Empty'
-import PostsSection from '@/components/PostsSection/PostsSection'
+import CardSourceBox from '@/components/CardSourceBox/CardSourceBox'
+import NewsSection from '@/components/NewsSection/NewsSection'
+import NewsCard from '@/components/NewsCard/NewsCard'
+import NewsCardWide from '@/components/NewsCardWide/NewsCardWide'
 
-async function getData(query: string, filter_option: string) {
-    const supabase = createClient()
+// Cache for search results
+const searchCache = new Map()
+const CACHE_EXPIRY = 5 * 60 * 1000 // 5 minutes
 
-    const pipe = await pipeline('feature-extraction', 'Supabase/gte-small')
+// Track the latest request to prevent race conditions
+let currentRequestId = 0
 
-    // Generate the embedding from text
-    const output = await pipe(query, {
-        pooling: 'mean',
-        normalize: true,
-    })
+async function getNews(
+    query: string,
+    filter_option: string,
+    requestId: number
+) {
+    console.log('getNews', query, filter_option, 'requestId:', requestId)
 
-    // Extract the embedding output
-    const embedding = Array.from(output.data)
+    // Create cache key
+    const cacheKey = `news-${query}-${filter_option}`
 
-    const { data, error } = await supabase
-        .rpc('match_posts', {
-            query_embedding: JSON.stringify(embedding),
-            match_threshold: 0.85,
-            match_count: 10,
-            filter_option: filter_option,
-        })
-        .range(0, 10)
+    // Check cache first
+    const cached = searchCache.get(cacheKey)
+    if (cached && Date.now() - cached.timestamp < CACHE_EXPIRY) {
+        console.log('Using cached news results')
+        return { data: cached.data, requestId }
+    }
 
+    const res = await fetch(`/api/match-news?q=${encodeURIComponent(query)}`)
+    if (!res.ok) {
+        throw new Error(`API error: ${res.statusText}`)
+    }
+    const data = await res.json()
     if (data) {
-        data.map((post: any) => {
-            post.likeCount = post.likecount
-            post.commentCount = post.commentcount
+        data.forEach((news: any) => {
+            news.likeCount = news.likecount
+            news.commentCount = news.commentcount
         })
     }
 
-    return data || []
+    // Cache the results
+    searchCache.set(cacheKey, {
+        data: data || [],
+        timestamp: Date.now(),
+    })
+
+    return { data: data || [], requestId }
 }
 
-async function fetchTopicsData(query: string) {
+async function fetchTopicsData(query: string, requestId: number) {
     const supabase = createClient()
+
+    // Create cache key
+    const cacheKey = `topics-${query}`
+
+    // Check cache first
+    const cached = searchCache.get(cacheKey)
+    if (cached && Date.now() - cached.timestamp < CACHE_EXPIRY) {
+        console.log('Using cached topics results')
+        return { data: cached.data, requestId }
+    }
 
     const { data, error } = await supabase
         .from('topics')
-        .select(`id, name, color, postCount:post_topics(count)`)
+        .select(`id, name, color, newsCount:news_topics(count)`)
         .textSearch('name', `${query}`)
 
-    return data || []
+    if (error) {
+        console.error('Error fetching topics:', error)
+    }
+
+    // Cache results
+    searchCache.set(cacheKey, {
+        data: data || [],
+        timestamp: Date.now(),
+    })
+
+    return { data: data || [], requestId }
 }
 
-async function fetchAuthorsData(query: string) {
+async function fetchSourcesData(query: string, requestId: number) {
     const supabase = createClient()
 
+    // Create cache key
+    const cacheKey = `sources-${query}`
+
+    // Check cache first
+    const cached = searchCache.get(cacheKey)
+    if (cached && Date.now() - cached.timestamp < CACHE_EXPIRY) {
+        console.log('Using cached sources results')
+        return { data: cached.data, requestId }
+    }
+
     const { data, error } = await supabase
-        .from('users')
+        .from('sources')
         .select(`*`)
         .textSearch('name', `${query}`)
 
-    return data || []
+    if (error) {
+        console.error('Error fetching sources:', error)
+    }
+
+    // Cache results
+    searchCache.set(cacheKey, {
+        data: data || [],
+        timestamp: Date.now(),
+    })
+
+    return { data: data || [], requestId }
 }
 
 const FILTERS = [
@@ -77,65 +129,134 @@ const FILTERS = [
     { name: 'Most Recent' },
     { name: 'Most Liked' },
 ]
-const TABS = ['Articles', 'Topics', 'Authors']
+const TABS = ['News', 'Topics', 'Sources']
 
-const PageSearchV2 = () => {
-    const [data, setData] = useState<PostType[]>([])
-    const [loading, setLoading] = useState(true)
+const PageSearch = () => {
+    const [news, setNews] = useState<NewsType[]>([])
+    const [loading, setLoading] = useState(false)
+    const [newsLoaded, setNewsLoaded] = useState(false)
     const router = useRouter()
     const searchParams = useSearchParams()
+    const initialSearchRef = useRef(true)
+    const currentSearchRef = useRef('')
 
     const initialSearchValue = searchParams.get('q') || ''
     const [searchValue, setSearchValue] = useState(initialSearchValue)
     const [tabActive, setTabActive] = useState<string>(TABS[0])
     const [topics, setTopics] = useState<TopicType[]>([])
-    const [authors, setAuthors] = useState<AuthorType[]>([])
+    const [topicsLoading, setTopicsLoading] = useState(false)
+    const [sources, setSources] = useState<SourceType[]>([])
+    const [sourcesLoading, setSourcesLoading] = useState(false)
+    const [activeFilter, setActiveFilter] = useState('most_relevant')
+
+    // Fetch initial news data only once when component mounts
+    useEffect(() => {
+        if (initialSearchValue && initialSearchRef.current) {
+            initialSearchRef.current = false
+            setLoading(true)
+            currentSearchRef.current = initialSearchValue
+            const requestId = ++currentRequestId
+
+            getNews(initialSearchValue, 'most_relevant', requestId)
+                .then((response) => {
+                    // Only update if this is still the latest request
+                    if (response.requestId === currentRequestId) {
+                        setNews(response.data)
+                        setNewsLoaded(true)
+                    }
+                })
+                .catch(console.error)
+                .finally(() => {
+                    if (requestId === currentRequestId) {
+                        setLoading(false)
+                    }
+                })
+        }
+    }, [initialSearchValue])
 
     useEffect(() => {
-        async function fetchData() {
+        const debouncedFetchData = debounce(async () => {
+            if (!searchValue) return
+
             setLoading(true)
-            setData([])
+            currentSearchRef.current = searchValue
+            const requestId = ++currentRequestId
+
             try {
-                //@ts-ignore
-                const res: PostType[] = await getData(
+                const response = await getNews(
                     searchValue,
-                    'most_relevant'
+                    activeFilter,
+                    requestId
                 )
-                setData(res)
-                setLoading(false)
+                // Only update state if this is still the current request
+                if (response.requestId === currentRequestId) {
+                    setNews(response.data)
+                    setNewsLoaded(true)
+                    document.title = `Search for "${searchValue}" - Athera`
+                }
             } catch (err) {
-                setLoading(false)
+                console.log(err)
+            } finally {
+                if (requestId === currentRequestId) {
+                    setLoading(false)
+                }
             }
-            document.title = `Search for "${searchValue}" - Athera`
-        }
+        }, 300)
+
         if (searchValue) {
-            fetchData()
+            debouncedFetchData()
         }
-    }, [searchValue])
+
+        return () => {
+            debouncedFetchData.cancel()
+        }
+    }, [searchValue, activeFilter])
 
     const getTopicsData = async () => {
+        if (topicsLoading) return
+        setTopicsLoading(true)
+        const requestId = ++currentRequestId
+
         try {
-            // const topicsData: TopicType[] = (
-            //     await fetchTopicsData(searchValue)
-            // ).map((topic) => ({
-            //     ...topic,
-            //     name: topic.name || '',
-            //     color: topic.color || '',
-            // }))
-            // setTopics(topicsData)
+            const response = await fetchTopicsData(searchValue, requestId)
+            // Only update if this is still the current request
+            if (response.requestId === currentRequestId) {
+                const topicsData: TopicType[] = response.data.map(
+                    (topic: TopicType) => ({
+                        ...topic,
+                        name: topic.name || '',
+                        color: topic.color || '',
+                        postCount: topic.newsCount || [],
+                    })
+                )
+                setTopics(topicsData)
+            }
         } catch (error) {
             console.error('Failed to fetch topics:', error)
+        } finally {
+            if (requestId === currentRequestId) {
+                setTopicsLoading(false)
+            }
         }
     }
 
-    const getAuthorsData = async () => {
+    const getSourcesData = async () => {
+        if (sourcesLoading) return
+        setSourcesLoading(true)
+        const requestId = ++currentRequestId
+
         try {
-            //@ts-ignore
-            const authorsData: AuthorType[] =
-                await fetchAuthorsData(searchValue)
-            setAuthors(authorsData)
+            const response = await fetchSourcesData(searchValue, requestId)
+            // Only update if this is still the current request
+            if (response.requestId === currentRequestId) {
+                setSources(response.data)
+            }
         } catch (error) {
-            console.error('Failed to fetch authors:', error)
+            console.error('Failed to fetch sources:', error)
+        } finally {
+            if (requestId === currentRequestId) {
+                setSourcesLoading(false)
+            }
         }
     }
 
@@ -147,28 +268,71 @@ const PageSearchV2 = () => {
 
         if (item === 'Topics' && topics.length === 0) {
             getTopicsData()
-        } else if (item === 'Authors' && authors.length === 0) {
-            getAuthorsData()
+        } else if (item === 'Sources' && sources.length === 0) {
+            getSourcesData()
         }
     }
 
     const handleFilterClick = async (filterOption: string) => {
+        const formattedOption = filterOption.replaceAll(' ', '_').toLowerCase()
+        setActiveFilter(formattedOption)
+
+        // If we have cached results, don't show loading state
+        const cacheKey = `news-${searchValue}-${formattedOption}`
+        const cached = searchCache.get(cacheKey)
+        const requestId = ++currentRequestId
+
+        if (!(cached && Date.now() - cached.timestamp < CACHE_EXPIRY)) {
+            setLoading(true)
+        }
+
         try {
-            //@ts-ignore
-            const res: PostType[] = await getData(
+            const response = await getNews(
                 searchValue,
-                filterOption.replaceAll(' ', '_').toLowerCase()
+                formattedOption,
+                requestId
             )
-            setData(res)
+            // Only update if this is still the current request
+            if (response.requestId === currentRequestId) {
+                setNews(response.data)
+            }
         } catch (err) {
             console.log(err)
+        } finally {
+            if (requestId === currentRequestId) {
+                setLoading(false)
+            }
         }
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         if (searchValue === '') return
-        router.push(`/search?q=${encodeURIComponent(searchValue)}`)
+
+        // Clear all previous requests and set current search as the URL search
+        currentRequestId = 0
+
+        // Only navigate if we're actually changing the search
+        if (searchValue !== currentSearchRef.current) {
+            currentSearchRef.current = searchValue
+            router.push(`/search?q=${encodeURIComponent(searchValue)}`)
+        }
+    }
+
+    // Properly implemented functions
+    function handleHideNews(newsId: string): void {
+        setNews((prevNews) => prevNews.filter((item) => item.id !== newsId))
+    }
+
+    function fetchNews(page: number): Promise<NewsType[]> {
+        const requestId = ++currentRequestId
+        return getNews(searchValue, activeFilter, requestId).then(
+            (response) => response.data
+        )
+    }
+
+    const handleRemoveWatchlist = async (newsId: string) => {
+        setNews((prev) => prev?.filter((item) => item.id !== newsId))
     }
 
     return (
@@ -219,14 +383,20 @@ const PageSearchV2 = () => {
                     </form>
                     {searchValue !== '' && (
                         <span className="block text-lg mt-4 text-neutral-500 dark:text-neutral-300">
-                            We found{' '}
-                            <strong className="font-semibold text-neutral-800 dark:text-neutral-100">
-                                {data.length}
-                            </strong>{' '}
-                            results articles for{' '}
-                            <strong className="font-semibold text-neutral-800 dark:text-neutral-100">
-                                {`"${searchValue}"`}
-                            </strong>
+                            {loading ? (
+                                'Searching...'
+                            ) : (
+                                <>
+                                    We found{' '}
+                                    <strong className="font-semibold text-neutral-800 dark:text-neutral-100">
+                                        {news.length}
+                                    </strong>{' '}
+                                    results news for{' '}
+                                    <strong className="font-semibold text-neutral-800 dark:text-neutral-100">
+                                        {`"${searchValue}"`}
+                                    </strong>
+                                </>
+                            )}
                         </span>
                     )}
                 </header>
@@ -256,50 +426,121 @@ const PageSearchV2 = () => {
                             />
                         </div>
                     </div>
-                    {tabActive === 'Articles' &&
-                        data.length > 0 &&
-                        searchValue !== '' && (
-                            <PostsSection id={searchValue} posts={data} />
-                        )}
-                    {tabActive === 'Topics' && topics.length > 0 && (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
-                            {topics.map((cat, id) => (
-                                <CardTopic2 key={id} topic={cat} />
-                            ))}
+
+                    {loading && tabActive === 'News' && (
+                        <div className="flex justify-center items-center min-h-[200px]">
+                            <div className="animate-pulse text-lg">
+                                Loading news...
+                            </div>
                         </div>
                     )}
-                    {tabActive === 'Authors' && authors.length > 0 && (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
-                            {authors.map((author, key) => (
-                                <CardAuthorBox key={key} author={author} />
-                            ))}
-                        </div>
-                    )}
-                    {tabActive === 'Articles' &&
-                        data.length === 0 &&
+
+                    {tabActive === 'News' &&
+                        news.length > 0 &&
                         searchValue !== '' &&
                         !loading && (
+                            <div
+                                className={`gap-6 md:gap-8 mt-8 lg:mt-10 ${(news ? news.length : 0) < 4 ? 'flex justify-center flex-wrap' : `grid lg:grid-cols-3 xl:grid-cols-${4}`}`}
+                            >
+                                {news &&
+                                    news.map((item, key) => (
+                                        <div
+                                            key={key}
+                                            className={`${(news ? news.length : 0) < 4 ? `w-full sm:w-1/2 lg:w-1/3 xl:w-1/${4}` : ''}`}
+                                            // Assign the ref to the div if the news is the third last one
+                                        >
+                                            <div className="hidden sm:block">
+                                                <NewsCard
+                                                    onHideNews={handleHideNews}
+                                                    news={item}
+                                                    onRemoveWatchlist={
+                                                        handleRemoveWatchlist
+                                                    }
+                                                />
+                                            </div>
+
+                                            <div className="sm:hidden grid grid-cols-1 gap-6">
+                                                <NewsCardWide
+                                                    onHideNews={handleHideNews}
+                                                    news={item}
+                                                    onRemoveWatchlist={
+                                                        handleRemoveWatchlist
+                                                    }
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                            </div>
+                        )}
+
+                    {tabActive === 'Topics' && topicsLoading && (
+                        <div className="flex justify-center items-center min-h-[200px]">
+                            <div className="animate-pulse text-lg">
+                                Loading topics...
+                            </div>
+                        </div>
+                    )}
+
+                    {tabActive === 'Topics' &&
+                        topics.length > 0 &&
+                        !topicsLoading && (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
+                                {topics.map((cat, id) => (
+                                    <CardTopic2 key={id} topic={cat} />
+                                ))}
+                            </div>
+                        )}
+
+                    {tabActive === 'Sources' && sourcesLoading && (
+                        <div className="flex justify-center items-center min-h-[200px]">
+                            <div className="animate-pulse text-lg">
+                                Loading sources...
+                            </div>
+                        </div>
+                    )}
+
+                    {tabActive === 'Sources' &&
+                        sources.length > 0 &&
+                        !sourcesLoading && (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
+                                {sources.map((source, key) => (
+                                    <CardSourceBox key={key} source={source} />
+                                ))}
+                            </div>
+                        )}
+
+                    {tabActive === 'News' &&
+                        news.length === 0 &&
+                        searchValue !== '' &&
+                        !loading &&
+                        newsLoaded && (
                             <Empty
-                                mainText="No Posts Found"
-                                subText="We couldn’t find any results. Try for something else."
+                                mainText="No News Found"
+                                subText="We couldn't find any results. Try for something else."
                             />
                         )}
-                    {tabActive === 'Topics' && topics.length === 0 && (
-                        <Empty
-                            mainText="No Topics Found"
-                            subText="We couldn’t find any results. Try for something else."
-                        />
-                    )}
-                    {tabActive === 'Authors' && authors.length === 0 && (
-                        <Empty
-                            mainText="No Authors Found"
-                            subText="We couldn’t find any results. Try for something else."
-                        />
-                    )}
+
+                    {tabActive === 'Topics' &&
+                        topics.length === 0 &&
+                        !topicsLoading && (
+                            <Empty
+                                mainText="No Topics Found"
+                                subText="We couldn't find any results. Try for something else."
+                            />
+                        )}
+
+                    {tabActive === 'Sources' &&
+                        sources.length === 0 &&
+                        !sourcesLoading && (
+                            <Empty
+                                mainText="No Sources Found"
+                                subText="We couldn't find any results. Try for something else."
+                            />
+                        )}
                 </main>
             </div>
         </div>
     )
 }
 
-export default PageSearchV2
+export default PageSearch

@@ -79,6 +79,7 @@ topic_configs = {
         "pitchfork": {
             "url": "https://pitchfork.com/",
             "title_suffix": " | Pitchfork",
+            "ignore_prefix": "https://pitchfork.com/reviews/"
         }
     },
     "sports": {
@@ -98,11 +99,13 @@ topic_configs = {
         "talksport": {
             "url": "https://talksport.com/",
             "title_suffix": " | talkSPORT",
+            "ignore_prefix": "https://talksport.com/betting/"
         },
         "therace": {
             "url": "https://the-race.com/",
             "title_suffix": " | The Race",
             "sitemap_xml": "https://www.the-race.com/sitemap-posts.xml",
+            "ignore_prefix": "https://www.the-race.com/promoted/"
         }
     },
     "cars": {
@@ -153,7 +156,7 @@ topic_configs = {
     "business": {
         "theentrepreneur": {
             "url": "https://entrepreneur.com/",
-            "title_suffix": " | The Entrepreneur",
+            "title_suffix": " | Entrepreneur",
         },
         "businessinsider": {
             "url": "https://www.businessinsider.com/",

@@ -53,8 +53,10 @@ async function addNews(topicId: string, pageParam: number) {
     return data as unknown as NewsType[]
 }
 
-async function getTopics(context: { params: { slug: any } }) {
+async function getTopics(context: { params: { slug: any } }, pageParam = 0) {
     const supabase = createClient()
+
+    console.log(context.params.slug, pageParam)
 
     const id = context.params.slug[1]
     const { data, error } = await supabase
@@ -65,7 +67,7 @@ async function getTopics(context: { params: { slug: any } }) {
             name,
             color,
             image,
-            news(
+            news!inner(
                 id,
                 title,
                 created_at,
@@ -88,6 +90,9 @@ async function getTopics(context: { params: { slug: any } }) {
             `
         )
         .eq('id', id)
+        .range(pageParam * 48, (pageParam + 1) * 48 - 1, {
+            referencedTable: 'news',
+        })
         .single()
 
     const catData: TopicType = data as unknown as TopicType
@@ -165,7 +170,8 @@ const PageTopic = async (context: any) => {
                     <NewsSection
                         id={catData.id}
                         news={catData.news}
-                        newsFn={(page: number) => addNews(catData.id, page)}
+                        type="topics"
+                        newsFn={(page: number) => getTopics(context, page)}
                         onHideNews={(newsId: string) => {
                             // setCatData((prev) => ({ ...prev, news: prev.news.filter((item) => item.id !== newsId) }));
                         }}

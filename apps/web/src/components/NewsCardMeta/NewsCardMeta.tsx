@@ -2,6 +2,7 @@ import React, { FC } from 'react'
 import { Avatar } from 'ui'
 import SourceType from '@/types/SourceType'
 import VerifyIcon from '../VerifyIcon'
+import Link from 'next/link'
 
 export interface NewsCardMetaProps {
     className?: string
@@ -47,9 +48,20 @@ const NewsCardMeta: FC<NewsCardMetaProps> = ({
                 )}
                 <div className="pl-2 flex flex-col justify-center">
                     <div className="flex items-center space-x-2 line-clamp-1">
-                        <span className="block text-neutral-700 dark:text-neutral-300 font-medium">
-                            {source.name}
-                        </span>
+                        {source.id ? (
+                            <Link
+                                href={`/source/${source.id}`}
+                                title={`View ${source.name} source profile`}
+                            >
+                                <span className="block text-neutral-700 dark:text-neutral-300 font-medium hover:underline">
+                                    {source.name || 'Unknown Source'}
+                                </span>
+                            </Link>
+                        ) : (
+                            <span className="block text-neutral-700 dark:text-neutral-300 font-medium">
+                                {source.name || 'Unknown Source'}
+                            </span>
+                        )}
                     </div>
                     <div className="flex items-center text-neutral-500 dark:text-neutral-400 font-normal">
                         <span>{formattedDate}</span>

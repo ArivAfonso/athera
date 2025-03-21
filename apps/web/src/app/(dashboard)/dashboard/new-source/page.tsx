@@ -2,17 +2,13 @@
 
 import React, { useEffect, useState } from 'react'
 import NextImage from 'next/image'
-import { Alert, Button, Textarea, Label, ButtonPrimary } from 'ui'
+import { Alert, Label, ButtonPrimary } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { Controller, useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
-import stringToSlug from '@/utils/stringToSlug'
 import toast from 'react-hot-toast'
 import TitleEditor from '@/components/PostSubmissionEditor/TitleEditor'
-import TagsInput from '@/components/PostSubmissionEditor/TagsInput'
 import { TrashIcon } from 'lucide-react'
-import { addIdsToHeadings } from '@/utils/addIdsToHeadings'
-import { debounce } from 'lodash'
 
 function strWords(str: string) {
     return str.split(/\s+/).length
@@ -43,10 +39,8 @@ const DashboardSubmitSource = () => {
     const supabase = createClient()
 
     const [errorMsg, setErrorMsg] = useState('')
-    const [text, setText] = useState('')
     const [selectedImage, setSelectedImage] = useState(null)
     const [uploading, setUploading] = useState(false)
-    let [json, setJson] = useState('' as any)
     const [progress, setProgress] = useState(0)
 
     let [tags, setTags] = useState<string[]>([])
@@ -57,102 +51,7 @@ const DashboardSubmitSource = () => {
         setErrorMsg('')
         setProgress(10)
 
-        tags.filter((tag) => tag && tag.length > 0).map((tag: string) => {
-            if (tag.length == 0 || tag == null || tag.length > 20) {
-                setUploading(false)
-                setErrorMsg('Topics must be between 1 and 20 characters')
-                return
-            }
-        })
-
-        if (!title) {
-            setUploading(false)
-            setErrorMsg('Source title is required')
-            return
-        }
-
-        setProgress(20)
-        try {
-            if (selectedImage) {
-                // Get the authenticated user
-                const {
-                    data: { user },
-                } = await supabase.auth.getUser()
-
-                let scheduled_at = null
-
-                if (!user) {
-                    toast.custom((t) => (
-                        <Alert
-                            type="danger"
-                            message="You need to be logged in to submit a source"
-                        />
-                    ))
-                    return
-                }
-
-                // Insert the source without the image URL
-                const { data, error: sourceInsertError } = await supabase
-                    .from('sources')
-                    .insert([
-                        {
-                            title: title,
-                            author: user?.id,
-                            text: text,
-                            estimatedReadingTime: Math.round(
-                                strWords(text) / 200
-                            ),
-                        },
-                    ])
-                    .select()
-
-                setProgress(30)
-
-                if (sourceInsertError) {
-                    throw new Error(
-                        `Source insertion failed: ${sourceInsertError.message}`
-                    )
-                }
-
-                setProgress(50)
-
-                // Upload the selected image to Supabase storage with the source's ID as the name
-                // const { data: imagePath } = await supabase.storage
-                //     .from('images')
-                //     .upload(`${user?.id}/${sourceId}/main-image`, selectedImage)
-
-                setProgress(90)
-
-                // Update the inserted source with the image URL
-                // await supabase
-                //     .from('sources')
-                //     .update({
-                //         image:
-                //             `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/` +
-                //             imagePath?.path,
-                //         json: addIdsToHeadings(json),
-                //     })
-                //     .eq('id', sourceId)
-
-                // setProgress(100)
-
-                // router.push(`/source/${stringToSlug(title)}/${sourceId}`)
-            } else {
-                toast.custom((t) => (
-                    <Alert
-                        type="danger"
-                        message="Please upload a featured image"
-                    />
-                ))
-                setUploading(false)
-            }
-        } catch (error) {
-            toast.custom((t) => (
-                <Alert type="danger" message={`Source submission failed`} />
-            ))
-
-            setUploading(false)
-        }
+        //TODO: Add source upload
     }
 
     const handleImageSelect = (event: { target: { files: any[] } }) => {
@@ -237,13 +136,6 @@ const DashboardSubmitSource = () => {
                             {errors.sourceTitle && (
                                 <Alert type="danger" message="Required" />
                             )}
-                        </Label>
-
-                        <Label className="flex justify-top sm:col-span-1 md:col-span-2">
-                            <TagsInput
-                                onChange={handleChangeTags}
-                                defaultValue={tags}
-                            />
                         </Label>
                         <div className="group block md:col-span-2">
                             <div

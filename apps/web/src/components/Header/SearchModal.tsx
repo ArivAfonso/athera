@@ -1,7 +1,14 @@
 'use client'
 
 import { FC, Fragment, ReactNode, useRef, useState } from 'react'
-import { Combobox, Dialog, Transition } from '@headlessui/react'
+import {
+    Combobox,
+    ComboboxInput,
+    ComboboxOption,
+    ComboboxOptions,
+    Dialog,
+    Transition,
+} from '@headlessui/react'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import {
     ExclamationTriangleIcon,
@@ -9,16 +16,15 @@ import {
     LifebuoyIcon,
     UserIcon,
 } from '@heroicons/react/24/outline'
-import { Route } from '@/routers/types'
-import { redirect, useRouter } from 'next/navigation'
-import { UrlObject } from 'url'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
-import PostType from '@/types/PostType'
 import { debounce } from 'lodash'
 import stringToSlug from '@/utils/stringToSlug'
 import TopicType from '@/types/TopicType'
-import AuthorType from '@/types/AuthorType'
+import NewsType from '@/types/NewsType'
+import SourceType from '@/types/SourceType'
 import { Search, SearchIcon } from 'lucide-react'
+import NewsDetailModal from '../NewsDetailModal/NewsDetailModal'
 
 interface Props {
     renderTrigger?: () => ReactNode
@@ -32,16 +38,17 @@ function classNames(...classes: any) {
 const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
     const [open, setOpen] = useState(false)
     const [rawQuery, setRawQuery] = useState('')
-    const [posts, setPosts] = useState<PostType[]>([])
+    const [news, setNews] = useState<NewsType[]>([])
     const [topics, setTopics] = useState<TopicType[]>([])
-    const [authors, setAuthors] = useState<AuthorType[]>([])
+    const [sources, setSources] = useState<SourceType[]>([])
+    // New state for selected news and modal visibility
+    const [selectedNews, setSelectedNews] = useState<NewsType | null>(null)
+    const [showNewsModal, setShowNewsModal] = useState(false)
 
     const router = useRouter()
 
     const query = rawQuery.toLowerCase().replace(/^[#>]/, '')
     const supabase = createClient()
-
-    // ...
 
     const latestQuery = useRef('')
 
@@ -51,18 +58,17 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
         latestQuery.current = query
 
         if (rawQuery.trim().startsWith('$')) {
-            // Fetch users
+            // Fetch sources instead of users
             const { data } = await supabase
-                .from('users')
-                .select('name, username, id')
+                .from('sources')
+                .select('name, id')
                 .ilike('name', `%${query.slice(1).trim()}%`)
                 .limit(10)
 
             if (rawQuery === '' || query !== latestQuery.current) {
-                setAuthors([])
+                setSources([])
             } else if (data) {
-                //@ts-ignore
-                setAuthors(data)
+                setSources(data as unknown as SourceType[])
             }
         } else if (rawQuery.trim().startsWith('#')) {
             // Fetch topics
@@ -75,25 +81,44 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
             if (rawQuery === '' || query !== latestQuery.current) {
                 setTopics([])
             } else if (data) {
-                //@ts-ignore
-                setTopics(data)
+                setTopics(data as unknown as TopicType[])
             }
         } else {
-            // Fetch posts
+            // Fetch news instead of posts
             const { data } = await supabase
-                .from('posts')
-                .select('title, id')
+                .from('news')
+                .select(
+                    `
+                    id,
+                    title,
+                    created_at,
+                    description,
+                    author,
+                    link,
+                    summary,
+                    image,
+                    likeCount:likes(count),
+                    commentCount:comments(count),
+                    news_topics(topic:topics(id,name,color,newsCount:news(count))),
+                    source(
+                        id,
+                        name,
+                        description,
+                        url,
+                        image
+                    )
+                `
+                )
                 .ilike('title', `%${query}%`)
                 .limit(10)
 
             if (rawQuery === '' || query !== latestQuery.current) {
-                setPosts([])
+                setNews([])
             } else if (data) {
-                //@ts-ignore
-                setPosts(data)
+                setNews(data as unknown as NewsType[])
             }
         }
-    }, 200) // 500ms debounce time
+    }, 200) // 200ms debounce time
 
     return (
         <>
@@ -193,33 +218,21 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                 className="block mx-auto max-w-2xl transform divide-y dark:divide-gray-800 divide-gray-100 overflow-hidden rounded-xl dark:bg-neutral-900 bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"
                                 as="form"
                             >
-                                {/* <form
-                                    onSubmit={(e) => {
-                                        e.preventDefault()
-                                        if (query.trim() !== '') {
-                                            router.push(
-                                                `/search/${encodeURIComponent(
-                                                    query
-                                                )}`
-                                            )
-                                        }
-                                    }}
-                                > */}
                                 <Combobox name="searchpallet">
                                     <div className="relative">
                                         <Search
                                             className="pointer-events-none absolute top-3.5 left-4 h-5 w-5 text-gray-400"
                                             aria-hidden="true"
                                         />
-                                        <Combobox.Input
+                                        <ComboboxInput
                                             className="h-12 w-full border-0 bg-transparent pl-11 pr-4 dark:text-gray-100 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
                                             placeholder="Search..."
                                             onChange={async (event) => {
                                                 const newQuery =
                                                     event.target.value
                                                 if (newQuery.trim() === '') {
-                                                    setPosts([])
-                                                    setAuthors([])
+                                                    setNews([])
+                                                    setSources([])
                                                     setTopics([])
                                                 } else if (
                                                     newQuery.trim() !== '?' &&
@@ -239,45 +252,40 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                                 ) {
                                                     event.preventDefault()
                                                     setOpen(false)
-                                                    router.push(
-                                                        `/search?q=${encodeURIComponent(
-                                                            rawQuery
-                                                        )}`
-                                                    )
+                                                    // In news options below, we open modal instead of router.push
                                                 }
                                             }}
                                         />
                                     </div>
-                                    {(posts.length > 0 ||
+                                    {(news.length > 0 ||
                                         topics.length > 0 ||
-                                        authors.length > 0) && (
-                                        <Combobox.Options
+                                        sources.length > 0) && (
+                                        <ComboboxOptions
                                             static
-                                            className="max-h-80 dark:bg-neutral-900 scroll-py-10 scroll-pb-2 space-y-4 overflow-y-auto p-4 pb-2"
+                                            className="list-none max-h-80 dark:bg-neutral-900 scroll-py-10 scroll-pb-2 space-y-4 overflow-y-auto p-4 pb-2"
                                         >
-                                            {posts.length > 0 && (
+                                            {news.length > 0 && (
                                                 <li>
                                                     <h2 className="text-xs font-semibold dark:text-gray-200 text-gray-900">
-                                                        Posts
+                                                        News
                                                     </h2>
-                                                    <ul className="-mx-4 mt-2 text-sm dark:text-gray-300 text-gray-700">
-                                                        {posts.map(
-                                                            (post, key) => (
-                                                                <Combobox.Option
+                                                    <ul className="list-none -mx-4 mt-2 text-sm dark:text-gray-300 text-gray-700">
+                                                        {news.map(
+                                                            (item, key) => (
+                                                                <ComboboxOption
                                                                     key={key}
                                                                     onClick={() => {
-                                                                        router.push(
-                                                                            `/post/${stringToSlug(
-                                                                                post.title
-                                                                            )}/${
-                                                                                post.id
-                                                                            }`
+                                                                        setSelectedNews(
+                                                                            item
+                                                                        )
+                                                                        setShowNewsModal(
+                                                                            true
                                                                         )
                                                                         setOpen(
                                                                             false
                                                                         )
                                                                     }}
-                                                                    value={post}
+                                                                    value={item}
                                                                     className={({
                                                                         active,
                                                                     }) =>
@@ -303,12 +311,12 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                                                             />
                                                                             <span className="ml-3 flex-auto truncate">
                                                                                 {
-                                                                                    post.title
+                                                                                    item.title
                                                                                 }
                                                                             </span>
                                                                         </>
                                                                     )}
-                                                                </Combobox.Option>
+                                                                </ComboboxOption>
                                                             )
                                                         )}
                                                     </ul>
@@ -319,10 +327,10 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                                     <h2 className="text-xs font-semibold dark:text-gray-200 text-gray-900">
                                                         Topics
                                                     </h2>
-                                                    <ul className="-mx-4 mt-2 text-sm dark:text-gray-300 text-gray-700">
+                                                    <ul className="-mx-4 list-none mt-2 text-sm dark:text-gray-300 text-gray-700">
                                                         {topics.map(
                                                             (topic, key) => (
-                                                                <Combobox.Option
+                                                                <ComboboxOption
                                                                     key={key}
                                                                     value={
                                                                         topic
@@ -340,9 +348,7 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                                                         router.push(
                                                                             `/topic/${stringToSlug(
                                                                                 topic.name
-                                                                            )}/${
-                                                                                topic.id
-                                                                            }`
+                                                                            )}/${topic.id}`
                                                                         )
                                                                         setOpen(
                                                                             false
@@ -369,74 +375,70 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                                                             </span>
                                                                         </>
                                                                     )}
-                                                                </Combobox.Option>
+                                                                </ComboboxOption>
                                                             )
                                                         )}
                                                     </ul>
                                                 </li>
                                             )}
-                                            {authors.length > 0 && (
+                                            {sources.length > 0 && (
                                                 <li>
                                                     <h2 className="text-xs font-semibold dark:text-gray-200 text-gray-900">
-                                                        Authors
+                                                        Sources
                                                     </h2>
-                                                    <ul className="-mx-4 mt-2 text-sm dark:text-gray-300 text-gray-700">
-                                                        {authors.map(
-                                                            (user, key) => (
-                                                                <Combobox.Option
+                                                    <ul className="-mx-4 mt-2 list-none text-sm dark:text-gray-300 text-gray-700">
+                                                        {sources.map(
+                                                            (source, key) => (
+                                                                <ComboboxOption
                                                                     key={key}
-                                                                    value={user}
+                                                                    value={
+                                                                        source
+                                                                    }
                                                                     className={({
                                                                         active,
                                                                     }) =>
                                                                         classNames(
                                                                             'flex select-none items-center px-4 py-2 cursor-pointer',
                                                                             active &&
-                                                                                'bg-zz-600 text-white'
+                                                                                'bg-indigo-600 text-white'
                                                                         )
                                                                     }
                                                                     onClick={() => {
                                                                         router.push(
-                                                                            `/author/${user.username}`
+                                                                            `/source/${source.id}`
                                                                         )
                                                                         setOpen(
                                                                             false
                                                                         )
                                                                     }}
                                                                 >
-                                                                    <UserIcon className="h-6 w-6" />
-                                                                    <span className="ml-3 flex-auto truncate">
-                                                                        {user
-                                                                            .name
-                                                                            .length >
-                                                                        20
-                                                                            ? user.name.slice(
-                                                                                  0,
-                                                                                  20
-                                                                              ) +
-                                                                              '...'
-                                                                            : user.name}{' '}
-                                                                        <span className="text-gray-500 dark:text-gray-400">
-                                                                            • @
-                                                                            {user
-                                                                                .username
-                                                                                .length >
-                                                                            10
-                                                                                ? user.username.slice(
-                                                                                      0,
-                                                                                      10
-                                                                                  ) +
-                                                                                  '...'
-                                                                                : user.username}
-                                                                        </span>
-                                                                    </span>
-                                                                </Combobox.Option>
+                                                                    {({
+                                                                        active,
+                                                                    }) => (
+                                                                        <>
+                                                                            <UserIcon
+                                                                                className={classNames(
+                                                                                    'h-6 w-6 flex-none',
+                                                                                    active
+                                                                                        ? 'text-white'
+                                                                                        : 'text-gray-400'
+                                                                                )}
+                                                                                aria-hidden="true"
+                                                                            />
+                                                                            <span className="ml-3 flex-auto truncate">
+                                                                                {
+                                                                                    source.name
+                                                                                }
+                                                                            </span>
+                                                                        </>
+                                                                    )}
+                                                                </ComboboxOption>
                                                             )
                                                         )}
                                                     </ul>
                                                 </li>
                                             )}
-                                        </Combobox.Options>
+                                        </ComboboxOptions>
                                     )}
 
                                     {rawQuery === '?' && (
@@ -450,20 +452,16 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                             </p>
                                             <p className="mt-2 text-gray-500">
                                                 Use this tool to quickly search
-                                                for users and projects across
-                                                our entire platform. You can
-                                                also use the search modifiers
-                                                found in the footer below to
-                                                limit the posts to just users or
-                                                projects.
+                                                for sources, news and topics
+                                                across our platform.
                                             </p>
                                         </div>
                                     )}
                                     {query !== '' &&
                                         rawQuery !== '?' &&
-                                        posts.length === 0 &&
+                                        news.length === 0 &&
                                         topics.length === 0 &&
-                                        authors.length === 0 && (
+                                        sources.length === 0 && (
                                             <div className="py-14 px-6 text-center text-sm sm:px-14">
                                                 <ExclamationTriangleIcon
                                                     className="mx-auto h-6 w-6 text-gray-400"
@@ -507,7 +505,7 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                         >
                                             $
                                         </kbd>{' '}
-                                        for users,{' '}
+                                        for sources,{' '}
                                         <kbd
                                             className={classNames(
                                                 'mx-1 flex h-5 w-5 items-center justify-center rounded border dark:bg-neutral-900 bg-white font-semibold sm:mx-2',
@@ -519,21 +517,20 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                             ?
                                         </kbd>{' '}
                                         for help
-                                        {/* <Link
-                                            href={'/search'}
-                                            className="mx-1 flex h-5 px-1.5 items-center justify-center rounded border bg-white sm:mx-2 border-primary-6000 text-neutral-900"
-                                            onClick={() => setOpen(false)}
-                                        >
-                                            Go to search page
-                                        </Link>{' '} */}
                                     </div>
                                 </Combobox>
-                                {/* </form> */}
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>
                 </Dialog>
             </Transition.Root>
+            {selectedNews && (
+                <NewsDetailModal
+                    show={showNewsModal}
+                    news={selectedNews}
+                    onClose={() => setShowNewsModal(false)}
+                />
+            )}
         </>
     )
 }

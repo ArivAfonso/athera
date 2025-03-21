@@ -10,9 +10,10 @@ interface NewsSectionProps {
     // initial array of news items
     news: NewsType[]
     id: string
+    type?: string
     // pagination function to fetch next set of news
     rows?: number
-    newsFn: (page: number) => Promise<NewsType[]>
+    newsFn: (page: number) => Promise<any> // Adjusted: may return an object with a news property when type is "topics"
     onHideNews: (newsId: string) => void
     onRemoveWatchlist?: (newsId: string) => void
     watchOption?: boolean
@@ -21,6 +22,7 @@ interface NewsSectionProps {
 function NewsSection({
     news,
     id,
+    type = '',
     rows = 4,
     newsFn,
     onHideNews,
@@ -28,17 +30,30 @@ function NewsSection({
     watchOption = false,
 }: NewsSectionProps) {
     const [newsState, setNews] = useState<NewsType[] | undefined>(news)
-    const [addNewsFinished, setAddNewsFinished] = useState(news.length < 24)
+    const [addNewsFinished, setAddNewsFinished] = useState(news.length < 48)
 
     const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
         useInfiniteQuery({
             queryKey: [id],
             queryFn: async ({ pageParam = 1 }) => {
-                if (addNewsFinished) return []
-                const response = await newsFn(pageParam)
-                if (response.length === 0 || response.length % 24 !== 0)
+                console.log('newsFn called with pageParam:', pageParam) // debug log
+                if (addNewsFinished) {
+                    console.log(
+                        'addNewsFinished is true – returning empty array'
+                    )
+                    return []
+                }
+                const response = await newsFn(pageParam - 1)
+                // If the type is topics, extract the nested news array.
+                let newsItems: NewsType[] = Array.isArray(response)
+                    ? response
+                    : []
+                if (type === 'topics' && response && (response as any).news) {
+                    newsItems = (response as any).news
+                }
+                if (newsItems.length === 0 || newsItems.length % 48 !== 0)
                     setAddNewsFinished(true)
-                return response
+                return newsItems
             },
             getNextPageParam: (lastPage, allPages) => allPages.length + 1,
             initialPageParam: 1,
@@ -68,9 +83,10 @@ function NewsSection({
 
     useEffect(() => {
         if (entry?.isIntersecting && hasNextPage) {
+            console.log('Sentinel intersecting. Calling fetchNextPage')
             fetchNextPage()
         }
-    }, [entry?.isIntersecting, hasNextPage])
+    }, [entry?.isIntersecting, hasNextPage, fetchNextPage])
 
     const handleHideNews = (newsId: string) => {
         onHideNews(newsId)
@@ -93,7 +109,6 @@ function NewsSection({
                     <div
                         key={key}
                         className={`${(news ? news.length : 0) < rows ? `w-full sm:w-1/2 lg:w-1/3 xl:w-1/${rows}` : ''}`}
-                        // Assign the ref to the div if the news is the third last one
                     >
                         <div className="hidden sm:block">
                             <NewsCard

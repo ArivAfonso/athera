@@ -53,14 +53,6 @@ to public
 using (true);
 
 
-create policy "Give Ariv access"
-on "storage"."objects"
-as permissive
-for insert
-to public
-with check ((((bucket_id = 'categories'::text) AND ((auth.uid())::text = 'd8101ee4-ae24-4f0f-bf00-0674140b4675'::text)) OR ((auth.uid())::text = 'b0156ec3-2660-421e-8aea-bb704cf67ec4'::text)));
-
-
 create policy "Give anon users access lfwun0_0"
 on "storage"."objects"
 as permissive
@@ -139,6 +131,14 @@ as permissive
 for delete
 to public
 using ((((bucket_id = 'categories'::text) AND ((auth.uid())::text = 'd8101ee4-ae24-4f0f-bf00-0674140b4675'::text)) OR ((auth.uid())::text = 'b0156ec3-2660-421e-8aea-bb704cf67ec4'::text)));
+
+
+create policy "Insert for anon 11lc7ug_0"
+on "storage"."objects"
+as permissive
+for select
+to anon
+using (((bucket_id = 'sources'::text) AND (storage.extension(name) = 'jpg'::text) AND (storage.extension(name) = 'png'::text) AND (storage.extension(name) = 'svg'::text) AND (storage.extension(name) = 'jpeg'::text) AND (storage.extension(name) = 'webp'::text) AND (lower((storage.foldername(name))[1]) = 'public'::text) AND (auth.role() = 'anon'::text)));
 
 
 

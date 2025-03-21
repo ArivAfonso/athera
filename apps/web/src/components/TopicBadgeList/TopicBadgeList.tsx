@@ -20,7 +20,7 @@ const TopicBadgeList: FC<TopicBadgeListProps> = ({
 }) => {
     let renderableTopics = topics
 
-    if (topics.length === 0) return null
+    if (!topics || topics.length === 0) return null
 
     if (shorten) {
         let totalCharCount = 0

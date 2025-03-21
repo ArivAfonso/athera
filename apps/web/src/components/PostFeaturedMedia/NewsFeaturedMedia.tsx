@@ -4,6 +4,7 @@ import React, { FC } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import NewsType from '@/types/NewsType'
+import { Img } from 'ui'
 
 export interface NewsFeaturedMediaProps {
     className?: string
@@ -23,7 +24,7 @@ const NewsFeaturedMedia: FC<NewsFeaturedMediaProps> = ({
     const imageUrl = news.image
     return (
         <div className={`NewsFeaturedMedia relative ${className}`}>
-            <Image
+            <Img
                 alt="featured"
                 fill
                 className="object-cover rounded-t-3xl"

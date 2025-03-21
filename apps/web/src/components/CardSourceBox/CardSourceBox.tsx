@@ -12,7 +12,7 @@ export interface CardSourceBoxProps {
 const CardSourceBox: FC<CardSourceBoxProps> = ({ className = '', source }) => {
     return (
         <Link
-            href={`/source/${source.name}`}
+            href={`/source/${source.id}`}
             className={`CardSourceBox flex flex-col overflow-hidden bg-white dark:bg-neutral-800 rounded-3xl ${className}`}
         >
             <div className="relative">
@@ -44,8 +44,8 @@ const CardSourceBox: FC<CardSourceBoxProps> = ({ className = '', source }) => {
                     <h2 className="text-base font-medium">
                         <span className="line-clamp-1">{source.name}</span>
                     </h2>
-                    <span className="block mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                        something
+                    <span className="text-xs text-neutral-700 dark:text-neutral-300 truncate">
+                        {source.url}
                     </span>
                 </div>
             </div>

@@ -11,6 +11,7 @@ import { getCookie } from 'cookies-next'
 import { Avatar, DropDown } from 'ui'
 import NewsCardLikeAndComment from '../NewsCardLikeAndComment/NewsCardLikeAndComment'
 import NewsDetailModal from '../NewsDetailModal/NewsDetailModal'
+import Link from 'next/link'
 
 export interface NewsCardProps {
     className?: string
@@ -59,7 +60,7 @@ const NewsCard: FC<NewsCardProps> = ({
         <>
             <Tilt tiltEnable={tilt === 'true'}>
                 <div
-                    className={`NewsCard relative flex flex-col group rounded-3xl overflow-hidden border dark:border-transparent border-neutral-100 dark:bg-neutral-900 ${className}`}
+                    className={`NewsCard relative flex flex-col group rounded-3xl overflow-hidden border dark:border-transparent border-neutral-100 dark:bg-neutral-900 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:translate-y-[-4px] ${className}`}
                     onMouseEnter={() => setIsHover(true)}
                     onMouseLeave={() => setIsHover(false)}
                     ref={innerRef}
@@ -95,11 +96,13 @@ const NewsCard: FC<NewsCardProps> = ({
                                     }
                                 />
                                 <div className="flex flex-col">
-                                    <span className="text-neutral-900 dark:text-neutral-100 font-medium text-sm">
-                                        {news.source
-                                            ? news.source.name
-                                            : 'Unknown Source'}
-                                    </span>
+                                    <Link href={`/source/${news.source?.id}`}>
+                                        <span className="text-neutral-900 dark:text-neutral-100 font-medium text-sm">
+                                            {news.source
+                                                ? news.source.name
+                                                : 'Unknown Source'}
+                                        </span>
+                                    </Link>
                                     <div className="flex items-center text-xs text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
                                         <span>{news.created_at}</span>
                                         {news.author && (

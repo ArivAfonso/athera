@@ -9,32 +9,10 @@ import { ArrowUpIcon } from '@heroicons/react/24/solid'
 import AuthorType from '@/types/AuthorType'
 import parse from 'html-react-parser'
 import PostCommentSection from './PostCommentSection'
-import Bold from '@tiptap/extension-bold'
-import Document from '@tiptap/extension-document'
-import Paragraph from '@tiptap/extension-paragraph'
-import Text from '@tiptap/extension-text'
-import StarterKit from '@tiptap/starter-kit'
-import Highlight from '@tiptap/extension-highlight'
-import Underline from '@tiptap/extension-underline'
-import Link from '@tiptap/extension-link'
-import Placeholder from '@tiptap/extension-placeholder'
-import TextAlign from '@tiptap/extension-text-align'
-import Image from '@tiptap/extension-image'
-import Table from '@tiptap/extension-table'
-import TableRow from '@tiptap/extension-table-row'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import { generateHTML } from '@tiptap/core'
-
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { ScaleIcon } from 'lucide-react'
 import TableContentAnchor from './TableContentAnchor'
 import BookmarkBtn from '@/components/BookmarkBtn/BookmarkBtn'
-import CustomHeading from '@/components/PostSubmissionEditor/extensions/headings/CustomHeading'
-import { Mathematics } from '@/components/PostSubmissionEditor/extensions/mathematics/MathematicsExtension'
 import { cn } from '@/utils/cn'
-import Superscript from '@tiptap/extension-superscript'
-import Subscript from '@tiptap/extension-subscript'
 import {
     Nunito,
     EB_Garamond,
@@ -138,42 +116,6 @@ const SingleContent: FC<SingleContentProps> = ({
             myFont = poppins
     }
 
-    const output = useMemo(() => {
-        return generateHTML(json, [
-            StarterKit.configure({
-                heading: false, // Disable the default heading from StarterKit
-            }),
-            Document,
-            CustomHeading,
-            Paragraph,
-            Text,
-            CodeBlockLowlight,
-            Bold,
-            Highlight,
-            Underline,
-            Link,
-            Placeholder,
-            TextAlign,
-            Image,
-            Subscript,
-            Superscript,
-            Table,
-            TableCell,
-            TableHeader,
-            TableRow,
-            Mathematics.configure({
-                HTMLAttributes: {
-                    class: cn(
-                        'text-foreground rounded p-1 hover:bg-accent cursor-pointer'
-                    ),
-                },
-                katexOptions: {
-                    throwOnError: false,
-                },
-            }),
-        ])
-    }, [json])
-
     useEffect(() => {
         const handleProgressIndicator = () => {
             const entryContent = contentRef.current
@@ -225,7 +167,6 @@ const SingleContent: FC<SingleContentProps> = ({
                                 id="single-entry-content"
                                 className={`prose lg:prose-lg !max-w-screen-md mx-auto dark:prose-invert ${myFont.className}`}
                                 ref={contentRef}
-                                dangerouslySetInnerHTML={{ __html: output }}
                             ></div>
                         </>
                     ) : (

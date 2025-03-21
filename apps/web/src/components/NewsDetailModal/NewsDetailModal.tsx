@@ -37,6 +37,14 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
     const [relatedNews, setRelatedNews] = useState<NewsType[]>([])
     const [authorNews, setAuthorNews] = useState<NewsType[]>([])
 
+    news.created_at = new Date(
+        news.created_at ? news.created_at : ''
+    ).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    })
+
     useEffect(() => {
         const supabase = createClient()
         const fetchUserData = async () => {

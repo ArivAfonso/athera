@@ -2,6 +2,8 @@ import { NextResponse, NextRequest } from 'next/server'
 import { createClient } from '@/utils/supabase/client'
 import { OpenAI } from 'openai'
 
+export const dynamic = 'force-dynamic'
+
 const openai = new OpenAI({
     apiKey: process.env.GEMINI_API_KEY,
     baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',

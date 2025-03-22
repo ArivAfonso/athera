@@ -4,16 +4,15 @@ import { OpenAI } from 'openai'
 
 export const dynamic = 'force-dynamic'
 
-const openai = new OpenAI({
-    apiKey: process.env.GEMINI_API_KEY,
-    baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
-})
-
 export async function GET(request: NextRequest) {
     // Parse query parameter
+
+    const openai = new OpenAI({
+        apiKey: process.env.GEMINI_API_KEY,
+        baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    })
     const { searchParams } = new URL(request.url)
     const query = searchParams.get('q')
-    console.log('query', query)
     if (!query) {
         return NextResponse.json(
             { error: 'Missing query parameter' },

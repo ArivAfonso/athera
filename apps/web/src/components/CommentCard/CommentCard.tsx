@@ -4,10 +4,10 @@ import twFocusClass from '@/utils/twFocusClass'
 import ModalEditComment from './ModalEditComment'
 import ModalDeleteComment from './ModalDeleteComment'
 import Link from 'next/link'
-import SingleCommentForm from '@/app/(root)/(posts)/PostCommentForm'
 import CommentCardLikeReply from './CommentCardLikeReply'
 import CommentType from '@/types/CommentType'
 import ModalReportComment from './ModalReportComment'
+import CommentForm from './CommentForm'
 
 export interface CommentCardProps {
     className?: string
@@ -139,7 +139,7 @@ const CommentCard: FC<CommentCardProps> = ({
 
     const renderCommentForm = () => {
         return (
-            <SingleCommentForm
+            <CommentForm
                 textareaRef={textareaRef}
                 id={id}
                 onClickSubmit={closeReplyForm}

@@ -1,74 +1,42 @@
 import React, { FC } from 'react'
+import Skeleton from '../Skeleton/Skeleton'
+import PostCardLikeCommentSaveSkeleton from '../Skeleton/PostCardLikeCommentSaveSkeleton'
 
-export interface NewsCardSkeletonProps {
+export interface Card11SkeletonProps {
     className?: string
     ratio?: string
 }
 
-const NewsCardSkeleton: FC<NewsCardSkeletonProps> = ({
+const Card11Skeleton: FC<Card11SkeletonProps> = ({
     className = 'h-full',
     ratio = 'aspect-w-4 aspect-h-3',
 }) => {
     return (
         <div
-            className={`relative flex flex-col group rounded-3xl overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:shadow-xl transition-shadow ${className}`}
+            className={`Card11 relative flex flex-col group rounded-3xl overflow-hidden bg-white dark:bg-neutral-900 ${className}`}
+            //
         >
-            {/* Image skeleton */}
             <div
                 className={`block flex-shrink-0 relative w-full rounded-t-3xl overflow-hidden z-10 ${ratio}`}
             >
-                <div className="absolute inset-0 bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
+                <div>
+                    <Skeleton
+                        width="100%"
+                        height="100%"
+                        containerClassName="absolute inset-0 leading-none"
+                    />
+                </div>
             </div>
 
-            {/* Content skeleton */}
             <div className="p-4 flex flex-col space-y-3">
-                {/* Avatar and source name */}
-                <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
-                    <div className="w-24 h-4 rounded-md bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
-                </div>
-
-                {/* Title */}
-                <div className="space-y-1">
-                    <div className="w-full h-5 rounded-md bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
-                    <div className="w-3/4 h-5 rounded-md bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
-                </div>
-
-                {/* Summary */}
-                <div className="space-y-1">
-                    <div className="w-full h-4 rounded-md bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
-                    <div className="w-full h-4 rounded-md bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
-                    <div className="w-2/3 h-4 rounded-md bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
-                </div>
-
-                <div className="border-t border-neutral-200 dark:border-neutral-700 my-3" />
-
-                {/* Footer */}
-                <div className="flex items-center justify-between">
-                    <div className="flex space-x-2">
-                        <div className="w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
-                        <div className="w-12 h-4 rounded-md bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
-                    </div>
-                    <div className="w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
-                </div>
+                <Skeleton width="60%" />
+                <h3 className="card-title block text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                    <Skeleton />
+                </h3>
+                <PostCardLikeCommentSaveSkeleton />
             </div>
-
-            {/* Add CSS for the animation
-            <style jsx>{`
-                @keyframes customPulse {
-                    0%, 100% {
-                        opacity: 1;
-                    }
-                    50% {
-                        opacity: 0.5;
-                    }
-                }
-                .animate-pulse {
-                    animation: customPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-                }
-            `}</style> */}
         </div>
     )
 }
 
-export default NewsCardSkeleton
+export default Card11Skeleton

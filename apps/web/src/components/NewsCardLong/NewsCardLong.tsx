@@ -143,17 +143,26 @@ const NewsCardLong: FC<NewsCardLongProps> = ({
                 />
                 <PostBookmark className="relative pl-12" postId={news.id} />
             </div>
-            <div className={`flex items-start relative w-full ${ratio}`}></div>
-            <a href={news.link} target="_blank" rel="noopener noreferrer">
-                <Image
-                    fill
-                    alt=""
-                    className="object-cover w-full h-full rounded-3xl"
-                    src={imageUrl}
-                    sizes="(max-width: 600px) 480px, 500px"
-                />
-                <span className="absolute inset-0 bg-black bg-opacity-10 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-            </a>
+
+            {/* Fixed image container structure */}
+            <div className={`relative w-full ${ratio}`}>
+                <a
+                    href={news.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full h-full"
+                >
+                    <Image
+                        fill
+                        alt={news.title || 'News image'}
+                        className="object-cover w-full h-full rounded-3xl"
+                        src={imageUrl || '/placeholder-image.jpg'}
+                        sizes="(max-width: 600px) 480px, 500px"
+                    />
+                    <span className="absolute inset-0 bg-black bg-opacity-10 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                </a>
+            </div>
+
             <div
                 className={`${hover ? 'opacity-0 group-hover:opacity-100 transition-opacity' : ''}`}
             >

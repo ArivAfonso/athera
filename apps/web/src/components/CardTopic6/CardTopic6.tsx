@@ -68,7 +68,7 @@ const CardTopic6: FC<CardTopic6Props> = ({
                         size === 'large' ? 'text-sm' : 'text-xs'
                     } mt-[2px] block text-neutral-500 dark:text-neutral-400`}
                 >
-                    {topic.postCount[0].count || 0} Articles
+                    {topic.newsCount[0].count || 0} Articles
                 </span>
             </div>
         </Link>

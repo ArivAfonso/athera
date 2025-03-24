@@ -19,7 +19,7 @@ const CardTopic2: FC<CardTopic2Props> = ({ className = '', topic, index }) => {
                 <span
                     className={`block mt-1 text-sm text-neutral-500 dark:text-neutral-400`}
                 >
-                    {topic.postCount[0].count} Articles
+                    {topic.newsCount[0].count} Articles
                 </span>
             </div>
         </Link>

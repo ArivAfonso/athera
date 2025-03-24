@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import debounce from 'lodash/debounce'
 import TopicFilterListBox from '@/components/TopicFilterListBox/TopicFilterListBox'
 import { Input, Nav, NavItem } from 'ui'
 import CardTopic2 from '@/components/CardTopic2/CardTopic2'
@@ -15,6 +14,7 @@ import CardSourceBox from '@/components/CardSourceBox/CardSourceBox'
 import NewsSection from '@/components/NewsSection/NewsSection'
 import NewsCard from '@/components/NewsCard/NewsCard'
 import NewsCardWide from '@/components/NewsCardWide/NewsCardWide'
+import { debounce } from 'es-toolkit'
 
 // Cache for search results
 const searchCache = new Map()
@@ -101,7 +101,6 @@ async function fetchSourcesData(query: string, requestId: number) {
     // Check cache first
     const cached = searchCache.get(cacheKey)
     if (cached && Date.now() - cached.timestamp < CACHE_EXPIRY) {
-        console.log('Using cached sources results')
         return { data: cached.data, requestId }
     }
 
@@ -322,13 +321,6 @@ const PageSearch = () => {
     // Properly implemented functions
     function handleHideNews(newsId: string): void {
         setNews((prevNews) => prevNews.filter((item) => item.id !== newsId))
-    }
-
-    function fetchNews(page: number): Promise<NewsType[]> {
-        const requestId = ++currentRequestId
-        return getNews(searchValue, activeFilter, requestId).then(
-            (response) => response.data
-        )
     }
 
     const handleRemoveWatchlist = async (newsId: string) => {

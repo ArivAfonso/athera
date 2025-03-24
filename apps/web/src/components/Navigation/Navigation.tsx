@@ -1,9 +1,9 @@
 import React, { FC } from 'react'
 import NavigationItem, { NavItemType } from './NavigationItem'
-import _ from 'lodash'
+import { uniqueId } from 'es-toolkit/compat'
 import { Route } from 'next'
 
-const randomId = _.uniqueId
+const randomId = uniqueId
 
 interface Props {
     className?: string

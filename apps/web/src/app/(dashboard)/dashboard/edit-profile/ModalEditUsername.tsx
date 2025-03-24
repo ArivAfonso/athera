@@ -3,7 +3,7 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { createClient } from '@/utils/supabase/client'
-import { debounce } from 'lodash'
+import { debounce } from 'es-toolkit'
 import { Button, Modal } from 'ui'
 
 async function changeUsername(username: string, id: string) {

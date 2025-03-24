@@ -25,6 +25,7 @@ const NewsFeaturedMedia: FC<NewsFeaturedMediaProps> = ({
     return (
         <div className={`NewsFeaturedMedia relative ${className}`}>
             <Img
+                containerClassName="relative" // added containerClassName
                 alt="featured"
                 fill
                 className="object-cover rounded-t-3xl"

@@ -68,9 +68,11 @@ const CardTopic4: FC<CardTopic4Props> = ({ className = '', topic, index }) => {
                     <h2 className="text-base text-neutral-900 dark:text-neutral-100 font-medium">
                         {topic.name}
                     </h2>
-                    <span className="block text-sm text-neutral-500 dark:text-neutral-400">
-                        {topic.postCount[0].count} Articles
-                    </span>
+                    {topic.newsCount && (
+                        <span className="block text-sm text-neutral-500 dark:text-neutral-400">
+                            {topic.newsCount[0].count} Articles
+                        </span>
+                    )}
                 </div>
             </div>
         </Link>

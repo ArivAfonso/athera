@@ -1,22 +1,15 @@
 import React from 'react'
 import SectionLargeSlider from './SectionLargeSlider'
-import BackgroundSection from '@/components/BackgroundSection/BackgroundSection'
 import SectionSliderNewTopics from '@/components/SectionSliderNewTopics/SectionSliderNewTopics'
 import SectionMagazine1 from '@/components/Sections/SectionMagazine1'
-import SectionSliderPosts from '@/components/Sections/SectionSliderPosts'
 import SectionSliderSources from '@/components/SectionSliderSources/SectionSliderSources'
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
-import PostType from '@/types/PostType'
 import TopicType from '@/types/TopicType'
 import NewsType from '@/types/NewsType'
 import SourceType from '@/types/SourceType'
 import Particles from '@/components/Particles/Particles'
-import SectionImport from '@/components/SectionImport/SectionImport'
-import SectionNewPosts from '@/components/SectionNewPosts/SectionNewPosts'
 import { Metadata } from 'next'
-import MySlider from '@/components/MySlider'
-import NewsCardLong from '@/components/NewsCardLong/NewsCardLong'
 
 async function getData() {
     const supabase = createClient(cookies())
@@ -72,12 +65,12 @@ async function getData() {
 export const metadata: Metadata = {
     title: 'Athera',
     description:
-        'Athera is a platform for creators to share their knowledge and grow their audience.',
+        'Athera is a news aggregation website designed to showcase interesting content from all over the internet',
     keywords: ['athera', 'blog', 'platform', 'knowledge'],
     openGraph: {
         title: 'Athera',
         description:
-            'Athera is a platform for creators to share their knowledge and grow their audience.',
+            'Athera is a news aggregation website designed to showcase interesting content from all over the internet',
         url: `https://www.athera.blog`,
         type: 'website',
         images: [
@@ -94,7 +87,7 @@ export const metadata: Metadata = {
         site: '@athera_blog',
         title: 'Athera',
         description:
-            'Athera is a platform for creators to share their knowledge and grow their audience.',
+            'Athera is a news aggregation website designed to showcase interesting content from all over the internet',
         images: {
             url: 'https://www.athera.blog/twitter-og.jpg',
             alt: 'Main Image',
@@ -138,10 +131,6 @@ const PageHome = async ({}) => {
                     news={data.popular_news.filter((_, i) => i < 3)}
                 />
 
-                <div className="relative py-16">
-                    <SectionImport />
-                </div>
-
                 <SectionSliderNewTopics
                     className="py-16 lg:py-28"
                     heading="Top trending topics"
@@ -154,8 +143,6 @@ const PageHome = async ({}) => {
                     className="py-16 lg:py-28"
                     news={data.popular_news.filter((_, i) => i > 3)}
                 />
-
-                {/* <SectionNewPosts posts={data.popular_news} /> */}
 
                 <SectionSliderSources
                     className="py-16 lg:py-28"

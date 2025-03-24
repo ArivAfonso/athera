@@ -1,62 +1,17 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import Card11 from '@/components/Card11/Card11'
 import TopicType from '@/types/TopicType'
 import Image from 'next/image'
-import Card6 from '@/components/Card6/Card6'
-import { Metadata } from 'next'
-import PostsSection from '@/components/PostsSection/PostsSection'
-import PostType from '@/types/PostType'
 import { createClient } from '@/utils/supabase/client'
 import CircleLoading from '@/components/CircleLoading/CircleLoading'
 import { Heading2 } from 'ui'
 import Empty from '@/components/Empty'
-import NewsCard from '@/components/NewsCard/NewsCard'
-import NewsType from '@/types/NewsType'
 import NewsSection from '@/components/NewsSection/NewsSection'
-
-async function addNews(topicId: string, pageParam: number) {
-    const supabase = createClient()
-    const { data, error } = await supabase
-        .from('news')
-        .select(
-            `
-            id,
-            title,
-            created_at,
-            description,
-            link,
-            summary,
-            author,
-            image,
-            source(
-                id,
-                name,
-                url,
-                image
-            ),
-            likeCount:likes(count),
-            commentCount:comments(count),
-            news_topics(topic:topics(id,name,color))
-            `
-        )
-        .eq('source', topicId)
-        .order('created_at', { ascending: false })
-        .range(pageParam * 48, (pageParam + 1) * 48 - 1)
-
-    if (error) {
-        console.error('Error fetching news:', error)
-        return []
-    }
-
-    return data as unknown as NewsType[]
-}
+import Loading from './loading'
 
 async function getTopics(context: { params: { slug: any } }, pageParam = 0) {
     const supabase = createClient()
-
-    console.log(context.params.slug, pageParam)
 
     const id = context.params.slug[1]
     const { data, error } = await supabase
@@ -97,8 +52,6 @@ async function getTopics(context: { params: { slug: any } }, pageParam = 0) {
 
     const catData: TopicType = data as unknown as TopicType
 
-    console.log(error, data, catData)
-
     return catData
 }
 
@@ -108,7 +61,15 @@ const PageTopic = async (context: any) => {
 
     useEffect(() => {
         async function getData() {
+            // Measure total time taken for getTopics from the component perspective
+            const startTime = performance.now()
             const data = await getTopics(context)
+            const endTime = performance.now()
+            console.log(
+                'Total getTopics call time from PageTopic:',
+                Math.round(endTime - startTime),
+                'ms'
+            )
             setCatData(data)
             setLoading(false)
         }
@@ -126,7 +87,7 @@ const PageTopic = async (context: any) => {
         <div className="PageTopic">
             <div className="w-full px-2 pt-2 xl:max-w-screen-2xl mx-auto">
                 {!catData ? (
-                    <CircleLoading />
+                    <Loading />
                 ) : (
                     <>
                         {catData.image ? (
@@ -134,6 +95,7 @@ const PageTopic = async (context: any) => {
                                 <Image
                                     alt="Topic header image"
                                     fill
+                                    priority
                                     src={catData.image || ''}
                                     className="object-cover w-full h-full rounded-3xl md:rounded-[40px]"
                                     sizes="(max-width: 1280px) 100vw, 1536px"

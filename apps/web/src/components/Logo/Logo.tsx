@@ -1,18 +1,8 @@
 import React from 'react'
-import logoImg from '@/images/logo.png'
-import logoLightImg from '@/images/logo-light.png'
 import Link from 'next/link'
 import Image from 'next/image'
 
-export interface LogoProps {
-    img?: string
-    imgLight?: string
-}
-
-const Logo: React.FC<LogoProps> = ({
-    img = logoImg,
-    imgLight = logoLightImg,
-}) => {
+const Logo: React.FC = ({}) => {
     return (
         <Link
             href="/"
@@ -21,8 +11,12 @@ const Logo: React.FC<LogoProps> = ({
             <Image
                 src="/full-logo-transparent.png"
                 alt="Logo"
+                priority
                 width={220}
                 height={220}
+                style={{
+                    height: 'auto',
+                }}
             />
         </Link>
     )

@@ -7,7 +7,9 @@ import {
     ComboboxOption,
     ComboboxOptions,
     Dialog,
+    DialogPanel,
     Transition,
+    TransitionChild,
 } from '@headlessui/react'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import {
@@ -18,7 +20,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
-import { debounce } from 'lodash'
+import { debounce } from 'es-toolkit'
 import stringToSlug from '@/utils/stringToSlug'
 import TopicType from '@/types/TopicType'
 import NewsType from '@/types/NewsType'
@@ -181,7 +183,7 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                 </form>
             )}
 
-            <Transition.Root
+            <Transition
                 show={open}
                 as={Fragment}
                 afterLeave={() => setRawQuery('')}
@@ -192,7 +194,7 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                     className="relative z-[99]"
                     onClose={() => setOpen(false)}
                 >
-                    <Transition.Child
+                    <TransitionChild
                         as={Fragment}
                         enter="ease-out duration-300"
                         enterFrom="opacity-0"
@@ -202,10 +204,10 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                         leaveTo="opacity-0"
                     >
                         <div className="fixed inset-0 bg-black/40 transition-opacity" />
-                    </Transition.Child>
+                    </TransitionChild>
 
                     <div className="fixed inset-0 z-10 overflow-y-auto p-4 sm:p-6 md:p-20">
-                        <Transition.Child
+                        <TransitionChild
                             as={Fragment}
                             enter="ease-out duration-300"
                             enterFrom="opacity-0 scale-95"
@@ -214,7 +216,7 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-100"
                         >
-                            <Dialog.Panel
+                            <DialogPanel
                                 className="block mx-auto max-w-2xl transform divide-y dark:divide-gray-800 divide-gray-100 overflow-hidden rounded-xl dark:bg-neutral-900 bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"
                                 as="form"
                             >
@@ -519,11 +521,11 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                         for help
                                     </div>
                                 </Combobox>
-                            </Dialog.Panel>
-                        </Transition.Child>
+                            </DialogPanel>
+                        </TransitionChild>
                     </div>
                 </Dialog>
-            </Transition.Root>
+            </Transition>
             {selectedNews && (
                 <NewsDetailModal
                     show={showNewsModal}

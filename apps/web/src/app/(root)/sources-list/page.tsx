@@ -177,11 +177,6 @@ const SourcesListPage = () => {
                                                 <h2 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                                     {source.name}
                                                 </h2>
-                                                {source.username && (
-                                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                                                        @{source.username}
-                                                    </p>
-                                                )}
                                             </div>
                                         </div>
 

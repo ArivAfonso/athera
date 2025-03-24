@@ -1,0 +1,8 @@
+User-Agent: *
+Allow: /
+Disallow: 
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /auth/
+
+Sitemap: https://athera.blog/sitemap.xml

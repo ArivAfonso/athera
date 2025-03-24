@@ -23,10 +23,11 @@ const Img: FC<ImgProps> = ({
         set_imgSrc(src)
     }, [src])
     return (
-        <div className={containerClassName}>
+        <div className={`w-full h-full relative ${containerClassName}`}>
             <Image
-                onLoadingComplete={(result) => {
-                    if (result.naturalWidth === 0) {
+                onLoad={(event) => {
+                    const img = event.target as HTMLImageElement
+                    if (img.naturalWidth === 0) {
                         // Broken image
                         set_imgSrc(
                             fallbackSrc ? fallbackSrc : './placeholder.svg'

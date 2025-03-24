@@ -28,7 +28,7 @@ const CardTopic5: FC<CardTopic5Props> = ({ className = '', topic }) => {
                 href={`/topic/${topic.name}`}
                 name={
                     <div className="flex items-center">
-                        {topic.postCount[0].count}
+                        {topic.newsCount[0].count}
                         <ArrowRightIcon className="ml-1.5 w-3.5 h-3.5" />
                     </div>
                 }

@@ -1,7 +1,6 @@
-import React, { FC } from 'react'
+import React, { FC, Suspense } from 'react'
 import Logo from '@/components/Logo/Logo'
 import Navigation from '@/components/Navigation/Navigation'
-import MenuBar from '@/components/MenuBar/MenuBar'
 import SearchModal from './SearchModal'
 import { cookies } from 'next/headers'
 import AvatarDropdown from './AvatarDropdown'
@@ -9,6 +8,9 @@ import NotifyDropdown from './NotifyDropdown'
 import { ButtonThird } from 'ui'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
+
+// Lazy load MenuBar
+const LazyMenuBar = React.lazy(() => import('@/components/MenuBar/MenuBar'))
 
 const MainNav = async ({}) => {
     const supabase = createClient(cookies())
@@ -19,7 +21,9 @@ const MainNav = async ({}) => {
             <div className="container">
                 <div className="h-20 py-5 flex justify-between items-center">
                     <div className="flex items-center lg:hidden flex-1">
-                        <MenuBar />
+                        <Suspense fallback={<div className="w-10 h-10" />}>
+                            <LazyMenuBar />
+                        </Suspense>
                     </div>
 
                     <div className="flex justify-center lg:justify-start flex-1 items-center space-x-4 sm:space-x-10 2xl:space-x-14">
@@ -74,7 +78,6 @@ const MainNav = async ({}) => {
                                     <div className="px-1"></div>
                                     <ButtonThird
                                         sizeClass="py-3 px-4 sm:px-6"
-                                        //className="hover:bg-neutral-200 bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-gray-200"
                                         href="/signup"
                                         pattern="third"
                                     >

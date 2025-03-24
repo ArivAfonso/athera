@@ -30,8 +30,8 @@ const NewsCardLikeAction: FC<NewsCardLikeActionProps> = ({
 
     async function checkLikedStatus() {
         try {
-            const { data: session } = await supabase.auth.getUser()
-            const userId = session.user?.id
+            const { data: session } = await supabase.auth.getSession()
+            const userId = session.session?.user?.id
             const localLikes = JSON.parse(
                 localStorage.getItem('newsLikes') || '[]'
             )

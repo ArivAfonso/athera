@@ -106,7 +106,12 @@ topic_configs = {
             "title_suffix": " | The Race",
             "sitemap_xml": "https://www.the-race.com/sitemap-posts.xml",
             "ignore_prefix": "https://www.the-race.com/promoted/"
-        }
+        },
+        "sportsillustrated": {
+            "url": "https://www.si.com/",
+            "title_suffix": " | Sports Illustrated",
+            "sitemap_xml": "https://www.si.com/news-sitemap.xml"
+        },
     },
     "cars": {
         # "autoexpress": {
@@ -123,6 +128,12 @@ topic_configs = {
         #     "sitemap_xml": "https://www.motortrend.com/sitemap-article-news-2025.xml",
         #     "disable_outdated_check": True  # Disable the out-of-date check for motortrend
         # }
+        
+        "automotivenews": {
+            "url": "https://www.autonews.com/",
+            "title_suffix": " | Automotive News",
+            "sitemap_xml": "https://www.autonews.com/arc/outboundfeeds/sitemap/latest/?outputType=xml"
+        },
     },
     "gaming": {
         "polygon": {
@@ -183,6 +194,15 @@ topic_configs = {
             "url": "https://fortune.com/",
             "title_suffix": " - Fortune",
         },
+        "financialtimes": {
+            "url": "https://www.ft.com/",
+            "title_suffix": " | Financial Times",
+        },
+        "theeconomist": {
+            "url": "https://www.economist.com/",
+            "title_suffix": " | The Economist",
+            "sitemap_xml": "https://www.economist.com/googlenews.xml"
+        },
     },
     "general": {
         "forbes": {
@@ -190,6 +210,18 @@ topic_configs = {
             "title_suffix": " - Forbes",
             "sitemap_xml": "https://www.forbes.com/news_sitemap.xml"
         },
+        "time": {
+            "url": "https://time.com/",
+            "title_suffix": " | Time",
+            "sitemap_xml": "https://time.com/news-sitemap.xml"
+        },
+        "aljazeera": {
+            "url": "https://www.aljazeera.com/",
+            "title_suffix": " | Al Jazeera",
+            "sitemap_xml": "https://www.aljazeera.com/sitemap.xml"
+        },
+        
+
     },
     "travel": {
         "atlasobscura": {

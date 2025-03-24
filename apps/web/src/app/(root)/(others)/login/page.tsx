@@ -2,10 +2,9 @@
 
 import React from 'react'
 import { useState } from 'react'
-import twitterSvg from '@/images/Twitter.svg'
+import xSvg from '@/images/X.svg'
 import googleSvg from '@/images/Google.svg'
 import discordSvg from '@/images/Discord.svg'
-import xSvg from '@/images/X.svg'
 import { createClient } from '@/utils/supabase/client'
 import { Controller, useForm } from 'react-hook-form'
 import { Input, Image, Alert, Button, Heading2, MyLink } from 'ui'
@@ -39,7 +38,7 @@ const PageLogin = ({}) => {
         })
     }
 
-    async function twitterSignIn() {
+    async function xSignIn() {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'twitter',
             options: {
@@ -86,7 +85,7 @@ const PageLogin = ({}) => {
                     </button>
                     <button
                         className=" flex w-full rounded-lg bg-primary-50 dark:bg-neutral-800 px-4 py-3 transform transition-transform sm:px-6 hover:translate-y-[-2px]"
-                        onClick={twitterSignIn}
+                        onClick={xSignIn}
                     >
                         <Image
                             className="flex-shrink-0"

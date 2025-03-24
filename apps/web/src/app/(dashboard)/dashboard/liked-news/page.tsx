@@ -1,22 +1,21 @@
 'use client'
 
 import Empty from '@/components/Empty'
-import PostsSection from '@/components/PostsSection/PostsSection'
-import PostType from '@/types/PostType'
+import NewsSection from '@/components/NewsSection/NewsSection'
+import NewsType from '@/types/NewsType'
 import { createClient } from '@/utils/supabase/client'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Loading from './loading'
 import toast from 'react-hot-toast'
 import { Alert } from 'ui'
 
-const DashboardLikedPosts = () => {
+const DashboardLikedNews = () => {
     const supabase = createClient()
-    const [myPosts, setMyPosts] = React.useState<PostType[]>([])
-    const [loading, setLoading] = React.useState(true)
+    const [likedNews, setLikedNews] = useState<NewsType[]>([])
+    const [loading, setLoading] = useState(true)
 
-    async function addPosts(pageParam: number) {
+    async function addNews(pageParam: number) {
         const { data: session } = await supabase.auth.getUser()
-
         if (!session.user) {
             toast.custom((t) => (
                 <Alert
@@ -30,21 +29,21 @@ const DashboardLikedPosts = () => {
             .from('likes')
             .select(
                 `
-            posts (
+            news (
                 title,
                 id,
                 created_at,
                 estimatedReadingTime,
                 description,
                 image,
-                author (
-                    name,
+                source(
                     id,
-                    verified,
-                    username,
-                    avatar
+                    name,
+                    description,
+                    url,
+                    image
                 ),
-                post_topics(topic:topics(id,name,color)),
+                news_topics(topic:topics(id,name,color)),
                 bookmarks(user(id)),
                 likeCount:likes(count),
                 commentCount:comments(count),
@@ -57,20 +56,19 @@ const DashboardLikedPosts = () => {
             `
             )
             .eq('liker', session.user?.id)
-            .limit(24, { referencedTable: 'posts' })
-            .order('created_at', { referencedTable: 'posts', ascending: false })
+            .limit(24, { referencedTable: 'news' })
+            .order('created_at', { referencedTable: 'news', ascending: false })
             .range(pageParam * 48, (pageParam + 1) * 48 - 1)
 
-        const newPosts = (data as unknown as { posts: PostType }[]).map(
-            (item) => item.posts
+        const newItems = (data as unknown as { news: NewsType }[]).map(
+            (item) => item.news
         )
 
-        return newPosts
+        return newItems
     }
 
-    async function getPosts() {
+    async function getNews() {
         const { data: session } = await supabase.auth.getUser()
-
         if (!session.user) {
             toast.custom((t) => (
                 <Alert
@@ -84,21 +82,21 @@ const DashboardLikedPosts = () => {
             .from('likes')
             .select(
                 `
-            posts (
+            news (
                 title,
                 id,
                 created_at,
                 estimatedReadingTime,
                 description,
                 image,
-                author (
-                    name,
+                source(
                     id,
-                    verified,
-                    username,
-                    avatar
+                    name,
+                    description,
+                    url,
+                    image
                 ),
-                post_topics(topic:topics(id,name,color)),
+                news_topics(topic:topics(id,name,color)),
                 bookmarks(user(id)),
                 likeCount:likes(count),
                 commentCount:comments(count),
@@ -111,49 +109,44 @@ const DashboardLikedPosts = () => {
             `
             )
             .eq('liker', session.user?.id)
-            .order('created_at', { referencedTable: 'posts', ascending: false })
+            .order('created_at', { referencedTable: 'news', ascending: false })
 
-        const myPosts = (data as unknown as { posts: PostType }[]).map(
-            (item) => item.posts
+        const fetchedNews = (data as unknown as { news: NewsType }[]).map(
+            (item) => item.news
         )
 
-        return myPosts
+        return fetchedNews
     }
 
     useEffect(() => {
         async function fetchData() {
-            const posts = await getPosts()
-            setMyPosts(posts || [])
+            const news = await getNews()
+            setLikedNews(news || [])
             setLoading(false)
         }
         fetchData()
     }, [])
 
     return (
-        <div className={`PageTopic`}>
+        <div className="PageLikedNews">
             <div className="container max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32 space-y-10 sm:space-y-12">
-                {/* HEADING */}
                 <h2 className="text-2xl sm:text-3xl font-semibold">
-                    Liked Posts
+                    Liked News
                 </h2>
                 <div>
-                    {
-                        /* LOADING */
-                        loading && <Loading />
-                    }
-                    {/* LOOP ITEMS */}
-                    {myPosts[0] ? (
-                        <PostsSection
-                            posts={myPosts}
+                    {loading && <Loading />}
+                    {likedNews[0] ? (
+                        <NewsSection
+                            news={likedNews}
                             id="likes"
                             // @ts-ignore
-                            postFn={addPosts}
-                            rows={3}
+                            newsFn={addNews}
+                            onHideNews={(newsId: string) => {}}
                         />
                     ) : (
                         <Empty
-                            mainText="No Posts Found"
-                            subText="You haven't liked any posts yet."
+                            mainText="No News Found"
+                            subText="You haven't liked any news yet."
                             className="text-center p-4"
                         />
                     )}
@@ -163,4 +156,4 @@ const DashboardLikedPosts = () => {
     )
 }
 
-export default DashboardLikedPosts
+export default DashboardLikedNews

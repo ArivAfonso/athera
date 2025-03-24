@@ -17,8 +17,8 @@ const BookmarkBtn: FC<BookmarkBtnProps> = ({
     useEffect(() => {
         async function fetchAndStoreBookmarks() {
             const supabase = createClient()
-            const { data: session } = await supabase.auth.getUser()
-            const userId = session.user?.id
+            const { data: session } = await supabase.auth.getSession()
+            const userId = session.session?.user?.id
             const localBookmarks = JSON.parse(
                 localStorage.getItem('bookmarks') || '[]'
             )

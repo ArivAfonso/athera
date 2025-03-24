@@ -1,23 +1,87 @@
 import React, { useEffect, useState } from 'react'
 import NewsFeaturedMedia from '@/components/PostFeaturedMedia/NewsFeaturedMedia'
 import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
-import SingleTitle from '@/app/(root)/(posts)/SingleTitle'
 import { Avatar } from 'ui'
 import NewsCardLikeAndComment from '../NewsCardLikeAndComment/NewsCardLikeAndComment'
 import PostBookmark from '../PostBookmark/PostBookmark'
 import NewsType from '@/types/NewsType'
 import { SquareArrowOutUpRightIcon, XIcon } from 'lucide-react'
 import WidgetSocialsFollow from '../WidgetSocialsFollow/WidgetSocialsFollow'
-import NewsCommentSection from '@/components/NewsCommentSection/NewsCommentSection'
 import { createClient } from '@/utils/supabase/client'
 import CardTopic1 from '../CardTopic1/CardTopic1'
 import Heading2 from '../Heading2/Heading2'
-import { title } from 'process'
 import NewsCardMeta from '../NewsCardMeta/NewsCardMeta'
 import Link from 'next/link'
 import Image from 'next/image'
-import SingleRelatedPosts from '@/app/(root)/(posts)/SingleRelatedPosts'
-import RelatedNews from './RelatedNews'
+
+const LazyNewsCommentSection = React.lazy(
+    () =>
+        // ...existing dynamic import handling...
+        import('@/components/NewsCommentSection/NewsCommentSection')
+)
+const LazyRelatedNews = React.lazy(() => import('./RelatedNews'))
+
+const NewsCommentSectionSkeleton = () => (
+    <div className="animate-pulse">
+        {/* Comment form skeleton */}
+        <div className="flex items-start space-x-4 mb-8">
+            <div className="h-10 w-10 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+            <div className="flex-1">
+                <div className="h-24 rounded-xl bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="mt-2 flex justify-end">
+                    <div className="h-9 w-24 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                </div>
+            </div>
+        </div>
+
+        {/* Comments list skeleton */}
+        {[...Array(3)].map((_, index) => (
+            <div
+                key={index}
+                className="flex items-start space-x-4 mb-5 pb-5 border-b border-neutral-200 dark:border-neutral-700"
+            >
+                <div className="h-10 w-10 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                <div className="flex-1">
+                    <div className="h-4 w-32 mb-2 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="h-3 w-24 mb-3 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="space-y-2">
+                        <div className="h-4 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                        <div className="h-4 rounded bg-neutral-200 dark:bg-neutral-700 w-5/6"></div>
+                    </div>
+                    <div className="flex space-x-3 mt-3">
+                        <div className="h-6 w-16 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                        <div className="h-6 w-16 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                    </div>
+                </div>
+            </div>
+        ))}
+    </div>
+)
+
+const RelatedNewsSkeleton = () => (
+    <div className="animate-pulse container pb-10">
+        <div className="px-3">
+            <div className="h-8 w-40 rounded bg-neutral-200 dark:bg-neutral-700 mb-6"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                {[...Array(4)].map((_, index) => (
+                    <div key={index} className="rounded-3xl overflow-hidden">
+                        <div className="aspect-w-3 aspect-h-3 bg-neutral-200 dark:bg-neutral-700"></div>
+                        <div className="p-4">
+                            <div className="h-4 w-16 rounded bg-neutral-200 dark:bg-neutral-700 mb-3"></div>
+                            <div className="h-5 rounded bg-neutral-200 dark:bg-neutral-700 mb-2"></div>
+                            <div className="h-5 rounded bg-neutral-200 dark:bg-neutral-700 w-3/4 mb-3"></div>
+                            <div className="flex items-center space-x-2">
+                                <div className="h-3 w-20 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                                <div className="h-3 w-3 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                                <div className="h-3 w-16 rounded bg-neutral-200 dark:bg-neutral-700"></div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+)
 
 interface NewsDetailModalProps {
     show: boolean
@@ -57,8 +121,6 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                 match_threshold: 0.1,
                 match_count: 5,
             })
-
-            console.log(data)
 
             if (error) {
                 console.error('Error fetching news:', error)
@@ -167,7 +229,12 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                                 />
                             </div>
 
-                            <SingleTitle title={news.title} font="classic" />
+                            <h1
+                                className={`text-neutral-900 font-semibold text-3xl md:text-4xl md:!leading-[120%] lg:text-5xl dark:text-neutral-100 max-w-4xl`}
+                                title={news.title}
+                            >
+                                {news.title}
+                            </h1>
 
                             {/* Mobile source info */}
                             <div className="flex items-center space-x-3 mt-6 mb-4 md:hidden">
@@ -239,12 +306,16 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                                 <PostBookmark postId={news.id} />
                             </div>
 
-                            {/* News Comment Section */}
+                            {/* News Comment Section Lazy Load */}
                             <div className="mt-8">
-                                <NewsCommentSection
-                                    newsId={news.id}
-                                    currentUserID={id}
-                                />
+                                <React.Suspense
+                                    fallback={<NewsCommentSectionSkeleton />}
+                                >
+                                    <LazyNewsCommentSection
+                                        newsId={news.id}
+                                        currentUserID={id}
+                                    />
+                                </React.Suspense>
                             </div>
                         </div>
 
@@ -457,7 +528,9 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                         </div>
                     </div>
                     {/* Added related posts slider */}
-                    <RelatedNews id={news.id} authorId={news.author} />
+                    <React.Suspense fallback={<RelatedNewsSkeleton />}>
+                        <LazyRelatedNews id={news.id} authorId={news.author} />
+                    </React.Suspense>
                 </div>
             </div>
         </div>

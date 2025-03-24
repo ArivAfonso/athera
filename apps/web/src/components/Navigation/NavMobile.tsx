@@ -11,10 +11,10 @@ import Link from 'next/link'
 import { Button } from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { AuthSession } from '@supabase/supabase-js'
-import _ from 'lodash'
+import { uniqueId } from 'es-toolkit/compat'
 import { Route } from 'next'
 
-const randomId = _.uniqueId
+const randomId = uniqueId
 
 export interface NavMobileProps {
     data?: NavItemType[]

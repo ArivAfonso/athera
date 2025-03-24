@@ -73,12 +73,26 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
     # json_file_path = f"extracted_metadata_{source}.json"
     # if os.path.exists(json_file_path):
     #     os.remove(json_file_path)
-    
+        
     extracted_metadata = []
     feed_urls = []
     
     try:
         # Generic sitemap handling block
+        # Fallback for timezone.utc for older Python versions
+        try:
+            utc = timezone.utc
+        except AttributeError:
+            from datetime import tzinfo, timedelta as _td
+            class UTC(tzinfo):
+                def utcoffset(self, dt):
+                    return _td(0)
+                def tzname(self, dt):
+                    return "UTC"
+                def dst(self, dt):
+                    return _td(0)
+            utc = UTC()
+        
         if "sitemap_xml" in config and config["sitemap_xml"]:
             print(f"Using sitemap XML: {config['sitemap_xml']}")
             try:
@@ -89,7 +103,7 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
                     except ET.ParseError as e:
                         print(f"Error parsing XML: {str(e)}")
                         root = None
-            
+        
                     if root is not None:
                         # If sitemap index, use the first sitemap URL from the index
                         if "sitemapindex" in root.tag:
@@ -100,7 +114,7 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
                                 if loc is not None and loc.text:
                                     sitemap_urls.append(loc.text)
                             if sitemap_urls:
-                                index = config["sitemap_xml_number"] if "sitemap_xml_number" in config and config["sitemap_xml_number"] else 0
+                                index = config["sitemap_xml_number"] if ("sitemap_xml_number" in config and config["sitemap_xml_number"]) else 0
                                 first_sitemap_url = sitemap_urls[index]
                                 print(f"Using first sitemap from index: {first_sitemap_url}")
                                 sitemap_response = requests.get(first_sitemap_url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -118,14 +132,14 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
                                                 lastmod_elem = url.find("{*}lastmod")
                                                 lastmod_text = lastmod_elem.text if lastmod_elem is not None else None
                                                 feed_entries.append((loc_elem.text, lastmod_text))
-                                        
+        
                                         # Sort feed entries by last modified date (most recent first)
                                         def parse_lastmod(lm):
                                             try:
-                                                return parse_date(lm) if lm else datetime.min.replace(tzinfo=timezone.utc)
+                                                return parse_date(lm) if lm else datetime.min.replace(tzinfo=utc)
                                             except Exception:
-                                                return datetime.min.replace(tzinfo=timezone.utc)
-                                        
+                                                return datetime.min.replace(tzinfo=utc)
+        
                                         sorted_entries = sorted(feed_entries, key=lambda x: parse_lastmod(x[1]), reverse=True)
                                         feed_urls = [entry[0] for entry in sorted_entries]
                                         print(f"Found {len(feed_urls)} article URLs from sitemap (sorted by last modified date)")
@@ -146,13 +160,13 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
                                     lastmod_elem = url.find("{*}lastmod")
                                     lastmod_text = lastmod_elem.text if lastmod_elem is not None else None
                                     feed_entries.append((loc_elem.text, lastmod_text))
-                            
+        
                             def parse_lastmod(lm):
                                 try:
-                                    return parse_date(lm) if lm else datetime.min.replace(tzinfo=datetime.timezone.utc)
+                                    return parse_date(lm) if lm else datetime.min.replace(tzinfo=utc)
                                 except Exception:
-                                    return datetime.min.replace(tzinfo=datetime.timezone.utc)
-                            
+                                    return datetime.min.replace(tzinfo=utc)
+        
                             sorted_entries = sorted(feed_entries, key=lambda x: parse_lastmod(x[1]), reverse=True)
                             feed_urls = [entry[0] for entry in sorted_entries]
                             print(f"Found {len(feed_urls)} article URLs from sitemap (sorted by last modified date)")
@@ -209,7 +223,7 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
             if metadata.date:
                 try:
                     article_date = parse_date(metadata.date)
-                    if article_date < datetime.now(article_date.tzinfo) - timedelta(hours=25):
+                    if article_date < datetime.now(article_date.tzinfo) - timedelta(hours=36):
                         print(f"Rejected: Article is too old. Date: {metadata.date}")
                         rejected_count += 1
                         # Only check consecutive outdated if the feed is from sitemap and the outdated check is enabled

@@ -1,71 +1,158 @@
+'use client'
+
 import Empty from '@/components/Empty'
-import PostsSection from '@/components/PostsSection/PostsSection'
-import PostType from '@/types/PostType'
-import { createClient } from '@/utils/supabase/server'
-import { cookies } from 'next/headers'
-import React from 'react'
+import NewsSection from '@/components/NewsSection/NewsSection'
+import NewsType from '@/types/NewsType'
+import { createClient } from '@/utils/supabase/client'
+import React, { useEffect, useState } from 'react'
+import Loading from './loading'
+import toast from 'react-hot-toast'
+import { Alert } from 'ui'
 
-const DashboardBookmarks = async () => {
-    const supabase = createClient(cookies())
-    const { data: session } = await supabase.auth.getUser()
+const DashboardBookmarks = () => {
+    const supabase = createClient()
+    const [myNews, setMyNews] = useState<NewsType[]>([])
+    const [loading, setLoading] = useState(true)
 
-    const { data, error } = await supabase
-        .from('bookmarks')
-        .select(
-            `
-            posts (
-                title,
-                id,
-                created_at,
-                estimatedReadingTime,
-                description,
-                image,
-                author (
+    async function addNews(pageParam: number) {
+        const { data: session } = await supabase.auth.getUser()
+        if (!session.user) {
+            toast.custom((t) => (
+                <Alert
+                    type="danger"
+                    message="You need to be logged in to view this page"
+                />
+            ))
+            return
+        }
+
+        const { data, error } = await supabase
+            .from('bookmarks')
+            .select(
+                `
+                news (
+                    title,
                     id,
-                    verified,
-                    name,
-                    username,
-                    avatar
-                ),
-                post_topics(topic:topics(id,name,color)),
-                bookmarks(user(id)),
-                likeCount:likes(count),
-                commentCount:comments(count),
-                likes(
-                    liker(
-                        id
+                    created_at,
+                    estimatedReadingTime,
+                    description,
+                    image,
+                    source(
+                        id,
+                        name,
+                        description,
+                        url,
+                        image
+                    ),
+                    news_topics(topic:topics(id,name,color)),
+                    bookmarks(user(id)),
+                    likeCount:likes(count),
+                    commentCount:comments(count),
+                    likes(
+                        liker(
+                            id
+                        )
                     )
                 )
+                `
             )
-            `
-        )
-        .eq('user', session.user?.id || '')
+            .eq('user', session.user?.id)
+            .limit(24, { referencedTable: 'news' })
+            .order('created_at', { referencedTable: 'news', ascending: false })
+            .range(pageParam * 48, (pageParam + 1) * 48 - 1)
 
-    const myPosts = (data as unknown as { posts: PostType }[]).map(
-        (item) => item.posts
-    )
+        const newItems = (data as unknown as { news: NewsType }[]).map(
+            (item) => item.news
+        )
+
+        return newItems
+    }
+
+    async function getNews() {
+        const { data: session } = await supabase.auth.getUser()
+        if (!session.user) {
+            toast.custom((t) => (
+                <Alert
+                    type="danger"
+                    message="You need to be logged in to view this page"
+                />
+            ))
+            return
+        }
+
+        const { data, error } = await supabase
+            .from('bookmarks')
+            .select(
+                `
+                news (
+                    title,
+                    id,
+                    created_at,
+                    estimatedReadingTime,
+                    description,
+                    image,
+                    source(
+                        id,
+                        name,
+                        description,
+                        url,
+                        image
+                    ),
+                    news_topics(topic:topics(id,name,color)),
+                    bookmarks(user(id)),
+                    likeCount:likes(count),
+                    commentCount:comments(count),
+                    likes(
+                        liker(
+                            id
+                        )
+                    )
+                )
+                `
+            )
+            .eq('user', session.user?.id)
+            .order('created_at', { referencedTable: 'news', ascending: false })
+
+        const fetchedNews = (data as unknown as { news: NewsType }[]).map(
+            (item) => item.news
+        )
+
+        return fetchedNews
+    }
+
+    useEffect(() => {
+        async function fetchData() {
+            const news = await getNews()
+            setMyNews(news || [])
+            setLoading(false)
+        }
+        fetchData()
+    }, [])
 
     return (
         <>
             <title>My Bookmarks - Athera</title>
-            <div className={`PageTopic`}>
+            <div className="PageBookmarks">
                 <div className="container max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32 space-y-10 sm:space-y-12">
                     {/* HEADING */}
                     <h2 className="text-2xl sm:text-3xl font-semibold">
                         Bookmarks
                     </h2>
                     <div>
-                        {/* LOOP ITEMS */}
-                        {myPosts[0] ? (
-                            <PostsSection
-                                posts={myPosts}
+                        {loading && <Loading />}
+                        {myNews[0] ? (
+                            <NewsSection
+                                news={myNews}
                                 rows={3}
                                 id="bookmarks"
+                                newsFn={addNews}
+                                onHideNews={(newsId: string) => {}}
                             />
                         ) : (
                             <Empty
-                                mainText="No Posts Found"
-                                subText="You have not bookmarked any posts yet."
+                                mainText="No News Found"
+                                subText="You have not bookmarked any news yet."
+                                className="text-center p-4"
                             />
                         )}
                     </div>

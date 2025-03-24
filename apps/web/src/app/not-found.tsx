@@ -1,40 +1,50 @@
 'use client'
 
 import { ButtonPrimary } from 'ui'
-import React from 'react'
+import React, { useMemo } from 'react'
 import Link from 'next/link'
 import { useThemeMode } from '@/hooks/useThemeMode'
-import Image from 'next/image'
+import Lottie from 'react-lottie'
+import darkAnimation from '../lotties/dark.json'
+import lightAnimation from '../lotties/light.json'
 
 const ErrorPage: React.FC = () => {
     const theme: any = useThemeMode()
+
+    const defaultOptions = useMemo(() => {
+        return {
+            loop: true,
+            autoplay: true,
+            animationData: theme.isDarkMode ? darkAnimation : lightAnimation, // Use the appropriate animation based on theme
+            rendererSettings: {
+                preserveAspectRatio: 'xMidYMid slice',
+            },
+        }
+    }, [theme.isDarkMode])
+
     return (
         <div className="Page404">
             <div className="flex flex-col items-center justify-center pl-8 pr-8 pt-8 pb-8">
-                {theme.isDarkMode ? (
-                    <Image
-                        src="/404-dark.png"
-                        width={400}
+                <div className="w-full max-w-lg">
+                    <Lottie
+                        options={defaultOptions}
                         height={400}
-                        alt="404"
+                        width="100%"
+                        isClickToPauseDisabled={true}
                     />
-                ) : (
-                    <video autoPlay loop muted className="w-full">
-                        <source src="/error.webm" type="video/webm" />
-                    </video>
-                )}
+                </div>
+
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-snug md:leading-snug lg:leading-snug">
-                    What on{' '}
                     <span className="text-blue-500 bg-blue-100 dark:bg-blue-950 p-1 rounded-md">
-                        Earth
+                        Lost??
                     </span>
                 </h1>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl text-center font-bold leading-snug md:leading-snug lg:leading-snug">
-                    are you doing here!?
+                <h1 className="text-2xl md:text-3xl lg:text-4xl text-center font-bold leading-snug md:leading-snug lg:leading-snug">
+                    Looks like you've drifted off course
                 </h1>
-                <p className="text-center">
+                <p className="text-center text-md mt-4 mb-6 max-w-md mx-auto text-gray-600 dark:text-gray-300">
                     Well this is awkward... The page you are trying to visit
-                    does not exist
+                    does not exist.
                 </p>
                 <Link href="/">
                     <ButtonPrimary className="mt-4">

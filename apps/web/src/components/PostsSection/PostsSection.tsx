@@ -9,7 +9,6 @@ import Card2 from '../Card2/Card2'
 import Card9 from '../Card9/Card9'
 import Card8 from '../Card8/Card8'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { initial, set } from 'lodash'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import CircleLoading from '../CircleLoading/CircleLoading'
 

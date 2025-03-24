@@ -16,6 +16,8 @@ export const revalidate = 0
 
 export const metadata = {
     title: 'Athera - A True Home for Extremely Revolting Articles',
+    description:
+        'Athera is a news aggregation website designed to showcase interesting content from all over the internet.',
 }
 
 const poppins = Poppins({
@@ -38,6 +40,14 @@ export default async function RootLayout({
     const accessToken = session?.access_token || ''
     return (
         <html lang="en" suppressHydrationWarning className={poppins.className}>
+            <link
+                rel="preconnect"
+                href={process.env.NEXT_PUBLIC_SUPABASE_URL}
+            />
+            <link
+                rel="dns-prefetch"
+                href={process.env.NEXT_PUBLIC_SUPABASE_URL}
+            />
             <head>
                 <meta
                     name="viewport"

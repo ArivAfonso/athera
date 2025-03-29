@@ -7,6 +7,7 @@ import Image from 'next/image'
 import NewsCardMeta from '../NewsCardMeta/NewsCardMeta'
 import PostBookmark from '../PostBookmark/PostBookmark'
 import NewsDetailModal from '../NewsDetailModal/NewsDetailModal'
+import { Img } from 'ui'
 
 export interface Card2Props {
     className?: string
@@ -37,10 +38,10 @@ const Card2: FC<Card2Props> = ({
     return (
         <div className={`nc-Card2 group relative flex flex-col ${className}`}>
             <div className="block flex-shrink-0 flex-grow relative w-full h-0 pt-[75%] sm:pt-[55%] z-0">
-                <Image
+                <Img
                     fill
-                    sizes="(max-width: 600px) 480px, 800px"
-                    className="object-cover rounded-3xl"
+                    sizes="(max-width: 600px) 100vw, 50vw"
+                    className="absolute inset-0 object-cover rounded-3xl"
                     src={news.image}
                     alt={news.title}
                 />

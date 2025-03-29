@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import NewsFeaturedMedia from '@/components/PostFeaturedMedia/NewsFeaturedMedia'
 import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
-import { Avatar } from 'ui'
+import { Avatar, Img } from 'ui'
 import NewsCardLikeAndComment from '../NewsCardLikeAndComment/NewsCardLikeAndComment'
 import PostBookmark from '../PostBookmark/PostBookmark'
 import NewsType from '@/types/NewsType'
@@ -171,6 +171,26 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
 
         fetchUserData()
     }, [])
+
+    // useEffect(() => {
+    //     if (show && localStorage.getItem('watch_history') != 'false' && id) {
+    //         const supabase = createClient()
+    //         const upsertWatchHistory = async () => {
+    //             const { error } = await supabase.from('watch_history').upsert(
+    //                 {
+    //                     user_id: id,
+    //                     news: news.id,
+    //                     watched_at: new Date().toISOString(),
+    //                 },
+    //                 { onConflict: 'user_id, news' }
+    //             )
+    //             if (error) {
+    //                 console.error('Error updating watch history:', error)
+    //             }
+    //         }
+    //         upsertWatchHistory()
+    //     }
+    // }, [show, id])
 
     return (
         <div
@@ -452,7 +472,7 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                                                     <div
                                                         className={`w-full h-0 aspect-w-1 aspect-h-1`}
                                                     >
-                                                        <Image
+                                                        <Img
                                                             alt="featured"
                                                             sizes="100px"
                                                             className="object-cover w-full h-full group-hover:scale-110 transform transition-transform duration-300"
@@ -510,7 +530,7 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                                                     <div
                                                         className={`w-full h-0 aspect-w-1 aspect-h-1`}
                                                     >
-                                                        <Image
+                                                        <Img
                                                             alt="featured"
                                                             sizes="100px"
                                                             className="object-cover w-full h-full group-hover:scale-110 transform transition-transform duration-300"

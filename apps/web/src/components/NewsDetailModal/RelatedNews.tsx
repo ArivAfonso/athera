@@ -8,6 +8,7 @@ import Card9 from '@/components/Card9/Card9'
 import { createClient } from '@/utils/supabase/client'
 import MySlider from '@/components/MySlider'
 import NewsCardLong from '@/components/NewsCardLong/NewsCardLong'
+import NewsDetailModal from './NewsDetailModal'
 
 export interface RelatedNewsType {
     latestNewsInTopic: NewsType[]
@@ -75,6 +76,8 @@ export interface SingleRelatedNewsProps {
 const SingleRelatedNews: FC<SingleRelatedNewsProps> = ({ id, authorId }) => {
     const [authorNews, setAuthorNews] = useState<NewsType[]>([])
     const [relatedNews, setRelatedNews] = useState<NewsType[]>([])
+    const [showDetailModal, setShowDetailModal] = useState(false)
+    const [selectedNews, setSelectedNews] = useState<NewsType | null>(null)
 
     const handleHideRelatedNews = async (newsId: string) => {
         //Update localStorage
@@ -104,6 +107,11 @@ const SingleRelatedNews: FC<SingleRelatedNewsProps> = ({ id, authorId }) => {
         setAuthorNews(authorNews?.filter((news) => news.id !== newsId))
     }
 
+    const handleOpenNewsDetail = (news: NewsType) => {
+        setSelectedNews(news)
+        setShowDetailModal(true)
+    }
+
     useEffect(() => {
         const getData = async () => {
             const data = await getAuthorNews(authorId)
@@ -111,7 +119,6 @@ const SingleRelatedNews: FC<SingleRelatedNewsProps> = ({ id, authorId }) => {
         }
 
         getData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -121,7 +128,6 @@ const SingleRelatedNews: FC<SingleRelatedNewsProps> = ({ id, authorId }) => {
         }
 
         getData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
@@ -140,6 +146,7 @@ const SingleRelatedNews: FC<SingleRelatedNewsProps> = ({ id, authorId }) => {
                                     key={indx}
                                     news={item}
                                     onHideNews={handleHideRelatedNews}
+                                    openNewsDetail={handleOpenNewsDetail}
                                 />
                             )}
                             itemPerRow={4}
@@ -148,7 +155,7 @@ const SingleRelatedNews: FC<SingleRelatedNewsProps> = ({ id, authorId }) => {
                 )}
 
                 {/* MORE FROM AUTHOR */}
-                {authorNews.length >= 3 && (
+                {authorNews.length >= 4 && (
                     <div className="mt-10 px-3">
                         <div className="text-lg font-semibold pb-6">
                             More From Author
@@ -160,6 +167,7 @@ const SingleRelatedNews: FC<SingleRelatedNewsProps> = ({ id, authorId }) => {
                                     key={indx}
                                     news={item}
                                     onHideNews={handleHideAuthorNews}
+                                    openNewsDetail={handleOpenNewsDetail}
                                 />
                             )}
                             itemPerRow={4}
@@ -167,6 +175,15 @@ const SingleRelatedNews: FC<SingleRelatedNewsProps> = ({ id, authorId }) => {
                     </div>
                 )}
             </div>
+
+            {/* News Detail Modal */}
+            {showDetailModal && selectedNews && (
+                <NewsDetailModal
+                    show={showDetailModal}
+                    news={selectedNews}
+                    onClose={() => setShowDetailModal(false)}
+                />
+            )}
         </div>
     )
 }

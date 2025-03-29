@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import NewsType from '@/types/NewsType'
 import stringToSlug from '@/utils/stringToSlug'
-import { DropDown } from 'ui'
+import { DropDown, Img } from 'ui'
 import ModalReportItem from '../ModalReportItem/ModalReportItem'
 import ModalHidePost from '../PostActionDropdown/ModalHidePost'
 
@@ -20,6 +20,7 @@ export interface NewsCardLongProps {
     watchOption?: boolean
     onRemoveWatchlist?: (newsId: string) => void
     hover?: boolean
+    openNewsDetail?: (news: NewsType) => void
 }
 
 const NewsCardLong: FC<NewsCardLongProps> = ({
@@ -31,6 +32,7 @@ const NewsCardLong: FC<NewsCardLongProps> = ({
     onHideNews,
     onRemoveWatchlist,
     hiddenSource = false,
+    openNewsDetail,
 }) => {
     news.created_at = new Date(
         news.created_at ? news.created_at : ''
@@ -75,6 +77,13 @@ const NewsCardLong: FC<NewsCardLongProps> = ({
     const handleHideNews = (newsId: string) => {
         onHideNews(newsId)
         setShowModalHideNews(false)
+    }
+
+    const handleNewsClick = (e: React.MouseEvent) => {
+        if (openNewsDetail) {
+            e.preventDefault()
+            openNewsDetail(news)
+        }
     }
 
     let actions: any[] = [
@@ -151,8 +160,9 @@ const NewsCardLong: FC<NewsCardLongProps> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block w-full h-full"
+                    onClick={handleNewsClick}
                 >
-                    <Image
+                    <Img
                         fill
                         alt={news.title || 'News image'}
                         className="object-cover w-full h-full rounded-3xl"
@@ -171,6 +181,7 @@ const NewsCardLong: FC<NewsCardLongProps> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black opacity-50"
+                    onClick={handleNewsClick}
                 ></a>
                 <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col flex-grow items-start">
                     <a
@@ -178,6 +189,7 @@ const NewsCardLong: FC<NewsCardLongProps> = ({
                         target="_blank"
                         rel="noopener noreferrer"
                         className="absolute inset-0"
+                        onClick={handleNewsClick}
                     ></a>
                     <div className="mb-3 left-3">
                         <TopicBadgeList chars={29} topics={news.news_topics} />

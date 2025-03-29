@@ -53,6 +53,19 @@ export default async function RootLayout({
                     name="viewport"
                     content="height=device-height, initial-scale=1, width=device-width, initial-scale=1"
                 />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            '@context': 'https://schema.org',
+                            '@type': 'WebSite',
+                            name: 'Athera',
+                            url: 'https://athera.blog',
+                            description:
+                                'Athera is a news aggregation website designed to showcase interesting content from all over the internet.',
+                        }),
+                    }}
+                />
             </head>
             <body className="text-base text-neutral-900 dark:text-neutral-200 bg-white dark:bg-neutral-800">
                 <NextTopLoader

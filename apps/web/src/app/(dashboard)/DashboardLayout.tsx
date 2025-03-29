@@ -52,7 +52,7 @@ const navigation: NavigationItem[] = [
         href: '/dashboard/posts/published',
         icon: FolderIcon,
         children: [
-            { name: 'likes', href: '/dashboard/liked-posts', icon: HeartIcon },
+            { name: 'likes', href: '/dashboard/liked-news', icon: HeartIcon },
             {
                 name: 'watch history',
                 href: '/dashboard/watch-history',
@@ -66,8 +66,8 @@ const navigation: NavigationItem[] = [
         ],
     },
     {
-        name: 'new post',
-        href: '/dashboard/new-post',
+        name: 'new source',
+        href: '/dashboard/new-source',
         icon: FilePlusIcon,
     },
 
@@ -88,11 +88,11 @@ const navigation: NavigationItem[] = [
             },
         ],
     },
-    {
-        name: 'settings',
-        href: '/dashboard/settings',
-        icon: SettingsIcon,
-    },
+    // {
+    //     name: 'settings',
+    //     href: '/dashboard/settings',
+    //     icon: SettingsIcon,
+    // },
 ]
 
 interface Props {

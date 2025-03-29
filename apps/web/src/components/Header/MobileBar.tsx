@@ -26,7 +26,7 @@ function MobileBar() {
         },
         {
             name: 'Create',
-            path: '/dashboard/new-post',
+            path: '/dashboard/new-source',
             icon: CirclePlusIcon,
         },
         {

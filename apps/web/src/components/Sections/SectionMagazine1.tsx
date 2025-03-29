@@ -4,7 +4,7 @@ import React, { FC, useState } from 'react'
 import HeaderFilter from './HeaderFilter'
 import NewsType from '@/types/NewsType'
 import NewsCardWide from '../NewsCardWide/NewsCardWide'
-import NewsCardBig from '../NewsCardBig/NewsCardBig'
+// import NewsCardBig from '../NewsCardBig/NewsCardBig'
 
 export interface SectionMagazine1Props {
     news: NewsType[]
@@ -26,6 +26,27 @@ const SectionMagazine1: FC<SectionMagazine1Props> = ({
         setNews(filteredNews)
     }
 
+    // Render a row with only wide cards
+    const renderWideRow = (startIndex: number, count: number) => {
+        if (startIndex >= myNews.length) return null
+
+        return (
+            <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-10">
+                {myNews
+                    .slice(startIndex, startIndex + count)
+                    .map((item, index) => (
+                        <NewsCardWide
+                            onHideNews={handleHideNews}
+                            key={`${startIndex}-${index}`}
+                            news={item}
+                        />
+                    ))}
+            </div>
+        )
+    }
+
+    // Original functions commented out
+    /*
     // Render a row with big card on the left and three wide cards on the right
     const renderBigLeftRow = (startIndex: number) => {
         if (startIndex >= myNews.length) return null
@@ -73,23 +94,18 @@ const SectionMagazine1: FC<SectionMagazine1Props> = ({
             </div>
         )
     }
+    */
 
     return (
         <div className={`SectionMagazine1 ${className}`}>
             <HeaderFilter heading={heading} />
             {!myNews.length && <span>Nothing we found!</span>}
 
-            {/* Row 1: Big card left + 3 wide cards right */}
-            {renderBigLeftRow(0)}
-
-            {/* Row 2: 3 wide cards left + Big card right */}
-            {renderWideLeftRow(4)}
-
-            {/* Row 3: Big card left + 3 wide cards right */}
-            {renderBigLeftRow(8)}
-
-            {/* Row 4: 3 wide cards left + Big card right */}
-            {renderWideLeftRow(12)}
+            {/* Render all news as wide cards in groups of 4 */}
+            {renderWideRow(0, 4)}
+            {renderWideRow(4, 4)}
+            {renderWideRow(8, 4)}
+            {renderWideRow(12, 4)}
         </div>
     )
 }

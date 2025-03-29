@@ -33,7 +33,6 @@ const DashboardLikedNews = () => {
                 title,
                 id,
                 created_at,
-                estimatedReadingTime,
                 description,
                 image,
                 source(
@@ -86,7 +85,6 @@ const DashboardLikedNews = () => {
                 title,
                 id,
                 created_at,
-                estimatedReadingTime,
                 description,
                 image,
                 source(
@@ -111,6 +109,7 @@ const DashboardLikedNews = () => {
             .eq('liker', session.user?.id)
             .order('created_at', { referencedTable: 'news', ascending: false })
 
+        console.log(error)
         const fetchedNews = (data as unknown as { news: NewsType }[]).map(
             (item) => item.news
         )

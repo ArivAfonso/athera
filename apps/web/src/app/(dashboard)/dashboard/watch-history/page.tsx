@@ -1,19 +1,19 @@
 'use client'
 
 import Empty from '@/components/Empty'
-import PostsSection from '@/components/PostsSection/PostsSection'
-import PostType from '@/types/PostType'
+import NewsSection from '@/components/NewsSection/NewsSection'
+import NewsType from '@/types/NewsType'
 import { createClient } from '@/utils/supabase/client'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import React, { Suspense, useEffect } from 'react'
 
 const DashboardWatchHistory = () => {
     const supabase = createClient()
 
-    const [myPosts, setMyPosts] = React.useState<PostType[]>([])
+    const [myNews, setMyNews] = React.useState<NewsType[]>([])
     const router = useRouter()
 
-    async function getPosts() {
+    async function getNews() {
         const supabase = createClient()
         const { data: session } = await supabase.auth.getUser()
 
@@ -24,21 +24,20 @@ const DashboardWatchHistory = () => {
             .from('watch_history')
             .select(
                 `
-                posts (
+                news (
                     title,
                     id,
                     created_at,
-                    estimatedReadingTime,
                     description,
                     image,
-                    author (
+                    source(
                         id,
-                        verified,
                         name,
-                        username,
-                        avatar
+                        description,
+                        url,
+                        image
                     ),
-                    post_topics(topic:topics(id,name,color)),
+                    news_topics(topic:topics(id,name,color)),
                     bookmarks(user(id)),
                     likeCount:likes(count),
                     commentCount:comments(count),
@@ -54,20 +53,20 @@ const DashboardWatchHistory = () => {
             .order('created_at', { ascending: false })
             .limit(24)
 
-        return (data as unknown as { posts: PostType }[]).map(
-            (item) => item.posts
+        return (data as unknown as { news: NewsType }[]).map(
+            (item) => item.news
         )
     }
 
     useEffect(() => {
         async function fetchData() {
-            const posts = await getPosts()
-            setMyPosts(posts)
+            const news = await getNews()
+            setMyNews(news)
         }
         fetchData()
     }, [])
 
-    async function addPosts(pageParam: number) {
+    async function addNews(pageParam: number) {
         const { data: session } = await supabase.auth.getUser()
 
         if (!session.user) {
@@ -77,21 +76,20 @@ const DashboardWatchHistory = () => {
             .from('watch_history')
             .select(
                 `
-                posts (
+                news (
                     title,
                     id,
                     created_at,
-                    estimatedReadingTime,
                     description,
                     image,
-                    author (
+                    source(
                         id,
-                        verified,
                         name,
-                        username,
-                        avatar
+                        description,
+                        url,
+                        image
                     ),
-                    post_topics(topic:topics(id,name,color)),
+                    news_topics(topic:topics(id,name,color)),
                     bookmarks(user(id)),
                     likeCount:likes(count),
                     commentCount:comments(count),
@@ -107,36 +105,35 @@ const DashboardWatchHistory = () => {
             .order('created_at', { ascending: false })
             .range(pageParam * 48, (pageParam + 1) * 48 - 1)
 
-        const newPosts = (newData as unknown as { posts: PostType }[]).map(
-            (item) => item.posts
+        const newNews = (newData as unknown as { news: NewsType }[]).map(
+            (item) => item.news
         )
 
-        return newPosts
+        return newNews
     }
 
     return (
         <>
             <title>Watch History - Athera</title>
-            <div className={`PageTopic`}>
+            <div className={`PageHistory`}>
                 <div className="container max-w-4xl mx-auto pt-14 sm:pt-26 pb-24 lg:pb-32 space-y-10 sm:space-y-12">
                     {/* HEADING */}
                     <h2 className="text-2xl sm:text-3xl font-semibold">
-                        Watch History
+                        News History
                     </h2>
                     <div>
                         {/* LOOP ITEMS */}
-                        {myPosts[0] ? (
-                            <PostsSection
-                                posts={myPosts}
-                                rows={3}
+                        {myNews[0] ? (
+                            <NewsSection
+                                news={myNews}
                                 id="watch-history"
-                                watchOption={true}
-                                postFn={addPosts}
+                                newsFn={addNews}
+                                onHideNews={(newsId: string) => {}}
                             />
                         ) : (
                             <Empty
-                                mainText="No Posts Found"
-                                subText="You have not bookmarked any posts yet."
+                                mainText="No News Found"
+                                subText="You haven't watched any news yet."
                             />
                         )}
                     </div>

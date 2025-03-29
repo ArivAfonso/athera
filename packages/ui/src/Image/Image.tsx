@@ -3,6 +3,18 @@
 import React, { FC, useEffect, useState } from 'react'
 import Image, { ImageProps } from 'next/image'
 
+const wsevLoader = ({
+    src,
+    width,
+    quality,
+}: {
+    src: string
+    width: number
+    quality?: number
+}) => {
+    return `https://wsrv.nl/?url=${src}&w=${width}&h=${width}`
+}
+
 export interface ImgProps extends ImageProps {
     containerClassName?: string
     fallbackSrc?: string
@@ -18,13 +30,22 @@ const Img: FC<ImgProps> = ({
     ...args
 }) => {
     const [imgSrc, set_imgSrc] = useState(src)
+    const [useDefaultLoader, setUseDefaultLoader] = useState(false)
 
     useEffect(() => {
         set_imgSrc(src)
+        setUseDefaultLoader(false)
     }, [src])
+
+    // Use fill mode if neither width nor height are provided in args
+    const fillDefault =
+        !('width' in args) && !('height' in args) ? { fill: true } : {}
+
     return (
         <div className={`w-full h-full relative ${containerClassName}`}>
             <Image
+                loader={useDefaultLoader ? undefined : wsevLoader}
+                {...fillDefault}
                 onLoad={(event) => {
                     const img = event.target as HTMLImageElement
                     if (img.naturalWidth === 0) {
@@ -35,7 +56,13 @@ const Img: FC<ImgProps> = ({
                     }
                 }}
                 onError={() => {
-                    set_imgSrc(fallbackSrc ? fallbackSrc : './placeholder.svg')
+                    if (!useDefaultLoader) {
+                        setUseDefaultLoader(true)
+                    } else {
+                        set_imgSrc(
+                            fallbackSrc ? fallbackSrc : './placeholder.svg'
+                        )
+                    }
                 }}
                 src={imgSrc}
                 className={className}

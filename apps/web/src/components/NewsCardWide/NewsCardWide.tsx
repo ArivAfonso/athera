@@ -8,7 +8,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import NewsType from '@/types/NewsType'
 import stringToSlug from '@/utils/stringToSlug'
-import { DropDown } from 'ui'
+import { DropDown, Img } from 'ui'
 import ModalReportItem from '../ModalReportItem/ModalReportItem'
 import ModalHidePost from '../PostActionDropdown/ModalHidePost'
 import PostBookmark from '../PostBookmark/PostBookmark'
@@ -104,7 +104,7 @@ const NewsCardWide: FC<NewsCardWideProps> = ({
                 <div
                     className={`block relative flex-shrink-0 w-24 h-24 sm:w-40 sm:h-full ml-3 sm:ml-5 rounded-2xl overflow-hidden z-0`}
                 >
-                    <Image
+                    <Img
                         sizes="(max-width: 600px) 180px, 400px"
                         className="object-cover w-full h-full"
                         fill

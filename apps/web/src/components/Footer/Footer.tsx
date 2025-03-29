@@ -61,7 +61,7 @@ const Footer: React.FC = () => {
                         <div className="mr-4  md:flex mb-4">
                             <Logo />
                         </div>
-                        <div>Copyright &copy; 2024 Athera</div>
+                        <div>Copyright &copy; 2025 Athera</div>
                         <div className="mt-2">All rights reserved</div>
                     </div>
                     <div className="grid grid-cols-3 gap-10 items-start mt-10 md:mt-0">

@@ -34,7 +34,6 @@ const DashboardBookmarks = () => {
                     title,
                     id,
                     created_at,
-                    estimatedReadingTime,
                     description,
                     image,
                     source(
@@ -88,7 +87,6 @@ const DashboardBookmarks = () => {
                     title,
                     id,
                     created_at,
-                    estimatedReadingTime,
                     description,
                     image,
                     source(

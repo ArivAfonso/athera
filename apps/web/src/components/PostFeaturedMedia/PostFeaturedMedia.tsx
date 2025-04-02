@@ -4,6 +4,7 @@ import React, { FC } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import PostType from '@/types/PostType'
+import { Img } from 'ui'
 
 export interface PostFeaturedMediaProps {
     className?: string
@@ -23,7 +24,7 @@ const PostFeaturedMedia: FC<PostFeaturedMediaProps> = ({
     const imageUrl = post.image
     return (
         <div className={`PostFeaturedMedia relative ${className}`}>
-            <Image
+            <Img
                 alt="featured"
                 fill
                 className="object-cover"

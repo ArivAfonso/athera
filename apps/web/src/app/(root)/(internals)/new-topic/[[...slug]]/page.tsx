@@ -373,8 +373,8 @@ const NewTopicPage = (context: { params: { slug: any } }) => {
                                                 selectedImage
                                             )}
                                             alt="Selected Image"
-                                            width={800} // Adjust the desired width
-                                            height={480} // Adjust the desired height
+                                            width={800}
+                                            height={480}
                                         />
                                     ) : (
                                         <>

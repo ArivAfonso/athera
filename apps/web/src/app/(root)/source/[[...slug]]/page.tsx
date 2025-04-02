@@ -136,7 +136,7 @@ const PageSource = (context: any) => {
                                 <div className="relative bg-white dark:bg-neutral-900 p-5 lg:p-8 rounded-3xl md:rounded-[40px] shadow-xl flex flex-col md:flex-row">
                                     <div className="absolute -top-16 left-0 right-0 mx-auto md:mx-0 md:static md:left-auto flex items-center justify-center md:justify-start md:block w-32 lg:w-40 flex-shrink-0">
                                         <div className="relative flex-shrink-0 inline-flex items-center justify-center overflow-hidden text-neutral-100 uppercase font-semibold rounded-full w-20 h-20 text-xl lg:text-2xl lg:w-36 lg:h-36 ring-4 ring-white dark:ring-neutral-800 shadow-2xl z-0">
-                                            <Image
+                                            <Img
                                                 alt="Avatar"
                                                 src={data.image}
                                                 fill

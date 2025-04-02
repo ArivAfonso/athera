@@ -107,12 +107,30 @@ def generate_embeddings(text: str) -> str:
     return response.data[0].embedding
 
 def upload_post(articles):
+    # Build a list of titles from the incoming articles
+    articles = [article for article in articles if article.get("title", "").strip()]
+    all_titles = [article.get("title", "").strip() for article in articles]
+    
+    # Call the Supabase RPC to determine which titles are NOT already in the DB.
+    result = supabase.rpc('check_titles', {"news_titles": all_titles}).execute()
+    # The RPC returns an array of titles that are missing from the DB.
+    unused_titles = result.data if result and result.data else []
+    
+    if not unused_titles:
+        print("No new articles to process. All article titles already exist in the database.")
+        return
+
+    print(f"Processing {len(unused_titles)} new articles out of {len(all_titles)} total.")
+
+    # Filter articles to only include those with titles in unused_titles.
+    new_articles = [article for article in articles if article.get("title", "").strip() in unused_titles]
+    
     # Detect sources with repetitive topics
     source_categories = {}
     source_article_count = {}
     
     # Group articles by source and count categories
-    for article in articles:
+    for article in new_articles:
         source = article.get("source", "").lower()
         if source not in source_categories:
             source_categories[source] = {}
@@ -140,8 +158,8 @@ def upload_post(articles):
                 print(f"Detected repetitive topics for source '{source}': {repetitive_categories}")
     
     data = []
-    # Process each article as before, but remove repetitive categories
-    for article in articles:
+    # Process each new article and run AI operations only for these filtered articles.
+    for article in new_articles:
         source = article.get("source", "").lower()
         categories = article.get("categories", [])
         
@@ -150,7 +168,7 @@ def upload_post(articles):
             categories = [cat for cat in categories if cat not in repetitive_sources[source]]
             article["categories"] = categories
         
-        # Use article text if it exists, otherwise fallback to description.
+        # Use article text if it exists; otherwise, fallback to description.
         article_text = article.get("text", article.get("description", ""))
         
         # Generate tags for all articles from repetitive sources OR those with <3 categories
@@ -166,7 +184,6 @@ def upload_post(articles):
             categories = list(set(categories + extra_tags_to_add))
             article["categories"] = categories
 
-        # Continue with the rest of the existing processing...
         # Get geodata, generate embeddings, and build the data array
         geodata = None
         if ai.location:
@@ -174,7 +191,7 @@ def upload_post(articles):
             if not geodata:
                 print(f"Unable to geocode address: {ai.location}")
 
-        embeddings = generate_embeddings(article.get("title", "")+" "+article.get("description", ""))
+        embeddings = generate_embeddings(article.get("title", "") + " " + article.get("description", ""))
 
         data.append({
             "source": article.get("source", ""),
@@ -191,9 +208,6 @@ def upload_post(articles):
             "estimated_reading_time": article.get("estimated_reading_time", 0),
         })
 
-    # The rest of the function remains the same...
-    # Upsert to news table, manage topics, cross-reference news with topics, etc.
-
     # Bulk upsert articles into the news table based on unique title.
     news_res = supabase.table("news")\
         .upsert(data, on_conflict="title")\
@@ -201,7 +215,7 @@ def upload_post(articles):
 
     # Retrieve all topics from the RPC (each topic is like {'top_id': XXXXX, 'top_name': 'Some-Topic'})
     all_tags = []
-    for article in articles:
+    for article in new_articles:
         tags = article.get("categories", [])
         all_tags.extend(tags)
     all_tags = [modify_string(tag) for tag in all_tags]
@@ -211,12 +225,12 @@ def upload_post(articles):
         result = supabase.rpc('manage_topics', {"topics": all_tags}).execute()
         tags_array = result.data if result and result.data else []
 
-        # Cross reference the news articles with topics and insert into the join table "news_topics"
+    # Cross reference the news articles with topics and insert into the join table "news_topics"
     news_data = news_res.data if news_res and news_res.data else []
     news_topics = []  # List of dicts with keys "news" and "topic"
     
-    # For each article in the original list, find its news record by matching title.
-    for article in articles:
+    # For each article in the new articles, find its news record by matching title.
+    for article in new_articles:
         title = article.get("title", "")
         matching_news = next((n for n in news_data if n.get("title", "").lower() == title.lower()), None)
         if matching_news:
@@ -249,5 +263,5 @@ def upload_post(articles):
                 seen_pairs.add(pair)
                 unique_news_topics.append(entry)
         
-        # Insert unique entries and directly execute without storing the unused result
+        # Insert unique entries and execute
         supabase.table("news_topics").insert(unique_news_topics).execute()

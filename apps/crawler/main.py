@@ -8,6 +8,7 @@ import json
 import re
 from datetime import datetime, timedelta, timezone
 from dateutil.parser import parse as parse_date
+from src.utils.homepage import scrape_news_links
 from src.utils.upload_post import upload_post, supabase
 import requests
 import xml.etree.ElementTree as ET
@@ -181,12 +182,19 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
         else:
             feed_urls = feeds.find_feed_urls(url=config["url"], target_lang="en")
         
-        # Filter out feed URLs that start with an ignore_prefix if defined in the source config.
-        if config.get("ignore_prefix"):
-            ignore_prefix = config["ignore_prefix"]
+        # Filter out feed URLs that contain any ignore pattern if defined in the source config.
+        if config.get("ignore_url_parts"):
+            ignore_url_parts = config["ignore_url_parts"]
             before_count = len(feed_urls)
-            feed_urls = [url for url in feed_urls if not url.startswith(ignore_prefix)]
-            print(f"Ignored {before_count - len(feed_urls)} URLs starting with '{ignore_prefix}'")
+            feed_urls = [url for url in feed_urls if not any(ignore in url for ignore in ignore_url_parts)]
+            print(f"Ignored {before_count - len(feed_urls)} URLs containing any of {ignore_url_parts}")
+
+        # Include only feed URLs that contain any required substring if defined in the source config.
+        if config.get("include_url_parts"):
+            include_url_parts = config["include_url_parts"]
+            before_count = len(feed_urls)
+            feed_urls = [url for url in feed_urls if any(include in url for include in include_url_parts)]
+            print(f"Filtered to include only URLs containing any of {include_url_parts}. {before_count - len(feed_urls)} URLs removed")
 
         #Filter out feed URLs that are specific urls if defined in the source config as an array ignore_urls
         if config.get("ignore_urls"):
@@ -194,7 +202,27 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
             before_count = len(feed_urls)
             feed_urls = [url for url in feed_urls if url not in ignore_urls]
             print(f"Ignored {before_count - len(feed_urls)} URLs in ignore_urls")
+
+        # If feed_urls is empty, try to scrape the homepage for links.
+        used_homepage = False
+        if not feed_urls:
+            print("No feed URLs found. Attempting to scrape homepage for links.")
+            homepage_links = scrape_news_links(config["url"], config.get("include_url_parts"), config.get("ignore_url_parts"))
+            if homepage_links:
+                feed_urls = homepage_links
+                used_homepage = True
+                print(f"Found {len(feed_urls)} links on the homepage")
+            else:
+                print("No links found on the homepage.")
+                return {"error": "No articles or homepage links could be extracted."}
+        else:   
+            print(f"Found {len(feed_urls)} feed URLs for {source}")
+            # Remove duplicates from feed_urls
+            feed_urls = list(set(feed_urls))
         
+        # Determine if consecutive outdated check should apply: for sitemap or homepage sources only.
+        apply_outdated_check = (("sitemap_xml" in config and config["sitemap_xml"]) or used_homepage)
+
         print(f"Found {len(feed_urls)} feeds/URLs for {source}")
         
         # Enforce a hard limit of 69 articles (if max_articles is not provided or is higher than 69)
@@ -218,23 +246,20 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
                 rejected_count += 1
                 continue
 
-            is_sitemap = "sitemap_xml" in config and bool(config["sitemap_xml"])
-
             if metadata.date:
                 try:
                     article_date = parse_date(metadata.date)
-                    if article_date < datetime.now(article_date.tzinfo) - timedelta(hours=36):
+                    if article_date < datetime.now(article_date.tzinfo) - timedelta(days=2):
                         print(f"Rejected: Article is too old. Date: {metadata.date}")
                         rejected_count += 1
-                        # Only check consecutive outdated if the feed is from sitemap and the outdated check is enabled
-                        if is_sitemap and not config.get("disable_outdated_check", False):
+                        if apply_outdated_check:
                             consecutive_outdated += 1
                             if consecutive_outdated >= 5:
-                                print("5 consecutive out-of-date articles encountered (sitemap). Stopping further processing.")
+                                print("5 consecutive out-of-date articles encountered. Stopping further processing.")
                                 break
                         continue
                     else:
-                        if is_sitemap:
+                        if apply_outdated_check:
                             consecutive_outdated = 0
                 except Exception as e:
                     print(f"Error parsing date '{metadata.date}' for feed {feed_url}: {str(e)}")
@@ -276,7 +301,7 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
                 "categories": filtered_categories,
                 "source": source,
                 "topic": topic,
-                "estimatedReadingTime": len(metadata.text.split()) // 200
+                "estimated_reading_time": len(metadata.text.split()) // 200
             })
             print(f"Extracted article: {title}")
             print(f"Categories: {filtered_categories}")
@@ -292,7 +317,7 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
     
     if extracted_metadata:
         try:
-            upload_post(extracted_metadata)
+            # upload_post(extracted_metadata)
             print(f"Successfully uploaded {len(extracted_metadata)} articles")
         except Exception as e:
             print(f"Error uploading posts: {str(e)}")

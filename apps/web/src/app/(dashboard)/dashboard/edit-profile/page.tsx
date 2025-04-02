@@ -1,7 +1,16 @@
 'use client'
 
 import React, { FC, useEffect, useState } from 'react'
-import { Input, Image, Alert, Button, Textarea, Label, ButtonPrimary } from 'ui'
+import {
+    Input,
+    Image,
+    Alert,
+    Button,
+    Textarea,
+    Label,
+    ButtonPrimary,
+    Img,
+} from 'ui'
 import { createClient } from '@/utils/supabase/client'
 import { useForm, Controller } from 'react-hook-form'
 import ModalEditUsername from './ModalEditUsername'
@@ -240,7 +249,7 @@ function AccountPage() {
                             <div className="flex-shrink-0 flex flex-col items-center">
                                 {/* AVATAR */}
                                 <div className="relative rounded-full overflow-hidden flex">
-                                    <Image
+                                    <Img
                                         src={
                                             imageFile
                                                 ? URL.createObjectURL(imageFile)
@@ -328,13 +337,13 @@ function AccountPage() {
                                     >
                                         <div className="space-y-1 text-center">
                                             {selectedImage ? (
-                                                <Image
+                                                <Img
                                                     src={URL.createObjectURL(
                                                         selectedImage
                                                     )}
                                                     alt="Selected Image"
-                                                    width={1260} // Adjust the desired width
-                                                    height={750} // Adjust the desired height
+                                                    width={1260}
+                                                    height={750}
                                                 />
                                             ) : (
                                                 <>

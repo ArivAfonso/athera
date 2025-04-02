@@ -5,7 +5,7 @@ import TopicType from '@/types/TopicType'
 import Image from 'next/image'
 import { createClient } from '@/utils/supabase/client'
 import CircleLoading from '@/components/CircleLoading/CircleLoading'
-import { Heading2 } from 'ui'
+import { Heading2, Img } from 'ui'
 import Empty from '@/components/Empty'
 import NewsSection from '@/components/NewsSection/NewsSection'
 import Loading from './loading'
@@ -92,7 +92,7 @@ const PageTopic = async (context: any) => {
                     <>
                         {catData.image ? (
                             <div className="relative aspect-w-16 aspect-h-13 sm:aspect-h-9 lg:aspect-h-8 xl:aspect-h-5 rounded-3xl md:rounded-[40px] overflow-hidden z-0">
-                                <Image
+                                <Img
                                     alt="Topic header image"
                                     fill
                                     priority

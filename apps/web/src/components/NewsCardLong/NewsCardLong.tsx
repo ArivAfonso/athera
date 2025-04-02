@@ -156,11 +156,10 @@ const NewsCardLong: FC<NewsCardLongProps> = ({
             {/* Fixed image container structure */}
             <div className={`relative w-full ${ratio}`}>
                 <a
-                    href={news.link}
+                    href={`/news/${stringToSlug(news.title)}/${news.id}`}
                     target="_blank"
-                    rel="noopener noreferrer"
                     className="block w-full h-full"
-                    onClick={handleNewsClick}
+                    // onClick={handleNewsClick}
                 >
                     <Img
                         fill
@@ -177,19 +176,17 @@ const NewsCardLong: FC<NewsCardLongProps> = ({
                 className={`${hover ? 'opacity-0 group-hover:opacity-100 transition-opacity' : ''}`}
             >
                 <a
-                    href={news.link}
+                    href={`/news/${stringToSlug(news.title)}/${news.id}`}
                     target="_blank"
-                    rel="noopener noreferrer"
                     className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black opacity-50"
-                    onClick={handleNewsClick}
+                    // onClick={handleNewsClick}
                 ></a>
                 <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col flex-grow items-start">
                     <a
-                        href={news.link}
+                        href={`/news/${stringToSlug(news.title)}/${news.id}`}
                         target="_blank"
-                        rel="noopener noreferrer"
                         className="absolute inset-0"
-                        onClick={handleNewsClick}
+                        // onClick={handleNewsClick}
                     ></a>
                     <div className="mb-3 left-3">
                         <TopicBadgeList chars={29} topics={news.news_topics} />

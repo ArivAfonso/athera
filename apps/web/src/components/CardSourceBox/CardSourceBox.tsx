@@ -16,7 +16,7 @@ const CardSourceBox: FC<CardSourceBoxProps> = ({ className = '', source }) => {
             className={`CardSourceBox flex flex-col overflow-hidden bg-white dark:bg-neutral-800 rounded-3xl ${className}`}
         >
             <div className="relative">
-                <div>
+                <div className="flex aspect-w-7 aspect-h-5 w-full h-0">
                     <Img
                         alt="source image"
                         containerClassName="flex aspect-w-7 aspect-h-5 w-full h-0"

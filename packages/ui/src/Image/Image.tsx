@@ -12,7 +12,7 @@ const wsevLoader = ({
     width: number
     quality?: number
 }) => {
-    return `https://wsrv.nl/?url=${src}&w=${width}&h=${width}`
+    return `https://wsrv.nl/?url=${src}&w=${width}`
 }
 
 export interface ImgProps extends ImageProps {
@@ -42,35 +42,39 @@ const Img: FC<ImgProps> = ({
         !('width' in args) && !('height' in args) ? { fill: true } : {}
 
     return (
-        <div className={`w-full h-full relative ${containerClassName}`}>
-            <Image
-                loader={useDefaultLoader ? undefined : wsevLoader}
-                {...fillDefault}
-                onLoad={(event) => {
-                    const img = event.target as HTMLImageElement
-                    if (img.naturalWidth === 0) {
-                        // Broken image
-                        set_imgSrc(
-                            fallbackSrc ? fallbackSrc : './placeholder.svg'
-                        )
-                    }
-                }}
-                onError={() => {
-                    if (!useDefaultLoader) {
-                        setUseDefaultLoader(true)
-                    } else {
-                        set_imgSrc(
-                            fallbackSrc ? fallbackSrc : './placeholder.svg'
-                        )
-                    }
-                }}
-                src={imgSrc}
-                className={className}
-                alt={alt}
-                sizes={sizes}
-                {...args}
-            />
-        </div>
+        // <div className={`w-full h-full relative ${containerClassName}`}>
+        <Image
+            loader={useDefaultLoader ? undefined : wsevLoader}
+            {...fillDefault}
+            onLoad={(event) => {
+                const img = event.target as HTMLImageElement
+                if (img.naturalWidth === 0) {
+                    // Broken image
+                    set_imgSrc(
+                        fallbackSrc
+                            ? fallbackSrc
+                            : `${window.location.origin}/placeholder.svg`
+                    )
+                }
+            }}
+            onError={() => {
+                if (!useDefaultLoader) {
+                    setUseDefaultLoader(true)
+                } else {
+                    set_imgSrc(
+                        fallbackSrc
+                            ? fallbackSrc
+                            : `${window.location.origin}/placeholder.svg`
+                    )
+                }
+            }}
+            src={imgSrc}
+            className={className}
+            alt={alt}
+            sizes={sizes}
+            {...args}
+        />
+        // </div>
     )
 }
 

@@ -6,3 +6,4 @@ trafilatura
 requests
 supabase
 dotenv
+beautifulsoup4

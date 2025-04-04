@@ -99,9 +99,8 @@ const CardLarge1: FC<CardLarge1Props> = ({
                 </div>
             </div>
             <div className="w-full md:w-4/5 lg:w-2/3">
-                <div className="CardLarge1__right block relative">
+                <div className="block aspect-w-16 aspect-h-12 sm:aspect-h-9 md:aspect-h-14 lg:aspect-h-10 2xl:aspect-h-9 relative">
                     <Img
-                        containerClassName="aspect-w-16 aspect-h-12 sm:aspect-h-9 md:aspect-h-14 lg:aspect-h-10 2xl:aspect-h-9 relative"
                         className="absolute inset-0 object-cover rounded-3xl"
                         src={imageUrl}
                         alt={news.title}

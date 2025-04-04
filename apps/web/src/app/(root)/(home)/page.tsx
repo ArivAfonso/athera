@@ -40,8 +40,6 @@ async function getData() {
         .order('created_at', { ascending: false })
         .limit(20)
 
-    console.log('news', news)
-
     const { data: topics, error: topicsError } = await supabase
         .from('topics')
         .select('id, name, image, color, postCount:post_topics(count)')
@@ -52,8 +50,6 @@ async function getData() {
         .from('sources')
         .select('id, name, url, background, image, newsCount:news(count)')
         .limit(20)
-
-    console.log('error', newsError, topicsError, sourcesError)
 
     return {
         popular_news: news,

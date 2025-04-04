@@ -2,6 +2,7 @@
 
 import Image, { StaticImageData } from 'next/image'
 import React, { FC, useEffect, useState } from 'react'
+import Img from '../Image/Image'
 
 export interface AvatarProps {
     containerClassName?: string
@@ -28,7 +29,7 @@ const Avatar: FC<AvatarProps> = ({
             style={{ backgroundColor: url ? undefined : '' }}
         >
             {url && (
-                <Image
+                <Img
                     fill
                     sizes="100px"
                     className="absolute inset-0 w-full h-full object-cover"

@@ -9,7 +9,7 @@ export interface SingleCommentFormProps {
     onClickCancel?: () => void
     textareaRef?: React.MutableRefObject<null>
     defaultValue?: string
-    onEditComment: (comment: string) => void // Add this prop
+    onEditComment: (comment: string) => void
     id: string
     rows?: number
 }
@@ -20,7 +20,7 @@ const EditCommentForm: FC<SingleCommentFormProps> = ({
     onClickCancel,
     textareaRef,
     defaultValue = '',
-    onEditComment, // Add this prop
+    onEditComment,
     id,
     rows = 4,
 }) => {

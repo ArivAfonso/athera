@@ -47,6 +47,7 @@ const NewsCommentForm: FC<NewsCommentFormProps> = ({
                         news: newsId,
                     },
                 ])
+                .select()
 
             if (error) {
                 console.log('Error adding comment:', error)
@@ -56,12 +57,10 @@ const NewsCommentForm: FC<NewsCommentFormProps> = ({
 
             const newComment = {
                 id:
-                    //@ts-ignore
                     commentInserted?.[0]?.id ||
                     Math.random().toString(36).slice(2),
                 comment: data.comment,
                 created_at:
-                    //@ts-ignore
                     commentInserted?.[0]?.created_at ||
                     new Date().toISOString(),
                 is_liked_by_current_user: false,

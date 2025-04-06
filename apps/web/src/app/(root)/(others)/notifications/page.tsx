@@ -51,13 +51,11 @@ const NotificationsPage = ({}) => {
                     .order('read_at', { ascending: true })
                     .order('created_at', { ascending: false })
 
-                //@ts-ignore
-                setNotifications(data || [])
+                setNotifications((data as unknown as NotificationType[]) || [])
             }
         }
 
         fetchNotifications()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     notifications?.forEach((item) => {

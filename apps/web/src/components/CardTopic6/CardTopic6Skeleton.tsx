@@ -24,7 +24,7 @@ const CardTopic6Skeleton: FC<CardTopic6SkeletonProps> = ({
                 <h2
                     className={`${
                         size === 'large' ? 'text-lg' : 'text-base'
-                    } nc-card-title text-sm font-medium text-neutral-900 sm:text-base sm:font-semibold dark:text-neutral-100`}
+                    } card-title text-sm font-medium text-neutral-900 sm:text-base sm:font-semibold dark:text-neutral-100`}
                 >
                     <Skeleton width={'80%'} />
                 </h2>

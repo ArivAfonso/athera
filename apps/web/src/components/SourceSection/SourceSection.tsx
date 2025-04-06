@@ -3,7 +3,7 @@ import { Avatar } from 'ui'
 import Link from 'next/link'
 import SourceType from '@/types/SourceType'
 
-export interface CardSource2Props extends SourceType {
+export interface SourceSectionProps extends SourceType {
     className?: string
     source: SourceType
     readingTime?: number
@@ -11,12 +11,12 @@ export interface CardSource2Props extends SourceType {
     date: string
 }
 
-const CardSource2: FC<CardSource2Props> = ({ className = '', source }) => {
+const SourceSection: FC<SourceSectionProps> = ({ className = '', source }) => {
     const avatar = source.image || ''
     return (
         <Link
             href={`/source/${source.id}`}
-            className={`CardSource2 relative inline-flex items-center ${className}`}
+            className={`SourceSection relative inline-flex items-center ${className}`}
         >
             <Avatar
                 sizeClass="h-10 w-10 text-base"
@@ -36,4 +36,4 @@ const CardSource2: FC<CardSource2Props> = ({ className = '', source }) => {
     )
 }
 
-export default CardSource2
+export default SourceSection

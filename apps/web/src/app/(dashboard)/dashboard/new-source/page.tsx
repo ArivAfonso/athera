@@ -49,8 +49,8 @@ const DashboardSubmitSource = () => {
     const supabase = createClient()
 
     const [errorMsg, setErrorMsg] = useState('')
-    const [selectedLogo, setSelectedLogo] = useState(null)
-    const [selectedBanner, setSelectedBanner] = useState(null)
+    const [selectedLogo, setSelectedLogo] = useState<File>()
+    const [selectedBanner, setSelectedBanner] = useState<File>()
     const [uploading, setUploading] = useState(false)
     const [progress, setProgress] = useState(0)
     const [description, setDescription] = useState('')
@@ -177,23 +177,31 @@ const DashboardSubmitSource = () => {
         setUploading(false)
     }
 
-    const handleLogoSelect = (event: { target: { files: any[] } }) => {
-        const file = event.target.files[0]
-        if (file) {
-            setSelectedLogo(file)
+    const handleLogoSelect = (event: {
+        target: { files: FileList | null }
+    }) => {
+        if (event.target.files) {
+            const file = event.target.files[0]
+            if (file) {
+                setSelectedLogo(file)
+            }
         }
     }
 
-    const handleBannerSelect = (event: { target: { files: any[] } }) => {
-        const file = event.target.files[0]
-        if (file) {
-            setSelectedBanner(file)
+    const handleBannerSelect = (event: {
+        target: { files: FileList | null }
+    }) => {
+        if (event.target.files) {
+            const file = event.target.files[0]
+            if (file) {
+                setSelectedBanner(file)
+            }
         }
     }
 
     const [isDragging, setIsDragging] = useState(false)
 
-    const handleDrop = (event: any) => {
+    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault()
         const file = event.dataTransfer.files[0]
         if (file) {
@@ -218,17 +226,17 @@ const DashboardSubmitSource = () => {
         setIsDragging(false)
     }
 
-    const handleDragOver = (event: any) => {
+    const handleDragOver = (event: React.FormEvent<HTMLDivElement>) => {
         event.preventDefault()
         setIsDragging(true)
     }
 
-    const handleDragEnter = (event: any) => {
+    const handleDragEnter = (event: React.FormEvent<HTMLDivElement>) => {
         event.preventDefault()
         setIsDragging(true)
     }
 
-    const handleDragLeave = (event: any) => {
+    const handleDragLeave = (event: React.FormEvent<HTMLDivElement>) => {
         event.preventDefault()
         setIsDragging(false)
     }
@@ -295,7 +303,9 @@ const DashboardSubmitSource = () => {
                                                     className="p-1.5 bg-black dark:bg-neutral-700 text-white rounded-md cursor-pointer transition-opacity duration-300"
                                                     title="Delete image"
                                                     onClick={() => {
-                                                        setSelectedLogo(null)
+                                                        setSelectedLogo(
+                                                            undefined
+                                                        )
                                                     }}
                                                 >
                                                     <TrashIcon className="w-4 h-4" />
@@ -329,7 +339,6 @@ const DashboardSubmitSource = () => {
                                                         type="file"
                                                         accept="image/png, image/jpeg, image/jpg"
                                                         className="sr-only"
-                                                        //@ts-ignore
                                                         onChange={
                                                             handleLogoSelect
                                                         }
@@ -374,7 +383,9 @@ const DashboardSubmitSource = () => {
                                                     className=" p-1.5 bg-black dark:bg-neutral-700 text-white rounded-md cursor-pointer transition-opacity duration-300"
                                                     title="Delete image"
                                                     onClick={() => {
-                                                        setSelectedBanner(null)
+                                                        setSelectedBanner(
+                                                            undefined
+                                                        )
                                                     }}
                                                 >
                                                     <TrashIcon className="w-4 h-4" />
@@ -408,7 +419,6 @@ const DashboardSubmitSource = () => {
                                                         type="file"
                                                         accept="image/png, image/jpeg, image/jpg"
                                                         className="sr-only"
-                                                        //@ts-ignore
                                                         onChange={
                                                             handleBannerSelect
                                                         }

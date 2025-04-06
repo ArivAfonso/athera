@@ -10,7 +10,6 @@ export default interface SourceType {
     }[]
     isFollowing?: boolean
     created_at?: string
-    username: string
     background?: string
     description?: string
     url?: string

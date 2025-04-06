@@ -244,7 +244,7 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                                     await fetchResults()
                                                 }
                                             }}
-                                            onKeyDown={(event: any) => {
+                                            onKeyDown={(event) => {
                                                 if (
                                                     event.key === 'Enter' &&
                                                     (rawQuery.trim() !== '' ||

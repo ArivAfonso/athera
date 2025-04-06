@@ -16,7 +16,7 @@ const ModalEditComment: FC<ModalEditCommentProps> = ({
     show,
     onCloseModalEditComment,
     comment,
-    onEditComment, // Add this prop
+    onEditComment,
     id,
 }) => {
     const textareaRef = useRef(null)

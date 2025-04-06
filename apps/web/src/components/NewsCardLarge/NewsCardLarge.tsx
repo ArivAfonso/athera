@@ -2,22 +2,22 @@ import { Img } from 'ui'
 import NextPrev from '@/components/NextPrev/NextPrev'
 import NewsCardLikeAndComment from '@/components/NewsCardLikeAndComment/NewsCardLikeAndComment'
 import React, { FC, useState } from 'react'
-import CardAuthor2 from '@/components/CardAuthor2/CardAuthor2'
 import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
 import Link from 'next/link'
 import NewsType from '@/types/NewsType'
 import PostBookmark from '../PostBookmark/PostBookmark'
 import SourceSection from '../SourceSection/SourceSection'
 import NewsDetailModal from '../NewsDetailModal/NewsDetailModal'
+import SourceType from '@/types/SourceType'
 
-export interface CardLarge1Props {
+export interface NewsCardLargeProps {
     className?: string
     news: NewsType
     onClickNext?: () => void
     onClickPrev?: () => void
 }
 
-const CardLarge1: FC<CardLarge1Props> = ({
+const NewsCardLarge: FC<NewsCardLargeProps> = ({
     className = '',
     news,
     onClickNext = () => {},
@@ -39,10 +39,10 @@ const CardLarge1: FC<CardLarge1Props> = ({
     const closeDetailModal = () => setShowDetailModal(false)
     return (
         <div
-            className={`CardLarge1 nc-CardLarge1--hasAnimation relative flex flex-col-reverse md:flex-row justify-end ${className}`}
+            className={`NewsCardLarge NewsCardLarge--hasAnimation relative flex flex-col-reverse md:flex-row justify-end ${className}`}
         >
             <div className="md:absolute z-10 md:left-0 md:top-1/2 md:-translate-y-1/2 w-full -mt-8 md:mt-0 px-3 sm:px-6 md:px-0 md:w-3/5 lg:w-1/2 xl:w-2/5">
-                <div className="CardLarge1__left p-4 sm:p-8 xl:py-14 md:px-10 bg-white/40 dark:bg-neutral-900/40 backdrop-filter backdrop-blur-lg shadow-lg dark:shadow-2xl rounded-3xl space-y-3 sm:space-y-5 ">
+                <div className="NewsCardLarge__left p-4 sm:p-8 xl:py-14 md:px-10 bg-white/40 dark:bg-neutral-900/40 backdrop-filter backdrop-blur-lg shadow-lg dark:shadow-2xl rounded-3xl space-y-3 sm:space-y-5 ">
                     <TopicBadgeList topics={news.news_topics} />
 
                     <h2 className="card-title text-base sm:text-xl lg:text-2xl font-semibold ">
@@ -55,25 +55,14 @@ const CardLarge1: FC<CardLarge1Props> = ({
                         </span>
                     </h2>
 
-                    {/* <CardAuthor2
-                        className="relative"
-                        author={news.author}
-                        readingTime={news.estimatedReadingTime}
-                        date={news.created_at}
-                        id={news.author.id}
-                        name={news.author.name}
-                        username={news.author.username}
-                        avatar={news.author.avatar}
-                    /> */}
-
-                    {/* @ts-ignore */}
                     <SourceSection
                         className="relative"
-                        source={news.source}
+                        source={news.source as SourceType}
                         date={news.created_at}
                         id={news.source.id}
                         name={news.source.name}
                         image={news.source.image}
+                        newsCount={[]}
                     />
 
                     <div className="flex items-center justify-between mt-auto">
@@ -118,4 +107,4 @@ const CardLarge1: FC<CardLarge1Props> = ({
     )
 }
 
-export default CardLarge1
+export default NewsCardLarge

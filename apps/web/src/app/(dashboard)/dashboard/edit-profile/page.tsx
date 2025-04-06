@@ -32,12 +32,12 @@ function AccountPage() {
     const { handleSubmit, register } = useForm()
     const [success, setSuccess] = useState('')
     const [error, setError] = useState('')
-    const [imageFile, setImageFile] = useState(null)
+    const [imageFile, setImageFile] = useState<File>()
     const [loading, setLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const supabase = createClient()
     const [session, setSession] = useState<any>(null)
-    const [selectedImage, setSelectedImage] = useState(null)
+    const [selectedImage, setSelectedImage] = useState<File>()
     const [imgChanged, setImgChanged] = useState(false)
 
     const [profile, setProfile] = useState({
@@ -181,7 +181,7 @@ function AccountPage() {
     const [isDragging, setIsDragging] = useState(false)
     const [showImg, setShowImg] = useState(null)
 
-    const handleDrop = (event: any) => {
+    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault()
         const file = event.dataTransfer.files[0]
         if (file) {
@@ -206,25 +206,29 @@ function AccountPage() {
         setIsDragging(false)
     }
 
-    const handleDragOver = (event: any) => {
+    const handleDragOver = (event: React.FormEvent<HTMLDivElement>) => {
         event.preventDefault()
         setIsDragging(true)
     }
 
-    const handleDragEnter = (event: any) => {
+    const handleDragEnter = (event: React.FormEvent<HTMLDivElement>) => {
         event.preventDefault()
         setIsDragging(true)
     }
 
-    const handleDragLeave = (event: any) => {
+    const handleDragLeave = (event: React.FormEvent<HTMLDivElement>) => {
         event.preventDefault()
         setIsDragging(false)
     }
 
-    const handleImageSelect = (event: { target: { files: any[] } }) => {
-        const file = event.target.files[0]
-        if (file) {
-            setImageFile(file)
+    const handleImageSelect = (event: {
+        target: { files: FileList | null }
+    }) => {
+        if (event.target.files) {
+            const file = event.target.files[0]
+            if (file) {
+                setImageFile(file)
+            }
         }
     }
 
@@ -300,7 +304,6 @@ function AccountPage() {
                                         accept="image/png, image/jpeg, image/jpg"
                                         className="absolute inset-0 opacity-0 cursor-pointer"
                                         id="fileInput"
-                                        //@ts-ignore
                                         onChange={handleImageSelect}
                                     />
                                 </div>
@@ -378,7 +381,6 @@ function AccountPage() {
                                                                 name="file-upload"
                                                                 type="file"
                                                                 className="sr-only"
-                                                                //@ts-ignore
                                                                 onChange={
                                                                     handleImageSelect
                                                                 }

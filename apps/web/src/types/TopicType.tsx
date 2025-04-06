@@ -6,9 +6,6 @@ export default interface TopicType {
     id: string
     otherTopics?: TopicType[]
     image?: string
-    postCount: {
-        count: number
-    }[]
     newsCount: {
         count: number
     }[]

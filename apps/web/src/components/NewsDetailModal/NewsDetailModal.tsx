@@ -408,7 +408,7 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                             </div>
                             {news.commentCount[0].count > 4 && (
                                 <div
-                                    className={`nc-WidgetCategories rounded-3xl overflow-hidden border border-neutral-100 dark:border-neutral-700`}
+                                    className={`WidgetCategories rounded-3xl overflow-hidden border border-neutral-100 dark:border-neutral-700`}
                                 >
                                     <Heading2 title="🧬 News Topics" />
 
@@ -419,7 +419,6 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                                                     <CardTopic1
                                                         className="p-4 xl:p-5 hover:bg-neutral-50 dark:hover:bg-neutral-800"
                                                         key={category.topic.id}
-                                                        //@ts-ignore
                                                         topic={category.topic}
                                                         size="normal"
                                                     />
@@ -432,7 +431,7 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
 
                             {news.commentCount[0].count > 8 && (
                                 <div
-                                    className={`nc-WidgetPosts rounded-3xl overflow-hidden max-w-72 border border-neutral-100 dark:border-neutral-700`}
+                                    className={`WidgetPosts rounded-3xl overflow-hidden max-w-72 border border-neutral-100 dark:border-neutral-700`}
                                 >
                                     <Heading2 title="🧬 Related News" />
                                     <div className="flex flex-col divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -453,7 +452,7 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                                                             author: '',
                                                         }}
                                                     />
-                                                    <h2 className="nc-card-title block text-sm sm:text-base font-medium sm:font-semibold text-neutral-900 dark:text-neutral-100">
+                                                    <h2 className="card-title block text-sm sm:text-base font-medium sm:font-semibold text-neutral-900 dark:text-neutral-100">
                                                         <Link
                                                             href={item.link}
                                                             className="line-clamp-2"
@@ -490,7 +489,7 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
 
                             {news.commentCount[0].count > 16 && (
                                 <div
-                                    className={`nc-WidgetPosts rounded-3xl overflow-hidden max-w-72 border border-neutral-100 dark:border-neutral-700`}
+                                    className={`WidgetPosts rounded-3xl overflow-hidden max-w-72 border border-neutral-100 dark:border-neutral-700`}
                                 >
                                     <Heading2 title="🧬 More News from this Author" />
                                     <div className="flex flex-col divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -511,7 +510,7 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                                                             author: '',
                                                         }}
                                                     />
-                                                    <h2 className="nc-card-title block text-sm sm:text-base font-medium sm:font-semibold text-neutral-900 dark:text-neutral-100">
+                                                    <h2 className="card-title block text-sm sm:text-base font-medium sm:font-semibold text-neutral-900 dark:text-neutral-100">
                                                         <Link
                                                             href={item.link}
                                                             className="line-clamp-2"

@@ -18,14 +18,14 @@ export interface ModalDeleteCommentProps {
     show: boolean
     id: string
     onCloseModalDeleteComment: () => void
-    onDeleteComment: (commentId: string) => void // Add this prop
+    onDeleteComment: (commentId: string) => void
 }
 
 const ModalDeleteComment: FC<ModalDeleteCommentProps> = ({
     show,
     id,
     onCloseModalDeleteComment,
-    onDeleteComment, // Add this prop
+    onDeleteComment,
 }) => {
     const { handleSubmit } = useForm()
     const textareaRef = useRef(null)

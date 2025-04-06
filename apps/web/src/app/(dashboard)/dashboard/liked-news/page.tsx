@@ -138,7 +138,6 @@ const DashboardLikedNews = () => {
                         <NewsSection
                             news={likedNews}
                             id="likes"
-                            // @ts-ignore
                             newsFn={addNews}
                             onHideNews={(newsId: string) => {}}
                         />

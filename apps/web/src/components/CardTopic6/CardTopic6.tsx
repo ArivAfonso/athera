@@ -59,7 +59,7 @@ const CardTopic6: FC<CardTopic6Props> = ({
                 <h2
                     className={`${
                         size === 'large' ? 'text-lg' : 'text-base'
-                    } nc-card-title text-sm font-medium text-neutral-900 dark:text-neutral-100`}
+                    } card-title text-sm font-medium text-neutral-900 dark:text-neutral-100`}
                 >
                     {topic.name}
                 </h2>

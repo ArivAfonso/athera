@@ -314,7 +314,7 @@ export default function NewsPage({ params }: { params: { slug: string[] } }) {
                             <WidgetSocialsFollow news={news} />
                         </div>
                         {news?.commentCount[0].count > 4 && (
-                            <div className="nc-WidgetCategories rounded-3xl overflow-hidden border border-neutral-100 dark:border-neutral-700">
+                            <div className="WidgetCategories rounded-3xl overflow-hidden border border-neutral-100 dark:border-neutral-700">
                                 <Heading2 title="🧬 News Topics" />
                                 <div className="flow-root">
                                     <div className="flex flex-col divide-y divide-neutral-200 dark:divide-neutral-700">
@@ -322,7 +322,6 @@ export default function NewsPage({ params }: { params: { slug: string[] } }) {
                                             <CardTopic1
                                                 className="p-4 xl:p-5 hover:bg-neutral-50 dark:hover:bg-neutral-800"
                                                 key={category.topic.id}
-                                                //@ts-ignore
                                                 topic={category.topic}
                                                 size="normal"
                                             />

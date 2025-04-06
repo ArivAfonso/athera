@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import HorizontalFormBlockWrapper from './FormWrapper'
 import { Checkbox, MySwitch } from 'ui'
 import { createClient } from '@/utils/supabase/client'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 
 interface NotificationSettings {
     comments: ('None' | 'In App' | 'Email')[]
@@ -37,8 +37,7 @@ async function getSettings(): Promise<NotificationSettings> {
     const { data: session } = await supabase.auth.getUser()
 
     if (!session.user) {
-        //@ts-ignore
-        return null
+        redirect('/login')
     }
 
     const { data } = await supabase

@@ -29,7 +29,6 @@ function PostsTable({ posts, onDeletePost, postFn }: PostsTableProps) {
             queryKey: ['posts'],
             queryFn: async ({ pageParam = 1 }) => {
                 if (addPostsFinished) return Promise.resolve([])
-                //@ts-ignore
                 const response = await postFn(pageParam)
                 if (response.length === 0) setAddPostsFinished(true)
                 return response

@@ -1,5 +1,5 @@
 # Define topic configurations
-topic_configs = {
+source_configs = {
     "tech": {
         "techcrunch": {
             "url": "https://techcrunch.com/",
@@ -287,70 +287,83 @@ topic_configs = {
             "url": "https://www.aljazeera.com/",
             "title_suffix": " | Al Jazeera",
             "include_url_parts": ["/news/"],
+            "country": "Qatar"
         },
-        # "theaustralian": {
-        #     "url": "https://www.theaustralian.com.au/",
-        #     "title_suffix": " | The Australian",
-        #     "sitemap_xml": "https://www.theaustralian.com.au/sitemap.xml",
-        # },
-        # "thechosundaily": {
-        #     "url": "https://www.chosun.com/english/",
-        #     "title_suffix": " | The Chosun Daily",
-        #     "include_url_parts": ["/english/"],
-        # },
-        # "ansa": {
-        #     "url": "https://www.ansa.it/english/",
-        #     "title_suffix": " | Ansa.it",
-        #     "include_url_parts": ["/english/news/"],
-        # }
-        # "thestraitstimes": {
-        #     "url": "https://www.straitstimes.com/",
-        #     "title_suffix": " | The Straits Times",
-        #     "include_url_parts": ["/singapore/", "/asia/"],
-        # },
-        # "france24": {
-        #     "url": "https://www.france24.com/en/",
-        #     "title_suffix": " | France 24",
-        #     "include_url_parts": ["/en/"],
-        # },
-    #     "theriotimes": {
-    #         "url": "https://riotimesonline.com/",
-    #         "title_suffix": " | The Rio Times",
-    #     },
-    #     "dw": {
-    #         "url": "https://www.dw.com/",
-    #         "title_suffix": " | DW",
-    #         "sitemap_xml": "https://www.dw.com/en/news-sitemap.xml"
-    #     },
-    #     "southchinamorningpost": {
-    #         "url": "https://www.scmp.com/",
-    #         "title_suffix": " | South China Morning Post",
-    #     },
-    #     "thewalrus": {
-    #         "url": "https://thewalrus.ca/",
-    #         "title_suffix": " | The Walrus",
-    #     },
-        # "latimes": {
-        #     "url": "https://www.latimes.com/",
-        #     "title_suffix": " - Los Angeles Times",
-        #     "sitemap_xml": "https://www.latimes.com/sitemap-latest.xml",
-        #     "include_urls": ["/story/"]
-        # },
-        # "japantoday": {
-        #     "url": "https://japantoday.com/",
-        #     "title_suffix": " | Japan Today",
-        # },
-        #CHECK SITEMAP AGAIN MAY HAVE JAPANESE IN THE MIDDLE
-        # "thejapannews": {
-        #     "url": "https://japannews.yomiuri.co.jp",
-        #     "title_suffix": " | The Japan News",
-        #     "sitemap_xml": "https://japannews.yomiuri.co.jp/sitemap-news.xml"
-        # },
-        # "thekoreatimes": {
-        #     "url": "https://www.koreatimes.co.kr/",
-        #     "title_suffix": " | The Kore Times",
-        #     "sitemap_xml": "https://www.koreatimes.co.kr/site_map/news/news.xml"
-        # },
+        "theaustralian": {
+            "url": "https://www.theaustralian.com.au/",
+            "title_suffix": " | The Australian",
+            "sitemap_xml": "https://www.theaustralian.com.au/sitemap.xml",
+            "country": "Australia"
+        },
+        "thechosundaily": {
+            "url": "https://www.chosun.com/english/",
+            "title_suffix": " | The Chosun Daily",
+            "include_url_parts": ["/english/"],
+            "country": "South Korea"
+        },
+        "ansa": {
+            "url": "https://www.ansa.it/english/",
+            "title_suffix": " | Ansa.it",
+            "include_url_parts": ["/english/news/"],
+            "country": "Italy"
+        },
+        "thestraitstimes": {
+            "url": "https://www.straitstimes.com/",
+            "title_suffix": " | The Straits Times",
+            "include_url_parts": ["/singapore/", "/asia/"],
+            "country": "Singapore"
+        },
+        "france24": {
+            "url": "https://www.france24.com/en/",
+            "title_suffix": " | France 24",
+            "include_url_parts": ["/en/"],
+            "country": "France"
+        },
+        "theriotimes": {
+            "url": "https://riotimesonline.com/",
+            "title_suffix": " | The Rio Times",
+            "country": "Brazil"
+        },
+        "dw": {
+            "url": "https://www.dw.com/",
+            "title_suffix": " | DW",
+            "sitemap_xml": "https://www.dw.com/en/news-sitemap.xml",
+            "country": "Germany"
+        },
+        "southchinamorningpost": {
+            "url": "https://www.scmp.com/",
+            "title_suffix": " | South China Morning Post",
+            "country": "Hong Kong"
+        },
+        "thewalrus": {
+            "url": "https://thewalrus.ca/",
+            "title_suffix": " | The Walrus",
+            "country": "Canada"
+        },
+        "latimes": {
+            "url": "https://www.latimes.com/",
+            "title_suffix": " - Los Angeles Times",
+            "sitemap_xml": "https://www.latimes.com/sitemap-latest.xml",
+            "include_urls": ["/story/"],
+            "country": "United States"
+        },
+        "japantoday": {
+            "url": "https://japantoday.com/",
+            "title_suffix": " | Japan Today",
+            "country": "Japan"
+        },
+        "thejapannews": {
+            "url": "https://japannews.yomiuri.co.jp",
+            "title_suffix": " | The Japan News",
+            "sitemap_xml": "https://japannews.yomiuri.co.jp/sitemap-news.xml",
+            "country": "Japan"
+        },
+        "thekoreatimes": {
+            "url": "https://www.koreatimes.co.kr/",
+            "title_suffix": " | The Kore Times",
+            "sitemap_xml": "https://www.koreatimes.co.kr/site_map/news/news.xml",
+            "country": "South Korea"
+        },
     },
     "cooking": {
         "bonappetit": {

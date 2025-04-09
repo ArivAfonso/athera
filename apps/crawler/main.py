@@ -12,7 +12,7 @@ from src.utils.homepage import scrape_news_links
 from src.utils.upload_post import upload_post, supabase
 import requests
 import xml.etree.ElementTree as ET
-from sources import topic_configs
+from sources import source_configs
 
 # Load environment variables
 load_dotenv()
@@ -56,7 +56,7 @@ def scrape_source(
 def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
     # Create a flattened dictionary of all sources
     all_sources = {}
-    for topic, sources in topic_configs.items():
+    for topic, sources in source_configs.items():
         for source_name, config in sources.items():
             all_sources[source_name] = {"config": config, "topic": topic}
     
@@ -317,7 +317,7 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
     
     if extracted_metadata:
         try:
-            # upload_post(extracted_metadata)
+            upload_post(extracted_metadata)
             print(f"Successfully uploaded {len(extracted_metadata)} articles")
         except Exception as e:
             print(f"Error uploading posts: {str(e)}")
@@ -327,7 +327,7 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
 @app.get("/sources")
 def list_sources() -> dict:
     all_sources = {}
-    for topic, sources in topic_configs.items():
+    for topic, sources in source_configs.items():
         all_sources[topic] = list(sources.keys())
     return {"topics": all_sources}
 

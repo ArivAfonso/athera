@@ -193,15 +193,6 @@ def upload_post(articles):
 
         embeddings = generate_embeddings(article.get("title", "") + " " + article.get("description", ""))
 
-        # Get country from source_configs if available, otherwise use 'general'
-        source = article.get("source", "").lower()
-        country = "general"
-        
-        # Search through source_configs to find the source and its country
-        for topic_name, sources in source_configs.items():
-            if source in sources and "country" in sources[source]:
-                country = sources[source]["country"]
-                break
 
         data.append({
             "source": article.get("source", ""),
@@ -216,7 +207,6 @@ def upload_post(articles):
             "location": geodata,
             "embeddings": embeddings,
             "estimated_reading_time": article.get("estimated_reading_time", 0),
-            "country": country
         })
 
     # Bulk upsert articles into the news table based on unique title.

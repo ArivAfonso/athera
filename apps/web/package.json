@@ -76,7 +76,7 @@
         "@types/react-lottie": "^1.2.10",
         "@types/react-modal": "^3.16.0",
         "@types/react-simple-maps": "^3.0.4",
-        "autoprefixer": "^10.4.20",
+        "autoprefixer": "^10.4.21",
         "env-cmd": "^10.1.0",
         "eslint": "^9.19.0",
         "eslint-config-next": "^14.2.8",

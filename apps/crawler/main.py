@@ -281,7 +281,7 @@ def perform_scrape(source: str, max_articles: Optional[int]=None) -> dict:
             if not title:
                 print(f"Warning: No title found for {feed_url}")
             if config.get("title_suffix") and title.endswith(config["title_suffix"]):
-                title = title[:-len(config["title_suffix"])]
+                title = title[:title.rfind(config["title_suffix"])]
             author = metadata.author if metadata.author else ""
             if not author:
                 print(f"Warning: No author found for {feed_url}")

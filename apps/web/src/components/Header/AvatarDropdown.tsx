@@ -3,6 +3,7 @@
 import { Popover, Transition } from '@/app/headlessui'
 import React, { FC, Fragment, Suspense } from 'react'
 import { createClient } from '@/utils/supabase/client'
+import Skeleton from '@/components/Skeleton/Skeleton'
 
 // Lazy load the dropdown content that contains expensive fetching logic.
 const LazyAvatarDropdownContent = React.lazy(
@@ -65,8 +66,8 @@ const AvatarDropdown: FC<AvatarProps> = ({ avatar_url, name, email, id }) => {
                                 {/* Wrap lazy loaded content in Suspense */}
                                 <Suspense
                                     fallback={
-                                        <div className="p-4 text-center text-sm">
-                                            Loading...
+                                        <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5">
+                                            <div className="relative grid grid-cols-1 gap-6 bg-white dark:bg-neutral-900 py-44 px-6" />
                                         </div>
                                     }
                                 >

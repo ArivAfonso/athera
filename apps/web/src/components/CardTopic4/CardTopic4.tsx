@@ -4,6 +4,7 @@ import Link from 'next/link'
 import TopicType from '@/types/TopicType'
 import Image from 'next/image'
 import Badge from '../Badge/Badge'
+import { Img } from 'ui'
 
 export interface CardTopic4Props {
     className?: string
@@ -40,7 +41,7 @@ const CardTopic4: FC<CardTopic4Props> = ({ className = '', topic, index }) => {
             className={`CardTopic4 flex flex-col ${className}`}
         >
             <div className="flex-shrink-0 relative w-full aspect-w-7 aspect-h-5 h-0 rounded-3xl overflow-hidden group">
-                <Image
+                <Img
                     alt="taxonomies"
                     fill
                     src={topic.image ? topic.image : ''}

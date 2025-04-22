@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import NewsType from '@/types/NewsType'
 import NewsCard from '@/components/NewsCard/NewsCard'
@@ -10,7 +10,6 @@ import NewsCardBig from '@/components/NewsCardBig/NewsCardBig'
 import SectionMagazine1 from '@/components/Sections/SectionMagazine1'
 import { Tab } from '@headlessui/react'
 import Empty from '@/components/Empty'
-import CircleLoading from '@/components/CircleLoading/CircleLoading'
 import {
     BookmarkIcon,
     FlameIcon,
@@ -20,12 +19,33 @@ import {
 } from 'lucide-react'
 import TopicType from '@/types/TopicType'
 import CardTopic1 from '@/components/CardTopic1/CardTopic1'
-import CardTopic2 from '@/components/CardTopic2/CardTopic2'
-import CardTopic6 from '@/components/CardTopic6/CardTopic6'
+import { getUserCountry } from '@/utils/getUserCountry'
+import HeaderFilter from '@/components/Sections/HeaderFilter'
+import NewsSection from '@/components/NewsSection/NewsSection'
+import SectionSliderNewTopics from '@/components/SectionSliderNewTopics/SectionSliderNewTopics'
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
 }
+
+// Skeleton UI for loading state
+const FeedSkeleton = () => (
+    <div className="px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
+        <div className="max-w-4xl mx-auto text-center mb-12">
+            <div className="h-8 bg-gray-300 dark:bg-neutral-700 rounded w-1/3 mx-auto mb-2"></div>
+            <div className="h-4 bg-gray-300 dark:bg-neutral-700 rounded w-1/4 mx-auto"></div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, idx) => (
+                <div key={idx} className="space-y-2">
+                    <div className="h-40 bg-gray-300 dark:bg-neutral-700 rounded"></div>
+                    <div className="h-4 bg-gray-300 dark:bg-neutral-700 rounded w-5/6"></div>
+                    <div className="h-4 bg-gray-300 dark:bg-neutral-700 rounded w-4/6"></div>
+                </div>
+            ))}
+        </div>
+    </div>
+)
 
 const ForYouFeed = () => {
     const [featuredNews, setFeaturedNews] = useState<NewsType[]>([])
@@ -37,59 +57,192 @@ const ForYouFeed = () => {
     const [selectedTab, setSelectedTab] = useState(0)
     const supabase = createClient()
 
+    // Pagination setup for Discover
+    const PAGE_SIZE = 48
+    const [userCountry, setUserCountry] = useState<string | null>(null)
+    const fetchDiscoverNews = useCallback(
+        async (page: number) => {
+            let q = supabase
+                .from('news')
+                .select(
+                    `
+                    id, title, created_at, description, author, link, summary, image,
+                    source!inner(*), news_topics(topic:topics(*)),
+                    likeCount:likes(count), commentCount:comments(count), likes(liker(id))
+                `
+                )
+                .order('created_at', { ascending: false })
+            // apply country filter
+            if (userCountry) {
+                q = q.or(`country.is.null, country.ilike.%${userCountry}%`, {
+                    foreignTable: 'source',
+                })
+            } else {
+                q = q.is('source.country', null)
+            }
+            const start = 6 + (page - 1) * PAGE_SIZE
+            const end = start + PAGE_SIZE - 1
+            const { data } = await q.range(start, end)
+            const items = (data as unknown as NewsType[]) || []
+            return items.filter((n) => n.source)
+        },
+        [supabase, userCountry]
+    )
+
+    // Paginated fetch for 'For You' (recommended)
+    const PAGE_SIZE_FORYOU = 48
+    const fetchRecommendedPaginated = useCallback(
+        async (page: number) => {
+            const start = (page - 1) * PAGE_SIZE_FORYOU
+            const end = start + PAGE_SIZE_FORYOU - 1
+            let q = supabase
+                .from('news')
+                .select(
+                    `id, title, created_at, description, author, link, summary, image,
+                source!inner(*), news_topics(topic:topics(*)),
+                likeCount:likes(count), commentCount:comments(count), likes(liker(id))`
+                )
+                .order('created_at', { ascending: false })
+                .range(start, end)
+            // apply country filter
+            if (userCountry) {
+                q = q.or(`country.is.null, country.ilike.%${userCountry}%`, {
+                    foreignTable: 'source',
+                })
+            } else {
+                q = q.is('source.country', null)
+            }
+            const { data } = await q
+            const items = (data as unknown as NewsType[]) || []
+            return items.filter((n) => n.source)
+        },
+        [supabase, userCountry]
+    )
+
+    // Paginated fetch for 'Trending'
+    const PAGE_SIZE_TRENDING = 48
+    const fetchTrendingPaginated = useCallback(
+        async (page: number) => {
+            const start = (page - 1) * PAGE_SIZE_TRENDING
+            const end = start + PAGE_SIZE_TRENDING - 1
+            let q = supabase
+                .from('news')
+                .select(
+                    `id, title, created_at, description, author, link, summary, image,
+                source!inner(*), news_topics(topic:topics(*)),
+                likeCount:likes(count), commentCount:comments(count), likes(liker(id))`
+                )
+                .order('created_at', { ascending: false })
+                .range(start, end)
+            // apply country filter
+            if (userCountry) {
+                q = q.or(`country.is.null, country.ilike.%${userCountry}%`, {
+                    foreignTable: 'source',
+                })
+            } else {
+                q = q.is('source.country', null)
+            }
+            const { data } = await q
+            const items = (data as unknown as NewsType[]) || []
+            return items.filter((n) => n.source)
+        },
+        [supabase, userCountry]
+    )
+
     useEffect(() => {
         const fetchRecommendedNews = async () => {
+            const country = await getUserCountry()
+            setUserCountry(country)
             try {
                 // Featured/For You
-                const { data: featured } = await supabase
+                let query = supabase
                     .from('news')
                     .select(
                         `
-                        id, title, created_at, description, author, link, summary, image,
-                        source(*), news_topics(topic:topics(*)),
-                        likeCount:likes(count), commentCount:comments(count), likes(liker(id))
-                    `
+                        id, 
+                        title, 
+                        description, 
+                        summary, 
+                        image, 
+                        author, 
+                        link, 
+                        created_at,
+                        source!inner(
+                            id,
+                            name,
+                            image,
+                            description,
+                            url,
+                            country
+                        ),
+                        likeCount:likes(count),
+                        commentCount:comments(count),
+                        news_topics(topic:topics(id,name,color))
+        `
                     )
                     .order('likeCount', { ascending: false })
                     .limit(9)
+                // apply country filter
+                if (country) {
+                    query = query.or(
+                        `country.is.null, country.ilike.%${country}%`,
+                        { foreignTable: 'source' }
+                    )
+                } else {
+                    query = query.is('source.country', null)
+                }
+                const { data: featured, error: newsError } = await query
 
                 // Trending
-                const { data: trending } = await supabase
+                let trendingQuery = supabase
                     .from('news')
                     .select(
                         `
                         id, title, created_at, description, author, link, summary, image,
-                        source(*), news_topics(topic:topics(*)),
+                        source!inner(*), news_topics(topic:topics(*)),
                         likeCount:likes(count), commentCount:comments(count), likes(liker(id))
                     `
                     )
                     .limit(12)
+                // apply country filter
+                if (country) {
+                    trendingQuery = trendingQuery.or(
+                        `country.is.null, country.ilike.%${country}%`,
+                        { foreignTable: 'source' }
+                    )
+                } else {
+                    trendingQuery = trendingQuery.is('source.country', null)
+                }
+                const { data: trending } = await trendingQuery
 
                 // Recommended
-                const { data: recommended } = await supabase
+                let recommendedQuery = supabase
                     .from('news')
                     .select(
                         `
                         id, title, created_at, description, author, link, summary, image,
-                        source(*), news_topics(topic:topics(*)),
+                        source!inner(*), news_topics(topic:topics(*)),
                         likeCount:likes(count), commentCount:comments(count), likes(liker(id))
                     `
                     )
                     .order('created_at', { ascending: false })
                     .limit(12)
-
-                // Recent/Discover
-                const { data: recent } = await supabase
-                    .from('news')
-                    .select(
-                        `
-                        id, title, created_at, description, author, link, summary, image,
-                        source(*), news_topics(topic:topics(*)),
-                        likeCount:likes(count), commentCount:comments(count), likes(liker(id))
-                    `
+                // apply country filter
+                if (country) {
+                    recommendedQuery = recommendedQuery.or(
+                        `country.is.null, country.ilike.%${country}%`,
+                        { foreignTable: 'source' }
                     )
-                    .order('created_at', { ascending: false })
-                    .range(6, 20)
+                } else {
+                    recommendedQuery = recommendedQuery.is(
+                        'source.country',
+                        null
+                    )
+                }
+                const { data: recommended } = await recommendedQuery
+
+                // Initial fetch for Discover
+                const initialRecent = await fetchDiscoverNews(1)
 
                 const { data: topics } = await supabase
                     .from('topics')
@@ -105,13 +258,28 @@ const ForYouFeed = () => {
                     .ilike('image', '%https://%')
                     .limit(20)
 
-                console.log(topics)
-
                 setTopics((topics as unknown as TopicType[]) || [])
-                setFeaturedNews((featured as unknown as NewsType[]) || [])
-                setTrendingNews((trending as unknown as NewsType[]) || [])
-                setRecommendedNews((recommended as unknown as NewsType[]) || [])
-                setRecentNews((recent as unknown as NewsType[]) || [])
+                // filter out items with null or incomplete source
+                setFeaturedNews(
+                    (featured as unknown as NewsType[])?.filter(
+                        (n) => n.source && n.source.id
+                    ) || []
+                )
+                setTrendingNews(
+                    (trending as unknown as NewsType[])?.filter(
+                        (n) => n.source && n.source.id
+                    ) || []
+                )
+                setRecommendedNews(
+                    (recommended as unknown as NewsType[])?.filter(
+                        (n) => n.source && n.source.id
+                    ) || []
+                )
+                setRecentNews(
+                    (initialRecent as NewsType[])?.filter(
+                        (n) => n.source && n.source.id
+                    ) || []
+                )
                 setLoading(false)
             } catch (error) {
                 console.error('Error fetching news:', error)
@@ -120,7 +288,7 @@ const ForYouFeed = () => {
         }
 
         fetchRecommendedNews()
-    }, [supabase])
+    }, [supabase, fetchDiscoverNews])
 
     // Handle hiding news items
     const handleHideNews = (newsId: string) => {
@@ -130,7 +298,7 @@ const ForYouFeed = () => {
         setRecentNews((prev) => prev.filter((item) => item.id !== newsId))
     }
 
-    if (loading) return <CircleLoading />
+    if (loading) return <FeedSkeleton />
 
     if (
         !featuredNews.length &&
@@ -193,50 +361,114 @@ const ForYouFeed = () => {
                         {/* FOR YOU TAB */}
                         <Tab.Panel>
                             <div className="space-y-12">
-                                {/* Featured Section */}
-                                <section>
-                                    <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-6">
-                                        Featured
-                                    </h2>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                        {featuredNews
-                                            .slice(0, 3)
-                                            .map((news) => (
-                                                <div key={news.id}>
-                                                    <NewsCard
-                                                        news={news}
-                                                        onHideNews={
-                                                            handleHideNews
-                                                        }
-                                                        className="h-full"
-                                                    />
+                                {/* Magazine-style Discover layout rows for For You */}
+                                {recommendedNews.length > 0 &&
+                                    [0, 1, 2].map((row) => {
+                                        const items = recommendedNews.slice(
+                                            row * 4,
+                                            row * 4 + 4
+                                        )
+                                        const bigLeft = row % 2 === 0
+                                        return (
+                                            <div key={row} className="mb-10">
+                                                <div className="hidden sm:grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                                                    {bigLeft ? (
+                                                        <>
+                                                            {items[0] && (
+                                                                <NewsCardBig
+                                                                    size="large"
+                                                                    news={
+                                                                        items[0]
+                                                                    }
+                                                                    className="w-full"
+                                                                />
+                                                            )}
+                                                            <div className="grid gap-6 md:gap-8">
+                                                                {items
+                                                                    .slice(1)
+                                                                    .map(
+                                                                        (n) => (
+                                                                            <NewsCardWide
+                                                                                key={
+                                                                                    n.id
+                                                                                }
+                                                                                news={
+                                                                                    n
+                                                                                }
+                                                                                onHideNews={
+                                                                                    handleHideNews
+                                                                                }
+                                                                                className="h-full"
+                                                                            />
+                                                                        )
+                                                                    )}
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className="grid gap-6 md:gap-8">
+                                                                {items
+                                                                    .slice(0, 3)
+                                                                    .map(
+                                                                        (n) => (
+                                                                            <NewsCardWide
+                                                                                key={
+                                                                                    n.id
+                                                                                }
+                                                                                news={
+                                                                                    n
+                                                                                }
+                                                                                onHideNews={
+                                                                                    handleHideNews
+                                                                                }
+                                                                                className="h-full"
+                                                                            />
+                                                                        )
+                                                                    )}
+                                                            </div>
+                                                            {items[3] && (
+                                                                <NewsCardBig
+                                                                    size="large"
+                                                                    news={
+                                                                        items[3]
+                                                                    }
+                                                                    className="w-full"
+                                                                />
+                                                            )}
+                                                        </>
+                                                    )}
                                                 </div>
-                                            ))}
-                                    </div>
-                                </section>
-
-                                {/* Recommended Section */}
-                                <section>
-                                    <h2 className="text-lg font-semibold text-neutral-900 dark:text-white flex items-center gap-2 mb-6">
-                                        <BookmarkIcon className="w-5 h-5 text-blue-500" />
-                                        Recommended For You
-                                    </h2>
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                        {recommendedNews
-                                            .slice(0, 6)
-                                            .map((news) => (
-                                                <div key={news.id}>
-                                                    <NewsCardWide
-                                                        news={news}
-                                                        onHideNews={
-                                                            handleHideNews
-                                                        }
-                                                        className="h-full"
-                                                    />
+                                                <div className="block sm:hidden">
+                                                    {items.map((n) => (
+                                                        <NewsCardWide
+                                                            key={n.id}
+                                                            news={n}
+                                                            onHideNews={
+                                                                handleHideNews
+                                                            }
+                                                            className="mb-4 h-full"
+                                                        />
+                                                    ))}
                                                 </div>
-                                            ))}
-                                    </div>
-                                </section>
+                                            </div>
+                                        )
+                                    })}
+                                {/* Slider for Topics */}
+                                <SectionSliderNewTopics
+                                    className="py-8"
+                                    heading=""
+                                    subHeading=""
+                                    topics={topics}
+                                    topicCardType="card4"
+                                    itemPerRow={5}
+                                />
+                                {/* Infinite scroll section for For You */}
+                                <NewsSection
+                                    news={recommendedNews}
+                                    id="for-you"
+                                    newsFn={fetchRecommendedPaginated}
+                                    onHideNews={handleHideNews}
+                                />
                             </div>
                         </Tab.Panel>
 
@@ -249,127 +481,227 @@ const ForYouFeed = () => {
                                         <FlameIcon className="w-5 h-5 text-red-500" />
                                         Hot Right Now
                                     </h2>
-                                    <SectionMagazine1
-                                        news={trendingNews.slice(0, 5)}
-                                        heading=""
-                                        className="mb-6"
-                                    />
+
+                                    <div className="block sm:hidden">
+                                        {trendingNews
+                                            .slice(0, 5)
+                                            .map((news) => (
+                                                <NewsCardWide
+                                                    key={news.id}
+                                                    news={news}
+                                                    onHideNews={handleHideNews}
+                                                    className="mb-4"
+                                                />
+                                            ))}
+                                    </div>
                                 </section>
 
-                                {/* Featured Topic Row */}
-                                <section className="py-4">
-                                    <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-6 flex items-center">
-                                        <span className="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
-                                            Trending Topics
-                                        </span>
-                                    </h2>
-                                    <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
-                                        {topics.slice(0, 6).map((topic) => (
-                                            <div
-                                                key={topic.id}
-                                                className="flex-shrink-0 w-48"
-                                            >
-                                                <div className="bg-gradient-to-br from-neutral-50 to-blue-50 dark:from-neutral-800 dark:to-blue-900/20 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                                                    <CardTopic1 topic={topic} />
+                                {/* Magazine-style Discover layout rows for Trending */}
+                                {trendingNews.length > 0 &&
+                                    [0, 1, 2, 3].map((row) => {
+                                        const items = trendingNews.slice(
+                                            row * 4,
+                                            row * 4 + 4
+                                        )
+                                        const bigLeft = row % 2 === 0
+                                        return (
+                                            <div key={row} className="mb-10">
+                                                <div className="hidden sm:grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                                                    {bigLeft ? (
+                                                        <>
+                                                            {items[0] && (
+                                                                <NewsCardBig
+                                                                    size="large"
+                                                                    news={
+                                                                        items[0]
+                                                                    }
+                                                                    className="w-full"
+                                                                />
+                                                            )}
+                                                            <div className="grid gap-6 md:gap-8">
+                                                                {items
+                                                                    .slice(1)
+                                                                    .map(
+                                                                        (n) => (
+                                                                            <NewsCardWide
+                                                                                key={
+                                                                                    n.id
+                                                                                }
+                                                                                news={
+                                                                                    n
+                                                                                }
+                                                                                onHideNews={
+                                                                                    handleHideNews
+                                                                                }
+                                                                                className="h-full"
+                                                                            />
+                                                                        )
+                                                                    )}
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className="grid gap-6 md:gap-8">
+                                                                {items
+                                                                    .slice(0, 3)
+                                                                    .map(
+                                                                        (n) => (
+                                                                            <NewsCardWide
+                                                                                key={
+                                                                                    n.id
+                                                                                }
+                                                                                news={
+                                                                                    n
+                                                                                }
+                                                                                onHideNews={
+                                                                                    handleHideNews
+                                                                                }
+                                                                                className="h-full"
+                                                                            />
+                                                                        )
+                                                                    )}
+                                                            </div>
+                                                            {items[3] && (
+                                                                <NewsCardBig
+                                                                    size="large"
+                                                                    news={
+                                                                        items[3]
+                                                                    }
+                                                                    className="w-full"
+                                                                />
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </div>
+                                                <div className="block sm:hidden">
+                                                    {items.map((n) => (
+                                                        <NewsCardWide
+                                                            key={n.id}
+                                                            news={n}
+                                                            onHideNews={
+                                                                handleHideNews
+                                                            }
+                                                            className="mb-4 h-full"
+                                                        />
+                                                    ))}
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                </section>
-
-                                {/* Continuous News Flow - First Section */}
-                                <section>
-                                    <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-6">
-                                        Popular Stories
-                                    </h2>
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                        {trendingNews
-                                            .slice(5, 9)
-                                            .map((news) => (
-                                                <div key={news.id}>
-                                                    <NewsCardWide
-                                                        news={news}
-                                                        onHideNews={
-                                                            handleHideNews
-                                                        }
-                                                        className="h-full"
-                                                    />
-                                                </div>
-                                            ))}
-                                    </div>
-                                </section>
-
-                                {/* Continuous News Flow - Featured Item */}
-                                <section>
-                                    {trendingNews[9] && (
-                                        <NewsCardBig
-                                            news={trendingNews[9]}
-                                            // onHideNews={handleHideNews}
-                                            className="w-full"
-                                        />
-                                    )}
-                                </section>
-
-                                {/* Continuous News Flow - Second Section */}
-                                <section>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        {trendingNews
-                                            .slice(10, 13)
-                                            .map((news) => (
-                                                <div key={news.id}>
-                                                    <NewsCard
-                                                        news={news}
-                                                        onHideNews={
-                                                            handleHideNews
-                                                        }
-                                                        className="h-full"
-                                                    />
-                                                </div>
-                                            ))}
-                                    </div>
-                                </section>
+                                        )
+                                    })}
+                                {/* Slider for Trending Topics */}
+                                <SectionSliderNewTopics
+                                    className="py-8"
+                                    heading=""
+                                    subHeading=""
+                                    topics={topics}
+                                    topicCardType="card4"
+                                    itemPerRow={5}
+                                />
+                                {/* Infinite scroll section for Trending */}
+                                <NewsSection
+                                    news={trendingNews}
+                                    id="trending"
+                                    newsFn={fetchTrendingPaginated}
+                                    onHideNews={handleHideNews}
+                                />
                             </div>
                         </Tab.Panel>
 
                         {/* DISCOVER TAB */}
                         <Tab.Panel>
-                            <div className="space-y-12">
-                                {/* Fresh Perspectives */}
-                                <section>
-                                    <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-6">
-                                        Fresh Perspectives
-                                    </h2>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        {recentNews.slice(0, 3).map((news) => (
-                                            <div key={news.id}>
-                                                <NewsCard
-                                                    news={news}
-                                                    onHideNews={handleHideNews}
-                                                    className="h-full"
-                                                />
+                            <section className="space-y-12">
+                                <HeaderFilter heading="Discover" />
+                                {!recentNews.length && (
+                                    <span>Nothing we found!</span>
+                                )}
+                                {/* Magazine-style first 16 items: 4 rows of 1 big + 3 wide cards alternating */}
+                                {recentNews.length > 0 &&
+                                    [0, 1, 2, 3].map((row) => {
+                                        const items = recentNews.slice(
+                                            row * 4,
+                                            row * 4 + 4
+                                        )
+                                        const bigLeft = row % 2 === 0
+                                        return (
+                                            <div
+                                                key={row}
+                                                className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-10"
+                                            >
+                                                {bigLeft ? (
+                                                    <>
+                                                        {items[0] && (
+                                                            <NewsCardBig
+                                                                size="large"
+                                                                news={items[0]}
+                                                                className="w-full"
+                                                            />
+                                                        )}
+                                                        <div className="grid gap-6 md:gap-8">
+                                                            {items
+                                                                .slice(1)
+                                                                .map((n) => (
+                                                                    <NewsCardWide
+                                                                        key={
+                                                                            n.id
+                                                                        }
+                                                                        news={n}
+                                                                        onHideNews={
+                                                                            handleHideNews
+                                                                        }
+                                                                        className="h-full"
+                                                                    />
+                                                                ))}
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className="grid gap-6 md:gap-8">
+                                                            {items
+                                                                .slice(0, 3)
+                                                                .map((n) => (
+                                                                    <NewsCardWide
+                                                                        key={
+                                                                            n.id
+                                                                        }
+                                                                        news={n}
+                                                                        onHideNews={
+                                                                            handleHideNews
+                                                                        }
+                                                                        className="h-full"
+                                                                    />
+                                                                ))}
+                                                        </div>
+                                                        {items[3] && (
+                                                            <NewsCardBig
+                                                                size="large"
+                                                                news={items[3]}
+                                                                className="w-full"
+                                                            />
+                                                        )}
+                                                    </>
+                                                )}
                                             </div>
-                                        ))}
-                                    </div>
-                                </section>
-
-                                {/* Explore More */}
-                                <section>
-                                    <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-6">
-                                        Explore More
-                                    </h2>
-                                    <div className="space-y-6">
-                                        {recentNews.slice(3, 9).map((news) => (
-                                            <div key={news.id}>
-                                                <NewsCardWide
-                                                    news={news}
-                                                    onHideNews={handleHideNews}
-                                                    className="h-full"
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </section>
-                            </div>
+                                        )
+                                    })}
+                                {/* Slider for Discover Topics */}
+                                <SectionSliderNewTopics
+                                    className="py-8"
+                                    heading=""
+                                    subHeading=""
+                                    topics={topics}
+                                    topicCardType="card4"
+                                    itemPerRow={5}
+                                />
+                                {/* Remaining posts in normal NewsSection */}
+                                {recentNews.length > 16 && (
+                                    <NewsSection
+                                        news={recentNews.slice(16)}
+                                        id="discover"
+                                        newsFn={fetchDiscoverNews}
+                                        onHideNews={handleHideNews}
+                                    />
+                                )}
+                            </section>
                         </Tab.Panel>
                     </Tab.Panels>
                 </Tab.Group>

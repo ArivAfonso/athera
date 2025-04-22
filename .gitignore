@@ -3,11 +3,12 @@ logs
 *.log
 npm-debug.log*
 .env
+.dev.vars
 apps/web/.env
 apps/web/.env.test
 apps/crawler/.env
 apps/crawler/.env.test
-apps/server
+apps/admin
 # Runtime data
 pids
 *.pid

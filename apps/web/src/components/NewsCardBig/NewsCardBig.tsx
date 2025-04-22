@@ -35,6 +35,11 @@ const NewsCardBig: FC<NewsCardBigProps> = ({
     }
     const closeDetailModal = () => setShowDetailModal(false)
 
+    const truncatedSummary =
+        news.summary && news.summary.length > 200
+            ? `${news.summary.substring(0, 200)}...`
+            : news.summary
+
     return (
         <div
             className={`NewsCardBig group relative flex flex-col ${className}`}
@@ -79,8 +84,8 @@ const NewsCardBig: FC<NewsCardBigProps> = ({
                             {news.title}
                         </span>
                     </h2>
-                    <span className="block line-clamp-2 text-neutral-500 dark:text-neutral-400 text-[15px] leading-6 ">
-                        {news.summary}
+                    <span className="block text-neutral-500 dark:text-neutral-400 text-[15px] leading-6 ">
+                        {truncatedSummary}
                     </span>
                 </div>
                 <div className="my-5 border-t border-neutral-200 dark:border-neutral-700"></div>

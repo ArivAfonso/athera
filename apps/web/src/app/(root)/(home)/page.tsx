@@ -10,10 +10,14 @@ import NewsType from '@/types/NewsType'
 import SourceType from '@/types/SourceType'
 import Particles from '@/components/Particles/Particles'
 import { Metadata } from 'next'
+import { getUserCountry } from '@/utils/getUserCountry'
 
 async function getData() {
     const supabase = createClient(cookies())
-    const { data: news, error: newsError } = await supabase
+    const userCountry = await getUserCountry()
+    console.log('User country:', userCountry)
+
+    let query = supabase
         .from('news')
         .select(
             `
@@ -30,7 +34,8 @@ async function getData() {
                 name,
                 image,
                 description,
-                url
+                url,
+                country
             ),
             likeCount:likes(count),
             commentCount:comments(count),
@@ -39,6 +44,17 @@ async function getData() {
         )
         .order('created_at', { ascending: false })
         .limit(20)
+
+    if (userCountry) {
+        query = query.or(`country.is.null, country.ilike.%${userCountry}%`, {
+            foreignTable: 'source',
+        })
+    } else {
+        query = query.is('source.country', null)
+    }
+
+    const { data: news, error: newsError } = await query
+    console.log('News error:', newsError)
 
     const { data: topics, error: topicsError } = await supabase
         .from('topics')

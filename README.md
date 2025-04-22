@@ -17,13 +17,10 @@ Athera is an open source blogging social network similar to Medium, Dev and Hash
 
 ## Feature Roadmap
 
--   [ ] Multiple languages
--   [ ] Analytics
--   [ ] Customization
--   [ ] Post Recommendations
+-   [ ] More sources (a never ending pursuit)
+-   [ ] Article Recommendations
 -   [ ] AI Voiceovers
 -   [ ] PWA support
--   [ ] Teams Support
 
 ## Tech Stack
 
@@ -42,6 +39,7 @@ Athera is an open source blogging social network similar to Medium, Dev and Hash
 > -   Docker
 > -   NodeJS
 > -   Supabase CLI
+> -   Python 3.8+
 
 </br>
 Want to get up and running quickly? Follow these steps:
@@ -59,6 +57,18 @@ git clone https://github.com/<your-username>/athera
 3. Rename `.env.example` to `.env.test`
 
 4. Run `npm run dev:local` in the root directory
+
+### Crawler Setup
+
+1. Copy the values from `npm run db:start` and store them in `.env.example` renaming it to `.env`
+
+2. Choose a suitable AI model for summarisation, popular choices include:
+
+-  Gemini 2.0 Flash Lite
+- Gpt 4o-mini
+
+
+The API url should be compatible with OpenAI's python libaries
 
 #### Access Points for Your Application
 

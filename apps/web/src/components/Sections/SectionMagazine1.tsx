@@ -4,6 +4,7 @@ import React, { FC, useState } from 'react'
 import HeaderFilter from './HeaderFilter'
 import NewsType from '@/types/NewsType'
 import NewsCardWide from '../NewsCardWide/NewsCardWide'
+import NewsCardBig from '../NewsCardBig/NewsCardBig'
 // import NewsCardBig from '../NewsCardBig/NewsCardBig'
 
 export interface SectionMagazine1Props {
@@ -45,8 +46,6 @@ const SectionMagazine1: FC<SectionMagazine1Props> = ({
         )
     }
 
-    // Original functions commented out
-    /*
     // Render a row with big card on the left and three wide cards on the right
     const renderBigLeftRow = (startIndex: number) => {
         if (startIndex >= myNews.length) return null
@@ -94,7 +93,6 @@ const SectionMagazine1: FC<SectionMagazine1Props> = ({
             </div>
         )
     }
-    */
 
     return (
         <div className={`SectionMagazine1 ${className}`}>
@@ -103,9 +101,12 @@ const SectionMagazine1: FC<SectionMagazine1Props> = ({
 
             {/* Render all news as wide cards in groups of 4 */}
             {renderWideRow(0, 4)}
-            {renderWideRow(4, 4)}
-            {renderWideRow(8, 4)}
-            {renderWideRow(12, 4)}
+
+            {/* Render a big card on the left and three wide cards on the right */}
+            {renderBigLeftRow(4)}
+
+            {/* Render a big card on the right and three wide cards on the left */}
+            {renderWideLeftRow(7)}
         </div>
     )
 }

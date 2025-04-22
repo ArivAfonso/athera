@@ -10,8 +10,24 @@ import { Img, Heading2 } from 'ui'
 import Loading from './loading'
 import NewsCard from '@/components/NewsCard/NewsCard'
 import Empty from '@/components/Empty'
-import CircleLoading from '@/components/CircleLoading/CircleLoading'
 import NewsSection from '@/components/NewsSection/NewsSection'
+
+// Removed CircleLoading import to use skeleton UI
+
+// Skeleton UI for source page
+const SourceSkeleton = () => (
+    <div className="container py-8 animate-pulse">
+        <div className="h-8 bg-gray-300 dark:bg-neutral-700 rounded w-1/3 mb-4 mx-auto"></div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, idx) => (
+                <div key={idx} className="space-y-2">
+                    <div className="h-40 bg-gray-300 dark:bg-neutral-700 rounded"></div>
+                    <div className="h-4 bg-gray-300 dark:bg-neutral-700 rounded"></div>
+                </div>
+            ))}
+        </div>
+    </div>
+)
 
 async function getSourceData(context: { params: { slug: any } }) {
     const supabase = createClient()
@@ -174,7 +190,7 @@ const PageSource = (context: any) => {
                         {/* NEWS POSTS FROM THIS SOURCE */}
                         <div className="container pb-16 lg:pb-28 lg:pt-10">
                             {loadingNews ? (
-                                <CircleLoading />
+                                <SourceSkeleton />
                             ) : sourceNews && sourceNews.length > 0 ? (
                                 <NewsSection
                                     id={data.id}

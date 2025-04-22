@@ -28,10 +28,10 @@ SET row_security = off;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO "public"."users" ("id", "created_at", "name", "avatar", "username", "tiktok", "facebook", "twitter", "phone", "bio", "website", "verified", "github", "linkedin", "twitch", "youtube", "instagram", "notifications", "background", "index", "email") VALUES
-	('b0156ec3-2660-421e-8aea-bb704cf67ec4', '2023-08-14 05:38:10.812478+00', 'Ariv Afonso', 'https://lh3.googleusercontent.com/a/AAcHTteQXMU-FVYIBbq1HfYYexDYCeE9XR14dIzeuSjlBoI-n_0=s96-c', 'Ariv', '', '', 'https://x.com/ArivAfonso', '', 'testing...', '', true, 'https://github.com/ArivAfonso', '', NULL, NULL, NULL, true, NULL, 1, NULL),
-	('cd88a440-dffb-4f54-aedd-51da015ded76', '2024-08-31 14:37:31.809147+00', 'Pablo', 'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/avatars/default-pic.png', 'Pablo', '', '', '', '', '', '', false, '', '', '', '', '', true, NULL, 72, NULL),
-	('d8101ee4-ae24-4f0f-bf00-0674140b4675', '2023-08-14 05:42:24.383102+00', 'Ariv Afonso', 'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/avatars/d8101ee4-ae24-4f0f-bf00-0674140b4675/avatar77762', 'ariv797', '', '', '', '', '', '', true, '', '', '', '', '', true, NULL, 2, NULL);
+INSERT INTO "public"."users" ("id", "created_at", "name", "avatar", "tiktok", "facebook", "twitter", "phone", "bio", "website", "verified", "github", "linkedin", "twitch", "youtube", "instagram", "notifications", "background", "index", "email") VALUES
+	('b0156ec3-2660-421e-8aea-bb704cf67ec4', '2023-08-14 05:38:10.812478+00', 'Ariv Afonso', 'https://lh3.googleusercontent.com/a/AAcHTteQXMU-FVYIBbq1HfYYexDYCeE9XR14dIzeuSjlBoI-n_0=s96-c', '', '', 'https://x.com/ArivAfonso', '', 'testing...', '', true, 'https://github.com/ArivAfonso', '', NULL, NULL, NULL, true, NULL, 1, NULL),
+	('cd88a440-dffb-4f54-aedd-51da015ded76', '2024-08-31 14:37:31.809147+00', 'Pablo', 'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/avatars/default-pic.png', '', '', '', '', '', '', false, '', '', '', '', '', true, NULL, 72, NULL),
+	('d8101ee4-ae24-4f0f-bf00-0674140b4675', '2023-08-14 05:42:24.383102+00', 'Ariv Afonso', 'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/avatars/d8101ee4-ae24-4f0f-bf00-0674140b4675/avatar77762', '', '', '', '', '', '', true, '', '', '', '', '', true, NULL, 2, NULL);
 
 
 --
@@ -61,12 +61,11 @@ VALUES
   (gen_random_uuid(), 'source-uuid-2', 'SpaceX Launches New Satellite', 'Mission to expand global internet.', 'https://example.com/image10.jpg', 'Rachel Moore', 'https://bbc.com/news/spacex-launch', 'SpaceX’s latest mission.', 3);
 
 -- Link each article to one of two topics
--- You must replace these with real topic UUIDs from your `topics` table
 INSERT INTO public.news_topics (news, topic)
-SELECT id, 'topic-uuid-1' FROM public.news LIMIT 5;
+SELECT id, '58bd7fe3-1046-41fb-baae-6ee9eb580366' FROM public.news LIMIT 5;
 
 INSERT INTO public.news_topics (news, topic)
-SELECT id, 'topic-uuid-2' FROM public.news OFFSET 5 LIMIT 5;
+SELECT id, '36f10f05-78ba-4921-a3a1-dc12b9b55fe1' FROM public.news OFFSET 5 LIMIT 5;
 
 
 
@@ -94,14 +93,6 @@ INSERT INTO "public"."customization" ("id", "created_at", "author", "profile_lay
 	(157, '2024-08-31 14:37:31.809147+00', 'cd88a440-dffb-4f54-aedd-51da015ded76', 'grid'),
 	(1, '2024-04-27 05:02:13.10789+00', 'b0156ec3-2660-421e-8aea-bb704cf67ec4', 'modern_magazine'),
 	(137, '2024-07-30 04:14:29.026491+00', 'def6b0db-634d-41c6-a40f-c74721eef741', 'grid');
-
-
---
--- Data for Name: drafts; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-INSERT INTO "public"."drafts" ("id", "created_at", "title", "description", "json", "author", "image", "estimatedReadingTime", "text", "edited_at", "license") VALUES
-	('788df964-a14d-417b-8512-c1201cecf885', '2023-12-27 04:39:02.221209+00', 'The Life of Pablo', NULL, '{"type": "doc", "content": [{"type": "paragraph", "content": [{"text": "Heelloo", "type": "text"}]}]}', 'b0156ec3-2660-421e-8aea-bb704cf67ec4', NULL, 0, '', '2023-12-27 09:42:27+00', NULL);
 
 
 --
@@ -1906,110 +1897,6 @@ INSERT INTO "public"."topics" ("id", "name", "color", "image") VALUES
 	('7d24533a-0ebc-4479-bf86-615a9048a87f', 'Design', 'blue', NULL),
 	('6bed4fa5-01a3-45e8-998f-01b1adb474ee', 'Chartered-Accountant', 'Green', 'https://vkruooaeaacsdxvfxwpu.supabase.co/storage/v1/object/public/categories/Chartered-Accountant/Chartered-Accountant'),
 	('74f02f50-54a2-454c-a0b9-6ad9f5d3abd2', 'Kendrick-Lamar', 'red', NULL);
-
-
---
--- Data for Name: interests; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
-
---
--- Name: banned_users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."banned_users_id_seq"', 1, false);
-
-
---
--- Name: bookmarks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."bookmarks_id_seq"', 56, true);
-
-
---
--- Name: comment_likes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."comment_likes_id_seq"', 1, false);
-
-
---
--- Name: comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."comments_id_seq"', 17, true);
-
-
---
--- Name: customization_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."customization_id_seq"', 159, true);
-
-
---
--- Name: draft_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."draft_categories_id_seq"', 2, true);
-
-
---
--- Name: followers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."followers_id_seq"', 35, true);
-
-
---
--- Name: hidden_posts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."hidden_posts_id_seq"', 3, true);
-
-
---
--- Name: likes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."likes_id_seq"', 59, true);
-
-
---
--- Name: notification_settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."notification_settings_id_seq"', 117, true);
-
-
---
--- Name: posts_index_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."posts_index_seq"', 157, true);
-
-
---
--- Name: reports_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."reports_id_seq1"', 1, false);
-
-
---
--- Name: users_index_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."users_index_seq"', 74, true);
-
-
---
--- Name: watch_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."watch_history_id_seq"', 602, true);
 
 
 --

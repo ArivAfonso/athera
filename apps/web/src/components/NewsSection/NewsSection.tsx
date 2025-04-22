@@ -122,6 +122,7 @@ function NewsSection({
                 useWindowScroll
                 style={{ width: '100%' }}
                 totalCount={groupedNews.length}
+                atTopThreshold={300}
                 atBottomThreshold={600}
                 itemContent={(rowIndex) => {
                     const rowItems = groupedNews[rowIndex]

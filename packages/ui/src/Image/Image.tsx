@@ -30,12 +30,16 @@ const Img: FC<ImgProps> = ({
     ...args
 }) => {
     const [imgSrc, set_imgSrc] = useState(src)
-    const [useDefaultLoader, setUseDefaultLoader] = useState(false)
+    // 0: wsrv.nl loader, 1: default next/image loader, 2: direct passthrough loader
+    const [loaderIndex, setLoaderIndex] = useState(0)
 
     useEffect(() => {
         set_imgSrc(src)
-        setUseDefaultLoader(false)
+        setLoaderIndex(0)
     }, [src])
+
+    // passthrough loader: return original URL
+    const directLoader = ({ src }: { src: string }) => src
 
     // Use fill mode if neither width nor height are provided in args
     const fillDefault =
@@ -44,7 +48,13 @@ const Img: FC<ImgProps> = ({
     return (
         // <div className={`w-full h-full relative ${containerClassName}`}>
         <Image
-            loader={useDefaultLoader ? undefined : wsevLoader}
+            loader={
+                loaderIndex === 0
+                    ? wsevLoader
+                    : loaderIndex === 2
+                      ? directLoader
+                      : undefined
+            }
             {...fillDefault}
             onLoad={(event) => {
                 const img = event.target as HTMLImageElement
@@ -58,9 +68,11 @@ const Img: FC<ImgProps> = ({
                 }
             }}
             onError={() => {
-                if (!useDefaultLoader) {
-                    setUseDefaultLoader(true)
+                if (loaderIndex < 2) {
+                    // try next loader strategy
+                    setLoaderIndex((prev) => prev + 1)
                 } else {
+                    // all loaders failed, fallback to placeholder
                     set_imgSrc(
                         fallbackSrc
                             ? fallbackSrc

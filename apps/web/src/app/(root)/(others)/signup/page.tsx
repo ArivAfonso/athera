@@ -6,7 +6,8 @@ import xSvg from '@/images/X.svg'
 import googleSvg from '@/images/Google.svg'
 import { createClient } from '@/utils/supabase/client'
 import { useForm, Controller } from 'react-hook-form'
-import { Input, Image, Alert, Button, Heading2, MyLink } from 'ui'
+import { Input, Alert, Button, Heading2, MyLink } from 'ui'
+import Image from 'next/image'
 
 const PageSignUp = ({}) => {
     const supabase = createClient()

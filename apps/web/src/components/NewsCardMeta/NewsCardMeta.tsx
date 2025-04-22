@@ -52,6 +52,7 @@ const NewsCardMeta: FC<NewsCardMetaProps> = ({
                             <Link
                                 href={`/source/${source.id}`}
                                 title={`View ${source.name} source profile`}
+                                prefetch={false}
                             >
                                 <span className="block text-neutral-700 dark:text-neutral-300 font-medium hover:underline">
                                     {source.name || 'Unknown Source'}

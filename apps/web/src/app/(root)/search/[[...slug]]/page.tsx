@@ -40,7 +40,10 @@ async function getNews(
         return { data: cached.data, requestId }
     }
 
-    const res = await fetch(`/api/match-news?q=${encodeURIComponent(query)}`)
+    const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || ''}/match-news?q=${encodeURIComponent(query)}&filter=${filter_option}`
+    )
+
     if (!res.ok) {
         throw new Error(`API error: ${res.statusText}`)
     }

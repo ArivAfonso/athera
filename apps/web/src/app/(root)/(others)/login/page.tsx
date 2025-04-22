@@ -7,7 +7,8 @@ import googleSvg from '@/images/Google.svg'
 import discordSvg from '@/images/Discord.svg'
 import { createClient } from '@/utils/supabase/client'
 import { Controller, useForm } from 'react-hook-form'
-import { Input, Image, Alert, Button, Heading2, MyLink } from 'ui'
+import { Input, Alert, Button, Heading2, MyLink } from 'ui'
+import Image from 'next/image'
 
 const PageLogin = ({}) => {
     const supabase = createClient()
@@ -50,14 +51,6 @@ const PageLogin = ({}) => {
         }
     }
 
-    async function discordSignIn() {
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'discord',
-            options: {
-                redirectTo: `${window.location.origin}/auth/login`,
-            },
-        })
-    }
     return (
         <>
             <title key="title">Login - Athera</title>
@@ -94,19 +87,6 @@ const PageLogin = ({}) => {
                         />
                         <h3 className="flex-grow text-center text-sm font-medium text-neutral-700 dark:text-neutral-300 sm:text-sm">
                             Login with X
-                        </h3>
-                    </button>
-                    <button
-                        className=" flex w-full rounded-lg bg-primary-50 dark:bg-neutral-800 px-4 py-3 transform transition-transform sm:px-6 hover:translate-y-[-2px]"
-                        onClick={discordSignIn}
-                    >
-                        <Image
-                            className="flex-shrink-0"
-                            src={discordSvg}
-                            alt="Login with Discord"
-                        />
-                        <h3 className="flex-grow text-center text-sm font-medium text-neutral-700 dark:text-neutral-300 sm:text-sm">
-                            Login with Discord
                         </h3>
                     </button>
                 </div>

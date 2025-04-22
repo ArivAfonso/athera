@@ -86,7 +86,10 @@ const NewsCard: FC<NewsCardProps> = ({
                                 userName={news.source ? news.source.name : ''}
                             />
                             <div className="flex flex-col">
-                                <Link href={`/source/${news.source?.id}`}>
+                                <Link
+                                    prefetch={false}
+                                    href={`/source/${news.source?.id}`}
+                                >
                                     <span className="text-neutral-900 dark:text-neutral-100 font-medium text-sm">
                                         {news.source
                                             ? news.source.name

@@ -1,7 +1,6 @@
 export async function getUserCountry(): Promise<string | null> {
     try {
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
-        console.log(`Timezone: ${tz}`)
         // Simple mapping of timezones to countries (expand as needed)
         const timezoneCountryMap: Record<string, string> = {
             'America/New_York': 'us',

@@ -2,7 +2,7 @@
 
 import React, { Suspense, useEffect, useState } from 'react'
 import TopicBadgeList from '@/components/TopicBadgeList/TopicBadgeList'
-import { Avatar, Img } from 'ui'
+import { Avatar, Img, DropDown } from 'ui'
 import NewsCardLikeAndComment from '@/components/NewsCardLikeAndComment/NewsCardLikeAndComment'
 import PostBookmark from '@/components/PostBookmark/PostBookmark'
 import NewsType from '@/types/NewsType'
@@ -126,9 +126,9 @@ async function getNewsData(id: string) {
 
 export default function NewsPage({ params }: { params: { slug: string[] } }) {
     const id = params.slug[1]
-    // ... rest of your code
 
     const [news, setNews] = useState<NewsType>()
+    const [showFullSummary, setShowFullSummary] = useState(false)
 
     // Fetch news data
     useEffect(() => {
@@ -139,83 +139,189 @@ export default function NewsPage({ params }: { params: { slug: string[] } }) {
         getData()
     }, [id])
 
+    // Dropdown menu items
+    const dropdownItems = [
+        {
+            id: 'copy',
+            name: 'Copy link to article',
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>',
+        },
+        {
+            id: 'print',
+            name: 'Print article',
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>',
+        },
+        {
+            id: 'source',
+            name: 'Visit original source',
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>',
+            href: news?.link,
+            isTargetBlank: true,
+        },
+    ]
+
+    // Handle dropdown actions
+    const handleDropdownClick = (item: any) => {
+        switch (item.id) {
+            case 'copy':
+                navigator.clipboard.writeText(window.location.href)
+                break
+            case 'print':
+                window.print()
+                break
+            case 'source':
+                // This is handled by the href property
+                break
+            default:
+                break
+        }
+    }
+
     return news ? (
         <div className="min-h-screen">
+            {/* Hero section with background image */}
+            <div
+                className="relative w-full h-[50vh] md:h-[60vh] bg-cover bg-center bg-no-repeat"
+                style={{
+                    backgroundImage: `url(${news?.image})`,
+                }}
+            >
+                {/* Overlay gradient */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-neutral-900/90"></div>
+
+                {/* Top right action buttons */}
+                <div className="absolute top-4 right-4 z-20 flex items-center space-x-2">
+                    {news?.link && (
+                        <a
+                            href={news.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-1.5 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-full text-xs font-medium hover:bg-white dark:hover:bg-neutral-800 transition-colors flex items-center space-x-1"
+                        >
+                            <span>Read article</span>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="ml-1.5 h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                />
+                            </svg>
+                        </a>
+                    )}
+                    <DropDown
+                        className="h-8 w-8 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-full flex items-center justify-center"
+                        panelMenusClass="origin-top-right"
+                        data={dropdownItems}
+                        onClick={handleDropdownClick}
+                        title="Article options"
+                    />
+                </div>
+
+                <div className="absolute inset-0 flex flex-col justify-end px-6 md:px-10 pb-10 max-w-6xl mx-auto">
+                    {/* Topics */}
+                    <div className="mb-4">
+                        <TopicBadgeList
+                            topics={news?.news_topics || []}
+                            className="flex flex-wrap gap-2"
+                            itemClass="text-sm bg-neutral-800/70 text-white backdrop-blur-sm"
+                        />
+                    </div>
+
+                    <h1
+                        className="text-white font-semibold text-3xl md:text-4xl md:!leading-[120%] lg:text-5xl max-w-4xl drop-shadow-lg"
+                        title={news?.title}
+                    >
+                        {news?.title}
+                    </h1>
+
+                    {/* Source info in hero section */}
+                    <div className="flex items-center space-x-3 mt-6">
+                        <Avatar
+                            radius="rounded-full"
+                            sizeClass="h-10 w-10 border-2 border-white/50"
+                            imgUrl={
+                                news?.source ? news?.source.image : undefined
+                            }
+                            userName={news?.source ? news?.source.name : ''}
+                        />
+                        <div className="flex flex-col">
+                            <span className="text-white font-medium">
+                                {news?.source
+                                    ? news?.source.name
+                                    : 'Unknown Source'}
+                            </span>
+                            <div className="flex items-center text-xs text-neutral-200 whitespace-nowrap">
+                                <span>
+                                    {new Date(
+                                        news?.created_at || ''
+                                    ).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                    })}
+                                </span>
+                                {news?.author && (
+                                    <>
+                                        <span className="mx-2">•</span>
+                                        <span className="font-medium text-neutral-100">
+                                            {news?.author.split(' ').length > 1
+                                                ? `${news?.author.split(' ')[0]} ${news?.author.split(' ').slice(-1)}`
+                                                : news?.author}
+                                        </span>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div className="max-w-6xl mx-auto bg-white dark:bg-neutral-900 rounded-b-3xl">
                 {/* Content area */}
                 <div className="flex flex-col md:flex-row">
-                    <div className="p-6 md:p-8 pt-36 flex-1">
-                        {/* Topics */}
-                        <div className="mb-4">
-                            <TopicBadgeList
-                                topics={news?.news_topics || []}
-                                className="flex flex-wrap gap-2"
-                                itemClass="text-sm"
-                            />
-                        </div>
-
-                        <h1
-                            className={`text-neutral-900 font-semibold text-3xl md:text-4xl md:!leading-[120%] lg:text-5xl dark:text-neutral-100 max-w-4xl`}
-                            title={news?.title}
-                        >
-                            {news?.title}
-                        </h1>
-
-                        {/* Mobile source info */}
-                        <div className="flex items-center space-x-3 mt-6 mb-4 md:hidden">
-                            <Avatar
-                                radius="rounded-full"
-                                sizeClass="h-10 w-10"
-                                imgUrl={
-                                    news?.source
-                                        ? news?.source.image
-                                        : undefined
-                                }
-                                userName={news?.source ? news?.source.name : ''}
-                            />
-                            <div className="flex flex-col">
-                                <span className="text-neutral-900 dark:text-neutral-100 font-medium">
-                                    {news?.source
-                                        ? news?.source.name
-                                        : 'Unknown Source'}
-                                </span>
-                                <div className="flex items-center text-xs text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
-                                    <span>
-                                        {new Date(
-                                            news?.created_at || ''
-                                        ).toLocaleDateString('en-US', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                        })}
-                                    </span>
-                                    {news?.author && (
-                                        <>
-                                            <span className="mx-2">•</span>
-                                            <span className="font-medium text-neutral-700 dark:text-neutral-300">
-                                                {news?.author.split(' ')
-                                                    .length > 1
-                                                    ? `${news?.author.split(' ')[0]} ${news?.author.split(' ').slice(-1)}`
-                                                    : news?.author}
-                                            </span>
-                                        </>
-                                    )}
+                    <div className="p-6 md:p-8 flex-1">
+                        {/* Styled summary */}
+                        <div className="mt-2">
+                            <div className="bg-neutral-50 dark:bg-neutral-800/50 p-5 rounded-2xl border border-neutral-100 dark:border-neutral-700/50">
+                                <p
+                                    className={`text-base text-neutral-700 dark:text-neutral-300 leading-relaxed ${showFullSummary ? '' : 'line-clamp-4'}`}
+                                >
+                                    {news?.summary}
+                                </p>
+                                <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                    <button
+                                        onClick={() =>
+                                            setShowFullSummary(!showFullSummary)
+                                        }
+                                        className="text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 font-medium flex items-center"
+                                    >
+                                        {showFullSummary
+                                            ? 'Show less'
+                                            : 'Read more'}
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className={`ml-1 h-4 w-4 transition-transform ${showFullSummary ? 'rotate-180' : ''}`}
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M19 9l-7 7-7-7"
+                                            />
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-
-                        <div className="mt-6">
-                            <p className="text-base text-neutral-700 dark:text-neutral-300 leading-relaxed md:line-clamp-none">
-                                {news?.summary}
-                            </p>
-                            <Img
-                                alt="single"
-                                containerClassName="container mt-8 mb-2 flex justify-center items-center mx-auto"
-                                className="rounded-xl"
-                                src={news?.image}
-                                width={800}
-                                height={480}
-                            />
                         </div>
 
                         {/* Action bar */}

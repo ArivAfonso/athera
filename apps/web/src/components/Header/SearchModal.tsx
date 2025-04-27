@@ -25,7 +25,7 @@ import stringToSlug from '@/utils/stringToSlug'
 import TopicType from '@/types/TopicType'
 import NewsType from '@/types/NewsType'
 import SourceType from '@/types/SourceType'
-import { Search, SearchIcon } from 'lucide-react'
+import { NewspaperIcon, Search, SearchIcon } from 'lucide-react'
 import NewsDetailModal from '../NewsDetailModal/NewsDetailModal'
 
 interface Props {
@@ -418,7 +418,7 @@ const SearchModal: FC<Props> = ({ renderTrigger, type = 'icon' }) => {
                                                                         active,
                                                                     }) => (
                                                                         <>
-                                                                            <UserIcon
+                                                                            <NewspaperIcon
                                                                                 className={classNames(
                                                                                     'h-6 w-6 flex-none',
                                                                                     active

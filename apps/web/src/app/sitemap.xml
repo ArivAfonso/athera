@@ -8,4 +8,8 @@
         <loc>https://athera.blog/sitemap/sources/0.xml</loc>
         <lastmod>2025-03-24T00:00:00+00:00</lastmod>
     </sitemap>
+    <sitemap>
+        <loc>https://athera.blog/sitemap/news/0.xml</loc>
+        <lastmod>2025-03-24T00:00:00+00:00</lastmod>
+    </sitemap>
 </sitemapindex>

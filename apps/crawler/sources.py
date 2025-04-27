@@ -56,6 +56,11 @@ source_configs = {
             "title_suffix": " - CNET",
             "ignore_url_parts": ["https://www.cnet.com/#ftag="]
         },
+        "bgr": {
+            "url": "https://bgr.com/",
+            "title_suffix": " | BGR",
+            "sitemap_xml": "https://bgr.com/sitemap-google-news.xml"
+        },
     },
     "politics": {
         "politico": {
@@ -80,7 +85,7 @@ source_configs = {
             "url": "https://pitchfork.com/",
             "title_suffix": " | Pitchfork",
             "ignore_url_parts": ["https://pitchfork.com/reviews/"]
-        }
+        },
     },
     "sports": {
         # "theathletic": {
@@ -91,10 +96,6 @@ source_configs = {
             "url": "https://bleacherreport.com/",
             "title_suffix": " | Bleacher Report",
             "sitemap_xml": "https://bleacherreport.com/sitemaps"
-        },
-        "sportbible": {
-            "url": "https://www.sportbible.com/",
-            "title_suffix": " | SPORTbible",
         },
         "talksport": {
             "url": "https://talksport.com/",
@@ -111,6 +112,13 @@ source_configs = {
             "url": "https://www.si.com/",
             "title_suffix": " | Sports Illustrated",
             "sitemap_xml": "https://www.si.com/news-sitemap.xml"
+        },
+        "theathletic": {
+            "url": "https://theathletic.com/",
+            "title_suffix": " | The Athletic",
+            "sitemap_xml": "https://www.theathletic.com/sitemap.xml",
+            "include_url_parts": ["/athletic/"],
+            "exclude_url_parts": ["ask", "draft", "fantasy", "betting", "shop", "podcast", "newsletter"]
         },
     },
     "cars": {
@@ -177,12 +185,11 @@ source_configs = {
             "url": "https://qz.com/",
             "title_suffix": " - Quartz",
         },
-        # "fastcompany": {
-        #     "url": "https://www.fastcompany.com/",
-        #     "title_suffix": " | Fast Company",
-        #     "sitemap_xml": "https://www.fastcompany.com/sitemap.xml",
-        #     "sitemap_xml_number": 1,
-        #     "ignore_urls": ["https://www.fastcompany.com"]
+        # "inc": {
+        #     "url": "https://www.inc.com/",
+        #     "title_suffix": " | Inc.",
+        #     "sitemap_xml": "https://www.inc.com/sitemap_index.xml",
+        #     "ignore_urls": ["https://www.inc.com"]
         # },
     },
     "finance": {
@@ -202,6 +209,22 @@ source_configs = {
             "url": "https://www.economist.com/",
             "title_suffix": " | The Economist",
             "sitemap_xml": "https://www.economist.com/googlenews.xml"
+        },
+        "thestreet": {
+            "url": "https://www.thestreet.com/",
+            "sitemap_xml": "https://www.thestreet.com/news-sitemap.xml",
+            "title_suffix": " | TheStreet",
+        },
+        "yahoofinance": {
+            "url": "https://finance.yahoo.com/",
+            "title_suffix": " | Yahoo Finance",
+            "include_url_parts": ["/news/", "finance.yahoo.com/"],
+            "exclude_url_parts": ["/news/live/"],
+        },
+        "coindesk": {
+            "url": "https://www.coindesk.com/",
+            "title_suffix": " | CoinDesk",
+            
         },
     },
     "general": {
@@ -224,7 +247,16 @@ source_configs = {
             "url": "https://www.npr.org/",
             "title_suffix": " | NPR",
         },
-        
+        "associatedpress": {
+            "url": "https://apnews.com/",
+            "title_suffix": " | AP News",
+            "sitemap_xml": "https://apnews.com/news-sitemap-content.xml"
+        },
+        "cnbc": {
+            "url": "https://www.cnbc.com/",
+            "title_suffix": " | CNBC",
+            "sitemap_xml": "https://www.cnbc.com/sitemap_news.xml"
+        },
     },
     "travel": {
         "atlasobscura": {
@@ -235,10 +267,11 @@ source_configs = {
         #     "url": "https://www.lonelyplanet.com/",
         #     "title_suffix": " - Lonely Planet",
         # },
-        # "cntraveller": {
-        #     "url": "https://www.cntraveller.com/",
-        #     "title_suffix": " | CN Traveller",
-        # }
+        "cntraveller": {
+            "url": "https://www.cntraveller.com/",
+            "title_suffix": " | CN Traveller",
+            "include_url_parts": ["/article/", "/gallery/"],
+        }
     },
     "fashion": {
         "hypebeast": {
@@ -275,13 +308,22 @@ source_configs = {
             "url": "https://undark.org/",
             "title_suffix": " | Undark",
         },
+        "sciencealert": {
+            "url": "https://www.sciencealert.com/",
+            "title_suffix": " | ScienceAlert",
+            "sitemap_xml": "https://www.sciencealert.com/news-sitemap.xml"
+        },
     },
-    # "architecture": {
-    #     "elledecor": {
-    #         "url": "https://www.elledecor.com/",
-    #         "title_suffix": " - ELLE Decor",
-    #     },
-    # },
+    "architecture": {
+        "elledecor": {
+            "url": "https://www.elledecor.com/",
+            "title_suffix": " - ELLE Decor",
+        },
+        "architecturaldigest": {
+            "url": "https://www.architecturaldigest.com/",
+            "title_suffix": " | Architectural Digest",
+        },
+    },
     "international": {
         "aljazeera": {
             "url": "https://www.aljazeera.com/",

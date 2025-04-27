@@ -98,6 +98,7 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
 
     const [isExpanded, setIsExpanded] = useState(false)
     const [id, setId] = useState('')
+    const [showFullSummary, setShowFullSummary] = useState(false)
     const [relatedNews, setRelatedNews] = useState<NewsType[]>([])
     const [authorNews, setAuthorNews] = useState<NewsType[]>([])
 
@@ -294,11 +295,41 @@ const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
                             </div>
 
                             <div className="mt-6">
-                                <p
-                                    className={`text-base text-neutral-700 dark:text-neutral-300 leading-relaxed ${!isExpanded ? 'line-clamp-4 md:line-clamp-none' : ''}`}
-                                >
-                                    {news.summary}
-                                </p>
+                                <div className="bg-neutral-50 dark:bg-neutral-800/50 p-5 rounded-2xl border border-neutral-100 dark:border-neutral-700/50">
+                                    <p
+                                        className={`text-base text-neutral-700 dark:text-neutral-300 leading-relaxed ${showFullSummary ? '' : 'line-clamp-3'}`}
+                                    >
+                                        {news?.summary}
+                                    </p>
+                                    <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                        <button
+                                            onClick={() =>
+                                                setShowFullSummary(
+                                                    !showFullSummary
+                                                )
+                                            }
+                                            className="text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 font-medium flex items-center"
+                                        >
+                                            {showFullSummary
+                                                ? 'Show less'
+                                                : 'Read more'}
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`ml-1 h-4 w-4 transition-transform ${showFullSummary ? 'rotate-180' : ''}`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M19 9l-7 7-7-7"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
 
                                 {/* Only show read more/less button on mobile if summary is long enough */}
                                 {news.summary && news.summary.length > 240 && (

@@ -68,7 +68,10 @@ async function getData() {
         .limit(20)
 
     return {
-        popular_news: news,
+        popular_news:
+            (news as unknown as NewsType[])?.filter(
+                (n) => n.source && n.source.id
+            ) || [],
         topics,
         sources,
     }

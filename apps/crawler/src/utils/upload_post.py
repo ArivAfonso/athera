@@ -219,6 +219,8 @@ def upload_post(articles):
     for article in new_articles:
         tags = article.get("categories", [])
         all_tags.extend(tags)
+    # Filter out "News" topic, case-insensitive
+    all_tags = [tag for tag in all_tags if tag.lower() != "news"]
     all_tags = [modify_string(tag) for tag in all_tags]
 
     tags_array = []

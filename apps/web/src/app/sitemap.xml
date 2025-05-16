@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <sitemap>
-        <loc>https://athera.blog/sitemap/topics/0.xml</loc>
+        <loc>https://athera.blog/sitemap/sitemap/topics/0.xml</loc>
         <lastmod>2025-03-24T00:00:00+00:00</lastmod>
+        <changefreq>hourly</changefreq>
     </sitemap>
     <sitemap>
-        <loc>https://athera.blog/sitemap/sources/0.xml</loc>
+        <loc>https://athera.blog/sitemap/sources/sitemap/0.xml</loc>
         <lastmod>2025-03-24T00:00:00+00:00</lastmod>
+        <changefreq>daily</changefreq>
     </sitemap>
     <sitemap>
-        <loc>https://athera.blog/sitemap/news/0.xml</loc>
+        <loc>https://athera.blog/sitemap/sitemap/news/0.xml</loc>
         <lastmod>2025-03-24T00:00:00+00:00</lastmod>
+        <changefreq>hourly</changefreq>
     </sitemap>
 </sitemapindex>

@@ -19,31 +19,6 @@ async function getData() {
         data: { user },
     } = await supabase.auth.getUser()
 
-    // Get hidden content for the authenticated user
-    let hiddenNews: string[] = []
-    let hiddenAuthors: string[] = []
-    let hiddenSources: string[] = []
-
-    if (user) {
-        // Fetch all hidden content for the user
-        const { data: hiddenContent } = await supabase
-            .from('hidden_content')
-            .select('*')
-            .eq('user_id', user.id)
-
-        if (hiddenContent) {
-            hiddenNews = hiddenContent
-                .filter((item) => item.post_id)
-                .map((item) => item.post_id)
-            hiddenAuthors = hiddenContent
-                .filter((item) => item.author)
-                .map((item) => item.author)
-            hiddenSources = hiddenContent
-                .filter((item) => item.source_id)
-                .map((item) => item.source_id)
-        }
-    }
-
     const thirtyHoursAgo = new Date()
     thirtyHoursAgo.setHours(thirtyHoursAgo.getHours() - 36)
     const dateFilter = thirtyHoursAgo.toISOString()
@@ -78,21 +53,6 @@ async function getData() {
         .eq('source.featured', true)
         .limit(20)
 
-    // Filter out hidden content if user is logged in
-    if (user) {
-        if (hiddenNews.length > 0) {
-            query = query.not('id', 'in', `(${hiddenNews.join(',')})`)
-        }
-
-        if (hiddenAuthors.length > 0) {
-            query = query.not('author', 'in', `(${hiddenAuthors.join(',')})`)
-        }
-
-        if (hiddenSources.length > 0) {
-            query = query.not('source.id', 'in', `(${hiddenSources.join(',')})`)
-        }
-    }
-
     if (userCountry) {
         query = query.or(`country.is.null, country.ilike.%${userCountry}%`, {
             foreignTable: 'source',
@@ -115,14 +75,6 @@ async function getData() {
         .from('sources')
         .select('id, name, url, background, image, newsCount:news(count)')
         .limit(20)
-
-    if (user && hiddenSources.length > 0) {
-        sourcesQuery = sourcesQuery.not(
-            'id',
-            'in',
-            `(${hiddenSources.join(',')})`
-        )
-    }
 
     const { data: sources, error: sourcesError } = await sourcesQuery
 
@@ -180,75 +132,6 @@ interface HomeProps {
 const PageHome = async ({}) => {
     const data = (await getData()) as unknown as HomeProps
 
-    async function handleHideNews(newsId: string): Promise<void> {
-        'use server'
-        const supabase = createClient(cookies())
-        const {
-            data: { user },
-        } = await supabase.auth.getUser()
-
-        if (!user) {
-            console.error('User not authenticated')
-            return
-        }
-
-        const { error } = await supabase
-            .from('hidden_content')
-            .insert({ user_id: user.id, post_id: newsId })
-
-        if (error) {
-            console.error('Error hiding news:', error)
-        } else {
-            console.log('News hidden successfully')
-        }
-    }
-
-    async function handleHideAuthor(author: string): Promise<void> {
-        'use server'
-        const supabase = createClient(cookies())
-        const {
-            data: { user },
-        } = await supabase.auth.getUser()
-
-        if (!user) {
-            console.error('User not authenticated')
-            return
-        }
-
-        const { error } = await supabase
-            .from('hidden_content')
-            .insert({ user_id: user.id, author })
-
-        if (error) {
-            console.error('Error hiding author:', error)
-        } else {
-            console.log('Author hidden successfully')
-        }
-    }
-
-    async function handleHideSource(sourceId: string): Promise<void> {
-        'use server'
-        const supabase = createClient(cookies())
-        const {
-            data: { user },
-        } = await supabase.auth.getUser()
-
-        if (!user) {
-            console.error('User not authenticated')
-            return
-        }
-
-        const { error } = await supabase
-            .from('hidden_content')
-            .insert({ user_id: user.id, source_id: sourceId })
-
-        if (error) {
-            console.error('Error hiding source:', error)
-        } else {
-            console.log('Source hidden successfully')
-        }
-    }
-
     return (
         <div className="PageHome relative overflow-x-hidden">
             <div className="container relative">
@@ -262,9 +145,6 @@ const PageHome = async ({}) => {
                 <SectionLargeSlider
                     className="md:py-16 lg:pb-28 pt-4"
                     news={data.popular_news.filter((_, i) => i < 3)}
-                    onHideNews={handleHideNews}
-                    onHideAuthor={handleHideAuthor}
-                    onHideSource={handleHideSource}
                 />
 
                 <SectionSliderNewTopics
@@ -278,9 +158,6 @@ const PageHome = async ({}) => {
                 <SectionMagazine1
                     className="py-16 lg:py-28"
                     news={data.popular_news.filter((_, i) => i > 3)}
-                    onHideNews={handleHideNews}
-                    onHideAuthor={handleHideAuthor}
-                    onHideSource={handleHideSource}
                 />
 
                 <SectionSliderSources

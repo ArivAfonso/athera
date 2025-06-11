@@ -54,9 +54,9 @@ const BookmarkBtn: FC<BookmarkBtnProps> = ({
 
     async function toggleBookmark() {
         const supabase = createClient()
-        const { data: session } = await supabase.auth.getUser()
+        const { data: session } = await supabase.auth.getSession()
 
-        if (!session.user) {
+        if (!session.session?.user) {
             toast.custom((t) => (
                 <Alert
                     message="You need to login to bookmark this post"
@@ -66,7 +66,7 @@ const BookmarkBtn: FC<BookmarkBtnProps> = ({
             return
         }
 
-        const userId = session.user?.id
+        const userId = session.session?.user?.id
 
         try {
             if (isBookmarked) {

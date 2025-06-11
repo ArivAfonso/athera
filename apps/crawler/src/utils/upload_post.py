@@ -70,7 +70,7 @@ def generate_summary(article_text: str, generate_tags: bool = False) -> ArticleR
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
     )
     prompt = (
-        f"Please generate a concise summary and generate the Precise address of the location "
+        f"Please generate a concise summary (at least 80 words) and generate the Precise address of the location "
         f"(leave empty if too general) of the following article:\n\n{article_text}\n\nSummary:\nLocation:"
     )
     if generate_tags:

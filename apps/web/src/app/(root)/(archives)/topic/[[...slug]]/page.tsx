@@ -28,16 +28,22 @@ const TopicSkeleton = () => (
 
 async function getTopics(context: { params: { slug: any } }, pageParam = 0) {
     const supabase = createClient()
-
     const id = context.params.slug[1]
-    const { data, error } = await supabase
+
+    // Fetch basic topic info
+    const { data: topic, error: topicError } = await supabase
         .from('topics')
+        .select('id, name, color, image')
+        .eq('id', id)
+        .single()
+
+    if (topicError) {
+        throw new Error(`Failed to fetch topic: ${topicError.message}`)
+    } // Fetch related news under the topic, paginated
+    const { data: news, error: newsError } = await supabase
+        .from('news_topics')
         .select(
             `
-            id,
-            name,
-            color,
-            image,
             news!inner(
                 id,
                 title,
@@ -49,7 +55,6 @@ async function getTopics(context: { params: { slug: any } }, pageParam = 0) {
                 image,
                 likeCount:likes(count),
                 commentCount:comments(count),
-                news_topics(topic:topics(id,name,color,newsCount:news(count))),
                 source(
                     id,
                     name,
@@ -57,16 +62,25 @@ async function getTopics(context: { params: { slug: any } }, pageParam = 0) {
                     url,
                     image
                 )
+            ),
+            topic!inner(
+                id,
+                name,
+                color
             )
             `
         )
-        .eq('id', id)
-        .range(pageParam * 48, (pageParam + 1) * 48 - 1, {
-            referencedTable: 'news',
-        })
-        .single()
+        .eq('topic', id)
+        .range(pageParam * 48, (pageParam + 1) * 48 - 1)
 
-    const catData: TopicType = data as unknown as TopicType
+    if (newsError) {
+        throw new Error(`Failed to fetch news: ${newsError.message}`)
+    } // Assemble the result to match your TopicType structure
+    const catData: TopicType = {
+        ...topic,
+        //@ts-ignore
+        news: news ? news.map((item) => item.news) : [],
+    }
 
     return catData
 }
@@ -74,6 +88,7 @@ async function getTopics(context: { params: { slug: any } }, pageParam = 0) {
 const PageTopic = async (context: any) => {
     const [catData, setCatData] = useState<TopicType>()
     const [loading, setLoading] = useState(true)
+    const [newsLoaded, setNewsLoaded] = useState(false)
 
     useEffect(() => {
         async function getData() {
@@ -88,6 +103,11 @@ const PageTopic = async (context: any) => {
             )
             setCatData(data)
             setLoading(false)
+
+            // Verify if news data is properly loaded
+            if (data.news && Array.isArray(data.news)) {
+                setNewsLoaded(true)
+            }
         }
 
         getData()
@@ -138,11 +158,12 @@ const PageTopic = async (context: any) => {
                         )}
                     </>
                 )}
-            </div>
-
+            </div>{' '}
             {/* NEWS POSTS FROM THIS SOURCE */}
             <div className="container pb-16 lg:pb-28 lg:pt-10">
                 {loading ? (
+                    <TopicSkeleton />
+                ) : !newsLoaded ? (
                     <TopicSkeleton />
                 ) : catData && catData.news && catData.news.length > 0 ? (
                     <NewsSection

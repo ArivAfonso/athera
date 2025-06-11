@@ -15,7 +15,38 @@ import { getUserCountry } from '@/utils/getUserCountry'
 async function getData() {
     const supabase = createClient(cookies())
     const userCountry = await getUserCountry()
-    console.log('User country:', userCountry)
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
+
+    // Get hidden content for the authenticated user
+    let hiddenNews: string[] = []
+    let hiddenAuthors: string[] = []
+    let hiddenSources: string[] = []
+
+    if (user) {
+        // Fetch all hidden content for the user
+        const { data: hiddenContent } = await supabase
+            .from('hidden_content')
+            .select('*')
+            .eq('user_id', user.id)
+
+        if (hiddenContent) {
+            hiddenNews = hiddenContent
+                .filter((item) => item.post_id)
+                .map((item) => item.post_id)
+            hiddenAuthors = hiddenContent
+                .filter((item) => item.author)
+                .map((item) => item.author)
+            hiddenSources = hiddenContent
+                .filter((item) => item.source_id)
+                .map((item) => item.source_id)
+        }
+    }
+
+    const thirtyHoursAgo = new Date()
+    thirtyHoursAgo.setHours(thirtyHoursAgo.getHours() - 36)
+    const dateFilter = thirtyHoursAgo.toISOString()
 
     let query = supabase
         .from('news')
@@ -29,21 +60,38 @@ async function getData() {
             author, 
             link, 
             created_at,
-            source(
+            source!inner(
                 id,
                 name,
                 image,
                 description,
                 url,
-                country
+                country,
+                featured
             ),
             likeCount:likes(count),
             commentCount:comments(count),
             news_topics(topic:topics(id,name,color))
         `
         )
-        .order('created_at', { ascending: false })
+        .gte('created_at', dateFilter)
+        .eq('source.featured', true)
         .limit(20)
+
+    // Filter out hidden content if user is logged in
+    if (user) {
+        if (hiddenNews.length > 0) {
+            query = query.not('id', 'in', `(${hiddenNews.join(',')})`)
+        }
+
+        if (hiddenAuthors.length > 0) {
+            query = query.not('author', 'in', `(${hiddenAuthors.join(',')})`)
+        }
+
+        if (hiddenSources.length > 0) {
+            query = query.not('source.id', 'in', `(${hiddenSources.join(',')})`)
+        }
+    }
 
     if (userCountry) {
         query = query.or(`country.is.null, country.ilike.%${userCountry}%`, {
@@ -62,10 +110,21 @@ async function getData() {
         .ilike('image', '%https://%')
         .limit(20)
 
-    const { data: sources, error: sourcesError } = await supabase
+    // Also filter sources if user is logged in
+    let sourcesQuery = supabase
         .from('sources')
         .select('id, name, url, background, image, newsCount:news(count)')
         .limit(20)
+
+    if (user && hiddenSources.length > 0) {
+        sourcesQuery = sourcesQuery.not(
+            'id',
+            'in',
+            `(${hiddenSources.join(',')})`
+        )
+    }
+
+    const { data: sources, error: sourcesError } = await sourcesQuery
 
     return {
         popular_news:
@@ -74,6 +133,7 @@ async function getData() {
             ) || [],
         topics,
         sources,
+        user,
     }
 }
 
@@ -114,20 +174,78 @@ interface HomeProps {
     popular_news: NewsType[]
     topics: TopicType[]
     sources: SourceType[]
+    user: any
 }
 
 const PageHome = async ({}) => {
     const data = (await getData()) as unknown as HomeProps
-    async function handleHideAuthorNews(newsId: string): Promise<void> {
+
+    async function handleHideNews(newsId: string): Promise<void> {
+        'use server'
         const supabase = createClient(cookies())
+        const {
+            data: { user },
+        } = await supabase.auth.getUser()
+
+        if (!user) {
+            console.error('User not authenticated')
+            return
+        }
+
         const { error } = await supabase
-            .from('hidden_news')
-            .insert({ news_id: newsId })
+            .from('hidden_content')
+            .insert({ user_id: user.id, post_id: newsId })
 
         if (error) {
             console.error('Error hiding news:', error)
         } else {
             console.log('News hidden successfully')
+        }
+    }
+
+    async function handleHideAuthor(author: string): Promise<void> {
+        'use server'
+        const supabase = createClient(cookies())
+        const {
+            data: { user },
+        } = await supabase.auth.getUser()
+
+        if (!user) {
+            console.error('User not authenticated')
+            return
+        }
+
+        const { error } = await supabase
+            .from('hidden_content')
+            .insert({ user_id: user.id, author })
+
+        if (error) {
+            console.error('Error hiding author:', error)
+        } else {
+            console.log('Author hidden successfully')
+        }
+    }
+
+    async function handleHideSource(sourceId: string): Promise<void> {
+        'use server'
+        const supabase = createClient(cookies())
+        const {
+            data: { user },
+        } = await supabase.auth.getUser()
+
+        if (!user) {
+            console.error('User not authenticated')
+            return
+        }
+
+        const { error } = await supabase
+            .from('hidden_content')
+            .insert({ user_id: user.id, source_id: sourceId })
+
+        if (error) {
+            console.error('Error hiding source:', error)
+        } else {
+            console.log('Source hidden successfully')
         }
     }
 
@@ -144,6 +262,9 @@ const PageHome = async ({}) => {
                 <SectionLargeSlider
                     className="md:py-16 lg:pb-28 pt-4"
                     news={data.popular_news.filter((_, i) => i < 3)}
+                    onHideNews={handleHideNews}
+                    onHideAuthor={handleHideAuthor}
+                    onHideSource={handleHideSource}
                 />
 
                 <SectionSliderNewTopics
@@ -157,6 +278,9 @@ const PageHome = async ({}) => {
                 <SectionMagazine1
                     className="py-16 lg:py-28"
                     news={data.popular_news.filter((_, i) => i > 3)}
+                    onHideNews={handleHideNews}
+                    onHideAuthor={handleHideAuthor}
+                    onHideSource={handleHideSource}
                 />
 
                 <SectionSliderSources
@@ -166,20 +290,6 @@ const PageHome = async ({}) => {
                     sources={data.sources.filter((_, i) => i < 10)}
                 />
 
-                {/* <div className="relative py-16">
-                    <BackgroundSection />
-                    <MySlider
-                        data={data.popular_news}
-                        renderItem={(item, indx) => (
-                            <NewsCardLong
-                                key={indx}
-                                news={item}
-                                onHideNews={handleHideAuthorNews}
-                            />
-                        )}
-                        itemPerRow={4}
-                    />
-                </div> */}
                 <div className="relative py-16 lg:py-28">
                     <div className="absolute inset-0 opacity-20 bg-pattern"></div>
                     <div className="relative z-10 max-w-4xl mx-auto text-center">

@@ -10,12 +10,18 @@ export interface SectionLargeSliderProps {
     className?: string
     heading?: string
     news: NewsType[]
+    onHideNews?: (newsId: string) => void
+    onHideAuthor?: (author: string) => void
+    onHideSource?: (sourceId: string) => void
 }
 
 const SectionLargeSlider: FC<SectionLargeSliderProps> = ({
     news,
     heading = "See What's happening in ",
     className = '',
+    onHideNews,
+    onHideAuthor,
+    onHideSource,
 }) => {
     const [indexActive, setIndexActive] = useState(0)
 
@@ -62,6 +68,9 @@ const SectionLargeSlider: FC<SectionLargeSliderProps> = ({
                         onClickNext={handleClickNext}
                         onClickPrev={handleClickPrev}
                         news={item}
+                        onHideNews={onHideNews}
+                        onHideAuthor={onHideAuthor}
+                        onHideSource={onHideSource}
                     />
                 )
             })}

@@ -2,113 +2,18 @@
 
 import { Popover, Transition } from '@/app/headlessui'
 import NotificationType from '@/types/NotificationType'
-import { createClient } from '@/utils/supabase/client'
 import Image from 'next/image'
-import { FC, Fragment, useEffect, useState } from 'react'
+import { FC, Fragment, useState } from 'react'
 import Empty from '../Empty'
-import stringToSlug from '@/utils/stringToSlug'
 
 interface Props {
     className?: string
 }
 
 const NotifyDropdown: FC<Props> = ({ className = 'hidden sm:block' }) => {
-    const [notifications, setNotifications] = useState<NotificationType[]>([])
-    const [newNots, setNewNots] = useState<string[]>([])
-    useEffect(() => {
-        const fetchData = async () => {
-            const cachedNotifications = localStorage.getItem('notifications')
-            const cacheTime = localStorage.getItem('cacheTime')
-            try {
-                if (
-                    cachedNotifications &&
-                    cacheTime &&
-                    Date.now() - Number(cacheTime) < 5 * 60 * 1000
-                ) {
-                    setNotifications(JSON.parse(cachedNotifications))
-                    return
-                } else {
-                    const supabase = createClient()
-                    const { data: session } = await supabase.auth.getUser()
-                    let { data, error } = await supabase
-                        .from('notifications')
-                        .select(
-                            `
-                        type,
-                        id,
-                        notifier(name, id, username, avatar),
-                        post(id, title),
-                        created_at,
-                        read_at
-                        `
-                        )
-                        .eq('user_id', session.user ? session.user.id : '')
-                        .order('read_at', { ascending: true })
-                        .order('created_at', { ascending: false })
-                        .limit(4)
-
-                    const notData: NotificationType[] | null =
-                        data as unknown as NotificationType[]
-
-                    notData?.forEach((item) => {
-                        if (item.type === 'follow') {
-                            item.description = `${item.notifier.name} followed you!!`
-                            item.href = `/author/${item.notifier.username}`
-                        } else if (item.type === 'comment') {
-                            item.description = `${item.notifier.name} commented on your post`
-                            item.href = `/post/${stringToSlug(
-                                item.post.title
-                            )}/${item.post.id}`
-                        }
-                        new Date(
-                            item.created_at ? item.created_at : ''
-                        ).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                        })
-                        if (item.read_at == null && item.id)
-                            setNewNots((prevNots) => [...prevNots, item.id])
-                    })
-                    if (notData) {
-                        localStorage.setItem(
-                            'notifications',
-                            JSON.stringify(notData)
-                        )
-                        localStorage.setItem('cacheTime', Date.now().toString())
-                    }
-                    setNotifications(notData || [])
-                }
-            } catch (err) {
-                console.error(err)
-            }
-        }
-
-        fetchData()
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    async function markAllasRead() {
-        // All ids in the newNots array are marked as read
-        const supabase = createClient()
-        const { data: session } = await supabase.auth.getUser()
-        if (!session.user) return
-        const { data, error } = await supabase
-            .from('notifications')
-            .update({ read_at: new Date().toISOString() })
-            .eq('user_id', session.user.id)
-            .in('id', newNots)
-        if (error) {
-            console.error(error)
-        }
-        setNewNots([])
-    }
-
-    useEffect(() => {
-        markAllasRead()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    // Simple state for tracking dropdown open status - no data fetching
+    const [notifications] = useState<NotificationType[]>([])
+    const [newNots] = useState<string[]>([])
 
     return (
         <div className={className}>

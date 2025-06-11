@@ -33,7 +33,7 @@ async function getTopics(context: { params: { slug: any } }, pageParam = 0) {
     // Fetch basic topic info
     const { data: topic, error: topicError } = await supabase
         .from('topics')
-        .select('id, name, color, image')
+        .select('id, name, color, image, newsCount:news_topics(count)')
         .eq('id', id)
         .single()
 
@@ -55,6 +55,7 @@ async function getTopics(context: { params: { slug: any } }, pageParam = 0) {
                 image,
                 likeCount:likes(count),
                 commentCount:comments(count),
+                news_topics(topic:topics(id,name,color)),
                 source(
                     id,
                     name,
@@ -141,7 +142,7 @@ const PageTopic = async (context: any) => {
                                         {catData.name.replaceAll('-', ' ')}
                                     </h2>
                                     <span className="block mt-4 text-neutral-300">
-                                        {catData.news?.length} Articles
+                                        {catData.newsCount[0].count} Articles
                                     </span>
                                 </div>
                             </div>
@@ -152,7 +153,7 @@ const PageTopic = async (context: any) => {
                                 </Heading2>
 
                                 <h2 className="text-center font-medium text-sm">
-                                    Found {catData?.news?.length} articles
+                                    Found {catData?.newsCount[0].count} articles
                                 </h2>
                             </div>
                         )}
